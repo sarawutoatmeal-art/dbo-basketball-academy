@@ -55,6 +55,14 @@
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
       color-scheme: light;
+      --app-scale: 1;
+    }
+
+    /* Auto Scale wrapper for all mobile screen sizes */
+    #app-viewport-scaler {
+      transform-origin: top center;
+      transition: transform 0.2s ease-out;
+      width: 100%;
     }
 
     body {
@@ -248,19 +256,27 @@
           </button>
         </nav>
 
-        <!-- Right Quick Actions: App Install & Staff Login -->
-        <div class="flex items-center gap-2">
+        <!-- Right Quick Actions: Auto Scale, App Install & Staff Login -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          
+          <!-- Auto Scale Toggle Button (For Perfect Mobile Fit) -->
+          <button onclick="toggleMobileAutoScale()" id="autoScaleBtn" title="ปรับสเกลพอดีหน้าจอมือถืออัตโนมัติ" class="btn-touch px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 flex items-center gap-1 shadow-xs transition">
+            <i data-lucide="scan" id="autoScaleIcon" class="w-3.5 h-3.5 text-amber-700"></i>
+            <span id="autoScaleText" class="font-mono">Auto 100%</span>
+          </button>
+
           <!-- Install App Button (PWA) -->
-          <button id="pwaInstallBtn" onclick="installAppPrompt()" class="hidden btn-touch px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 flex items-center gap-1.5">
+          <button id="pwaInstallBtn" onclick="installAppPrompt()" class="hidden btn-touch px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 flex items-center gap-1.5">
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
             <span class="hidden sm:inline">ติดตั้งลงมือถือ</span>
             <span class="sm:hidden">ติดตั้งแอป</span>
           </button>
 
           <!-- Coach Login Switch -->
-          <button onclick="toggleCoachAuth()" id="role-auth-btn" class="btn-touch px-3.5 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5">
+          <button onclick="toggleCoachAuth()" id="role-auth-btn" class="btn-touch px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1 sm:gap-1.5">
             <span id="role-dot" class="w-2 h-2 rounded-full bg-slate-400"></span>
-            <span id="role-label">เข้าสู่ระบบโค้ช</span>
+            <span id="role-label" class="hidden xs:inline sm:inline">เข้าสู่ระบบโค้ช</span>
+            <span class="xs:hidden sm:hidden">โค้ช</span>
             <i data-lucide="lock" id="role-icon" class="w-3.5 h-3.5 text-slate-400"></i>
           </button>
         </div>
@@ -286,8 +302,9 @@
     </div>
   </div>
 
-  <!-- Main Content Area -->
-  <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+  <!-- Main Content Area with Viewport Scaler Wrapper -->
+  <div id="app-viewport-scaler" class="flex-grow flex flex-col">
+    <main class="flex-grow max-w-6xl w-full mx-auto px-3.5 sm:px-6 py-4 sm:py-8">
 
     <!-- ======================================================== -->
     <!-- TAB 1: PARENT PORTAL (LOGIN GATE & STUDENT DASHBOARD)    -->
@@ -949,6 +966,7 @@
     </section>
 
   </main>
+  </div>
 
   <!-- ======================================================== -->
   <!-- MOBILE BOTTOM NAVIGATION BAR                             -->
@@ -1808,11 +1826,67 @@
       setTimeout(() => { toast.classList.add('hidden'); }, 3500);
     }
 
+    // ========================================================
+    // MOBILE AUTO-SCALE ADAPTIVE ENGINE
+    // ========================================================
+    const scaleModes = ['auto', '100', '90', '85'];
+    let currentScaleIndex = parseInt(localStorage.getItem('dbo_mobile_scale_idx') || '0');
+
+    function applyScreenScale() {
+      const scaler = document.getElementById('app-viewport-scaler');
+      const btnText = document.getElementById('autoScaleText');
+      if (!scaler || !btnText) return;
+
+      const mode = scaleModes[currentScaleIndex % scaleModes.length];
+      let scale = 1.0;
+
+      if (mode === 'auto') {
+        const screenW = window.innerWidth;
+        if (screenW < 360) {
+          scale = screenW / 375; // Adaptive scale for ultra compact phones
+        } else if (screenW >= 360 && screenW <= 414) {
+          scale = 1.0; // Perfect standard 1:1 mobile
+        } else if (screenW > 414 && screenW < 768) {
+          scale = Math.min(1.05, screenW / 414);
+        } else {
+          scale = 1.0;
+        }
+        btnText.innerText = 'Auto ' + Math.round(scale * 100) + '%';
+      } else {
+        scale = parseInt(mode) / 100;
+        btnText.innerText = mode + '%';
+      }
+
+      scaler.style.transform = `scale(${scale})`;
+      if (scale < 1.0) {
+        scaler.style.width = `${100 / scale}%`;
+        scaler.style.transformOrigin = 'top left';
+      } else {
+        scaler.style.width = '100%';
+        scaler.style.transformOrigin = 'top center';
+      }
+    }
+
+    function toggleMobileAutoScale() {
+      currentScaleIndex = (currentScaleIndex + 1) % scaleModes.length;
+      localStorage.setItem('dbo_mobile_scale_idx', currentScaleIndex);
+      applyScreenScale();
+      const currentMode = scaleModes[currentScaleIndex];
+      showToast(`ปรับขนาดการแสดงผลหน้าจอ: ${document.getElementById('autoScaleText').innerText}`);
+    }
+
+    window.addEventListener('resize', () => {
+      if (scaleModes[currentScaleIndex % scaleModes.length] === 'auto') {
+        applyScreenScale();
+      }
+    });
+
     window.addEventListener('DOMContentLoaded', () => {
       const today = new Date().toISOString().split('T')[0];
       const privDate = document.getElementById('privateDate');
       if (privDate) privDate.value = today;
 
+      applyScreenScale();
       renderParentView();
       updateCoachStateUI();
       renderMasterCalendar();
