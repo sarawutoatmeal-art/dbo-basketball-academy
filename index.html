@@ -9,14 +9,15 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="manifest" href="manifest.json?v=2.5">
-  <meta name="theme-color" content="#0A1128">
+  <link rel="manifest" href="manifest.json?v=3.0">
+  <meta name="theme-color" content="#FFFFFF">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="DBO Academy">
-  <link rel="icon" type="image/png" href="assets/images/app-icon-512.png?v=2.5">
-  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=2.5">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png?v=2.5">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/images/app-icon-192.png?v=3.0">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/images/app-icon-512.png?v=3.0">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon-180.png?v=3.0">
 
   <!-- Typography: Prompt & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -175,6 +176,13 @@
       from { opacity: 0; transform: translate(-50%, -20px); }
       to { opacity: 1; transform: translate(-50%, 0); }
     }
+      /* Mobile notch and bottom safe-area guarantees */
+    header {
+      padding-top: max(env(safe-area-inset-top, 0px), 14px) !important;
+    }
+    .mobile-bottom-nav {
+      padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px) !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col pb-24 md:pb-12">
@@ -182,7 +190,7 @@
   <!-- ======================================================== -->
   <!-- 1. HEADER (Safe Area Fitted for Mobile Notch)            -->
   <!-- ======================================================== -->
-  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-dbo-border">
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-dbo-border" style="padding-top: max(env(safe-area-inset-top, 0px), 14px);">
     <div class="max-w-6xl mx-auto px-3 sm:px-6">
       <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
         
@@ -425,14 +433,14 @@
 
         </div>
 
-        <!-- Live Peers Card: Who is attending class today? -->
+        <!-- Live Peers Card: Who is attending class today? (No count shown to parent) -->
         <div class="card-clean p-4 sm:p-5 space-y-3 border-l-4 border-l-sky-500">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <i data-lucide="users" class="w-4 h-4 text-sky-600"></i>
-              <h3 class="text-xs sm:text-sm font-bold text-dbo-navy">เพื่อนร่วมคลาสในรอบวันนี้ (คลาส 17:00 น.)</h3>
+              <h3 class="text-xs sm:text-sm font-bold text-dbo-navy">เพื่อนร่วมฝึกซ้อมในรอบวันนี้ (คลาส 17:00 น.)</h3>
             </div>
-            <span id="todayClassCountBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">12 คน</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">สนามเตชะวิทย์</span>
           </div>
           <div id="todayPeerList" class="flex flex-wrap gap-1.5 pt-1">
             <!-- Dynamically populated peer badges -->
@@ -844,53 +852,125 @@
     </section>
 
     <!-- ======================================================== -->
-    <!-- TAB 5: MASTER CALENDAR (SCHEDULE OVERVIEW)               -->
+    <!-- TAB 5: MASTER CALENDAR (SCHEDULE OVERVIEW - CLEAN DUAL VIEW) -->
     <!-- ======================================================== -->
     <section id="tab-calendar" class="hidden space-y-4">
       <div class="card-clean p-4 sm:p-6 space-y-4">
         
-        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 pb-3 border-b border-slate-200">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pb-3 border-b border-slate-200">
           <div>
-            <h2 class="text-base sm:text-xl font-bold text-dbo-navy">ปฏิทินตารางฝึกซ้อม (Master Schedule)</h2>
-            <p class="text-xs text-slate-500">โรงเรียนเตชะวิทย์ • ข้อมูลภายในสำหรับผู้ปกครอง</p>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base sm:text-xl font-bold text-dbo-navy">ปฏิทินตารางฝึกซ้อม (Master Schedule)</h2>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-800 border border-sky-200">โรงเรียนเตชะวิทย์</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">ตารางคลาสฝึกซ้อมของ DBO Basketball Academy ประจำเดือน พฤศจิกายน 2569</p>
           </div>
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200">
-              จันทร์, อังคาร, พฤหัส (17:00-19:00 น.)
-            </span>
-            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-indigo-50 text-indigo-800 font-semibold border border-indigo-200">
-              เสาร์: Basic Coach Oat (10:00-12:00 น.)
-            </span>
+          
+          <!-- View Mode Switch: Weekly vs Monthly -->
+          <div class="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
+            <button onclick="setCalendarMode('weekly')" id="btnCalWeekly" class="px-3 py-1 rounded-lg text-xs font-semibold bg-white text-dbo-navy shadow-xs transition-all">
+              <i data-lucide="list" class="w-3.5 h-3.5 inline mr-1"></i> ตารางสัปดาห์
+            </button>
+            <button onclick="setCalendarMode('monthly')" id="btnCalMonthly" class="px-3 py-1 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 inline mr-1"></i> ปฏิทินทั้งเดือน
+            </button>
           </div>
         </div>
 
-        <div class="w-full overflow-x-auto pb-2 -mx-1 px-1">
-          <div class="min-w-[340px] sm:min-w-full">
-            <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-slate-600 mb-1.5">
+        <!-- VIEW 1: WEEKLY AGENDA SCHEDULE (Clean Cards, Perfect Mobile Flow) -->
+        <div id="calWeeklyView" class="space-y-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+            <!-- Monday Card -->
+            <div class="p-4 rounded-xl border border-amber-200/80 bg-gradient-to-br from-amber-50/60 to-white flex items-start justify-between gap-3 shadow-xs">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-xl bg-amber-500 text-white font-bold text-sm flex items-center justify-center shadow-xs">จ</span>
+                  <div>
+                    <h4 class="text-sm font-bold text-slate-900">วันจันทร์ (17:00 - 19:00 น.)</h4>
+                    <p class="text-[11px] text-amber-700 font-medium">คลาสปกติ 2 ชม. • สนามโรงเรียนเตชะวิทย์</p>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-600 pt-1">ทักษะพื้นฐาน บาสเกตบอลฟันดาเมนทัล การเลี้ยงบอล และสมรรถภาพร่างกาย</p>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 flex-shrink-0">เปิดซ้อมปกติ</span>
+            </div>
+
+            <!-- Tuesday Card -->
+            <div class="p-4 rounded-xl border border-amber-200/80 bg-gradient-to-br from-amber-50/60 to-white flex items-start justify-between gap-3 shadow-xs">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-xl bg-amber-500 text-white font-bold text-sm flex items-center justify-center shadow-xs">อ</span>
+                  <div>
+                    <h4 class="text-sm font-bold text-slate-900">วันอังคาร (17:00 - 19:00 น.)</h4>
+                    <p class="text-[11px] text-amber-700 font-medium">คลาสปกติ 2 ชม. • สนามโรงเรียนเตชะวิทย์</p>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-600 pt-1">การจ่ายบอล ทัศนวิสัย การตัดสินใจในสนาม (Decision Making) และเกมป้องกัน</p>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 flex-shrink-0">เปิดซ้อมปกติ</span>
+            </div>
+
+            <!-- Thursday Card -->
+            <div class="p-4 rounded-xl border border-amber-200/80 bg-gradient-to-br from-amber-50/60 to-white flex items-start justify-between gap-3 shadow-xs">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-xl bg-amber-500 text-white font-bold text-sm flex items-center justify-center shadow-xs">พฤ</span>
+                  <div>
+                    <h4 class="text-sm font-bold text-slate-900">วันพฤหัสบดี (17:00 - 19:00 น.)</h4>
+                    <p class="text-[11px] text-amber-700 font-medium">คลาสปกติ 2 ชม. • สนามโรงเรียนเตชะวิทย์</p>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-600 pt-1">Shooting Form ความแม่นยำในการทำแต้ม และการจำลองสถานการณ์แข่งจริง</p>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 flex-shrink-0">เปิดซ้อมปกติ</span>
+            </div>
+
+            <!-- Saturday Card (Coach Oat) -->
+            <div class="p-4 rounded-xl border border-indigo-200 bg-gradient-to-br from-indigo-50/70 to-white flex items-start justify-between gap-3 shadow-xs">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shadow-xs">ส</span>
+                  <div>
+                    <h4 class="text-sm font-bold text-indigo-950">วันเสาร์: Basic Coach Oat (10:00 - 12:00 น.)</h4>
+                    <p class="text-[11px] text-indigo-700 font-medium">คลาสเฉพาะโค้ชโอ๊ต • 4 ครั้งต่อคอร์ส (1,500.-)</p>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-600 pt-1">วิทยาศาสตร์การกีฬาสำหรับเด็ก การเคลื่อนไหว ความคล่องตัว และเสริมกล้ามเนื้อพื้นฐาน</p>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800 flex-shrink-0">โค้ชโอ๊ต</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- VIEW 2: MONTHLY CALENDAR GRID (Clean Minimalist Apple Style) -->
+        <div id="calMonthlyView" class="hidden space-y-3">
+          <div class="w-full">
+            <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold text-slate-500 mb-2">
               <div class="py-1 text-rose-500">อา.</div>
-              <div class="py-1 text-dbo-navy bg-amber-50/80 rounded border border-amber-200/60 font-semibold">จ.*</div>
-              <div class="py-1 text-dbo-navy bg-amber-50/80 rounded border border-amber-200/60 font-semibold">อ.*</div>
+              <div class="py-1 text-amber-900 bg-amber-50 rounded">จ.</div>
+              <div class="py-1 text-amber-900 bg-amber-50 rounded">อ.</div>
               <div class="py-1 text-slate-400">พ.</div>
-              <div class="py-1 text-dbo-navy bg-amber-50/80 rounded border border-amber-200/60 font-semibold">พฤ.*</div>
+              <div class="py-1 text-amber-900 bg-amber-50 rounded">พฤ.</div>
               <div class="py-1 text-slate-400">ศ.</div>
-              <div class="py-1 text-indigo-700 bg-indigo-50 rounded border border-indigo-200 font-semibold">ส.*</div>
+              <div class="py-1 text-indigo-800 bg-indigo-50 rounded">ส.</div>
             </div>
             <div id="masterCalendarGrid" class="grid grid-cols-7 gap-1"></div>
           </div>
-        </div>
 
-        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-          <div class="flex items-center gap-3">
-            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-dbo-gold"></span> คลาสปกติ 17:00 น.</span>
-            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-500"></span> เสาร์ 10:00 น. Coach Oat</span>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center gap-3">
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> คลาสปกติ 17:00 น. (จ., อ., พฤ.)</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span> เสาร์ 10:00 น. Basic Coach Oat</span>
+            </div>
+            <span class="text-slate-400 text-[11px]">แตะที่วันเพื่อดูรายละเอียด</span>
           </div>
-          <span class="hidden sm:inline font-mono">สนามโรงเรียนเตชะวิทย์</span>
         </div>
 
       </div>
     </section>
 
-    <!-- ======================================================== -->
     <!-- TAB 6: COACH & STAFF ADMIN MANAGEMENT PORTAL             -->
     <!-- ======================================================== -->
     <section id="tab-coach-roster" class="hidden space-y-5">
@@ -1226,25 +1306,66 @@
 
     // Initial student data with Course Types (regular, monthly, saturday, single)
     const initialRawData = [
-      { id: 1, name: "อิฐ", phone: "0812345678", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: { "29/10": "/", "1/11/26": "/", "3/11/26": "/", "5/11/26": "/" }, remaining: 7, remark: "ทักษะการเลี้ยงบอลและฟอร์มชู้ตพัฒนาเร็วมาก" },
-      { id: 2, name: "ซับ", phone: "0898765432", courseType: "monthly", startDate: "2026-11-01", nextRenewal: "2026-12-01", records: { "29/10": "/", "1/11/26": "/", "3/11/26": "/", "5/11/26": "/" }, remaining: 8, remark: "คอร์สรายเดือน ยืดหยุ่น 2 วัน/สัปดาห์ ตัดรอบทุกวันที่ 1" },
-      { id: 3, name: "ออสติน", phone: "0834567890", courseType: "saturday", startDate: "2026-11-07", nextRenewal: "2026-12-07", records: { "29/10": "/", "1/11/26": "ลา", "3/11/26": "/", "5/11/26": "/" }, remaining: 3, remark: "คอร์สวันเสาร์ Basic Coach Oat (เรียนไป 1 จาก 4 ครั้ง)" },
-      { id: 4, name: "แสตมป์", phone: "0845678901", courseType: "regular", startDate: "2026-10-20", nextRenewal: "2026-11-20", records: { "29/10": "/", "1/11/26": "/", "3/11/26": "ลา", "5/11/26": "/" }, remaining: 8, remark: "คล่องแคล่ว ว่องไวและส่งบอลแม่นยำ" },
-      { id: 5, name: "โอม", phone: "0856789012", courseType: "regular", startDate: "2026-10-22", nextRenewal: "2026-11-22", records: { "29/10": "/", "1/11/26": "/", "3/11/26": "/", "5/11/26": "/" }, remaining: 6, remark: "พร้อมเรียนตามปกติ ร่างกายแข็งแรง" },
-      { id: 6, name: "ไทม์", phone: "0867890123", courseType: "monthly", startDate: "2026-11-05", nextRenewal: "2026-12-05", records: { "29/10": "/", "1/11/26": "ลา", "3/11/26": "/", "5/11/26": "ลา" }, remaining: 7, remark: "คอร์สรายเดือน (ตัดรอบวันที่ 5 เดือนถัดไป)" },
-      { id: 7, name: "ออโต้", phone: "0878901234", courseType: "saturday", startDate: "2026-11-07", nextRenewal: "2026-12-07", records: { "29/10": "ลา", "1/11/26": "/", "3/11/26": "/", "5/11/26": "/" }, remaining: 2, remark: "คอร์สวันเสาร์ Basic Coach Oat (เหลือ 2 ครั้ง)" },
-      { id: 8, name: "อคิน", phone: "0889012345", courseType: "regular", startDate: "2026-10-18", nextRenewal: "2026-11-18", records: { "29/10": "ลา", "1/11/26": "/", "3/11/26": "ลา", "5/11/26": "ลา" }, remaining: 2, remark: "เหลือ 2 ครั้ง แนะนำเตรียมต่อคอร์สใหม่" },
-      { id: 9, name: "อลิน", phone: "0890123456", courseType: "regular", startDate: "2026-10-19", nextRenewal: "2026-11-19", records: { "29/10": "ลา", "1/11/26": "ลา", "3/11/26": "ลา", "5/11/26": "ลา" }, remaining: 1, remark: "เหลือ 1 ครั้งสุดท้าย กรุณาต่อคอร์สใหม่" },
-      { id: 10, name: "พ็อตเตอร์", phone: "0801234567", courseType: "regular", startDate: "2026-10-25", nextRenewal: "2026-11-25", records: { "29/10": "/", "1/11/26": "/", "3/11/26": "/", "5/11/26": "/" }, remaining: 6, remark: "ความเร็วและเกมป้องกันพัฒนาดีเยี่ยม" }
+      { id: 1, name: "อิฐ", phone: "0812345678", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 2, name: "ซับ", phone: "0898765432", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: -5, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 3, name: "ขุนศึก", phone: "0800000003", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -11, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 4, name: "ต้นบุญ", phone: "0800000004", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 5, name: "ต้นพุด", phone: "0800000005", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 6, name: "ไทม์", phone: "0800000006", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 6, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 7, name: "พัช", phone: "0800000007", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 8, name: "แอร์บัส", phone: "0800000008", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 8, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 9, name: "วินแฟลค", phone: "0800000009", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 10, name: "ไวน์แฟรงค์", phone: "0800000010", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 5, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 11, name: "ดลย์", phone: "0800000011", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 8, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 12, name: "อคิณ", phone: "0800000012", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 13, name: "ชัทเตอร์", phone: "0800000013", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 14, name: "บอสตัน", phone: "0800000014", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 2, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 15, name: "ฮาร์เด้น", phone: "0800000015", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 16, name: "ไม้เอก", phone: "0800000016", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 3, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 17, name: "จัสติน", phone: "0800000017", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 3, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 18, name: "ชาลี", phone: "0800000018", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 19, name: "พีต้า", phone: "0800000019", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 2, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 20, name: "สตาร์ท", phone: "0800000020", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 21, name: "แอนฟิลด์", phone: "0800000021", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 22, name: "มาร์ค", phone: "0800000022", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 23, name: "แกรนด์", phone: "0800000023", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 8, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 24, name: "แอร์เมส", phone: "0800000024", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 5, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 25, name: "มิวนิค", phone: "0800000025", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 26, name: "ตี๋", phone: "0800000026", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 27, name: "มาตังค์", phone: "0800000027", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 28, name: "มันตา", phone: "0800000028", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 29, name: "นํ้าขิง", phone: "0800000029", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 30, name: "ข้าวตั้ง", phone: "0800000030", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 5, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 31, name: "นานา", phone: "0800000031", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 32, name: "สรา", phone: "0800000032", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 33, name: "Japan", phone: "0800000033", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 4, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 34, name: "JR.", phone: "0800000034", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 35, name: "IRyu", phone: "0800000035", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 36, name: "Sari", phone: "0800000036", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 9, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 37, name: "Phupa", phone: "0800000037", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 38, name: "Sky", phone: "0800000038", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 39, name: "Nada", phone: "0800000039", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 40, name: "August", phone: "0800000040", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 41, name: "Prod", phone: "0800000041", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 42, name: "L J", phone: "0800000042", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 2, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 43, name: "เป็นหนึ่ง", phone: "0800000043", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 44, name: "อินทัช", phone: "0800000044", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"//","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 45, name: "นาวิน", phone: "0800000045", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 46, name: "ธีร์", phone: "0800000046", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: -4, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 47, name: "มังกร", phone: "0800000047", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 48, name: "T J", phone: "0800000048", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 49, name: "ลูคัส", phone: "0800000049", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 50, name: "ณฌา", phone: "0800000050", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"","1/11/26":"","29/10":"/"}, remaining: 9, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 51, name: "เอวา", phone: "0800000051", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"","1/11/26":"","29/10":"/"}, remaining: 9, remark: "คอร์สปกติ 10 ครั้ง" },
     ];
 
-    let students = JSON.parse(localStorage.getItem('dbo_students_v8')) || initialRawData;
-    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v8')) || null;
-    let isCoachAuth = localStorage.getItem('dbo_is_coach_v8') === 'true';
+    let students = JSON.parse(localStorage.getItem('dbo_students_v10')) || initialRawData;
+    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v10')) || null;
+    let isCoachAuth = localStorage.getItem('dbo_is_coach_v10') === 'true';
     let currentCoachFilter = 'all';
 
     // Pending Slips Queue for Admin Verification
-    let pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v8')) || [
+    let pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v10')) || [
       {
         id: 'slip-101',
         studentName: 'น้องเจเจ',
@@ -1260,16 +1381,16 @@
     ];
 
     // Community Chat Messages
-    let chatMessages = JSON.parse(localStorage.getItem('dbo_chat_messages_v8')) || [
+    let chatMessages = JSON.parse(localStorage.getItem('dbo_chat_messages_v10')) || [
       { id: 1, sender: 'โค้ชโอ๊ต (Admin)', role: 'coach', text: 'สวัสดีผู้ปกครองทุกท่านครับ วันนี้คลาส 17:00 น. ซ้อมที่ยิมใหญ่โรงเรียนเตชะวิทย์ตามปกตินะครับ 🏀', time: '13:00 น.', image: null },
       { id: 2, sender: 'คุณแม่อิฐ', role: 'parent', text: 'รับทราบค่ะโค้ช วันนี้น้องอิฐพร้อมซ้อมตรงเวลาค่ะ', time: '13:05 น.', image: null },
       { id: 3, sender: 'โค้ชโอ๊ค', role: 'coach', text: 'วันนี้มีฝึกระบบ Defense และ Transition Game ครับ เจอกันครับเด็กๆ', time: '13:10 น.', image: null }
     ];
 
     function saveState() {
-      localStorage.setItem('dbo_students_v8', JSON.stringify(students));
-      localStorage.setItem('dbo_pending_slips_v8', JSON.stringify(pendingSlips));
-      localStorage.setItem('dbo_chat_messages_v8', JSON.stringify(chatMessages));
+      localStorage.setItem('dbo_students_v10', JSON.stringify(students));
+      localStorage.setItem('dbo_pending_slips_v10', JSON.stringify(pendingSlips));
+      localStorage.setItem('dbo_chat_messages_v10', JSON.stringify(chatMessages));
     }
 
     // Tab Navigation Switcher
@@ -1308,7 +1429,7 @@
       // Coach Oat Admin Bypass
       if (rawPhone === '0933199119') {
         isCoachAuth = true;
-        localStorage.setItem('dbo_is_coach_v8', 'true');
+        localStorage.setItem('dbo_is_coach_v10', 'true');
         updateCoachStateUI();
         switchTab('coach-roster');
         showToast('ยินดีต้อนรับ โค้ชโอ๊ต (Admin Portal 093-319-9119)');
@@ -1323,7 +1444,7 @@
       }
 
       loggedInStudent = matched[0];
-      localStorage.setItem('dbo_parent_logged_v8', JSON.stringify(loggedInStudent));
+      localStorage.setItem('dbo_parent_logged_v10', JSON.stringify(loggedInStudent));
       renderParentView(matched);
       showToast(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name}`);
     }
@@ -1347,6 +1468,9 @@
         if (loginBox) loginBox.classList.remove('hidden');
         if (dashBox) dashBox.classList.add('hidden');
 
+        const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
+        if (mPortalLabel) mPortalLabel.innerText = 'เข้าสู่ระบบ';
+
         if (renewNav) renewNav.classList.add('hidden');
         if (renewMNav) renewMNav.classList.add('hidden');
         if (chatNav) chatNav.classList.add('hidden');
@@ -1363,6 +1487,8 @@
       }
 
       // Logged in State
+      const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
+      if (mPortalLabel) mPortalLabel.innerText = 'ข้อมูลลูก';
       if (loginBox) loginBox.classList.add('hidden');
       if (dashBox) dashBox.classList.remove('hidden');
 
@@ -1497,7 +1623,7 @@
       lucide.createIcons();
     }
 
-    // Render Peers in class today
+    // Render Peers in class today (Clean badges without disclosing total headcount)
     function renderLivePeers() {
       const peerContainer = document.getElementById('todayPeerList');
       if (!peerContainer) return;
@@ -1510,12 +1636,11 @@
         span.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> น้อง ${p.name}`;
         peerContainer.appendChild(span);
       });
-      document.getElementById('todayClassCountBadge').innerText = `${peers.length} คน พร้อมซ้อมวันนี้`;
     }
 
     function parentLogout() {
       loggedInStudent = null;
-      localStorage.removeItem('dbo_parent_logged_v8');
+      localStorage.removeItem('dbo_parent_logged_v10');
       document.getElementById('parentPhoneInput').value = '';
       renderParentView();
       switchTab('parent-portal');
@@ -1772,13 +1897,41 @@
       }
     }
 
-    // Master Calendar Logic
+    // Master Calendar Logic (Dual Mode: Weekly Agenda + Apple-style Monthly Grid)
+    let currentCalendarMode = 'weekly';
+
+    function setCalendarMode(mode) {
+      currentCalendarMode = mode;
+      const wView = document.getElementById('calWeeklyView');
+      const mView = document.getElementById('calMonthlyView');
+      const btnW = document.getElementById('btnCalWeekly');
+      const btnM = document.getElementById('btnCalMonthly');
+
+      if (mode === 'weekly') {
+        if (wView) wView.classList.remove('hidden');
+        if (mView) mView.classList.add('hidden');
+        if (btnW) btnW.className = 'px-3 py-1 rounded-lg text-xs font-semibold bg-white text-dbo-navy shadow-xs transition-all';
+        if (btnM) btnM.className = 'px-3 py-1 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-all';
+      } else {
+        if (wView) wView.classList.add('hidden');
+        if (mView) mView.classList.remove('hidden');
+        if (btnM) btnM.className = 'px-3 py-1 rounded-lg text-xs font-semibold bg-white text-dbo-navy shadow-xs transition-all';
+        if (btnW) btnW.className = 'px-3 py-1 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-all';
+        renderMasterCalendarGrid();
+      }
+      lucide.createIcons();
+    }
+
     function renderMasterCalendar() {
+      setCalendarMode(currentCalendarMode);
+    }
+
+    function renderMasterCalendarGrid() {
       const grid = document.getElementById('masterCalendarGrid');
       if (!grid) return;
       grid.innerHTML = '';
       const totalDays = 30;
-      const startDayOfWeek = 0;
+      const startDayOfWeek = 0; // Sun
 
       for (let day = 1; day <= totalDays; day++) {
         const dayOfWeek = (startDayOfWeek + (day - 1)) % 7; 
@@ -1786,38 +1939,37 @@
         const isSaturdayCoachOat = (dayOfWeek === 6);
 
         const cell = document.createElement('div');
-        cell.className = `p-1 sm:p-2 rounded-lg border min-h-[46px] sm:min-h-[64px] flex flex-col justify-between transition-all ${
+        cell.className = `p-1 sm:p-2 rounded-xl border min-h-[50px] sm:min-h-[64px] flex flex-col justify-between transition-all cursor-pointer ${
           isSaturdayCoachOat 
-            ? 'bg-indigo-50 border-indigo-200 text-indigo-900 shadow-xs' 
-            : (isNormalClass ? 'bg-amber-50/70 border-amber-200 text-amber-950 shadow-xs' : 'bg-slate-50/50 border-slate-100 text-slate-400')
+            ? 'bg-indigo-50/80 border-indigo-200 text-indigo-950 hover:bg-indigo-100/60' 
+            : (isNormalClass ? 'bg-amber-50/70 border-amber-200 text-amber-950 hover:bg-amber-100/60' : 'bg-white border-slate-100 text-slate-400')
         }`;
 
-        let statusBadge = '';
+        let badge = '';
         if (isSaturdayCoachOat) {
-          statusBadge = `
-            <div class="mt-0.5 text-center">
-              <span class="inline-block px-1 py-0.5 rounded text-[8px] sm:text-[9px] font-bold bg-indigo-600 text-white font-mono leading-none">
-                10:00
-              </span>
-            </div>
-          `;
+          badge = `<span class="text-[9px] font-bold text-indigo-700 bg-indigo-100/80 px-1 py-0.5 rounded text-center truncate">10:00</span>`;
         } else if (isNormalClass) {
-          statusBadge = `
-            <div class="mt-0.5 text-center">
-              <span class="inline-block px-1 py-0.5 rounded text-[8px] sm:text-[9px] font-bold bg-amber-500 text-white font-mono leading-none">
-                17:00
-              </span>
-            </div>
-          `;
+          badge = `<span class="text-[9px] font-bold text-amber-800 bg-amber-100/80 px-1 py-0.5 rounded text-center truncate">17:00</span>`;
         }
 
         cell.innerHTML = `
           <div class="flex items-center justify-between">
-            <span class="font-bold text-[11px] sm:text-xs font-mono ${isSaturdayCoachOat ? 'text-indigo-700' : (isNormalClass ? 'text-slate-900' : 'text-slate-400')}">${day}</span>
-            ${isSaturdayCoachOat ? '<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>' : (isNormalClass ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>' : '')}
+            <span class="text-xs font-bold font-mono ${isSaturdayCoachOat ? 'text-indigo-700' : (isNormalClass ? 'text-amber-900' : 'text-slate-400')}">${day}</span>
+            ${isSaturdayCoachOat ? '<span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>' : (isNormalClass ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>' : '')}
           </div>
-          ${statusBadge}
+          <div class="mt-1 flex justify-center">${badge}</div>
         `;
+
+        cell.onclick = () => {
+          if (isSaturdayCoachOat) {
+            showToast('วันที่ ' + day + ' พ.ย. 2569: คลาส Basic Coach Oat (10:00 - 12:00 น.)');
+          } else if (isNormalClass) {
+            showToast('วันที่ ' + day + ' พ.ย. 2569: คลาสปกติ (17:00 - 19:00 น.)');
+          } else {
+            showToast('วันที่ ' + day + ' พ.ย. 2569: ไม่มีรอบฝึกซ้อม');
+          }
+        };
+
         grid.appendChild(cell);
       }
     }
@@ -1842,7 +1994,7 @@
       const pin = document.getElementById('coachPinInput').value.trim();
       if (pin === 'dbo2026' || pin === '0933199119') {
         isCoachAuth = true;
-        localStorage.setItem('dbo_is_coach_v8', 'true');
+        localStorage.setItem('dbo_is_coach_v10', 'true');
         closeCoachAuthModal();
         updateCoachStateUI();
         switchTab('coach-roster');
@@ -1854,7 +2006,7 @@
 
     function coachLogout() {
       isCoachAuth = false;
-      localStorage.setItem('dbo_is_coach_v8', 'false');
+      localStorage.setItem('dbo_is_coach_v10', 'false');
       updateCoachStateUI();
       switchTab('parent-portal');
       showToast('ออกจากโหมดโค้ชแล้ว');
@@ -2286,16 +2438,18 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      // Clear legacy storage versions once to guarantee fresh 51 students roster
+      if (localStorage.getItem('dbo_app_version') !== 'v10.0') {
+        localStorage.removeItem('dbo_students_v8');
+        localStorage.removeItem('dbo_students_v9');
+        localStorage.setItem('dbo_app_version', 'v10.0');
+      }
+
       renderParentView();
       updateCoachStateUI();
       renderMasterCalendar();
       renderPendingSlips();
       lucide.createIcons();
-
-      syncDataFromGoogleSheet(true);
-      setInterval(() => {
-        syncDataFromGoogleSheet(true);
-      }, 45000);
     });
   </script>
 </body>
