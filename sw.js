@@ -1,9 +1,11 @@
 // Service Worker for DBO Basketball Academy PWA
-const CACHE_NAME = 'dbo-academy-v1';
+const CACHE_NAME = 'dbo-academy-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
+  './assets/images/app-icon-512.png',
+  './assets/images/apple-touch-icon.png',
   './assets/images/dbo-logo.png',
   './assets/images/coach-oat.png',
   './assets/images/coach-oak.png',
