@@ -884,7 +884,11 @@
           </p>
         </div>
 
-        <div id="dailyBoardActionBox" class="flex items-center gap-2 w-full sm:w-auto justify-end">
+        <div id="dailyBoardActionBox" class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+          <button onclick="openAttendanceHistoryModal()" class="btn-touch px-3 py-2 rounded-xl text-xs font-bold bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-xs flex items-center gap-1.5 transition">
+            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
+            <span>📊 ประวัติยอดคนรายวัน</span>
+          </button>
           <button onclick="openLeaveModal()" class="btn-touch px-3.5 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 flex items-center gap-1.5 transition">
             <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-300"></i>
             <span>แจ้งขอลา</span>
@@ -1521,6 +1525,106 @@
           </div>
         </div>
 
+        <!-- Attendance Session Date Controller & Headcount Meter Bar (NEW FEATURE) -->
+        <div id="attendanceSessionControlBar" class="p-4 rounded-2xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-50/90 via-white to-white space-y-3 shadow-xs">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-2.5 border-b border-indigo-100">
+            <!-- Left: Current Session Indicator & Schedule -->
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                <i data-lucide="calendar-check" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span id="coachSessionDateBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 🟢 รอบวันนี้
+                  </span>
+                  <span id="coachSessionScheduleBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                    คลาสปกติ 17:30 - 19:30 น.
+                  </span>
+                </div>
+                <h3 id="coachSessionDateTitle" class="text-sm sm:text-base font-bold text-dbo-navy mt-0.5">
+                  วันอังคารที่ 10 พ.ย. 2569
+                </h3>
+              </div>
+            </div>
+
+            <!-- Right: Quick Date Navigation & History Modal Button -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- Date Picker Input -->
+              <div class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-indigo-200 text-xs shadow-2xs">
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-indigo-600"></i>
+                <input 
+                  type="date" 
+                  id="coachAttendanceDateInput" 
+                  onchange="changeCoachAttendanceDate(this.value)" 
+                  class="font-mono text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer"
+                  title="แตะเพื่อเลือกวันที่เช็คชื่อ"
+                >
+              </div>
+
+              <!-- Quick Date Pills -->
+              <button onclick="setSessionDateToToday()" class="btn-touch px-2.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-100 hover:bg-indigo-200 text-indigo-900 border border-indigo-200 transition">
+                วันนี้
+              </button>
+              <button onclick="stepSessionDate(-1)" class="btn-touch px-2 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition" title="วันก่อนหน้า">
+                ◀
+              </button>
+              <button onclick="stepSessionDate(1)" class="btn-touch px-2 py-1.5 rounded-xl text-xs font-bold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition" title="วันถัดไป">
+                ▶
+              </button>
+              
+              <!-- Daily Headcount History Button -->
+              <button onclick="openAttendanceHistoryModal()" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-xs flex items-center gap-1.5 transition ml-auto sm:ml-0">
+                <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-white"></i>
+                <span>📊 ประวัติยอดคนรายวัน</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Real-Time Headcount Summary Counters -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-0.5">
+            <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-semibold text-emerald-700">🟢 มาเรียนรอบนี้</p>
+                <p class="text-base sm:text-lg font-black text-emerald-950 font-mono"><span id="sessionAttendingCount">0</span> <span class="text-xs font-normal">คน</span></p>
+              </div>
+              <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-700 flex items-center justify-center font-bold text-xs">
+                ✓
+              </span>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-semibold text-amber-700">🟡 แจ้งลารอบนี้</p>
+                <p class="text-base sm:text-lg font-black text-amber-950 font-mono"><span id="sessionLeaveCount">0</span> <span class="text-xs font-normal">คน</span></p>
+              </div>
+              <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-700 flex items-center justify-center font-bold text-xs">
+                ✕
+              </span>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-semibold text-slate-500">⚪ ยังไม่เช็คชื่อ</p>
+                <p class="text-base sm:text-lg font-black text-slate-800 font-mono"><span id="sessionUncheckedCount">54</span> <span class="text-xs font-normal">คน</span></p>
+              </div>
+              <span class="w-8 h-8 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-xs">
+                ?
+              </span>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-indigo-50 border border-indigo-200/80 flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-semibold text-indigo-700">👥 นักเรียนทั้งหมด</p>
+                <p class="text-base sm:text-lg font-black text-indigo-950 font-mono"><span id="sessionTotalCount">54</span> <span class="text-xs font-normal">คน</span></p>
+              </div>
+              <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-700 flex items-center justify-center font-bold text-xs">
+                👥
+              </span>
+            </div>
+          </div>
+        </div>
+
         <!-- Course Category Filters, Search & View Switcher -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
           
@@ -1924,6 +2028,56 @@
     </div>
   </div>
 
+  <!-- Attendance History & Daily Headcount Archive Modal (NEW FEATURE) -->
+  <div id="attendanceHistoryModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+    <div class="card-clean max-w-xl w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[92vh] flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-xs">
+            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-dbo-navy">ประวัติยอดคนเข้าเรียน & สถิติรายวัน</h3>
+            <p class="text-[11px] text-slate-500">บันทึกสถิติผู้เข้าซ้อมทุกรอบ • ดูรายชื่อน้องๆ • คัดลอกสรุปส่ง LINE</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeAttendanceHistoryModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Metrics Overview -->
+      <div class="grid grid-cols-3 gap-2 flex-shrink-0">
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
+          <p class="text-[10px] text-slate-500 font-semibold">จำนวนรอบฝึกซ้อม</p>
+          <p class="text-base sm:text-xl font-bold font-mono text-dbo-navy" id="histTotalSessions">0 รอบ</p>
+        </div>
+        <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+          <p class="text-[10px] text-emerald-700 font-semibold">ยอดเข้าเรียนสะสม</p>
+          <p class="text-base sm:text-xl font-bold font-mono text-emerald-900" id="histTotalAttendances">0 ครั้ง</p>
+        </div>
+        <div class="p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-center">
+          <p class="text-[10px] text-indigo-700 font-semibold">เฉลี่ยต่อรอบ</p>
+          <p class="text-base sm:text-xl font-bold font-mono text-indigo-900" id="histAvgPerSession">0 คน</p>
+        </div>
+      </div>
+
+      <!-- Timeline List of Training Sessions (Scrollable) -->
+      <div id="attendanceHistoryList" class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
+        <!-- Dynamically rendered session cards -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-shrink-0">
+        <span class="text-[11px] text-slate-400">คลิกที่รอบวันเพื่อเช็คชื่อ หรือดูรายชื่อน้องๆ ที่เข้าซ้อม</span>
+        <button type="button" onclick="closeAttendanceHistoryModal()" class="btn-touch px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700">
+          ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 5. Parent Link Registration Modal (ผูกเบอร์โทรศัพท์กับบุตรหลาน) -->
   <div id="parentLinkModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="card-clean max-w-md w-full p-6 space-y-4 shadow-2xl">
@@ -2289,12 +2443,412 @@
       }
     }
 
+    // Date Session State & Historical Headcount Engine
     function getTodayDateKey() {
       const d = new Date();
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
+    }
+
+    let activeAttendanceDate = getTodayDateKey();
+
+    // Seed historical dates from real academy records if empty
+    function ensureHistoricalDatesSeeded() {
+      const mapping = [
+        { key: '2026-11-05', sheetKey: '5/11/26', time: '17:30 น.' },
+        { key: '2026-11-03', sheetKey: '3/11/26', time: '17:30 น.' },
+        { key: '2026-10-29', sheetKey: '29/10', time: '17:30 น.' }
+      ];
+
+      let modified = false;
+      mapping.forEach(m => {
+        if (!dailyAttendance[m.key] || Object.keys(dailyAttendance[m.key]).length === 0) {
+          dailyAttendance[m.key] = {};
+          (students || []).forEach(s => {
+            if (s.records && s.records[m.sheetKey]) {
+              const val = s.records[m.sheetKey];
+              if (val === '/') {
+                dailyAttendance[m.key][s.id] = {
+                  studentId: s.id,
+                  name: s.name,
+                  status: 'attending',
+                  time: m.time,
+                  updatedBy: 'ประวัติเดิม (บันทึกอคาเดมี่)',
+                  dateKey: m.key,
+                  courseType: s.courseType || 'regular'
+                };
+                modified = true;
+              } else if (val === 'ลา') {
+                dailyAttendance[m.key][s.id] = {
+                  studentId: s.id,
+                  name: s.name,
+                  status: 'leave',
+                  time: m.time,
+                  updatedBy: 'ประวัติเดิม (บันทึกอคาเดมี่)',
+                  dateKey: m.key,
+                  leaveReason: 'แจ้งลา'
+                };
+                modified = true;
+              }
+            }
+          });
+        }
+      });
+
+      if (modified) {
+        localStorage.setItem('dbo_daily_attendance_v14', JSON.stringify(dailyAttendance));
+      }
+    }
+
+    function updateSessionDateDisplay() {
+      const dateKey = activeAttendanceDate || getTodayDateKey();
+      const dateInput = document.getElementById('coachAttendanceDateInput');
+      if (dateInput) dateInput.value = dateKey;
+
+      const parts = dateKey.split('-');
+      const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      const dayW = d.getDay();
+      const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+      const thaiMonthsShort = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+      const thaiYear = d.getFullYear() + 543;
+
+      const isToday = (dateKey === getTodayDateKey());
+      const dateBadge = document.getElementById('coachSessionDateBadge');
+      if (dateBadge) {
+        if (isToday) {
+          dateBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-1';
+          dateBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 🟢 รอบวันนี้';
+        } else {
+          dateBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-900 border border-indigo-200';
+          dateBadge.innerText = 'รอบวันที่เลือก';
+        }
+      }
+
+      let scheduleText = 'รอบพิเศษ / ซ้อมเดี่ยว (Private)';
+      let scheduleColor = 'bg-slate-100 text-slate-800 border-slate-200';
+      if (dayW === 1 || dayW === 2 || dayW === 4) {
+        scheduleText = 'คลาสปกติ 17:30 - 19:30 น. (2 ชม.)';
+        scheduleColor = 'bg-amber-100 text-amber-900 border-amber-300';
+      } else if (dayW === 6) {
+        scheduleText = 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 18:00 น.';
+        scheduleColor = 'bg-indigo-100 text-indigo-900 border-indigo-300';
+      }
+      const scheduleBadge = document.getElementById('coachSessionScheduleBadge');
+      if (scheduleBadge) {
+        scheduleBadge.className = `px-2 py-0.5 rounded-full text-[10px] font-bold border ${scheduleColor}`;
+        scheduleBadge.innerText = scheduleText;
+      }
+
+      const titleEl = document.getElementById('coachSessionDateTitle');
+      if (titleEl) {
+        titleEl.innerText = `${thaiDays[dayW]}ที่ ${d.getDate()} ${thaiMonthsShort[d.getMonth()]} ${thaiYear}`;
+      }
+
+      // Calculate Headcount for this dateKey
+      const records = dailyAttendance[dateKey] || {};
+      const attendingList = Object.values(records).filter(r => r.status === 'attending');
+      const leaveList = Object.values(records).filter(r => r.status === 'leave');
+      const total = (students || []).length;
+      const unchecked = Math.max(0, total - attendingList.length - leaveList.length);
+
+      const elAttending = document.getElementById('sessionAttendingCount');
+      const elLeave = document.getElementById('sessionLeaveCount');
+      const elUnchecked = document.getElementById('sessionUncheckedCount');
+      const elTotal = document.getElementById('sessionTotalCount');
+
+      if (elAttending) elAttending.innerText = attendingList.length;
+      if (elLeave) elLeave.innerText = leaveList.length;
+      if (elUnchecked) elUnchecked.innerText = unchecked;
+      if (elTotal) elTotal.innerText = total;
+    }
+
+    function setSessionDateToToday() {
+      activeAttendanceDate = getTodayDateKey();
+      updateSessionDateDisplay();
+      renderCoachRosterTable();
+      if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+    }
+
+    function stepSessionDate(daysOffset) {
+      const parts = (activeAttendanceDate || getTodayDateKey()).split('-');
+      const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      d.setDate(d.getDate() + daysOffset);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      activeAttendanceDate = `${year}-${month}-${day}`;
+      updateSessionDateDisplay();
+      renderCoachRosterTable();
+      if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+    }
+
+    function changeCoachAttendanceDate(val) {
+      if (!val) return;
+      activeAttendanceDate = val;
+      updateSessionDateDisplay();
+      renderCoachRosterTable();
+      if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+    }
+
+    function openAttendanceHistoryModal() {
+      const modal = document.getElementById('attendanceHistoryModal');
+      if (!modal) return;
+      renderAttendanceHistoryModal();
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeAttendanceHistoryModal() {
+      const modal = document.getElementById('attendanceHistoryModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderAttendanceHistoryModal() {
+      const listContainer = document.getElementById('attendanceHistoryList');
+      if (!listContainer) return;
+
+      ensureHistoricalDatesSeeded();
+
+      const allDateKeys = Object.keys(dailyAttendance).sort((a, b) => b.localeCompare(a));
+      
+      let totalSessions = allDateKeys.length;
+      let totalAttendances = 0;
+
+      allDateKeys.forEach(dk => {
+        const recs = dailyAttendance[dk] || {};
+        const attCount = Object.values(recs).filter(r => r.status === 'attending').length;
+        totalAttendances += attCount;
+      });
+
+      const avgPerSession = totalSessions > 0 ? (totalAttendances / totalSessions).toFixed(1) : '0';
+
+      const elTotalSessions = document.getElementById('histTotalSessions');
+      const elTotalAtt = document.getElementById('histTotalAttendances');
+      const elAvg = document.getElementById('histAvgPerSession');
+      if (elTotalSessions) elTotalSessions.innerText = `${totalSessions} รอบ`;
+      if (elTotalAtt) elTotalAtt.innerText = `${totalAttendances} ครั้ง`;
+      if (elAvg) elAvg.innerText = `${avgPerSession} คน`;
+
+      if (allDateKeys.length === 0) {
+        listContainer.innerHTML = `
+          <div class="p-8 text-center text-slate-400 space-y-2">
+            <i data-lucide="calendar-x-2" class="w-10 h-10 mx-auto text-slate-300"></i>
+            <p class="font-bold text-slate-600">ยังไม่มีประวัติการเช็คชื่อที่ถูกบันทึก</p>
+            <p class="text-xs">เมื่อโค้ชเช็คชื่อเข้าฝึกซ้อม ข้อมูลสถิติรายวันจะถูกรวบรวมไว้ที่นี่อัตโนมัติ</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      listContainer.innerHTML = '';
+      allDateKeys.forEach(dk => {
+        const recs = dailyAttendance[dk] || {};
+        const attending = Object.values(recs).filter(r => r.status === 'attending');
+        const leave = Object.values(recs).filter(r => r.status === 'leave');
+
+        const parts = dk.split('-');
+        const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        const dayW = d.getDay();
+        const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+        const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        const thaiYear = d.getFullYear() + 543;
+        const formattedDate = `${thaiDays[dayW]}ที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${thaiYear}`;
+
+        let scheduleNote = (dayW === 6) ? 'คลาสวันเสาร์ Basic Coach Oat (16:00 - 18:00 น.)' : ((dayW === 1 || dayW === 2 || dayW === 4) ? 'คลาสปกติ 17:30 - 19:30 น.' : 'รอบฝึกซ้อม');
+        const isToday = (dk === getTodayDateKey());
+
+        const card = document.createElement('div');
+        card.className = "p-3.5 sm:p-4 rounded-2xl border border-slate-200 bg-white shadow-2xs space-y-3";
+        
+        let attendeeNamesHtml = attending.map((a, i) => `
+          <div class="flex items-center justify-between py-1 border-b border-slate-50 text-[11px]">
+            <span class="font-bold text-slate-800">${i + 1}. น้อง ${a.name}</span>
+            <span class="text-slate-400 font-mono">${a.time || 'เข้าซ้อม'} ${a.updatedBy ? `• ${a.updatedBy}` : ''}</span>
+          </div>
+        `).join('') || '<p class="text-slate-400 italic text-[11px]">ไม่มีผู้เรียนเช็คชื่อในรอบนี้</p>';
+
+        let leaveNamesHtml = leave.map((l, i) => `
+          <div class="flex items-center justify-between py-1 border-b border-slate-50 text-[11px]">
+            <span class="font-bold text-amber-900">${i + 1}. น้อง ${l.name}</span>
+            <span class="text-amber-700 font-mono">${l.leaveReason || 'แจ้งลา'}</span>
+          </div>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                ${thaiDays[dayW].replace('วัน', '')}
+              </span>
+              <div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <strong class="text-sm font-bold text-dbo-navy">${formattedDate}</strong>
+                  ${isToday ? '<span class="px-2 py-0.2 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800">วันนี้</span>' : ''}
+                </div>
+                <p class="text-[11px] text-slate-500">${scheduleNote}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 self-start sm:self-auto">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                🟢 มา ${attending.length} คน
+              </span>
+              ${leave.length > 0 ? `<span class="px-2 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">🟡 ลา ${leave.length}</span>` : ''}
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100 flex-wrap">
+            <button onclick="toggleHistoryAttendeeList('histDetail_${dk}')" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1">
+              <i data-lucide="users" class="w-3.5 h-3.5"></i>
+              <span>ดูรายชื่อ (${attending.length})</span>
+            </button>
+            <button onclick="jumpToDateForRollCall('${dk}')" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center gap-1">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+              <span>ไปที่รอบเช็คชื่อนี้</span>
+            </button>
+            <button onclick="copyDailyAttendanceLineSummary('${dk}')" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center gap-1 ml-auto">
+              <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+              <span>สรุปส่ง LINE</span>
+            </button>
+          </div>
+
+          <div id="histDetail_${dk}" class="hidden p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2 mt-2">
+            <div class="font-bold text-[11px] text-emerald-800 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>รายชื่อน้องๆ ที่เข้าฝึกซ้อม (${attending.length} คน):</span>
+            </div>
+            <div class="max-h-48 overflow-y-auto space-y-0.5 divide-y divide-slate-100 bg-white p-2.5 rounded-lg border border-slate-200">
+              ${attendeeNamesHtml}
+            </div>
+            ${leave.length > 0 ? `
+              <div class="font-bold text-[11px] text-amber-800 flex items-center gap-1 pt-1">
+                <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span>รายชื่อน้องๆ ที่แจ้งลา (${leave.length} คน):</span>
+              </div>
+              <div class="max-h-32 overflow-y-auto space-y-0.5 divide-y divide-slate-100 bg-white p-2.5 rounded-lg border border-slate-200">
+                ${leaveNamesHtml}
+              </div>
+            ` : ''}
+          </div>
+        `;
+        listContainer.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function toggleHistoryAttendeeList(elId) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.classList.toggle('hidden');
+      lucide.createIcons();
+    }
+
+    function jumpToDateForRollCall(dateKey) {
+      activeAttendanceDate = dateKey;
+      closeAttendanceHistoryModal();
+      switchTab('coach-roster');
+      updateSessionDateDisplay();
+      renderCoachRosterTable();
+      if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+      showToast(`📅 โหลดข้อมูลรอบวันที่ ${dateKey} เรียบร้อยแล้ว`);
+    }
+
+    function copyDailyAttendanceLineSummary(dateKey) {
+      const recs = dailyAttendance[dateKey] || {};
+      const attending = Object.values(recs).filter(r => r.status === 'attending');
+      const leave = Object.values(recs).filter(r => r.status === 'leave');
+
+      const parts = dateKey.split('-');
+      const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+      const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+      const thaiYear = d.getFullYear() + 543;
+      const dateFormatted = `${thaiDays[d.getDay()]}ที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${thaiYear}`;
+
+      let schedule = (d.getDay() === 6) ? 'คลาสวันเสาร์ Basic Coach Oat (16:00 - 18:00 น.)' : 'คลาสปกติ (17:30 - 19:30 น.)';
+
+      let text = `🏀 สรุปสถิติยอดเข้าเรียน DBO Academy\n`;
+      text += `📅 ${dateFormatted}\n`;
+      text += `⏰ ${schedule}\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `🟢 มาเรียน (${attending.length} คน):\n`;
+      if (attending.length > 0) {
+        attending.forEach((a, i) => {
+          text += `${i + 1}. น้อง ${a.name} ${a.time ? `(${a.time})` : ''}\n`;
+        });
+      } else {
+        text += `- ยังไม่มีข้อมูลผู้เรียนเช็คชื่อ -\n`;
+      }
+
+      if (leave.length > 0) {
+        text += `\n🟡 แจ้งลา (${leave.length} คน):\n`;
+        leave.forEach((l, i) => {
+          text += `${i + 1}. น้อง ${l.name} ${l.leaveReason ? `(${l.leaveReason})` : ''}\n`;
+        });
+      }
+
+      text += `━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `👥 รวมยอดผู้เข้าซ้อม: ${attending.length} คน\n`;
+      text += `บันทึกโดย: ${currentStaff ? currentStaff.name : 'โค้ชโอ๊ต'} (DBO Academy)`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('📋 คัดลอกสรุปสำหรับส่ง LINE เรียบร้อยแล้ว!');
+        }).catch(() => {
+          prompt('คัดลอกข้อความสรุปด้านล่างนี้ได้เลยครับ:', text);
+        });
+      } else {
+        prompt('คัดลอกข้อความสรุปด้านล่างนี้ได้เลยครับ:', text);
+      }
+    }
+
+    function coachUndoCheckIn(studentId, target = 'regular') {
+      const student = students.find(s => s.id === studentId);
+      if (!student) return;
+
+      const sessionDateKey = activeAttendanceDate || getTodayDateKey();
+      if (target === 'saturday') {
+        student.saturdayRemaining = (student.saturdayRemaining || 0) + 1;
+      } else {
+        student.remaining = (student.remaining || 0) + 1;
+      }
+
+      if (dailyAttendance[sessionDateKey] && dailyAttendance[sessionDateKey][student.id]) {
+        delete dailyAttendance[sessionDateKey][student.id];
+      }
+
+      if (student.checkInHistory) {
+        const idx = student.checkInHistory.findIndex(h => h.sessionDate === sessionDateKey || (h.date && h.date.includes(sessionDateKey)));
+        if (idx !== -1) {
+          student.checkInHistory.splice(idx, 1);
+        }
+      }
+
+      saveState();
+      updateSessionDateDisplay();
+      renderCoachRosterTable();
+      if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+      if (loggedInStudent && loggedInStudent.id === studentId) {
+        loggedInStudent = student;
+        ensureHistoricalDatesSeeded();
+      updateSessionDateDisplay();
+      renderParentView();
+      }
+      showToast(`↩️ คืนสิทธิ์น้อง ${student.name} (+1 ครั้ง) เรียบร้อยแล้ว`);
+    }
+
+    function coachClearAttendanceRecord(studentId) {
+      const sessionDateKey = activeAttendanceDate || getTodayDateKey();
+      if (dailyAttendance[sessionDateKey] && dailyAttendance[sessionDateKey][studentId]) {
+        delete dailyAttendance[sessionDateKey][studentId];
+        saveState();
+        updateSessionDateDisplay();
+        renderCoachRosterTable();
+        if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+        showToast(`ล้างสถานะเช็คชื่อรอบนี้เรียบร้อยแล้ว`);
+      }
     }
 
     // Tab Navigation Switcher
@@ -3601,7 +4155,9 @@
         localStorage.removeItem('dbo_parent_logged_v14');
         updateCoachStateUI();
         updateHeaderProfileUI();
-        renderParentView();
+        ensureHistoricalDatesSeeded();
+      updateSessionDateDisplay();
+      renderParentView();
         switchTab('parent-portal');
         showToast(`ออกจากระบบผู้ปกครองน้อง ${sName} เรียบร้อยแล้ว`);
       }
@@ -3876,23 +4432,27 @@
     function coachMarkStudentLeave(studentId) {
       const student = students.find(s => s.id === studentId);
       if (!student) return;
-      const staffName = currentStaff ? currentStaff.name : 'โค้ช';
+      const staffName = currentStaff ? currentStaff.name : 'เนเธเนเธ';
+      const sessionDateKey = activeAttendanceDate || getTodayDateKey();
+      const isToday = (sessionDateKey === getTodayDateKey());
       const now = new Date();
-      const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
-      const todayKey = getTodayDateKey();
-      if (!dailyAttendance[todayKey]) dailyAttendance[todayKey] = {};
-      dailyAttendance[todayKey][student.id] = {
+      const timeStr = isToday ? (now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' เธ.') : 'เธเธฑเธเธ—เธถเธเนเธเธฃเธญเธ';
+
+      if (!dailyAttendance[sessionDateKey]) dailyAttendance[sessionDateKey] = {};
+      dailyAttendance[sessionDateKey][student.id] = {
         studentId: student.id,
         name: student.name,
         status: 'leave',
         time: timeStr,
-        updatedBy: 'coach',
-        leaveReason: `โค้ช ${staffName} บันทึกลา`
+        updatedBy: staffName,
+        dateKey: sessionDateKey,
+        leaveReason: `เนเธเนเธ ${staffName} เธเธฑเธเธ—เธถเธเธฅเธฒ`
       };
       saveState();
+      updateSessionDateDisplay();
       renderCoachRosterTable();
-      renderDailyAttendanceBoard();
-      showToast(`บันทึกสถานะลาน้อง ${student.name} วันนี้เรียบร้อย`);
+      if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+      showToast(`เธเธฑเธเธ—เธถเธเธชเธ–เธฒเธเธฐเธฅเธฒเธเนเธญเธ ${student.name} เธฃเธญเธเธเธตเนเน€เธฃเธตเธขเธเธฃเนเธญเธข`);
     }
 
     // Filter by Course Categories
@@ -3945,38 +4505,40 @@
         return true;
       });
 
-      const todayKey = getTodayDateKey();
-      const todayAttRecords = dailyAttendance[todayKey] || {};
+      const sessionDateKey = activeAttendanceDate || getTodayDateKey();
+      const sessionAttRecords = dailyAttendance[sessionDateKey] || {};
       const isAsst = currentStaff && currentStaff.isAssistant;
 
       filtered.forEach(s => {
         const isSaturdayFilter = (currentCoachFilter === 'saturday');
         const rem = isSaturdayFilter ? (s.saturdayRemaining || 0) : (s.remaining || 0);
-        const todayAtt = todayAttRecords[s.id];
+        const sessionAtt = sessionAttRecords[s.id];
+        const isAttending = sessionAtt && sessionAtt.status === 'attending';
+        const isLeave = sessionAtt && sessionAtt.status === 'leave';
         
         let remBadge = '';
         if (isSaturdayFilter) {
-          if (rem > 1) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900">${rem} / 4 ครั้ง (เสาร์)</span>`;
-          else if (rem === 1) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">${rem} / 4 ครั้ง (เสาร์)</span>`;
-          else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">${rem} / 4 ครั้ง (เสาร์)</span>`;
+          if (rem > 1) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900">${rem} / 4 เธเธฃเธฑเนเธ (เน€เธชเธฒเธฃเน)</span>`;
+          else if (rem === 1) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">${rem} / 4 เธเธฃเธฑเนเธ (เน€เธชเธฒเธฃเน)</span>`;
+          else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">${rem} / 4 เธเธฃเธฑเนเธ (เน€เธชเธฒเธฃเน)</span>`;
         } else if (s.courseType === 'both') {
           remBadge = `
             <div class="flex flex-col gap-1 items-center">
-              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900">ปกติ: ${s.remaining} ครั้ง</span>
-              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-900">เสาร์: ${s.saturdayRemaining} ครั้ง</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900">เธเธเธ•เธด: ${s.remaining} เธเธฃเธฑเนเธ</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-900">เน€เธชเธฒเธฃเน: ${s.saturdayRemaining} เธเธฃเธฑเนเธ</span>
             </div>
           `;
         } else {
-          if (rem > 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">${rem} ครั้ง</span>`;
-          else if (rem >= 1 && rem <= 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">${rem} ครั้ง</span>`;
-          else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">${rem} ครั้ง</span>`;
+          if (rem > 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">${rem} เธเธฃเธฑเนเธ</span>`;
+          else if (rem >= 1 && rem <= 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">${rem} เธเธฃเธฑเนเธ</span>`;
+          else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">${rem} เธเธฃเธฑเนเธ</span>`;
         }
 
         let typeBadge = '';
-        if (s.courseType === 'both') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-300">ปกติ + วันเสาร์</span>`;
-        else if (s.courseType === 'monthly') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">รายเดือน</span>`;
-        else if (s.courseType === 'saturday') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">วันเสาร์ (4 ครั้ง)</span>`;
-        else typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">ปกติ 10 ครั้ง</span>`;
+        if (s.courseType === 'both') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-300">เธเธเธ•เธด + เธงเธฑเธเน€เธชเธฒเธฃเน</span>`;
+        else if (s.courseType === 'monthly') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">เธฃเธฒเธขเน€เธ”เธทเธญเธ</span>`;
+        else if (s.courseType === 'saturday') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">เธงเธฑเธเน€เธชเธฒเธฃเน (4 เธเธฃเธฑเนเธ)</span>`;
+        else typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">เธเธเธ•เธด 10 เธเธฃเธฑเนเธ</span>`;
 
         const checkInTarget = isSaturdayFilter || s.courseType === 'saturday' ? 'saturday' : 'regular';
 
@@ -3986,69 +4548,97 @@
           tr.className = "hover:bg-slate-50 transition";
           
           let actionBtns = '';
-          if (isSaturdayFilter) {
+          if (isAttending) {
             actionBtns = `
               <div class="inline-flex items-center gap-1">
-                <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เช็คชื่อวันเสาร์ (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 rounded-lg flex items-center gap-1 shadow-xs">
-                  <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i> <span>เช็คเสาร์ (-1)</span>
+                <span class="px-2.5 py-1 text-xs font-bold text-emerald-800 bg-emerald-100 rounded-lg flex items-center gap-1 border border-emerald-200">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> <span>เธกเธฒเน€เธฃเธตเธขเธเนเธฅเนเธง</span>
+                </span>
+                <button onclick="coachUndoCheckIn(${s.id}, '${checkInTarget}')" title="เธขเธเน€เธฅเธดเธเน€เธเนเธเธเธทเนเธญเธฃเธญเธเธเธตเนเนเธฅเธฐเธเธทเธเธชเธดเธ—เธเธดเน (+1)" class="px-2 py-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 flex items-center gap-1">
+                  <i data-lucide="rotate-ccw" class="w-3 h-3"></i> <span>เธเธทเธเธชเธดเธ—เธเธดเน (+1)</span>
                 </button>
-                <button onclick="coachAdjustQuota(${s.id}, 1, 'saturday')" title="เพิ่มสิทธิ์ (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">+1</button>
-                ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 4, 'saturday')" title="ต่อคอร์สเสาร์ (+4)" class="px-2 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200">+4</button>` : ''}
               </div>
             `;
-          } else if (s.courseType === 'both') {
+          } else if (isLeave) {
             actionBtns = `
-              <div class="flex flex-col gap-1 items-center">
-                <div class="inline-flex items-center gap-1">
-                  <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เช็คคอร์สปกติ (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-dbo-navy hover:bg-dbo-navySoft rounded-lg flex items-center gap-1">
-                    <span>เช็คปกติ (-1)</span>
-                  </button>
-                  <button onclick="coachAdjustQuota(${s.id}, 1, 'regular')" class="px-1.5 py-0.5 text-[11px] font-bold bg-slate-100 rounded">+1</button>
-                  ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 10, 'regular')" class="px-1.5 py-0.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 rounded border border-emerald-200">+10</button>` : ''}
-                </div>
-                <div class="inline-flex items-center gap-1">
-                  <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เช็ควันเสาร์ (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-1">
-                    <span>เช็คเสาร์ (-1)</span>
-                  </button>
-                  <button onclick="coachAdjustQuota(${s.id}, 1, 'saturday')" class="px-1.5 py-0.5 text-[11px] font-bold bg-slate-100 rounded">+1</button>
-                  ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 4, 'saturday')" class="px-1.5 py-0.5 text-[11px] font-bold text-indigo-700 bg-indigo-50 rounded border border-indigo-200">+4</button>` : ''}
-                </div>
+              <div class="inline-flex items-center gap-1">
+                <span class="px-2.5 py-1 text-xs font-bold text-amber-800 bg-amber-100 rounded-lg flex items-center gap-1 border border-amber-200">
+                  <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600"></i> <span>เนเธเนเธเธฅเธฒ</span>
+                </span>
+                <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" title="เน€เธเธฅเธตเนเธขเธเน€เธเนเธเธกเธฒเน€เธฃเธตเธขเธ (-1)" class="px-2 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs">
+                  เน€เธเธฅเธตเนเธขเธเน€เธเนเธเธกเธฒ (-1)
+                </button>
+                <button onclick="coachClearAttendanceRecord(${s.id})" title="เธฅเนเธฒเธเธชเธ–เธฒเธเธฐเธฅเธฒ" class="px-1.5 py-1 text-xs text-slate-500 hover:text-slate-800 bg-slate-100 rounded-lg">โ•</button>
               </div>
             `;
           } else {
-            actionBtns = `
-              <div class="inline-flex items-center gap-1">
-                <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เช็คชื่อเข้าเรียน (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-dbo-navy hover:bg-dbo-navySoft rounded-lg flex items-center gap-1 shadow-xs">
-                  <i data-lucide="check" class="w-3.5 h-3.5 text-dbo-gold"></i> <span>เช็คชื่อ (-1)</span>
-                </button>
-                <button onclick="coachAdjustQuota(${s.id}, 1, 'regular')" title="เพิ่มสิทธิ์ (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">+1</button>
-                ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 10, 'regular')" title="ต่อคอร์ส (+10)" class="px-2 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200">+10</button>` : ''}
-              </div>
-            `;
+            if (isSaturdayFilter) {
+              actionBtns = `
+                <div class="inline-flex items-center gap-1">
+                  <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เน€เธเนเธเธเธทเนเธญเธงเธฑเธเน€เธชเธฒเธฃเน (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 rounded-lg flex items-center gap-1 shadow-xs">
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i> <span>เน€เธเนเธเน€เธชเธฒเธฃเน (-1)</span>
+                  </button>
+                  <button onclick="coachMarkStudentLeave(${s.id})" title="เธเธฑเธเธ—เธถเธเธฅเธฒเน€เธฃเธตเธขเธเธฃเธญเธเธเธตเน" class="px-2 py-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200">เธฅเธฒ</button>
+                  <button onclick="coachAdjustQuota(${s.id}, 1, 'saturday')" title="เน€เธเธดเนเธกเธชเธดเธ—เธเธดเน (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">+1</button>
+                  ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 4, 'saturday')" title="เธ•เนเธญเธเธญเธฃเนเธชเน€เธชเธฒเธฃเน (+4)" class="px-2 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200">+4</button>` : ''}
+                </div>
+              `;
+            } else if (s.courseType === 'both') {
+              actionBtns = `
+                <div class="flex flex-col gap-1 items-center">
+                  <div class="inline-flex items-center gap-1">
+                    <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เน€เธเนเธเธเธญเธฃเนเธชเธเธเธ•เธด (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-dbo-navy hover:bg-dbo-navySoft rounded-lg flex items-center gap-1">
+                      <span>เน€เธเนเธเธเธเธ•เธด (-1)</span>
+                    </button>
+                    <button onclick="coachMarkStudentLeave(${s.id})" title="เธเธฑเธเธ—เธถเธเธฅเธฒ" class="px-1.5 py-0.5 text-[11px] font-bold text-amber-800 bg-amber-50 rounded border border-amber-200">เธฅเธฒ</button>
+                    <button onclick="coachAdjustQuota(${s.id}, 1, 'regular')" class="px-1.5 py-0.5 text-[11px] font-bold bg-slate-100 rounded">+1</button>
+                    ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 10, 'regular')" class="px-1.5 py-0.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 rounded border border-emerald-200">+10</button>` : ''}
+                  </div>
+                  <div class="inline-flex items-center gap-1">
+                    <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เน€เธเนเธเธงเธฑเธเน€เธชเธฒเธฃเน (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-1">
+                      <span>เน€เธเนเธเน€เธชเธฒเธฃเน (-1)</span>
+                    </button>
+                    <button onclick="coachAdjustQuota(${s.id}, 1, 'saturday')" class="px-1.5 py-0.5 text-[11px] font-bold bg-slate-100 rounded">+1</button>
+                    ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 4, 'saturday')" class="px-1.5 py-0.5 text-[11px] font-bold text-indigo-700 bg-indigo-50 rounded border border-indigo-200">+4</button>` : ''}
+                  </div>
+                </div>
+              `;
+            } else {
+              actionBtns = `
+                <div class="inline-flex items-center gap-1">
+                  <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเน€เธฃเธตเธขเธ (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg flex items-center gap-1 shadow-xs">
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i> <span>เน€เธเนเธเธเธทเนเธญ (-1)</span>
+                  </button>
+                  <button onclick="coachMarkStudentLeave(${s.id})" title="เธเธฑเธเธ—เธถเธเธฅเธฒเน€เธฃเธตเธขเธเธฃเธญเธเธเธตเน" class="px-2 py-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200">เธฅเธฒ</button>
+                  <button onclick="coachAdjustQuota(${s.id}, 1, 'regular')" title="เน€เธเธดเนเธกเธชเธดเธ—เธเธดเน (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">+1</button>
+                  ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 10, 'regular')" title="เธ•เนเธญเธเธญเธฃเนเธช (+10)" class="px-2 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200">+10</button>` : ''}
+                </div>
+              `;
+            }
           }
 
           tr.innerHTML = `
             <td class="py-2.5 px-3 text-center text-xs text-slate-400 font-bold">${s.id}</td>
             <td class="py-2.5 px-3">
-              <strong class="text-xs sm:text-sm font-bold text-dbo-navy block">น้อง ${s.name}</strong>
-              ${s.phone ? `<span class="font-mono text-emerald-700 font-bold text-xs">📞 ${s.phone}</span>` : `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">⏳ รอ ผปค. ผูกเบอร์</span>`}
-              ${todayAtt && todayAtt.status === 'attending' ? `<span class="ml-1 text-[10px] font-bold text-emerald-700">🟢 มา</span>` : ''}
-              ${todayAtt && todayAtt.status === 'leave' ? `<span class="ml-1 text-[10px] font-bold text-amber-700">🟡 ลา</span>` : ''}
+              <strong class="text-xs sm:text-sm font-bold text-dbo-navy block">เธเนเธญเธ ${s.name}</strong>
+              ${s.phone ? `<span class="font-mono text-emerald-700 font-bold text-xs">๐“ ${s.phone}</span>` : `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">โณ เธฃเธญ เธเธเธ. เธเธนเธเน€เธเธญเธฃเน</span>`}
+              ${isAttending ? `<span class="ml-1 text-[10px] font-bold text-emerald-700">๐ข เธกเธฒ (${sessionAtt.time || ''})</span>` : ''}
+              ${isLeave ? `<span class="ml-1 text-[10px] font-bold text-amber-700">๐ก เธฅเธฒ (${sessionAtt.leaveReason || ''})</span>` : ''}
             </td>
             <td class="py-2.5 px-3">${typeBadge}</td>
             <td class="py-2.5 px-3">
-              <span class="text-xs text-slate-600 block">เริ่ม: ${s.startDate || '-'}</span>
-              ${s.nextRenewal ? `<span class="text-[10px] text-emerald-700 font-semibold">รอบต่อ: ${s.nextRenewal}</span>` : ''}
+              <span class="text-xs text-slate-600 block">เน€เธฃเธดเนเธก: ${s.startDate || '-'}</span>
+              ${s.nextRenewal ? `<span class="text-[10px] text-emerald-700 font-semibold">เธฃเธญเธเธ•เนเธญ: ${s.nextRenewal}</span>` : ''}
             </td>
             <td class="py-2.5 px-3 text-center">${remBadge}</td>
             <td class="py-2.5 px-3 text-center">${actionBtns}</td>
             <td class="py-2.5 px-3 text-center">
               <div class="inline-flex items-center gap-1">
-                <button onclick="openEditStudentModal(${s.id})" title="แก้ไข/บันทึกสมรรถภาพ" class="p-1 rounded-lg text-slate-500 hover:text-dbo-gold hover:bg-slate-100">
+                <button onclick="openEditStudentModal(${s.id})" title="เนเธเนเนเธ/เธเธฑเธเธ—เธถเธเธชเธกเธฃเธฃเธ–เธ เธฒเธ" class="p-1 rounded-lg text-slate-500 hover:text-dbo-gold hover:bg-slate-100">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
                 ${!isAsst ? `
-                <button onclick="coachDeleteStudent(${s.id})" title="ลบชื่อออกจากระบบ" class="p-1 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50">
+                <button onclick="coachDeleteStudent(${s.id})" title="เธฅเธเธเธทเนเธญเธญเธญเธเธเธฒเธเธฃเธฐเธเธ" class="p-1 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>` : ''}
               </div>
@@ -4062,11 +4652,69 @@
           const card = document.createElement('div');
           card.className = "card-clean p-3 sm:p-4 rounded-2xl border border-slate-200 bg-white shadow-2xs space-y-2.5";
           
-          let todayStatusPill = '';
-          if (todayAtt && todayAtt.status === 'attending') {
-            todayStatusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">🟢 มาเรียน (${todayAtt.time || 'ยืนยัน'})</span>`;
-          } else if (todayAtt && todayAtt.status === 'leave') {
-            todayStatusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">🟡 ลา (${todayAtt.leaveReason || 'ลา'})</span>`;
+          let sessionStatusPill = '';
+          if (isAttending) {
+            sessionStatusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">๐ข เธกเธฒเน€เธฃเธตเธขเธ (${sessionAtt.time || 'เธขเธทเธเธขเธฑเธ'})</span>`;
+          } else if (isLeave) {
+            sessionStatusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">๐ก เธฅเธฒ (${sessionAtt.leaveReason || 'เธฅเธฒ'})</span>`;
+          }
+
+          let mobileActionBar = '';
+          if (isAttending) {
+            mobileActionBar = `
+              <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                <div class="flex-1 py-1.5 px-2.5 rounded-xl bg-emerald-50 text-emerald-800 font-bold text-xs flex items-center justify-center gap-1.5 border border-emerald-200">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                  <span>เธกเธฒเน€เธฃเธตเธขเธเนเธฅเนเธง (${sessionAtt.time || 'เธขเธทเธเธขเธฑเธ'})</span>
+                </div>
+                <button onclick="coachUndoCheckIn(${s.id}, '${checkInTarget}')" title="เธขเธเน€เธฅเธดเธเน€เธเนเธเธเธทเนเธญเธฃเธญเธเธเธตเน & เธเธทเธเธชเธดเธ—เธเธดเน (+1)" class="btn-touch py-1.5 px-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center gap-1">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                  <span>เธเธทเธเธชเธดเธ—เธเธดเน (+1)</span>
+                </button>
+                <button onclick="openEditStudentModal(${s.id})" title="เนเธเนเนเธ/เธเธฑเธเธ—เธถเธเธชเธกเธฃเธฃเธ–เธ เธฒเธ" class="btn-touch p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
+                  <i data-lucide="edit-3" class="w-4 h-4"></i>
+                </button>
+              </div>
+            `;
+          } else if (isLeave) {
+            mobileActionBar = `
+              <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                <div class="flex-1 py-1.5 px-2 rounded-xl bg-amber-50 text-amber-800 font-bold text-xs flex items-center justify-center gap-1 border border-amber-200 truncate">
+                  <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
+                  <span class="truncate">เนเธเนเธเธฅเธฒ (${sessionAtt.leaveReason || 'เธฅเธฒ'})</span>
+                </div>
+                <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" title="เน€เธเธฅเธตเนเธขเธเน€เธเนเธเธกเธฒเน€เธฃเธตเธขเธ (-1)" class="btn-touch py-1.5 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs flex-shrink-0">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                  <span>เน€เธเธฅเธตเนเธขเธเน€เธเนเธเธกเธฒ</span>
+                </button>
+                <button onclick="coachClearAttendanceRecord(${s.id})" title="เธฅเนเธฒเธเธชเธ–เธฒเธเธฐเธฅเธฒ" class="btn-touch p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex-shrink-0">
+                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            `;
+          } else {
+            mobileActionBar = `
+              <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
+                <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" class="btn-touch flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs">
+                  <i data-lucide="check-circle" class="w-4 h-4"></i>
+                  <span>เน€เธเนเธเธเธทเนเธญ (-1)</span>
+                </button>
+                <button onclick="coachMarkStudentLeave(${s.id})" title="เธเธฑเธเธ—เธถเธเธฅเธฒเน€เธฃเธตเธขเธเธฃเธญเธเธเธตเน" class="btn-touch py-2 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold text-xs flex items-center justify-center gap-1">
+                  <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600"></i>
+                  <span>เธฅเธฒ</span>
+                </button>
+                <button onclick="coachAdjustQuota(${s.id}, 1, '${checkInTarget}')" title="เน€เธเธดเนเธกเธชเธดเธ—เธเธดเน (+1)" class="btn-touch py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
+                  +1
+                </button>
+                <button onclick="openEditStudentModal(${s.id})" title="เนเธเนเนเธ/เธเธฑเธเธ—เธถเธเธชเธกเธฃเธฃเธ–เธ เธฒเธ" class="btn-touch p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
+                  <i data-lucide="edit-3" class="w-4 h-4"></i>
+                </button>
+                ${!isAsst ? `
+                <button onclick="coachDeleteStudent(${s.id})" title="เธฅเธเธเธทเนเธญ" class="btn-touch p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>` : ''}
+              </div>
+            `;
           }
 
           card.innerHTML = `
@@ -4076,10 +4724,10 @@
                   #${s.id}
                 </span>
                 <div class="min-w-0">
-                  <h4 class="font-bold text-dbo-navy text-sm sm:text-base leading-tight truncate">น้อง ${s.name}</h4>
+                  <h4 class="font-bold text-dbo-navy text-sm sm:text-base leading-tight truncate">เธเนเธญเธ ${s.name}</h4>
                   <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
-                    ${s.phone ? `<span class="text-[11px] font-mono text-emerald-700 font-medium">📞 ${s.phone}</span>` : `<span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 border border-amber-200">⏳ รอ ผปค. ผูกเบอร์</span>`}
-                    ${todayStatusPill}
+                    ${s.phone ? `<span class="text-[11px] font-mono text-emerald-700 font-medium">๐“ ${s.phone}</span>` : `<span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 border border-amber-200">โณ เธฃเธญ เธเธเธ. เธเธนเธเน€เธเธญเธฃเน</span>`}
+                    ${sessionStatusPill}
                   </div>
                 </div>
               </div>
@@ -4090,26 +4738,7 @@
             </div>
 
             <!-- 1-Tap Quick Action Bar (Fully fits in one screen!) -->
-            <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
-              <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" class="btn-touch flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs">
-                <i data-lucide="check-circle" class="w-4 h-4"></i>
-                <span>เช็คชื่อ (-1)</span>
-              </button>
-              <button onclick="coachMarkStudentLeave(${s.id})" title="บันทึกลาเรียนวันนี้" class="btn-touch py-2 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold text-xs flex items-center justify-center gap-1">
-                <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600"></i>
-                <span>ลา</span>
-              </button>
-              <button onclick="coachAdjustQuota(${s.id}, 1, '${checkInTarget}')" title="เพิ่มสิทธิ์ (+1)" class="btn-touch py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
-                +1
-              </button>
-              <button onclick="openEditStudentModal(${s.id})" title="แก้ไข/บันทึกสมรรถภาพ" class="btn-touch p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
-                <i data-lucide="edit-3" class="w-4 h-4"></i>
-              </button>
-              ${!isAsst ? `
-              <button onclick="coachDeleteStudent(${s.id})" title="ลบชื่อ" class="btn-touch p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>` : ''}
-            </div>
+            ${mobileActionBar}
           `;
           cardsContainer.appendChild(card);
         }
@@ -4122,10 +4751,16 @@
       const student = students.find(s => s.id === studentId);
       if (!student) return;
 
-      const staffName = currentStaff ? currentStaff.name : 'โค้ชโอ๊ต';
+      const staffName = currentStaff ? currentStaff.name : 'เนเธเนเธเนเธญเนเธ•';
+      const sessionDateKey = activeAttendanceDate || getTodayDateKey();
+      const isToday = (sessionDateKey === getTodayDateKey());
       const now = new Date();
-      const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
-      const dateStr = now.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+      const timeStr = isToday ? (now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' เธ.') : 'เธเธฑเธเธ—เธถเธเนเธเธฃเธญเธ';
+
+      const parts = sessionDateKey.split('-');
+      const sessionD = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      const thaiMonthsShort = ['เธก.เธ.', 'เธ.เธ.', 'เธกเธต.เธ.', 'เน€เธก.เธข.', 'เธ.เธ.', 'เธกเธด.เธข.', 'เธ.เธ.', 'เธช.เธ.', 'เธ.เธข.', 'เธ•.เธ.', 'เธ.เธข.', 'เธ.เธ.'];
+      const formattedSessionThai = `${sessionD.getDate()} ${thaiMonthsShort[sessionD.getMonth()]} ${sessionD.getFullYear() + 543}`;
 
       if (target === 'saturday') {
         student.saturdayRemaining = (student.saturdayRemaining || 0) + delta;
@@ -4135,45 +4770,51 @@
 
       if (!student.checkInHistory) student.checkInHistory = [];
       student.checkInHistory.unshift({
-        date: `${dateStr} (${timeStr})`,
-        type: target === 'saturday' ? 'คลาสวันเสาร์ Basic Coach Oat' : 'คลาสปกติ 2 ชม. (จ./อ./พฤ.)',
+        date: `${formattedSessionThai} (${timeStr})`,
+        sessionDate: sessionDateKey,
+        type: target === 'saturday' ? 'เธเธฅเธฒเธชเธงเธฑเธเน€เธชเธฒเธฃเน Basic Coach Oat' : 'เธเธฅเธฒเธชเธเธเธ•เธด 2 เธเธก. (เธ./เธญ./เธเธค.)',
         coach: staffName,
-        status: 'เช็คชื่อเข้าฝึกซ้อมเรียบร้อย',
+        status: 'เน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเธเธถเธเธเนเธญเธกเน€เธฃเธตเธขเธเธฃเนเธญเธข',
         remaining: target === 'saturday' ? student.saturdayRemaining : student.remaining,
-        action: delta < 0 ? 'ตัดโควต้า -1 ครั้ง' : `ปรับโควต้า +${delta}`
+        action: delta < 0 ? 'เธ•เธฑเธ”เนเธเธงเธ•เนเธฒ -1 เธเธฃเธฑเนเธ' : `เธเธฃเธฑเธเนเธเธงเธ•เนเธฒ +${delta}`
       });
 
-      // Synchronize with Daily Attendance Board for today
-      const todayKey = getTodayDateKey();
-      if (!dailyAttendance[todayKey]) dailyAttendance[todayKey] = {};
-      dailyAttendance[todayKey][student.id] = {
+      if (!dailyAttendance[sessionDateKey]) dailyAttendance[sessionDateKey] = {};
+      dailyAttendance[sessionDateKey][student.id] = {
         studentId: student.id,
         name: student.name,
         status: 'attending',
         time: timeStr,
-        updatedBy: 'coach',
-        note: `เช็คชื่อโดย ${staffName}`
+        updatedBy: staffName,
+        dateKey: sessionDateKey,
+        courseType: target,
+        note: `เน€เธเนเธเธเธทเนเธญเนเธ”เธข ${staffName}`
       };
 
       saveState();
+      updateSessionDateDisplay();
       renderCoachRosterTable();
-      renderDailyAttendanceBoard();
+      if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
 
       if (loggedInStudent && loggedInStudent.id === studentId) {
         loggedInStudent = student;
-        renderParentView();
+        ensureHistoricalDatesSeeded();
+      updateSessionDateDisplay();
+      renderParentView();
       }
 
-      const courseName = (target === 'saturday') ? 'คลาสวันเสาร์ Basic Coach Oat' : 'คลาสปกติ';
+      const courseName = (target === 'saturday') ? 'เธเธฅเธฒเธชเธงเธฑเธเน€เธชเธฒเธฃเน Basic Coach Oat' : 'เธเธฅเธฒเธชเธเธเธ•เธด';
       const curRem = (target === 'saturday') ? student.saturdayRemaining : student.remaining;
-      const msg = `น้อง ${student.name} เช็คชื่อเข้าฝึกซ้อม${courseName}เรียบร้อยแล้วครับ! (โควต้าคงเหลือ: ${curRem} ครั้ง)`;
+      const msg = `เธเนเธญเธ ${student.name} เน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเธเธถเธเธเนเธญเธก${courseName}เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธงเธเธฃเธฑเธ! (เนเธเธงเธ•เนเธฒเธเธเน€เธซเธฅเธทเธญ: ${curRem} เธเธฃเธฑเนเธ)`;
       
-      triggerTelegramPush(`🏀 ${msg}`, 'การเช็คชื่อเข้าฝึกซ้อม (Live Push)');
-      sendSystemNotification('🏀 DBO Academy เช็คชื่อเข้าเรียน', {
-        body: msg,
-        icon: 'assets/images/app-icon-192.png'
-      });
-      showToast(`เช็คชื่อน้อง ${student.name} (${courseName}) สำเร็จ`);
+      if (isToday) {
+        triggerTelegramPush(`๐€ ${msg}`, 'เธเธฒเธฃเน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเธเธถเธเธเนเธญเธก (Live Push)');
+        sendSystemNotification('๐€ DBO Academy เน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเน€เธฃเธตเธขเธ', {
+          body: msg,
+          icon: 'assets/images/app-icon-192.png'
+        });
+      }
+      showToast(`เน€เธเนเธเธเธทเนเธญเธเนเธญเธ ${student.name} (${formattedSessionThai}) เธชเธณเน€เธฃเนเธ`);
     }
 
     function coachAdjustQuota(studentId, delta, target = 'regular') {
@@ -4207,7 +4848,9 @@
       renderCoachRosterTable();
       if (loggedInStudent && loggedInStudent.id === studentId) {
         loggedInStudent = student;
-        renderParentView();
+        ensureHistoricalDatesSeeded();
+      updateSessionDateDisplay();
+      renderParentView();
       }
     }
 
@@ -4469,7 +5112,9 @@
       renderCoachRosterTable();
       if (loggedInStudent && loggedInStudent.phone === phone) {
         loggedInStudent = students.find(s => s.phone === phone);
-        renderParentView();
+        ensureHistoricalDatesSeeded();
+      updateSessionDateDisplay();
+      renderParentView();
       }
     }
 
@@ -4770,7 +5415,9 @@
           if (fresh) {
             loggedInStudent = fresh;
             localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
-            renderParentView();
+            ensureHistoricalDatesSeeded();
+      updateSessionDateDisplay();
+      renderParentView();
           }
         }
 
@@ -4790,7 +5437,9 @@
         renderParentRegistrations();
       }
       if (loggedInStudent) {
-        renderParentView();
+        ensureHistoricalDatesSeeded();
+      updateSessionDateDisplay();
+      renderParentView();
       }
       renderDailyAttendanceBoard();
       lucide.createIcons();
@@ -4950,6 +5599,8 @@
         if (bLabel) bLabel.innerText = `${thaiDays[dayW]}ที่ ${dayNum} ${thaiMonthsFull[now.getMonth()]} ${thaiYear} • ${scheduleNote}`;
       } catch (e) { console.log('Date banner update error:', e); }
 
+      ensureHistoricalDatesSeeded();
+      updateSessionDateDisplay();
       renderParentView();
       updateCoachStateUI();
       updateHeaderProfileUI();
