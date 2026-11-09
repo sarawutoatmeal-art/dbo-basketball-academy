@@ -157,12 +157,17 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 6px 4px;
+      padding: 6px 2px;
       color: #64748B;
       font-size: 11px;
       font-weight: 500;
       transition: all 0.15s ease;
-      gap: 2px;
+      gap: 3px;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .mobile-tab-btn:active {
+      transform: scale(0.92);
     }
     .mobile-tab-btn.active {
       color: #C59B27;
@@ -949,36 +954,36 @@
   <!-- MOBILE BOTTOM NAVIGATION BAR                             -->
   <!-- ======================================================== -->
   <nav class="md:hidden mobile-bottom-nav">
-    <div class="grid grid-cols-4 text-center">
-      <button onclick="switchTab('parent-portal')" id="nav-m-parent-portal" class="mobile-tab-btn active">
+    <div id="mobileBottomNavContainer" class="flex items-center justify-around text-center px-1">
+      <button onclick="switchTab('parent-portal')" id="nav-m-parent-portal" class="mobile-tab-btn active flex-1">
         <i data-lucide="user" class="w-5 h-5"></i>
         <span>ข้อมูลลูก</span>
       </button>
 
       <!-- Renew Tab: Only visible if logged in -->
-      <button onclick="switchTab('renew-payment')" id="nav-m-renew-payment" class="mobile-tab-btn hidden">
+      <button onclick="switchTab('renew-payment')" id="nav-m-renew-payment" class="mobile-tab-btn hidden flex-1">
         <i data-lucide="refresh-cw" class="w-5 h-5 text-dbo-gold"></i>
-        <span>ต่อคอร์ส</span>
+        <span class="text-dbo-gold font-bold">ต่อคอร์ส</span>
       </button>
 
       <!-- Register Tab: Visible if NOT logged in -->
-      <button onclick="switchTab('register-new')" id="nav-m-register-new" class="mobile-tab-btn">
+      <button onclick="switchTab('register-new')" id="nav-m-register-new" class="mobile-tab-btn flex-1">
         <i data-lucide="user-plus" class="w-5 h-5 text-emerald-600"></i>
         <span>สมัครเรียน</span>
       </button>
 
-      <button onclick="switchTab('calendar')" id="nav-m-calendar" class="mobile-tab-btn">
+      <button onclick="switchTab('calendar')" id="nav-m-calendar" class="mobile-tab-btn flex-1">
         <i data-lucide="calendar" class="w-5 h-5"></i>
         <span>ปฏิทิน</span>
       </button>
 
-      <button onclick="switchTab('private-class')" id="nav-m-private-class" class="mobile-tab-btn">
+      <button onclick="switchTab('private-class')" id="nav-m-private-class" class="mobile-tab-btn flex-1">
         <i data-lucide="target" class="w-5 h-5"></i>
         <span>Private</span>
       </button>
 
       <!-- Coach Tab in mobile (If Coach Mode) -->
-      <button onclick="switchTab('coach-roster')" id="nav-m-coach-roster" class="mobile-tab-btn hidden text-indigo-600">
+      <button onclick="switchTab('coach-roster')" id="nav-m-coach-roster" class="mobile-tab-btn hidden flex-1 text-indigo-600">
         <i data-lucide="shield-check" class="w-5 h-5"></i>
         <span>แผงโค้ช</span>
       </button>
