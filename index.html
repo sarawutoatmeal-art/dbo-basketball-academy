@@ -228,9 +228,9 @@
             <span>ต่อคอร์สเรียน</span>
           </button>
 
-          <button onclick="switchTab('community-chat')" id="nav-community-chat" class="pill-tab inactive text-dbo-navy font-semibold">
-            <i data-lucide="message-square" class="w-4 h-4 text-sky-600"></i>
-            <span>ห้องแชท ผปค.</span>
+          <button onclick="switchTab('daily-attendance')" id="nav-daily-attendance" class="pill-tab inactive text-dbo-navy font-semibold">
+            <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
+            <span>เพื่อนร่วมคลาสวันนี้</span>
           </button>
 
           <button onclick="switchTab('register-new')" id="nav-register-new" class="pill-tab inactive">
@@ -323,7 +323,16 @@
           </button>
         </form>
 
-        <div class="pt-4 border-t border-slate-100 text-xs text-dbo-textSecondary flex items-center justify-center gap-2">
+        <!-- New Parent Registration Link Card -->
+        <div class="pt-3 border-t border-slate-100 space-y-2">
+          <p class="text-xs text-slate-500">สำหรับผู้ปกครองที่ยังไม่ได้ผูกเบอร์เข้าสู่ระบบ:</p>
+          <button type="button" onclick="openParentLinkModal()" class="btn-touch w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300 flex items-center justify-center gap-2 transition shadow-xs">
+            <i data-lucide="user-plus" class="w-4 h-4 text-emerald-600"></i>
+            <span>📝 ผู้ปกครองลงทะเบียนผูกเบอร์กับลูกหลาน</span>
+          </button>
+        </div>
+
+        <div class="pt-2 text-xs text-dbo-textSecondary flex items-center justify-center gap-2">
           <span>ยังไม่เคยเป็นนักเรียนที่นี่?</span>
           <button onclick="switchTab('register-new')" class="text-dbo-gold font-bold hover:underline">สมัครเรียนใหม่ที่นี่</button>
         </div>
@@ -368,9 +377,9 @@
 
         <!-- Parent Quick Interactive Buttons: RSVP & Leave Request -->
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-          <button onclick="openRsvpModal()" class="btn-touch p-3 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 flex items-center justify-center gap-2 text-xs font-bold shadow-xs">
+          <button onclick="setTodayAttendanceFromParent('attending')" class="btn-touch p-3 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 flex items-center justify-center gap-2 text-xs font-bold shadow-xs">
             <i data-lucide="calendar-check" class="w-4 h-4 text-emerald-600"></i>
-            <span>แจ้งเข้าเรียนวันนี้ / ล่วงหน้า</span>
+            <span>ยืนยันเข้าเรียนวันนี้</span>
           </button>
 
           <button onclick="openLeaveModal()" class="btn-touch p-3 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-900 flex items-center justify-center gap-2 text-xs font-bold shadow-xs">
@@ -378,10 +387,44 @@
             <span>แจ้งขอลาหยุดเรียน</span>
           </button>
 
-          <button onclick="switchTab('community-chat')" class="col-span-2 sm:col-span-1 btn-touch p-3 rounded-xl border border-sky-200 bg-sky-50 hover:bg-sky-100 text-sky-900 flex items-center justify-center gap-2 text-xs font-bold shadow-xs">
-            <i data-lucide="message-square" class="w-4 h-4 text-sky-600"></i>
-            <span>ห้องแชท ผปค. & โค้ช</span>
+          <button onclick="switchTab('daily-attendance')" class="col-span-2 sm:col-span-1 btn-touch p-3 rounded-xl border border-sky-200 bg-sky-50 hover:bg-sky-100 text-sky-900 flex items-center justify-center gap-2 text-xs font-bold shadow-xs">
+            <i data-lucide="users" class="w-4 h-4 text-sky-600"></i>
+            <span>กระดานเพื่อนร่วมคลาสวันนี้</span>
           </button>
+        </div>
+
+        <!-- Today's Attendance Check-in Card (New Feature for Parents) -->
+        <div id="parentTodayCheckinCard" class="card-clean p-4 sm:p-5 rounded-2xl border-l-4 border-l-emerald-500 bg-gradient-to-r from-emerald-50/50 via-white to-white space-y-3 shadow-xs">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 pb-2 border-b border-emerald-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <h3 class="text-xs sm:text-sm font-bold text-dbo-navy">สถานะการเข้าเรียนวันนี้ของน้อง</h3>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-0.5" id="parentTodayDateLabel">
+                วันจันทร์ที่ 9 พ.ย. 2569 • คลาสปกติ 17:00 - 19:00 น. ณ ยิมเตชะวิทย์
+              </p>
+            </div>
+            <div id="parentTodayStatusBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1.5">
+              ⚪ ยังไม่ได้ระบุสถานะ
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+            <p class="text-xs text-slate-600">
+              ผู้ปกครองสามารถระบุล่วงหน้าเพื่อเตรียมความพร้อม และช่วยให้โค้ชเตรียมรูปแบบการฝึกซ้อมได้อย่างมีประสิทธิภาพครับ
+            </p>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button type="button" onclick="setTodayAttendanceFromParent('attending')" class="btn-touch flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs flex items-center justify-center gap-1.5 transition">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                <span>ยืนยันเข้าเรียนวันนี้</span>
+              </button>
+              <button type="button" onclick="openLeaveModal()" class="btn-touch flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 flex items-center justify-center gap-1.5 transition">
+                <i data-lucide="calendar-x" class="w-4 h-4 text-amber-700"></i>
+                <span>แจ้งขอลา</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Mobile Push Notification Status Card -->
@@ -708,96 +751,114 @@
     </section>
 
     <!-- ======================================================== -->
-    <!-- TAB 3: CHAT HUB (PARENT COMMUNITY & STAFF INTERNAL CHAT)  -->
+    <!-- TAB 3: DAILY ATTENDANCE & HEADCOUNT BOARD (เพื่อนร่วมคลาส) -->
     <!-- ======================================================== -->
-    <section id="tab-community-chat" class="hidden space-y-4">
+    <section id="tab-daily-attendance" class="hidden space-y-5">
       
-      <!-- Room Channel Switcher Bar -->
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs">
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <button id="btnChannelParent" onclick="switchChatChannel('parent')" class="btn-touch flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold bg-dbo-navy text-white shadow-xs flex items-center justify-center gap-1.5 transition">
-            <i data-lucide="users" class="w-3.5 h-3.5 text-sky-400"></i>
-            <span>ห้องแชทผู้ปกครอง & โค้ช</span>
-          </button>
-          
-          <button id="btnChannelInternal" onclick="switchChatChannel('staff_internal')" class="hidden btn-touch flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition border border-transparent">
-            <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-600"></i>
-            <span>ห้องแชทภายในทีมงาน (Staff Only 🔒)</span>
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          </button>
+      <!-- Top Banner -->
+      <div class="card-clean p-5 sm:p-6 bg-gradient-to-r from-slate-900 via-dbo-navy to-slate-900 text-white rounded-2xl shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 uppercase tracking-wider">LIVE ROSTER</span>
+            <span class="text-xs text-indigo-200">โรงยิม โรงเรียนเตชะวิทย์ • Start from 0 to No. 1</span>
+          </div>
+          <h2 class="text-lg sm:text-2xl font-black text-white flex items-center gap-2">
+            <span>กระดานเช็คชื่อ & เพื่อนร่วมคลาสวันนี้</span>
+          </h2>
+          <p class="text-xs text-indigo-200/90" id="dailyBoardDateLabel">
+            วันจันทร์ที่ 9 พฤศจิกายน 2569 • คลาสปกติ 17:00 - 19:00 น.
+          </p>
         </div>
 
-        <!-- Sender Profile Tag -->
-        <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 text-xs self-end sm:self-auto">
-          <span id="chatSenderAvatar" class="w-5 h-5 rounded-full bg-dbo-gold text-white flex items-center justify-center font-bold text-[10px]">P</span>
-          <span id="chatSenderName" class="font-bold text-dbo-navy text-[11px] truncate max-w-[150px]">ผู้ปกครอง</span>
+        <div id="dailyBoardActionBox" class="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <button onclick="openLeaveModal()" class="btn-touch px-3.5 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 flex items-center gap-1.5 transition">
+            <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-300"></i>
+            <span>แจ้งขอลา</span>
+          </button>
+          <button onclick="setTodayAttendanceFromParent('attending')" class="btn-touch px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-xs flex items-center gap-1.5 transition">
+            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            <span>ยืนยันเข้าเรียนวันนี้</span>
+          </button>
         </div>
       </div>
 
-      <div class="card-clean overflow-hidden flex flex-col h-[75vh] max-h-[700px] border border-slate-200">
-        
-        <!-- Chat Header -->
-        <div id="chatHeaderBar" class="p-3 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          <div class="flex items-center gap-2.5">
-            <div id="chatRoomIconBox" class="w-9 h-9 rounded-full bg-dbo-navy text-white flex items-center justify-center font-bold text-xs shadow-xs">
-              DBO
-            </div>
-            <div>
-              <h3 id="chatRoomTitle" class="text-xs sm:text-sm font-bold text-dbo-navy">ห้องแชทข่าวสารผู้ปกครอง & ทีมโค้ช</h3>
-              <p id="chatRoomSubtitle" class="text-[10px] text-emerald-600 flex items-center gap-1 font-medium">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> พื้นที่สื่อสารระหว่างผู้ปกครองและทีมผู้ฝึกสอน DBO Academy
-              </p>
-            </div>
-          </div>
-          
-          <div class="flex items-center gap-2 self-end sm:self-auto">
-            <a href="https://line.me/ti/p/~0933199119" target="_blank" rel="noopener noreferrer" class="btn-touch px-3 py-1.5 rounded-full text-[11px] font-bold bg-[#06C755] hover:bg-[#05b34c] text-white shadow-xs flex items-center gap-1.5 transition">
-              <span class="font-black text-xs">LINE</span>
-              <span>แชทกับโค้ชโอ๊ต</span>
-            </a>
-            <div id="chatRoomStatusBadge" class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold bg-white border border-slate-200 text-slate-600">
-              Live Room
-            </div>
-          </div>
+      <!-- Live Headcount Counter (3 KPI Cards) -->
+      <div class="grid grid-cols-3 gap-2.5 sm:gap-4">
+        <!-- Card 1: Attending -->
+        <div class="card-clean p-3.5 sm:p-5 text-center border-l-4 border-l-emerald-500 bg-emerald-50/50">
+          <span class="text-[11px] sm:text-xs font-semibold text-emerald-800 block">🟢 ยืนยันมาเรียน</span>
+          <span id="boardAttendingCount" class="text-2xl sm:text-4xl font-black text-emerald-700 font-mono my-0.5 block">0</span>
+          <span class="text-[10px] sm:text-xs text-emerald-600 block">คน (พร้อมฝึกซ้อม)</span>
         </div>
 
-        <!-- Chat Messages Scrollable Box -->
-        <div id="chatMessagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[#F8FAFC]">
-          <!-- Chat messages dynamically rendered -->
+        <!-- Card 2: Leave -->
+        <div class="card-clean p-3.5 sm:p-5 text-center border-l-4 border-l-amber-500 bg-amber-50/50">
+          <span class="text-[11px] sm:text-xs font-semibold text-amber-800 block">🟡 แจ้งขอลา</span>
+          <span id="boardLeaveCount" class="text-2xl sm:text-4xl font-black text-amber-700 font-mono my-0.5 block">0</span>
+          <span class="text-[10px] sm:text-xs text-amber-600 block">คน (แจ้งล่วงหน้า)</span>
         </div>
 
-        <!-- Guest Hint for Unlogged Users -->
-        <div id="chatGuestHint" class="hidden p-2.5 bg-amber-50 border-t border-amber-200 text-center text-xs text-amber-900">
-          💡 ผู้ปกครองสามารถร่วมพิมพ์ข้อความและส่งภาพได้ — <button type="button" onclick="switchTab('parent-portal')" class="font-bold underline text-dbo-navy hover:text-dbo-gold">กรุณาเข้าสู่ระบบด้วยเบอร์โทร</button>
+        <!-- Card 3: Unconfirmed -->
+        <div class="card-clean p-3.5 sm:p-5 text-center border-l-4 border-l-slate-400 bg-slate-50/50">
+          <span class="text-[11px] sm:text-xs font-semibold text-slate-700 block">⚪ ยังไม่แจ้ง</span>
+          <span id="boardUnconfirmedCount" class="text-2xl sm:text-4xl font-black text-slate-700 font-mono my-0.5 block">0</span>
+          <span class="text-[10px] sm:text-xs text-slate-500 block">คน (รอเช็คชื่อ)</span>
         </div>
-
-        <!-- Chat Input Bar -->
-        <div class="p-2.5 sm:p-3 bg-white border-t border-slate-200">
-          <form onsubmit="handleSendChatMessage(event)" class="flex items-center gap-2">
-            
-            <!-- Send Image Button -->
-            <label class="cursor-pointer p-2 rounded-xl text-slate-500 hover:text-dbo-gold hover:bg-slate-100 transition flex-shrink-0">
-              <i data-lucide="image" class="w-5 h-5"></i>
-              <input type="file" id="chatImageInput" accept="image/*" class="hidden" onchange="handleChatImageUpload(this)">
-            </label>
-
-            <!-- Text Input -->
-            <input 
-              type="text" 
-              id="chatMessageInput" 
-              placeholder="พิมพ์ข้อความพูดคุย หรือส่งรูปภาพ..." 
-              required
-              class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-dbo-navy focus:outline-none focus:border-dbo-gold min-h-[42px]"
-            >
-
-            <button type="submit" class="btn-touch px-4 py-2 rounded-xl font-bold text-xs bg-dbo-navy text-white hover:bg-dbo-navySoft shadow-xs flex items-center gap-1 flex-shrink-0">
-              <i data-lucide="send" class="w-4 h-4 text-dbo-gold"></i>
-              <span class="hidden sm:inline">ส่ง</span>
-            </button>
-          </form>
-        </div>
-
       </div>
+
+      <!-- Section 1: Who's Coming Today (Friendly Cards for Parents) -->
+      <div class="card-clean p-4 sm:p-5 space-y-3 border-l-4 border-l-emerald-500">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+            <h3 class="text-xs sm:text-sm font-bold text-dbo-navy">
+              รายชื่อเพื่อนๆ ที่ยืนยันมาเรียนวันนี้ (<span id="boardAttendingBadge">0</span> คน)
+            </h3>
+          </div>
+          <span class="text-[11px] text-emerald-700 font-medium">มีเพื่อนร่วมคลาสแน่นอน 🏀</span>
+        </div>
+
+        <div id="boardAttendingList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 pt-1">
+          <!-- Dynamically populated student cards -->
+        </div>
+      </div>
+
+      <!-- Section 2: Leave Today -->
+      <div class="card-clean p-4 sm:p-5 space-y-3 border-l-4 border-l-amber-500">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <h3 class="text-xs sm:text-sm font-bold text-dbo-navy">
+              รายชื่อน้องที่แจ้งขอลาหยุดวันนี้ (<span id="boardLeaveBadge">0</span> คน)
+            </h3>
+          </div>
+          <span class="text-[11px] text-amber-700 font-medium">แจ้งล่วงหน้าเรียบร้อย</span>
+        </div>
+
+        <div id="boardLeaveList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+          <!-- Dynamically populated leave cards -->
+        </div>
+      </div>
+
+      <!-- Section 3: Others / Unconfirmed -->
+      <div class="card-clean p-4 sm:p-5 space-y-3 border-l-4 border-l-slate-300">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-slate-300"></span>
+            <h3 class="text-xs sm:text-sm font-bold text-slate-700">
+              นักเรียนท่านอื่นในคอร์ส (<span id="boardUnconfirmedBadge">0</span> คน)
+            </h3>
+          </div>
+          <button type="button" onclick="toggleUnconfirmedList()" id="btnToggleUnconfirmed" class="text-xs text-dbo-gold font-bold hover:underline">
+            แสดงรายชื่อทั้งหมด
+          </button>
+        </div>
+
+        <div id="boardUnconfirmedList" class="hidden flex flex-wrap gap-2 pt-1">
+          <!-- Dynamically populated student badges -->
+        </div>
+      </div>
+
     </section>
 
     <!-- ======================================================== -->
@@ -1229,24 +1290,21 @@
           </div>
         </div>
 
-        <!-- Quick Staff Chat Action Banner -->
-        <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-50/80 to-white border border-amber-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
-          <div class="flex items-center gap-2.5">
-            <span class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-xs shadow-xs flex-shrink-0">
-              <i data-lucide="lock" class="w-4 h-4"></i>
-            </span>
-            <div>
-              <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                <span>ห้องแชทลับเฉพาะทีมงาน (Staff Internal Room)</span>
-                <span class="text-[10px] px-2 py-0.2 rounded-full font-bold bg-amber-200 text-amber-900">4 ท่าน</span>
+        <!-- Parent Account Approvals Queue Banner (New Feature) -->
+        <div id="parentApprovalSection" class="p-4 rounded-2xl border border-emerald-300 bg-gradient-to-r from-emerald-50/70 via-white to-white space-y-3 shadow-xs">
+          <div class="flex items-center justify-between pb-2 border-b border-emerald-100">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <h4 class="text-xs sm:text-sm font-bold text-slate-900">
+                คำขอลงทะเบียนเชื่อมต่อบัญชีผู้ปกครอง (<span id="parentPendingCount" class="text-emerald-700 font-mono font-bold">0</span> รายการ)
               </h4>
-              <p class="text-[11px] text-slate-500 mt-0.5">ปรึกษาและประสานงานภายใน: โค้ชโอ๊ต, โค้ชโอ๊ค, คุณไอริส, คุณออม</p>
             </div>
+            <span class="text-[10px] text-slate-500 font-medium">อนุมัติแล้วระบบจะผูกเบอร์ให้นักเรียนอัตโนมัติ</span>
           </div>
-          <button onclick="switchTab('community-chat'); switchChatChannel('staff_internal');" class="btn-touch px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-xs flex items-center gap-1.5 flex-shrink-0 w-full sm:w-auto justify-center">
-            <i data-lucide="messages-square" class="w-3.5 h-3.5"></i>
-            <span>เข้าห้องแชทภายในทีมงาน</span>
-          </button>
+
+          <div id="parentPendingList" class="space-y-2">
+            <!-- Dynamically populated pending cards -->
+          </div>
         </div>
 
         <!-- Pending Slip Verification Queue Banner -->
@@ -1322,10 +1380,10 @@
         <span>หน้าหลัก</span>
       </button>
 
-      <!-- Chat Tab: Visible to All -->
-      <button onclick="switchTab('community-chat')" id="nav-m-community-chat" class="mobile-tab-btn flex-1">
-        <i data-lucide="message-square" class="w-5 h-5 text-sky-600"></i>
-        <span>แชท</span>
+      <!-- Daily Attendance Tab: Visible to All -->
+      <button onclick="switchTab('daily-attendance')" id="nav-m-daily-attendance" class="mobile-tab-btn flex-1">
+        <i data-lucide="users" class="w-5 h-5 text-emerald-600"></i>
+        <span>คลาสวันนี้</span>
       </button>
 
       <!-- Renew Tab: Only visible if logged in -->
@@ -1524,6 +1582,107 @@
     </div>
   </div>
 
+  <!-- 5. Parent Link Registration Modal (ผูกเบอร์โทรศัพท์กับบุตรหลาน) -->
+  <div id="parentLinkModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="card-clean max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center font-bold">
+            <i data-lucide="link" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-dbo-navy">ลงทะเบียนผูกบัญชีผู้ปกครอง</h3>
+            <p class="text-[11px] text-slate-500">ส่งข้อมูลให้โค้ชโอ๊ตและทีมงานอนุมัติเพื่อเข้าใช้งาน</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeParentLinkModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleParentLinkSubmit(event)" class="space-y-3.5 text-left text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์ผู้ปกครอง (10 หลัก) <span class="text-rose-500">*</span></label>
+          <input 
+            type="tel" 
+            id="linkParentPhone" 
+            placeholder="เช่น 081-234-5678" 
+            maxlength="12"
+            required
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-sm focus:outline-none focus:border-dbo-gold focus:bg-white"
+          >
+          <p class="text-[10px] text-slate-400 mt-0.5">เบอร์นี้จะใช้ในการล็อกอินเข้าสู่ระบบหลังจากโค้ชอนุมัติ</p>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล หรือชื่อเรียกของผู้ปกครอง <span class="text-rose-500">*</span></label>
+          <input 
+            type="text" 
+            id="linkParentName" 
+            placeholder="เช่น คุณแม่น้องอิฐ / สมชาย มั่งมี" 
+            required
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-dbo-gold focus:bg-white"
+          >
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">ความสัมพันธ์ <span class="text-rose-500">*</span></label>
+            <select id="linkRelation" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium focus:outline-none focus:border-dbo-gold focus:bg-white">
+              <option value="คุณแม่">คุณแม่</option>
+              <option value="คุณพ่อ">คุณพ่อ</option>
+              <option value="ผู้ปกครอง">ผู้ปกครอง / ญาติ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">เลือกลูกหลานในอคาเดมี่ <span class="text-rose-500">*</span></label>
+            <select id="linkStudentSelect" onchange="handleLinkStudentChange(this.value)" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold focus:outline-none focus:border-dbo-gold focus:bg-white">
+              <!-- Injected student options sorted by name -->
+            </select>
+          </div>
+        </div>
+
+        <div id="linkOtherStudentBox" class="hidden">
+          <label class="block font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล หรือชื่อเล่นของน้อง (กรณีไม่มีในรายชื่อ)</label>
+          <input 
+            type="text" 
+            id="linkOtherStudentName" 
+            placeholder="ระบุชื่อน้อง..." 
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-dbo-gold focus:bg-white"
+          >
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+          <input 
+            type="text" 
+            id="linkNote" 
+            placeholder="เช่น เบอร์โทรศัพท์สำรอง หรือข้อมูลเพิ่มเติม..." 
+            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-dbo-gold focus:bg-white"
+          >
+        </div>
+
+        <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] space-y-1">
+          <div class="font-bold flex items-center gap-1">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-600"></i>
+            <span>ขั้นตอนการอนุมัติ:</span>
+          </div>
+          <p>เมื่อกดส่งข้อมูล ระบบจะส่งคำขอไปยังโค้ชโอ๊ตและทีมงานเพื่อตรวจสอบ เมื่อโค้ชกดอนุมัติ (Approve) ท่านจะสามารถนำเบอร์โทรนี้เข้าสู่ระบบเพื่อดูข้อมูลลูกหลานได้ทันทีครับ</p>
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+          <button type="button" onclick="closeParentLinkModal()" class="btn-touch flex-1 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600">
+            ยกเลิก
+          </button>
+          <button type="submit" class="btn-touch flex-1 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center justify-center gap-1.5">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            <span>ส่งข้อมูลให้โค้ชอนุมัติ</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Telegram / Line Style Popup Toast (Instant Mobile Check-in Alert) -->
   <div id="telegramPushToast" class="hidden telegram-toast">
     <div class="bg-dbo-navy text-white border-2 border-dbo-gold rounded-2xl p-4 shadow-2xl flex items-start gap-3">
@@ -1571,60 +1730,60 @@
 
     // Initial student data with Course Types (regular, monthly, saturday, single)
     const initialRawData = [
-      { id: 1, name: "อิฐ", phone: "0812345678", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 2, name: "ซับ", phone: "0898765432", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: -5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 3, name: "ขุนศึก", phone: "0800000003", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -11, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 4, name: "ต้นบุญ", phone: "0800000004", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 5, name: "ต้นพุด", phone: "0800000005", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 6, name: "ไทม์", phone: "0800000006", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 6, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 7, name: "พัช", phone: "0800000007", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 8, name: "แอร์บัส", phone: "0800000008", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 8, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 9, name: "วินแฟลค", phone: "0800000009", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 10, name: "ไวน์แฟรงค์", phone: "0800000010", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 11, name: "ดลย์", phone: "0800000011", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 8, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 12, name: "อคิณ", phone: "0800000012", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 2, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 13, name: "ชัทเตอร์", phone: "0800000013", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 14, name: "บอสตัน", phone: "0800000014", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 2, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 15, name: "ฮาร์เด้น", phone: "0800000015", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 16, name: "ไม้เอก", phone: "0800000016", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 3, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 17, name: "จัสติน", phone: "0800000017", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 3, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 18, name: "ชาลี", phone: "0800000018", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 19, name: "พีต้า", phone: "0800000019", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 2, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 20, name: "สตาร์ท", phone: "0800000020", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 21, name: "แอนฟิลด์", phone: "0800000021", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 22, name: "มาร์ค", phone: "0800000022", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 23, name: "แกรนด์", phone: "0800000023", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 8, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 24, name: "แอร์เมส", phone: "0800000024", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 25, name: "มิวนิค", phone: "0800000025", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 0, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 26, name: "ตี๋", phone: "0800000026", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 27, name: "มาตังค์", phone: "0800000027", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 28, name: "มันตา", phone: "0800000028", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 29, name: "นํ้าขิง", phone: "0800000029", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 30, name: "ข้าวตั้ง", phone: "0800000030", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 31, name: "นานา", phone: "0800000031", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 32, name: "สรา", phone: "0800000032", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 33, name: "Japan", phone: "0800000033", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 34, name: "JR.", phone: "0800000034", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 35, name: "IRyu", phone: "0800000035", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 36, name: "Sari", phone: "0800000036", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 9, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 37, name: "Phupa", phone: "0800000037", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 0, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 38, name: "Sky", phone: "0800000038", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 39, name: "Nada", phone: "0800000039", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 40, name: "August", phone: "0800000040", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 41, name: "Prod", phone: "0800000041", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 42, name: "L J", phone: "0800000042", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 2, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 43, name: "เป็นหนึ่ง", phone: "0800000043", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 44, name: "อินทัช", phone: "0800000044", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"//","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 45, name: "นาวิน", phone: "0800000045", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 46, name: "ธีร์", phone: "0800000046", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: -4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 47, name: "มังกร", phone: "0800000047", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 48, name: "T J", phone: "0800000048", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 49, name: "ลูคัส", phone: "0800000049", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 50, name: "ณฌา", phone: "0800000050", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"","1/11/26":"","29/10":"/"}, remaining: 9, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 51, name: "เอวา", phone: "0800000051", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"","1/11/26":"","29/10":"/"}, remaining: 9, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 52, name: "ไนท์", phone: "0800000052", courseType: "saturday", startDate: "2026-11-01", nextRenewal: "2026-12-01", records: {}, remaining: 0, saturdayRemaining: 2, remark: "คอร์สวันเสาร์ Basic Coach Oat (เหลือ 2 ครั้ง)" },
-      { id: 53, name: "ตั้งใจ", phone: "0800000053", courseType: "saturday", startDate: "2026-11-01", nextRenewal: "2026-12-01", records: {}, remaining: 0, saturdayRemaining: 2, remark: "คอร์สวันเสาร์ Basic Coach Oat (เหลือ 2 ครั้ง)" },
-      { id: 54, name: "เวหา", phone: "0800000054", courseType: "saturday", startDate: "2026-11-01", nextRenewal: "2026-12-01", records: {}, remaining: 0, saturdayRemaining: 2, remark: "คอร์สวันเสาร์ Basic Coach Oat (เหลือ 2 ครั้ง)" },
+      { id: 1, name: "อิฐ", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 2, name: "ซับ", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: -5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 3, name: "ขุนศึก", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -11, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 4, name: "ต้นบุญ", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 5, name: "ต้นพุด", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 6, name: "ไทม์", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 6, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 7, name: "พัช", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 8, name: "แอร์บัส", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 8, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 9, name: "วินแฟลค", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 10, name: "ไวน์แฟรงค์", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 11, name: "ดลย์", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 8, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 12, name: "อคิณ", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 2, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 13, name: "ชัทเตอร์", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 14, name: "บอสตัน", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 2, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 15, name: "ฮาร์เด้น", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 16, name: "ไม้เอก", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 3, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 17, name: "จัสติน", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 3, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 18, name: "ชาลี", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 19, name: "พีต้า", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 2, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 20, name: "สตาร์ท", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 21, name: "แอนฟิลด์", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 22, name: "มาร์ค", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 23, name: "แกรนด์", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 8, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 24, name: "แอร์เมส", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 25, name: "มิวนิค", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 0, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 26, name: "ตี๋", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 27, name: "มาตังค์", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 28, name: "มันตา", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 29, name: "นํ้าขิง", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 30, name: "ข้าวตั้ง", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 31, name: "นานา", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 32, name: "สรา", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 33, name: "Japan", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 34, name: "JR.", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 35, name: "IRyu", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 36, name: "Sari", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 9, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 37, name: "Phupa", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 0, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 38, name: "Sky", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 39, name: "Nada", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 40, name: "August", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 41, name: "Prod", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 42, name: "L J", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 2, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 43, name: "เป็นหนึ่ง", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 44, name: "อินทัช", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"//","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 45, name: "นาวิน", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 46, name: "ธีร์", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: -4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 47, name: "มังกร", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 48, name: "T J", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 49, name: "ลูคัส", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 50, name: "ณฌา", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"","1/11/26":"","29/10":"/"}, remaining: 9, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 51, name: "เอวา", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"","1/11/26":"","29/10":"/"}, remaining: 9, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 52, name: "ไนท์", phone: "", courseType: "saturday", startDate: "2026-11-01", nextRenewal: "2026-12-01", records: {}, remaining: 0, saturdayRemaining: 2, remark: "คอร์สวันเสาร์ Basic Coach Oat (เหลือ 2 ครั้ง)" },
+      { id: 53, name: "ตั้งใจ", phone: "", courseType: "saturday", startDate: "2026-11-01", nextRenewal: "2026-12-01", records: {}, remaining: 0, saturdayRemaining: 2, remark: "คอร์สวันเสาร์ Basic Coach Oat (เหลือ 2 ครั้ง)" },
+      { id: 54, name: "เวหา", phone: "", courseType: "saturday", startDate: "2026-11-01", nextRenewal: "2026-12-01", records: {}, remaining: 0, saturdayRemaining: 2, remark: "คอร์สวันเสาร์ Basic Coach Oat (เหลือ 2 ครั้ง)" },
     ];
 
     const AUTHORIZED_STAFF = {
@@ -1670,14 +1829,30 @@
       }
     };
 
-    let students = JSON.parse(localStorage.getItem('dbo_students_v11')) || initialRawData;
-    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v11')) || null;
-    let isCoachAuth = localStorage.getItem('dbo_is_coach_v11') === 'true';
+    let students = JSON.parse(localStorage.getItem('dbo_students_v12')) || null;
+    if (!students) {
+      students = initialRawData.map(s => ({
+        ...s,
+        phone: s.phone || '',
+        parentName: s.parentName || '',
+        parentRelation: s.parentRelation || ''
+      }));
+      localStorage.setItem('dbo_students_v12', JSON.stringify(students));
+    } else {
+      students.forEach(s => {
+        if (s.phone && (s.phone.startsWith('08000000') || s.phone === '0812345678' || s.phone === '0898765432')) {
+          s.phone = '';
+        }
+      });
+    }
+
+    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v12')) || null;
+    let isCoachAuth = localStorage.getItem('dbo_is_coach_v12') === 'true';
     let currentStaff = JSON.parse(localStorage.getItem('dbo_current_staff')) || (isCoachAuth ? AUTHORIZED_STAFF['0933199119'] : null);
     let currentCoachFilter = 'all';
 
     // Pending Slips Queue for Admin Verification
-    let pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v11')) || [
+    let pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v12')) || [
       {
         id: 'slip-101',
         studentName: 'น้องเจเจ',
@@ -1692,29 +1867,48 @@
       }
     ];
 
-    let currentChatChannel = 'parent'; // 'parent' or 'staff_internal'
-
-    // Community Chat Messages (Public Parent & Coach Room)
-    let chatMessages = JSON.parse(localStorage.getItem('dbo_chat_messages_v11')) || [
-      { id: 1, sender: 'โค้ชโอ๊ต (Head Coach)', role: 'coach', text: 'สวัสดีผู้ปกครองทุกท่านครับ วันนี้คลาส 17:00 น. ซ้อมที่ยิมใหญ่โรงเรียนเตชะวิทย์ตามปกตินะครับ 🏀', time: '13:00 น.', image: null },
-      { id: 2, sender: 'คุณแม่อิฐ', role: 'parent', text: 'รับทราบค่ะโค้ช วันนี้น้องอิฐพร้อมซ้อมตรงเวลาค่ะ', time: '13:05 น.', image: null },
-      { id: 3, sender: 'โค้ชโอ๊ค (Head Coach)', role: 'coach', text: 'วันนี้มีฝึกระบบ Defense และ Transition Game ครับ เจอกันครับเด็กๆ 🎯', time: '13:10 น.', image: null }
+    // Parent Account Registrations (Awaiting Coach Approval)
+    let parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrations_v12')) || [
+      {
+        id: 'reg-demo-1',
+        phone: '0812345678',
+        parentName: 'คุณแม่น้องอิฐ',
+        relation: 'คุณแม่',
+        studentId: 1,
+        studentName: 'อิฐ',
+        status: 'pending',
+        note: 'ขอลงทะเบียนผูกเบอร์เข้าดูข้อมูลน้องอิฐ',
+        createdAt: new Date().toISOString(),
+        createdDateStr: 'วันนี้ 15:30 น.'
+      }
     ];
 
-    // Staff Internal Confidential Chat Messages (Staff Only 🔒)
-    let internalChatMessages = JSON.parse(localStorage.getItem('dbo_internal_chat_messages_v11')) || [
-      { id: 101, sender: 'โค้ชโอ๊ต (Head Coach)', role: 'coach', text: 'สวัสดีทีมงานครับ สัปดาห์นี้ตารางซ้อมวันเสาร์เตรียมอุปกรณ์ Speed Ladder และกรวยฝึก Agility ด้วยนะครับ 🏀', time: '10:00 น.', image: null },
-      { id: 102, sender: 'คุณไอริส (แอดมิน)', role: 'admin', text: 'รับทราบค่ะโค้ชโอ๊ต สลิปที่ส่งเข้ามาตรวจสอบและอนุมัติเข้าคอร์สเรียบร้อยแล้วค่ะ ✅', time: '10:15 น.', image: null },
-      { id: 103, sender: 'คุณออม (แอดมิน)', role: 'admin', text: 'อัปเดตรายชื่อและประสานงานผู้ปกครองคลาสวันเสาร์ครบทั้ง 13 คนแล้วค่ะ 👍', time: '10:30 น.', image: null },
-      { id: 104, sender: 'โค้ชโอ๊ค (Head Coach)', role: 'coach', text: 'ยอดเยี่ยมครับ สัปดาห์นี้คลาสปกติ 17:00 น. เน้นเรื่อง Footwork และ Spacing ต่อเนื่องครับ 🎯', time: '10:45 น.', image: null }
-    ];
+    // Daily Attendance Registry (Keyed by date: 'YYYY-MM-DD')
+    let dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v12')) || {
+      '2026-11-09': {
+        1: { studentId: 1, name: 'อิฐ', status: 'attending', time: '14:20 น.', updatedBy: 'parent' },
+        2: { studentId: 2, name: 'ซับ', status: 'attending', time: '14:35 น.', updatedBy: 'parent' },
+        3: { studentId: 3, name: 'ขุนศึก', status: 'attending', time: '15:10 น.', updatedBy: 'parent' },
+        8: { studentId: 8, name: 'แอร์บัส', status: 'attending', time: '15:15 น.', updatedBy: 'parent' },
+        5: { studentId: 5, name: 'ต้นพุด', status: 'leave', leaveReason: 'ติดสอบปลายภาค', time: '13:50 น.', updatedBy: 'parent' },
+        47: { studentId: 47, name: 'มังกร', status: 'leave', leaveReason: 'ไม่สบาย มีไข้', time: '14:05 น.', updatedBy: 'parent' }
+      }
+    };
 
     function saveState() {
-      localStorage.setItem('dbo_students_v11', JSON.stringify(students));
-      localStorage.setItem('dbo_pending_slips_v11', JSON.stringify(pendingSlips));
-      localStorage.setItem('dbo_chat_messages_v11', JSON.stringify(chatMessages));
-      localStorage.setItem('dbo_internal_chat_messages_v11', JSON.stringify(internalChatMessages));
+      localStorage.setItem('dbo_students_v12', JSON.stringify(students));
+      localStorage.setItem('dbo_pending_slips_v12', JSON.stringify(pendingSlips));
+      localStorage.setItem('dbo_parent_registrations_v12', JSON.stringify(parentRegistrations));
+      localStorage.setItem('dbo_daily_attendance_v12', JSON.stringify(dailyAttendance));
       if (currentStaff) localStorage.setItem('dbo_current_staff', JSON.stringify(currentStaff));
+    }
+
+    function getTodayDateKey() {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
 
     // Tab Navigation Switcher
@@ -1725,7 +1919,7 @@
         return;
       }
 
-      const tabs = ['parent-portal', 'renew-payment', 'community-chat', 'register-new', 'calendar', 'coach-roster'];
+      const tabs = ['parent-portal', 'daily-attendance', 'renew-payment', 'register-new', 'calendar', 'coach-roster'];
       
       tabs.forEach(t => {
         const sec = document.getElementById(`tab-${t}`);
@@ -1743,7 +1937,8 @@
         }
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (tabName === 'community-chat') renderChatMessages();
+      if (tabName === 'daily-attendance') renderDailyAttendanceBoard();
+      if (tabName === 'coach-roster') renderParentRegistrations();
       lucide.createIcons();
     }
 
@@ -1761,10 +1956,10 @@
         const staff = AUTHORIZED_STAFF[rawPhone];
         isCoachAuth = true;
         currentStaff = staff;
-        localStorage.setItem('dbo_is_coach_v11', 'true');
+        localStorage.setItem('dbo_is_coach_v12', 'true');
         localStorage.setItem('dbo_current_staff', JSON.stringify(staff));
         loggedInStudent = null;
-        localStorage.removeItem('dbo_parent_logged_v11');
+        localStorage.removeItem('dbo_parent_logged_v12');
 
         updateCoachStateUI();
         updateHeaderProfileUI();
@@ -1778,17 +1973,24 @@
       const matched = students.filter(s => (s.phone || '').replace(/[-\s]/g, '') === rawPhone);
 
       if (matched.length === 0) {
-        showToast('ไม่พบข้อมูลเบอร์โทรนี้ในระบบ (เฉพาะผู้ปกครองและทีมงานที่ลงทะเบียนเท่านั้น)');
+        const pending = parentRegistrations.find(r => r.phone.replace(/[-\s]/g, '') === rawPhone && r.status === 'pending');
+        if (pending) {
+          showToast(`เบอร์ ${rawPhone} ลงทะเบียนไว้แล้ว (น้อง${pending.studentName}) อยู่ระหว่างรอโค้ชโอ๊ตอนุมัติครับ`);
+          return;
+        }
+
+        showToast('ไม่พบข้อมูลเบอร์โทรนี้ในระบบ กรุณาลงทะเบียนผูกเบอร์กับลูกหลานเพื่อส่งให้โค้ชอนุมัติครับ');
+        openParentLinkModal(rawPhone);
         return;
       }
 
       isCoachAuth = false;
       currentStaff = null;
-      localStorage.setItem('dbo_is_coach_v11', 'false');
+      localStorage.setItem('dbo_is_coach_v12', 'false');
       localStorage.removeItem('dbo_current_staff');
 
       loggedInStudent = matched[0];
-      localStorage.setItem('dbo_parent_logged_v11', JSON.stringify(loggedInStudent));
+      localStorage.setItem('dbo_parent_logged_v12', JSON.stringify(loggedInStudent));
       updateCoachStateUI();
       updateHeaderProfileUI();
       renderParentView(matched);
@@ -1801,8 +2003,8 @@
       const dashBox = document.getElementById('parent-dashboard');
       const renewNav = document.getElementById('nav-renew-payment');
       const renewMNav = document.getElementById('nav-m-renew-payment');
-      const chatNav = document.getElementById('nav-community-chat');
-      const chatMNav = document.getElementById('nav-m-community-chat');
+      const dailyNav = document.getElementById('nav-daily-attendance');
+      const dailyMNav = document.getElementById('nav-m-daily-attendance');
       const regNav = document.getElementById('nav-register-new');
       const regMNav = document.getElementById('nav-m-register-new');
       const calNav = document.getElementById('nav-calendar');
@@ -1820,8 +2022,8 @@
 
         if (renewNav) renewNav.classList.add('hidden');
         if (renewMNav) renewMNav.classList.add('hidden');
-        if (chatNav) chatNav.classList.remove('hidden');
-        if (chatMNav) chatMNav.classList.remove('hidden');
+        if (dailyNav) dailyNav.classList.remove('hidden');
+        if (dailyMNav) dailyMNav.classList.remove('hidden');
         if (calNav) calNav.classList.remove('hidden');
         if (calMNav) calMNav.classList.remove('hidden');
         if (regNav) regNav.classList.remove('hidden');
@@ -1829,8 +2031,6 @@
 
         if (renewGate) renewGate.classList.remove('hidden');
         if (renewContent) renewContent.classList.add('hidden');
-        const guestHint = document.getElementById('chatGuestHint');
-        if (guestHint) guestHint.classList.remove('hidden');
         return;
       }
 
@@ -1840,13 +2040,10 @@
       if (loginBox) loginBox.classList.add('hidden');
       if (dashBox) dashBox.classList.remove('hidden');
 
-      const guestHint = document.getElementById('chatGuestHint');
-      if (guestHint) guestHint.classList.add('hidden');
-
       if (renewNav) renewNav.classList.remove('hidden');
       if (renewMNav) renewMNav.classList.remove('hidden');
-      if (chatNav) chatNav.classList.remove('hidden');
-      if (chatMNav) chatMNav.classList.remove('hidden');
+      if (dailyNav) dailyNav.classList.remove('hidden');
+      if (dailyMNav) dailyMNav.classList.remove('hidden');
       if (calNav) calNav.classList.remove('hidden');
       if (calMNav) calMNav.classList.remove('hidden');
       if (regNav) regNav.classList.remove('hidden');
@@ -1889,12 +2086,6 @@
       document.getElementById('renewingStudentPhone').innerText = loggedInStudent.phone;
       document.getElementById('slipStudentName').value = loggedInStudent.name;
 
-      // Update Chat Sender Info
-      const chatSenderName = document.getElementById('chatSenderName');
-      const chatSenderAvatar = document.getElementById('chatSenderAvatar');
-      if (chatSenderName) chatSenderName.innerText = `ผู้ปกครองน้อง ${loggedInStudent.name}`;
-      if (chatSenderAvatar) chatSenderAvatar.innerText = loggedInStudent.name.charAt(0);
-
       // Remaining Quota Calculations
       const rem = loggedInStudent.remaining;
       const remNumEl = document.getElementById('dash-remaining-number');
@@ -1932,48 +2123,71 @@
         renewNoticeEl.innerText = 'กรุณาต่อคอร์สใหม่เพื่อรักษาสิทธิ์';
       }
 
-      // History Table
+      // History Table - Dynamic rendering
       const historyTbody = document.getElementById('dash-history-tbody');
       const recs = loggedInStudent.records || {};
-      historyTbody.innerHTML = `
-        <tr class="hover:bg-slate-50 transition">
-          <td class="py-2.5 px-3.5 font-mono text-xs font-medium text-slate-700">29 ต.ค. 2569</td>
-          <td class="py-2.5 px-3.5 text-xs text-slate-800">คลาสปกติ (17:00-19:00 น.)</td>
-          <td class="py-2.5 px-3.5 text-center">
-            ${recs['29/10'] === '/' 
-              ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">มาเรียน (/)</span>' 
-              : (recs['29/10'] === 'ลา' ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">ลาเรียน</span>' : '<span class="text-slate-400">-</span>')}
-          </td>
-          <td class="py-2.5 px-3.5 text-center text-xs font-mono text-slate-500">${recs['29/10'] === '/' ? '-1 ครั้ง' : '0'}</td>
-        </tr>
-        <tr class="hover:bg-slate-50 transition">
-          <td class="py-2.5 px-3.5 font-mono text-xs font-medium text-slate-700">1 พ.ย. 2569</td>
-          <td class="py-2.5 px-3.5 text-xs text-slate-800">คลาส Basic กับ Coach Oat</td>
-          <td class="py-2.5 px-3.5 text-center">
-            ${recs['1/11/26'] === '/' 
-              ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">มาเรียน (/)</span>' 
-              : (recs['1/11/26'] === 'ลา' ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">ลาเรียน</span>' : '<span class="text-slate-400">-</span>')}
-          </td>
-          <td class="py-2.5 px-3.5 text-center text-xs font-mono text-slate-500">${recs['1/11/26'] === '/' ? '-1 ครั้ง' : '0'}</td>
-        </tr>
-        <tr class="hover:bg-slate-50 transition">
-          <td class="py-2.5 px-3.5 font-mono text-xs font-medium text-slate-700">3 พ.ย. 2569</td>
-          <td class="py-2.5 px-3.5 text-xs text-slate-800">คลาสปกติ (17:00-19:00 น.)</td>
-          <td class="py-2.5 px-3.5 text-center">
-            ${recs['3/11/26'] === '/' 
-              ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">มาเรียน (/)</span>' 
-              : (recs['3/11/26'] === 'ลา' ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">ลาเรียน</span>' : '<span class="text-slate-400">-</span>')}
-          </td>
-          <td class="py-2.5 px-3.5 text-center text-xs font-mono text-slate-500">${recs['3/11/26'] === '/' ? '-1 ครั้ง' : '0'}</td>
-        </tr>
-      `;
+      
+      let rowsHtml = '';
+      
+      // Check today's attendance
+      const todayKey = getTodayDateKey();
+      const todayAtt = dailyAttendance[todayKey] ? dailyAttendance[todayKey][loggedInStudent.id] : null;
+      if (todayAtt) {
+        rowsHtml += `
+          <tr class="bg-emerald-50/50 hover:bg-emerald-50 transition border-b border-emerald-100">
+            <td class="py-2.5 px-3.5 font-mono text-xs font-bold text-emerald-950">วันนี้ (9 พ.ย. 2569)</td>
+            <td class="py-2.5 px-3.5 text-xs text-slate-800">คลาสปกติ (17:00-19:00 น.)</td>
+            <td class="py-2.5 px-3.5 text-center">
+              ${todayAtt.status === 'attending' 
+                ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">🟢 ยืนยันเข้าเรียนแล้ว</span>' 
+                : `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">🟡 ลา: ${todayAtt.leaveReason || 'ลาเรียน'}</span>`}
+            </td>
+            <td class="py-2.5 px-3.5 text-center text-xs font-mono font-bold text-slate-700">${todayAtt.status === 'attending' ? '-1 ครั้ง' : '0'}</td>
+          </tr>
+        `;
+      }
+
+      // Past recorded dates
+      const pastDates = [
+        { label: '5 พ.ย. 2569', classType: 'คลาสปกติ (17:00-19:00 น.)', key: '5/11/26' },
+        { label: '3 พ.ย. 2569', classType: 'คลาสปกติ (17:00-19:00 น.)', key: '3/11/26' },
+        { label: '1 พ.ย. 2569', classType: 'คลาส Basic กับ Coach Oat', key: '1/11/26' },
+        { label: '29 ต.ค. 2569', classType: 'คลาสปกติ (17:00-19:00 น.)', key: '29/10' }
+      ];
+
+      pastDates.forEach(d => {
+        const val = recs[d.key];
+        const isPresent = (val === '/' || val === '//');
+        const isLeave = (val === 'ลา');
+        
+        let statusBadge = '<span class="text-slate-400 font-mono">-</span>';
+        if (isPresent) {
+          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">มาเรียน (/)</span>';
+        } else if (isLeave) {
+          statusBadge = '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">ลาเรียน</span>';
+        }
+
+        const deduct = isPresent ? (val === '//' ? '-2 ครั้ง' : '-1 ครั้ง') : '0';
+
+        rowsHtml += `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-2.5 px-3.5 font-mono text-xs font-medium text-slate-700">${d.label}</td>
+            <td class="py-2.5 px-3.5 text-xs text-slate-800">${d.classType}</td>
+            <td class="py-2.5 px-3.5 text-center">${statusBadge}</td>
+            <td class="py-2.5 px-3.5 text-center text-xs font-mono text-slate-500">${deduct}</td>
+          </tr>
+        `;
+      });
+
+      historyTbody.innerHTML = rowsHtml;
+      updateParentTodayStatusUI();
 
       // Live Peers Card in parent view
       renderLivePeers();
       lucide.createIcons();
     }
 
-    // Render Peers in class today (Clean badges without disclosing total headcount)
+    // Render Peers in class today (Clean badges)
     function renderLivePeers() {
       const peerContainer = document.getElementById('todayPeerList');
       if (!peerContainer) return;
@@ -1990,9 +2204,12 @@
 
     function parentLogout() {
       loggedInStudent = null;
-      localStorage.removeItem('dbo_parent_logged_v11');
+      localStorage.removeItem('dbo_parent_logged_v12');
       document.getElementById('parentPhoneInput').value = '';
       renderParentView();
+      switchTab('parent-portal');
+      showToast('ออกจากระบบเรียบร้อย');
+    }
       switchTab('parent-portal');
       showToast('ออกจากระบบเรียบร้อย');
     }
@@ -2218,199 +2435,404 @@
     }
 
     // ========================================================
-    // DUAL CHAT HUB: PARENT COMMUNITY & STAFF INTERNAL ROOM
+    // PARENT ACCOUNT REGISTRATION & VERIFICATION (APPROVAL WORKFLOW)
     // ========================================================
 
-    function switchChatChannel(channel) {
-      if (channel === 'staff_internal' && !isCoachAuth) {
-        showToast('ห้องแชทนี้สงวนสิทธิ์เฉพาะทีมงานและโค้ชเท่านั้น 🔒');
-        return;
+    function openParentLinkModal(prefilledPhone = '') {
+      populateLinkStudentDropdown();
+      const phoneInput = document.getElementById('linkParentPhone');
+      if (prefilledPhone && phoneInput) {
+        phoneInput.value = prefilledPhone;
       }
-      currentChatChannel = channel;
-
-      const btnParent = document.getElementById('btnChannelParent');
-      const btnInternal = document.getElementById('btnChannelInternal');
-      const roomTitle = document.getElementById('chatRoomTitle');
-      const roomSub = document.getElementById('chatRoomSubtitle');
-      const iconBox = document.getElementById('chatRoomIconBox');
-      const chatInput = document.getElementById('chatMessageInput');
-
-      if (channel === 'staff_internal') {
-        if (btnInternal) {
-          btnInternal.className = 'btn-touch flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500 text-white shadow-xs flex items-center justify-center gap-1.5 transition';
-        }
-        if (btnParent) {
-          btnParent.className = 'btn-touch flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition border border-transparent';
-        }
-        if (roomTitle) roomTitle.innerText = 'ห้องแชทภายในทีมงาน (Staff Internal Room 🔒)';
-        if (roomSub) roomSub.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> โค้ชโอ๊ต, โค้ชโอ๊ค, คุณไอริส, คุณออม (ปรึกษาและประสานงานภายใน)';
-        if (iconBox) {
-          iconBox.className = 'w-9 h-9 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-xs shadow-xs';
-          iconBox.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i>';
-        }
-        if (chatInput) chatInput.placeholder = 'พิมพ์ข้อความคุยภายในทีมงาน (เฉพาะโค้ช & แอดมิน)...';
-      } else {
-        if (btnParent) {
-          btnParent.className = 'btn-touch flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold bg-dbo-navy text-white shadow-xs flex items-center justify-center gap-1.5 transition';
-        }
-        if (btnInternal) {
-          btnInternal.className = 'btn-touch flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center gap-1.5 transition border border-transparent';
-        }
-        if (roomTitle) roomTitle.innerText = 'ห้องแชทข่าวสารผู้ปกครอง & ทีมโค้ช';
-        if (roomSub) roomSub.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> พื้นที่สื่อสารระหว่างผู้ปกครองและทีมผู้ฝึกสอน DBO Academy';
-        if (iconBox) {
-          iconBox.className = 'w-9 h-9 rounded-full bg-dbo-navy text-white flex items-center justify-center font-bold text-xs shadow-xs';
-          iconBox.innerHTML = 'DBO';
-        }
-        if (chatInput) chatInput.placeholder = 'พิมพ์ข้อความพูดคุย หรือส่งรูปภาพ...';
-      }
-      renderChatMessages();
+      document.getElementById('parentLinkModal').classList.remove('hidden');
       lucide.createIcons();
     }
 
-    function renderChatMessages() {
-      const container = document.getElementById('chatMessagesContainer');
-      if (!container) return;
-      container.innerHTML = '';
+    function closeParentLinkModal() {
+      document.getElementById('parentLinkModal').classList.add('hidden');
+    }
 
-      const messagesList = currentChatChannel === 'staff_internal' ? internalChatMessages : chatMessages;
+    function populateLinkStudentDropdown() {
+      const select = document.getElementById('linkStudentSelect');
+      if (!select) return;
+      select.innerHTML = '<option value="">-- แตะเพื่อเลือกชื่อน้อง --</option>';
 
-      messagesList.forEach(msg => {
-        let isMe = false;
-        if (isCoachAuth && currentStaff) {
-          isMe = (msg.sender && (msg.sender.includes(currentStaff.name) || msg.sender.includes(currentStaff.title)));
-        } else if (loggedInStudent) {
-          isMe = (msg.sender && msg.sender.includes(loggedInStudent.name));
+      // Sort students alphabetically by Thai name
+      const sorted = [...students].sort((a, b) => a.name.localeCompare(b.name, 'th'));
+      sorted.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        const phoneLabel = s.phone ? '(ผูกเบอร์แล้ว)' : '(ยังไม่ผูกเบอร์)';
+        opt.innerText = `น้อง ${s.name} ${phoneLabel}`;
+        select.appendChild(opt);
+      });
+
+      const otherOpt = document.createElement('option');
+      otherOpt.value = 'other';
+      otherOpt.innerText = '+ น้องยังไม่มีในรายชื่อ (พิมพ์ระบุเอง)';
+      select.appendChild(otherOpt);
+    }
+
+    function handleLinkStudentChange(val) {
+      const otherBox = document.getElementById('linkOtherStudentBox');
+      const otherInput = document.getElementById('linkOtherStudentName');
+      if (!otherBox || !otherInput) return;
+      if (val === 'other') {
+        otherBox.classList.remove('hidden');
+        otherInput.required = true;
+      } else {
+        otherBox.classList.add('hidden');
+        otherInput.required = false;
+      }
+    }
+
+    function handleParentLinkSubmit(e) {
+      e.preventDefault();
+      const rawPhone = document.getElementById('linkParentPhone').value.replace(/[-\s]/g, '').trim();
+      const parentName = document.getElementById('linkParentName').value.trim();
+      const relation = document.getElementById('linkRelation').value;
+      const selectVal = document.getElementById('linkStudentSelect').value;
+      const otherName = document.getElementById('linkOtherStudentName').value.trim();
+      const note = document.getElementById('linkNote').value.trim();
+
+      if (!rawPhone || rawPhone.length < 9) {
+        showToast('กรุณาระบุเบอร์โทรศัพท์มือถือที่ถูกต้อง (9-10 หลัก)');
+        return;
+      }
+
+      let studentId = null;
+      let studentName = '';
+
+      if (selectVal === 'other') {
+        if (!otherName) {
+          showToast('กรุณาระบุชื่อของน้องด้วยครับ');
+          return;
         }
-
-        const div = document.createElement('div');
-        div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
-
-        let imgHtml = '';
-        if (msg.image) {
-          imgHtml = `<div class="mt-1.5 rounded-lg overflow-hidden max-w-xs border border-slate-200"><img src="${msg.image}" class="w-full h-auto object-cover"></div>`;
+        studentName = otherName;
+      } else {
+        studentId = parseInt(selectVal, 10);
+        const st = students.find(s => s.id === studentId);
+        if (!st) {
+          showToast('กรุณาเลือกชื่อน้องในรายชื่อครับ');
+          return;
         }
+        studentName = st.name;
+      }
 
-        let roleTagClass = 'text-slate-600';
-        if (msg.role === 'coach') roleTagClass = 'text-amber-700 font-bold';
-        if (msg.role === 'admin') roleTagClass = 'text-emerald-700 font-bold';
+      const newReg = {
+        id: 'reg-' + Date.now(),
+        phone: rawPhone,
+        parentName: parentName,
+        relation: relation,
+        studentId: studentId,
+        studentName: studentName,
+        status: 'pending',
+        note: note,
+        createdAt: new Date().toISOString(),
+        createdDateStr: 'วันนี้ ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.'
+      };
 
-        div.innerHTML = `
-          <div class="flex items-center gap-1.5 mb-0.5">
-            <span class="text-[10px] font-bold ${roleTagClass}">${msg.sender}</span>
-            <span class="text-[9px] text-slate-400 font-mono">${msg.time}</span>
+      parentRegistrations.unshift(newReg);
+      saveState();
+      closeParentLinkModal();
+
+      // Show warm feedback
+      showToast('ส่งข้อมูลลงทะเบียนเรียบร้อยแล้ว! โค้ชจะตรวจสอบและอนุมัติให้โดยเร็วครับ');
+      triggerTelegramPush(`📝 มีผู้ปกครองลงทะเบียนใหม่: ${parentName} (${rawPhone}) ขอผูกกับน้อง ${studentName}`, 'DBO Parent Registration');
+      playNotificationChime();
+
+      // If coach is logged in, re-render
+      if (isCoachAuth) renderParentRegistrations();
+    }
+
+    function renderParentRegistrations() {
+      const container = document.getElementById('parentPendingList');
+      const countEl = document.getElementById('parentPendingCount');
+      if (!container || !countEl) return;
+
+      const pending = parentRegistrations.filter(r => r.status === 'pending');
+      countEl.innerText = pending.length;
+
+      if (pending.length === 0) {
+        container.innerHTML = `
+          <div class="p-3 text-center bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-500">
+            ✅ ไม่มีคำขอลงทะเบียนค้างตรวจสอบในขณะนี้
           </div>
-          <div class="px-3.5 py-2 rounded-2xl text-xs max-w-[85%] ${
-            isMe 
-              ? (currentChatChannel === 'staff_internal' ? 'bg-amber-600 text-white rounded-tr-none shadow-xs' : 'bg-dbo-navy text-white rounded-tr-none shadow-xs')
-              : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none shadow-xs'
-          }">
-            <p class="leading-relaxed">${msg.text}</p>
-            ${imgHtml}
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      pending.forEach(reg => {
+        const div = document.createElement('div');
+        div.className = "p-3.5 bg-white rounded-xl border border-emerald-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3";
+        div.innerHTML = `
+          <div class="space-y-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">รออนุมัติ</span>
+              <strong class="text-xs sm:text-sm text-dbo-navy">${reg.parentName} (${reg.relation})</strong>
+              <span class="text-xs font-mono font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">📞 ${reg.phone}</span>
+            </div>
+            <p class="text-xs text-slate-600">
+              ขอนำเบอร์ผูกกับ: <strong class="text-dbo-gold font-bold text-sm">น้อง ${reg.studentName}</strong> ${reg.note ? `• หมายเหตุ: ${reg.note}` : ''}
+            </p>
+            <span class="text-[10px] text-slate-400 font-mono">ลงทะเบียน: ${reg.createdDateStr}</span>
+          </div>
+
+          <div class="flex items-center gap-2 self-end sm:self-auto flex-shrink-0">
+            <button onclick="rejectParentRegistration('${reg.id}')" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition">
+              ปฏิเสธ
+            </button>
+            <button onclick="approveParentRegistration('${reg.id}')" class="btn-touch px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs flex items-center gap-1 transition">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+              <span>อนุมัติ & ผูกเบอร์อัตโนมัติ</span>
+            </button>
           </div>
         `;
         container.appendChild(div);
       });
-      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
     }
 
-    function handleSendChatMessage(e) {
-      e.preventDefault();
-      if (!isCoachAuth && !loggedInStudent) {
-        showToast('กรุณาล็อกอินด้วยเบอร์โทรศัพท์เพื่อร่วมพิมพ์ข้อความในห้องแชทครับ');
+    function approveParentRegistration(regId) {
+      const reg = parentRegistrations.find(r => r.id === regId);
+      if (!reg) return;
+
+      // Find or match student
+      let st = null;
+      if (reg.studentId) {
+        st = students.find(s => s.id === reg.studentId);
+      }
+      if (!st) {
+        st = students.find(s => s.name === reg.studentName);
+      }
+
+      if (st) {
+        st.phone = reg.phone;
+        st.parentName = reg.parentName;
+        st.parentRelation = reg.relation;
+      } else {
+        // Create new student record if not found
+        const newId = students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1;
+        const newSt = {
+          id: newId,
+          name: reg.studentName,
+          phone: reg.phone,
+          parentName: reg.parentName,
+          parentRelation: reg.relation,
+          courseType: 'regular',
+          startDate: new Date().toISOString().split('T')[0],
+          nextRenewal: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
+          records: {},
+          remaining: 10,
+          saturdayRemaining: 0,
+          remark: 'สมัครใหม่ผ่านการอนุมัติผู้ปกครอง'
+        };
+        students.push(newSt);
+        st = newSt;
+      }
+
+      reg.status = 'approved';
+      reg.approvedBy = currentStaff ? currentStaff.title : 'โค้ช';
+      reg.approvedAt = new Date().toISOString();
+
+      saveState();
+      renderParentRegistrations();
+      renderCoachRosterTable();
+      showToast(`✅ อนุมัติเบอร์ ${reg.phone} ผูกกับน้อง ${reg.studentName} เรียบร้อยแล้ว!`);
+      triggerTelegramPush(`✅ โค้ชอนุมัติเบอร์ ${reg.phone} ผูกกับน้อง ${reg.studentName} เรียบร้อย ผู้ปกครองเข้าสู่ระบบได้ทันที`, 'DBO Academy Admin');
+      playNotificationChime();
+    }
+
+    function rejectParentRegistration(regId) {
+      const reg = parentRegistrations.find(r => r.id === regId);
+      if (!reg) return;
+      if (!confirm(`ต้องการปฏิเสธคำขอของ ${reg.parentName} ใช่หรือไม่?`)) return;
+
+      reg.status = 'rejected';
+      saveState();
+      renderParentRegistrations();
+      showToast('ปฏิเสธคำขอเรียบร้อย');
+    }
+
+    // ========================================================
+    // DAILY ATTENDANCE & HEADCOUNT BOARD
+    // ========================================================
+
+    function setTodayAttendanceFromParent(status, leaveReason = '') {
+      if (!loggedInStudent) {
+        showToast('กรุณาเข้าสู่ระบบก่อนแจ้งสถานะการเข้าเรียนครับ');
         switchTab('parent-portal');
         return;
       }
 
-      const input = document.getElementById('chatMessageInput');
-      const text = input.value.trim();
-      if (!text) return;
+      const todayKey = getTodayDateKey();
+      if (!dailyAttendance[todayKey]) dailyAttendance[todayKey] = {};
 
-      const sender = isCoachAuth 
-        ? (currentStaff ? currentStaff.title : 'ทีมงาน DBO') 
-        : (loggedInStudent ? `คุณแม่/ผปค. น้อง ${loggedInStudent.name}` : 'ผู้ปกครอง');
+      const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
 
-      const role = isCoachAuth 
-        ? (currentStaff && currentStaff.role === 'Head Coach' ? 'coach' : 'admin') 
-        : 'parent';
-
-      const newMsg = {
-        id: Date.now(),
-        sender: sender,
-        role: role,
-        text: text,
-        time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.',
-        image: null
+      dailyAttendance[todayKey][loggedInStudent.id] = {
+        studentId: loggedInStudent.id,
+        name: loggedInStudent.name,
+        status: status, // 'attending' | 'leave'
+        leaveReason: leaveReason || (status === 'leave' ? 'แจ้งลาเรียน' : ''),
+        time: nowTime,
+        updatedBy: 'parent'
       };
 
-      if (currentChatChannel === 'staff_internal') {
-        internalChatMessages.push(newMsg);
-        localStorage.setItem('dbo_internal_chat_messages_v11', JSON.stringify(internalChatMessages));
-      } else {
-        chatMessages.push(newMsg);
-        localStorage.setItem('dbo_chat_messages_v11', JSON.stringify(chatMessages));
-      }
-
-      input.value = '';
-      renderChatMessages();
-
-      // Live notification alert with audio chime
+      saveState();
+      updateParentTodayStatusUI();
+      renderDailyAttendanceBoard();
       playNotificationChime();
-      const channelLabel = currentChatChannel === 'staff_internal' ? '🔒 แชทภายในทีมงาน' : (role === 'coach' || role === 'admin' ? `🏀 ${sender}` : `💬 ${sender}`);
-      triggerTelegramPush(`"${text.length > 50 ? text.substring(0, 50) + '...' : text}"`, channelLabel);
-      sendSystemNotification(channelLabel, {
-        body: text,
-        icon: 'assets/images/app-icon-192.png'
-      });
+
+      if (status === 'attending') {
+        showToast(`✅ ยืนยันการเข้าเรียนวันนี้ของน้อง ${loggedInStudent.name} เรียบร้อยแล้ว`);
+        triggerTelegramPush(`🟢 น้อง ${loggedInStudent.name} ยืนยันเข้าเรียนคลาสวันนี้ (${nowTime})`, 'DBO Attendance Check-in');
+      } else {
+        showToast(`🟡 แจ้งลาเรียนของน้อง ${loggedInStudent.name} (${leaveReason || 'ลาเรียน'}) เรียบร้อย`);
+        triggerTelegramPush(`🟡 น้อง ${loggedInStudent.name} แจ้งขอลาหยุดวันนี้: ${leaveReason || 'ลาเรียน'}`, 'DBO Leave Notice');
+      }
     }
 
-    function handleChatImageUpload(input) {
-      if (!isCoachAuth && !loggedInStudent) {
-        showToast('กรุณาล็อกอินด้วยเบอร์โทรศัพท์เพื่อร่วมส่งรูปภาพในห้องแชทครับ');
-        switchTab('parent-portal');
-        input.value = '';
-        return;
+    function updateParentTodayStatusUI() {
+      if (!loggedInStudent) return;
+      const todayKey = getTodayDateKey();
+      const record = dailyAttendance[todayKey] ? dailyAttendance[todayKey][loggedInStudent.id] : null;
+
+      const badge = document.getElementById('parentTodayStatusBadge');
+      if (!badge) return;
+
+      if (!record) {
+        badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1.5';
+        badge.innerHTML = '⚪ ยังไม่ได้ระบุสถานะวันนี้';
+      } else if (record.status === 'attending') {
+        badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1.5';
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 🟢 ยืนยันเข้าเรียนแล้ว (${record.time})`;
+      } else if (record.status === 'leave') {
+        badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1.5';
+        badge.innerHTML = `🟡 แจ้งลา: ${record.leaveReason || 'ลาเรียน'} (${record.time})`;
       }
-      if (input.files && input.files[0]) {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const sender = isCoachAuth 
-            ? (currentStaff ? currentStaff.title : 'ทีมงาน DBO') 
-            : (loggedInStudent ? `คุณแม่/ผปค. น้อง ${loggedInStudent.name}` : 'ผู้ปกครอง');
-          const role = isCoachAuth 
-            ? (currentStaff && currentStaff.role === 'Head Coach' ? 'coach' : 'admin') 
-            : 'parent';
+    }
 
-          const newMsg = {
-            id: Date.now(),
-            sender: sender,
-            role: role,
-            text: 'แนบรูปภาพ 📷',
-            time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.',
-            image: e.target.result
-          };
+    function renderDailyAttendanceBoard() {
+      const todayKey = getTodayDateKey();
+      const records = dailyAttendance[todayKey] || {};
 
-          if (currentChatChannel === 'staff_internal') {
-            internalChatMessages.push(newMsg);
-            localStorage.setItem('dbo_internal_chat_messages_v11', JSON.stringify(internalChatMessages));
-          } else {
-            chatMessages.push(newMsg);
-            localStorage.setItem('dbo_chat_messages_v11', JSON.stringify(chatMessages));
-          }
+      const attendingListEl = document.getElementById('boardAttendingList');
+      const leaveListEl = document.getElementById('boardLeaveList');
+      const unconfirmedListEl = document.getElementById('boardUnconfirmedList');
 
-          renderChatMessages();
-          showToast('ส่งรูปภาพเรียบร้อย');
+      const attendingCountEl = document.getElementById('boardAttendingCount');
+      const leaveCountEl = document.getElementById('boardLeaveCount');
+      const unconfirmedCountEl = document.getElementById('boardUnconfirmedCount');
 
-          playNotificationChime();
-          const channelLabel = currentChatChannel === 'staff_internal' ? '🔒 แชทภายในทีมงาน' : (role === 'coach' || role === 'admin' ? `🏀 ${sender}` : `💬 ${sender}`);
-          triggerTelegramPush('📷 ได้ส่งรูปภาพใหม่ในห้องแชท', channelLabel);
-          sendSystemNotification(channelLabel, {
-            body: 'ได้ส่งรูปภาพใหม่ในห้องแชท DBO Academy',
-            icon: 'assets/images/app-icon-192.png'
-          });
-        };
-        reader.readAsDataURL(file);
+      const attendingBadge = document.getElementById('boardAttendingBadge');
+      const leaveBadge = document.getElementById('boardLeaveBadge');
+      const unconfirmedBadge = document.getElementById('boardUnconfirmedBadge');
+
+      if (!attendingListEl || !leaveListEl || !unconfirmedListEl) return;
+
+      const attending = [];
+      const leave = [];
+      const unconfirmed = [];
+
+      students.forEach(st => {
+        const att = records[st.id];
+        if (att && att.status === 'attending') {
+          attending.push({ ...st, time: att.time });
+        } else if (att && att.status === 'leave') {
+          leave.push({ ...st, reason: att.leaveReason, time: att.time });
+        } else {
+          unconfirmed.push(st);
+        }
+      });
+
+      // Update Counts
+      if (attendingCountEl) attendingCountEl.innerText = attending.length;
+      if (leaveCountEl) leaveCountEl.innerText = leave.length;
+      if (unconfirmedCountEl) unconfirmedCountEl.innerText = unconfirmed.length;
+
+      if (attendingBadge) attendingBadge.innerText = attending.length;
+      if (leaveBadge) leaveBadge.innerText = leave.length;
+      if (unconfirmedBadge) unconfirmedBadge.innerText = unconfirmed.length;
+
+      // 1. Render Attending List
+      attendingListEl.innerHTML = '';
+      if (attending.length === 0) {
+        attendingListEl.innerHTML = `
+          <div class="col-span-full p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            ยังไม่มีผู้ยืนยันเข้าเรียนวันนี้ แตะ "ยืนยันเข้าเรียนวันนี้" ด้านบนได้เลยครับ
+          </div>
+        `;
+      } else {
+        attending.forEach(st => {
+          const div = document.createElement('div');
+          div.className = "p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-center gap-2.5 shadow-2xs hover:bg-emerald-100/60 transition";
+          div.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-2xs">
+              ${st.name.charAt(0)}
+            </div>
+            <div class="min-w-0 flex-1">
+              <strong class="text-xs sm:text-sm font-bold text-slate-900 block truncate">น้อง ${st.name}</strong>
+              <span class="text-[10px] text-emerald-700 font-medium block">
+                ${st.time ? `ยืนยัน: ${st.time}` : 'ยืนยันแล้ว'}
+              </span>
+            </div>
+          `;
+          attendingListEl.appendChild(div);
+        });
+      }
+
+      // 2. Render Leave List
+      leaveListEl.innerHTML = '';
+      if (leave.length === 0) {
+        leaveListEl.innerHTML = `
+          <div class="col-span-full p-3 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            ไม่มีรายการแจ้งลาในวันนี้
+          </div>
+        `;
+      } else {
+        leave.forEach(st => {
+          const div = document.createElement('div');
+          div.className = "p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center justify-between gap-2 shadow-2xs";
+          div.innerHTML = `
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-6 h-6 rounded-full bg-amber-500 text-white text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+                ${st.name.charAt(0)}
+              </span>
+              <div class="min-w-0">
+                <span class="text-xs font-bold text-slate-800 block truncate">น้อง ${st.name}</span>
+                <span class="text-[10px] text-amber-700 block truncate">${st.reason || 'ลาหยุด'}</span>
+              </div>
+            </div>
+            <span class="text-[10px] font-mono text-slate-400 flex-shrink-0">${st.time || ''}</span>
+          `;
+          leaveListEl.appendChild(div);
+        });
+      }
+
+      // 3. Render Unconfirmed List
+      unconfirmedListEl.innerHTML = '';
+      unconfirmed.forEach(st => {
+        const span = document.createElement('span');
+        span.className = "px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200";
+        span.innerText = `น้อง ${st.name}`;
+        unconfirmedListEl.appendChild(span);
+      });
+
+      lucide.createIcons();
+    }
+
+    function toggleUnconfirmedList() {
+      const el = document.getElementById('boardUnconfirmedList');
+      const btn = document.getElementById('btnToggleUnconfirmed');
+      if (!el || !btn) return;
+      if (el.classList.contains('hidden')) {
+        el.classList.remove('hidden');
+        btn.innerText = 'ซ่อนรายชื่อ';
+      } else {
+        el.classList.add('hidden');
+        btn.innerText = 'แสดงรายชื่อทั้งหมด';
       }
     }
 
@@ -2617,25 +3039,13 @@
           if (phoneEl) phoneEl.innerText = currentStaff.phone;
           if (descEl) descEl.innerHTML = `เบอร์โทร: <span class="font-bold text-white">${currentStaff.phone}</span> • ${currentStaff.desc}`;
         }
-        const btnInternal = document.getElementById('btnChannelInternal');
-        if (btnInternal) btnInternal.classList.remove('hidden');
-        const chatSenderName = document.getElementById('chatSenderName');
-        const chatSenderAvatar = document.getElementById('chatSenderAvatar');
-        if (chatSenderName) chatSenderName.innerText = currentStaff.title;
-        if (chatSenderAvatar) chatSenderAvatar.innerText = currentStaff.name.charAt(0);
-        const guestHint = document.getElementById('chatGuestHint');
-        if (guestHint) guestHint.classList.add('hidden');
-
         renderCoachRosterTable();
         renderPendingSlips();
+        renderParentRegistrations();
       } else {
         if (coachTab) coachTab.classList.add('hidden');
         if (coachMTab) coachMTab.classList.add('hidden');
         if (staffCard) staffCard.classList.add('hidden');
-
-        const btnInternal = document.getElementById('btnChannelInternal');
-        if (btnInternal) btnInternal.classList.add('hidden');
-        if (currentChatChannel === 'staff_internal') switchChatChannel('parent');
       }
       lucide.createIcons();
     }
@@ -2760,7 +3170,7 @@
           <td class="py-2.5 px-3 text-center text-xs text-slate-400 font-bold">${s.id}</td>
           <td class="py-2.5 px-3">
             <strong class="text-xs sm:text-sm font-bold text-dbo-navy block">น้อง ${s.name}</strong>
-            <span class="text-[10px] text-slate-500 font-medium">${s.phone}</span>
+            ${s.phone ? `<span class="font-mono text-emerald-700 font-bold text-xs">📞 ${s.phone}</span>` : `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">⏳ รอ ผปค. ผูกเบอร์</span>`}
           </td>
           <td class="py-2.5 px-3">${typeBadge}</td>
           <td class="py-2.5 px-3">
@@ -2811,8 +3221,21 @@
         action: delta < 0 ? 'ตัดโควต้า -1 ครั้ง' : `ปรับโควต้า +${delta}`
       });
 
+      // Synchronize with Daily Attendance Board for today
+      const todayKey = getTodayDateKey();
+      if (!dailyAttendance[todayKey]) dailyAttendance[todayKey] = {};
+      dailyAttendance[todayKey][student.id] = {
+        studentId: student.id,
+        name: student.name,
+        status: 'attending',
+        time: timeStr,
+        updatedBy: 'coach',
+        note: `เช็คชื่อโดย ${staffName}`
+      };
+
       saveState();
       renderCoachRosterTable();
+      renderDailyAttendanceBoard();
 
       if (loggedInStudent && loggedInStudent.id === studentId) {
         loggedInStudent = student;
@@ -3324,12 +3747,13 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Clear legacy storage versions once to guarantee fresh 54 students roster
-      if (localStorage.getItem('dbo_app_version') !== 'v11.1') {
+      // Clear legacy storage versions once to guarantee fresh roster & data model
+      if (localStorage.getItem('dbo_app_version') !== 'v12.0') {
         localStorage.removeItem('dbo_students_v8');
         localStorage.removeItem('dbo_students_v9');
         localStorage.removeItem('dbo_students_v10');
-        localStorage.setItem('dbo_app_version', 'v11.1');
+        localStorage.removeItem('dbo_students_v11');
+        localStorage.setItem('dbo_app_version', 'v12.0');
       }
 
       renderParentView();
@@ -3338,7 +3762,22 @@
       updateNotificationPermissionUI();
       renderMasterCalendar();
       renderPendingSlips();
+      renderParentRegistrations();
+      renderDailyAttendanceBoard();
       lucide.createIcons();
+
+      // Support direct link triggers (e.g. ?action=register-parent)
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const action = urlParams.get('action');
+        if (action === 'register-parent') {
+          setTimeout(() => openParentLinkModal(), 300);
+        } else if (action === 'daily-attendance') {
+          setTimeout(() => switchTab('daily-attendance'), 200);
+        }
+      } catch (e) {
+        console.log('Query param check error:', e);
+      }
 
       // Dual Google Sheets Realtime Auto-Sync
       syncDataFromGoogleSheet(true);
