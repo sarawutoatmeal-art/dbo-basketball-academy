@@ -917,7 +917,7 @@
                 <label for="regSlipInput" class="cursor-pointer block space-y-1">
                   <i data-lucide="upload-cloud" class="w-5 h-5 mx-auto text-dbo-gold"></i>
                   <span id="regSlipLabel" class="text-xs text-dbo-navy font-bold block">แตะเพื่อแนบรูปสลิป</span>
-                  <span class="text-[10px] text-slate-400 block">เมื่อแอดมิน (โค้ชโอ๊ต/โค้ชโอ๊ค/ไอริส) ตรวจสอบสลิป จะเปิดบัญชีให้ทันที</span>
+                  <span class="text-[10px] text-slate-400 block">เมื่อแอดมิน (โค้ชโอ๊ต/โค้ชโอ๊ค/ไอริส/ออม) ตรวจสอบสลิป จะเปิดบัญชีให้ทันที</span>
                 </label>
               </div>
             </div>
@@ -976,7 +976,7 @@
             <div class="flex items-center gap-2 flex-wrap text-[11px]">
               <span class="px-2.5 py-1 rounded-full bg-white/10 text-amber-300 font-semibold border border-white/10">🏀 โค้ชโอ๊ต</span>
               <span class="px-2.5 py-1 rounded-full bg-white/10 text-sky-300 font-semibold border border-white/10">🎯 โค้ชโอ๊ค</span>
-              <span class="px-2.5 py-1 rounded-full bg-white/10 text-emerald-300 font-semibold border border-white/10">📋 คุณไอริส (แอดมิน)</span>
+              <span class="px-2.5 py-1 rounded-full bg-white/10 text-emerald-300 font-semibold border border-white/10">📋 คุณไอริส & คุณออม (แอดมิน)</span>
             </div>
           </div>
 
@@ -1605,6 +1605,16 @@
         phone: '080-374-5694',
         badge: 'System Admin / Registrar',
         desc: 'ผู้จัดการฝ่ายทะเบียน ตรวจสอบสลิปโอนเงิน และประสานงานผู้ปกครอง'
+      },
+      '0946365206': {
+        id: 'admin_aom',
+        name: 'ออม',
+        fullName: 'คุณออม (แอดมิน)',
+        role: 'Academy Admin & Coordinator',
+        title: 'คุณออม (แอดมิน)',
+        phone: '094-636-5206',
+        badge: 'Academy Admin',
+        desc: 'ผู้ดูแลระบบ ประสานงานผู้ปกครอง และจัดการข้อมูลคอร์สเรียน'
       }
     };
 
@@ -1678,7 +1688,7 @@
       document.getElementById('parentPhoneInput').value = phone;
     }
 
-    // Unified Phone Login Logic (Staff Whitelist: 0933199119, 0952974593, 0803745694)
+    // Unified Phone Login Logic (Staff Whitelist: 0933199119, 0952974593, 0803745694, 0946365206)
     function handleParentPhoneLogin(e) {
       e.preventDefault();
       const rawPhone = document.getElementById('parentPhoneInput').value.replace(/[-\s]/g, '').trim();
