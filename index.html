@@ -6,14 +6,17 @@
   <title>DBO Basketball Academy — Portal ผู้ปกครอง & เช็คชื่อนักเรียน</title>
   
   <!-- PWA & Mobile Web App Meta -->
-  <link rel="manifest" href="manifest.json">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="manifest" href="manifest.json?v=2.2">
   <meta name="theme-color" content="#0A1128">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="DBO Academy">
-  <link rel="icon" type="image/png" href="assets/images/app-icon-512.png">
-  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="assets/images/app-icon-512.png?v=2.2">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=2.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png?v=2.2">
 
   <!-- Typography: Prompt & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1076,6 +1079,28 @@
     <i data-lucide="check-circle" class="w-4 h-4 text-dbo-gold"></i>
     <span id="globalToastText">บันทึกเรียบร้อย</span>
   </div>
+
+  <!-- Service Worker Real-time Update Engine -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js?v=' + Date.now()).then((reg) => {
+          reg.update(); // Force check updates every load
+          reg.onupdatefound = () => {
+            const installing = reg.installing;
+            if (installing) {
+              installing.onstatechange = () => {
+                if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New content available, reload automatically to get freshest code
+                  window.location.reload();
+                }
+              };
+            }
+          };
+        }).catch((err) => console.log('SW reg error:', err));
+      });
+    }
+  </script>
 
   <!-- ======================================================== -->
   <!-- JAVASCRIPT APPLICATION CORE                              -->

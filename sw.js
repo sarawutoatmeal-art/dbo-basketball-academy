@@ -1,23 +1,8 @@
-// Service Worker for DBO Basketball Academy PWA
-const CACHE_NAME = 'dbo-academy-v2';
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  './assets/images/app-icon-512.png',
-  './assets/images/apple-touch-icon.png',
-  './assets/images/dbo-logo.png',
-  './assets/images/coach-oat.png',
-  './assets/images/coach-oak.png',
-  './assets/images/kbank-qr.jpg'
-];
+// Network-First Service Worker for DBO Basketball Academy
+// Ensures real-time instant updates on every deploy
+const CACHE_NAME = 'dbo-live-v3';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
   self.skipWaiting();
 });
 
@@ -25,17 +10,31 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        keys.map((key) => caches.delete(key))
       );
     })
   );
   self.clients.claim();
 });
 
+// Network-First: Always fetch freshest version from server first
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        // Fallback to cache only if device is offline
+        return caches.match(event.request);
+      })
   );
 });
