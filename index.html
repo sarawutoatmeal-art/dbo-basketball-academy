@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th" class="h-full">
 <head>
   <meta charset="UTF-8">
@@ -9,15 +9,15 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="manifest" href="manifest.json?v=3.0">
+  <link rel="manifest" href="manifest.json?v=5.0">
   <meta name="theme-color" content="#FFFFFF">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="DBO Academy">
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/images/app-icon-192.png?v=3.0">
-  <link rel="icon" type="image/png" sizes="512x512" href="assets/images/app-icon-512.png?v=3.0">
-  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=3.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon-180.png?v=3.0">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/images/app-icon-192.png?v=5.0">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/images/app-icon-512.png?v=5.0">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=5.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon-180.png?v=5.0">
 
   <!-- Typography: Prompt & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1302,70 +1302,74 @@
   <!-- JAVASCRIPT APPLICATION CORE                              -->
   <!-- ======================================================== -->
   <script>
-    const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1l45Id-MEgde9iP4DjNzPLZgzUKhojWE1TKvrenQ6XwQ/export?format=csv&gid=1234243027';
+    const GOOGLE_SHEET_REGULAR_URL = 'https://docs.google.com/spreadsheets/d/1l45Id-MEgde9iP4DjNzPLZgzUKhojWE1TKvrenQ6XwQ/export?format=csv&gid=1234243027';
+    const GOOGLE_SHEET_SATURDAY_URL = 'https://docs.google.com/spreadsheets/d/1l45Id-MEgde9iP4DjNzPLZgzUKhojWE1TKvrenQ6XwQ/export?format=csv&gid=1407999894';
 
     // Initial student data with Course Types (regular, monthly, saturday, single)
     const initialRawData = [
-      { id: 1, name: "อิฐ", phone: "0812345678", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 2, name: "ซับ", phone: "0898765432", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: -5, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 3, name: "ขุนศึก", phone: "0800000003", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -11, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 4, name: "ต้นบุญ", phone: "0800000004", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 5, name: "ต้นพุด", phone: "0800000005", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 6, name: "ไทม์", phone: "0800000006", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 6, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 7, name: "พัช", phone: "0800000007", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 8, name: "แอร์บัส", phone: "0800000008", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 8, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 9, name: "วินแฟลค", phone: "0800000009", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 10, name: "ไวน์แฟรงค์", phone: "0800000010", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 5, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 11, name: "ดลย์", phone: "0800000011", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 8, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 12, name: "อคิณ", phone: "0800000012", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 13, name: "ชัทเตอร์", phone: "0800000013", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 14, name: "บอสตัน", phone: "0800000014", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 2, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 15, name: "ฮาร์เด้น", phone: "0800000015", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 16, name: "ไม้เอก", phone: "0800000016", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 3, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 17, name: "จัสติน", phone: "0800000017", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 3, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 18, name: "ชาลี", phone: "0800000018", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 19, name: "พีต้า", phone: "0800000019", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 2, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 20, name: "สตาร์ท", phone: "0800000020", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 21, name: "แอนฟิลด์", phone: "0800000021", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 22, name: "มาร์ค", phone: "0800000022", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 23, name: "แกรนด์", phone: "0800000023", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 8, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 24, name: "แอร์เมส", phone: "0800000024", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 5, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 25, name: "มิวนิค", phone: "0800000025", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 26, name: "ตี๋", phone: "0800000026", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 27, name: "มาตังค์", phone: "0800000027", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 28, name: "มันตา", phone: "0800000028", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 29, name: "นํ้าขิง", phone: "0800000029", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 30, name: "ข้าวตั้ง", phone: "0800000030", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 5, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 31, name: "นานา", phone: "0800000031", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 32, name: "สรา", phone: "0800000032", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 33, name: "Japan", phone: "0800000033", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 4, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 34, name: "JR.", phone: "0800000034", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 35, name: "IRyu", phone: "0800000035", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 36, name: "Sari", phone: "0800000036", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 9, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 37, name: "Phupa", phone: "0800000037", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 38, name: "Sky", phone: "0800000038", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 39, name: "Nada", phone: "0800000039", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 40, name: "August", phone: "0800000040", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 41, name: "Prod", phone: "0800000041", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 42, name: "L J", phone: "0800000042", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 2, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 43, name: "เป็นหนึ่ง", phone: "0800000043", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 44, name: "อินทัช", phone: "0800000044", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"//","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 45, name: "นาวิน", phone: "0800000045", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 46, name: "ธีร์", phone: "0800000046", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: -4, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 47, name: "มังกร", phone: "0800000047", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 48, name: "T J", phone: "0800000048", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 49, name: "ลูคัส", phone: "0800000049", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 50, name: "ณฌา", phone: "0800000050", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"","1/11/26":"","29/10":"/"}, remaining: 9, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 51, name: "เอวา", phone: "0800000051", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"","1/11/26":"","29/10":"/"}, remaining: 9, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 1, name: "อิฐ", phone: "0812345678", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 2, name: "ซับ", phone: "0898765432", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: -5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 3, name: "ขุนศึก", phone: "0800000003", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -11, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 4, name: "ต้นบุญ", phone: "0800000004", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 5, name: "ต้นพุด", phone: "0800000005", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 6, name: "ไทม์", phone: "0800000006", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 6, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 7, name: "พัช", phone: "0800000007", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 8, name: "แอร์บัส", phone: "0800000008", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 8, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 9, name: "วินแฟลค", phone: "0800000009", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 10, name: "ไวน์แฟรงค์", phone: "0800000010", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 11, name: "ดลย์", phone: "0800000011", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 8, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 12, name: "อคิณ", phone: "0800000012", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 2, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 13, name: "ชัทเตอร์", phone: "0800000013", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 14, name: "บอสตัน", phone: "0800000014", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 2, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 15, name: "ฮาร์เด้น", phone: "0800000015", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 16, name: "ไม้เอก", phone: "0800000016", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 3, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 17, name: "จัสติน", phone: "0800000017", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 3, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 18, name: "ชาลี", phone: "0800000018", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 19, name: "พีต้า", phone: "0800000019", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 2, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 20, name: "สตาร์ท", phone: "0800000020", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 21, name: "แอนฟิลด์", phone: "0800000021", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 22, name: "มาร์ค", phone: "0800000022", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 23, name: "แกรนด์", phone: "0800000023", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 8, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 24, name: "แอร์เมส", phone: "0800000024", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 25, name: "มิวนิค", phone: "0800000025", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 0, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 26, name: "ตี๋", phone: "0800000026", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 27, name: "มาตังค์", phone: "0800000027", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 28, name: "มันตา", phone: "0800000028", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 29, name: "นํ้าขิง", phone: "0800000029", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 30, name: "ข้าวตั้ง", phone: "0800000030", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 31, name: "นานา", phone: "0800000031", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 32, name: "สรา", phone: "0800000032", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 33, name: "Japan", phone: "0800000033", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 34, name: "JR.", phone: "0800000034", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 35, name: "IRyu", phone: "0800000035", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 36, name: "Sari", phone: "0800000036", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 9, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 37, name: "Phupa", phone: "0800000037", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 0, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 38, name: "Sky", phone: "0800000038", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 39, name: "Nada", phone: "0800000039", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 40, name: "August", phone: "0800000040", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 41, name: "Prod", phone: "0800000041", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 42, name: "L J", phone: "0800000042", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 2, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 43, name: "เป็นหนึ่ง", phone: "0800000043", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 44, name: "อินทัช", phone: "0800000044", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"//","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 45, name: "นาวิน", phone: "0800000045", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 46, name: "ธีร์", phone: "0800000046", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: -4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 47, name: "มังกร", phone: "0800000047", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 48, name: "T J", phone: "0800000048", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 49, name: "ลูคัส", phone: "0800000049", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 50, name: "ณฌา", phone: "0800000050", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"","1/11/26":"","29/10":"/"}, remaining: 9, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 51, name: "เอวา", phone: "0800000051", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"","1/11/26":"","29/10":"/"}, remaining: 9, saturdayRemaining: 4, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
+      { id: 52, name: "ไนท์", phone: "0800000052", courseType: "saturday", startDate: "2026-11-01", nextRenewal: "2026-12-01", records: {}, remaining: 0, saturdayRemaining: 2, remark: "คอร์สวันเสาร์ Basic Coach Oat (เหลือ 2 ครั้ง)" },
+      { id: 53, name: "ตั้งใจ", phone: "0800000053", courseType: "saturday", startDate: "2026-11-01", nextRenewal: "2026-12-01", records: {}, remaining: 0, saturdayRemaining: 2, remark: "คอร์สวันเสาร์ Basic Coach Oat (เหลือ 2 ครั้ง)" },
+      { id: 54, name: "เวหา", phone: "0800000054", courseType: "saturday", startDate: "2026-11-01", nextRenewal: "2026-12-01", records: {}, remaining: 0, saturdayRemaining: 2, remark: "คอร์สวันเสาร์ Basic Coach Oat (เหลือ 2 ครั้ง)" },
     ];
 
-    let students = JSON.parse(localStorage.getItem('dbo_students_v10')) || initialRawData;
-    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v10')) || null;
-    let isCoachAuth = localStorage.getItem('dbo_is_coach_v10') === 'true';
+    let students = JSON.parse(localStorage.getItem('dbo_students_v11')) || initialRawData;
+    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v11')) || null;
+    let isCoachAuth = localStorage.getItem('dbo_is_coach_v11') === 'true';
     let currentCoachFilter = 'all';
 
     // Pending Slips Queue for Admin Verification
-    let pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v10')) || [
+    let pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v11')) || [
       {
         id: 'slip-101',
         studentName: 'น้องเจเจ',
@@ -1381,16 +1385,16 @@
     ];
 
     // Community Chat Messages
-    let chatMessages = JSON.parse(localStorage.getItem('dbo_chat_messages_v10')) || [
+    let chatMessages = JSON.parse(localStorage.getItem('dbo_chat_messages_v11')) || [
       { id: 1, sender: 'โค้ชโอ๊ต (Admin)', role: 'coach', text: 'สวัสดีผู้ปกครองทุกท่านครับ วันนี้คลาส 17:00 น. ซ้อมที่ยิมใหญ่โรงเรียนเตชะวิทย์ตามปกตินะครับ 🏀', time: '13:00 น.', image: null },
       { id: 2, sender: 'คุณแม่อิฐ', role: 'parent', text: 'รับทราบค่ะโค้ช วันนี้น้องอิฐพร้อมซ้อมตรงเวลาค่ะ', time: '13:05 น.', image: null },
       { id: 3, sender: 'โค้ชโอ๊ค', role: 'coach', text: 'วันนี้มีฝึกระบบ Defense และ Transition Game ครับ เจอกันครับเด็กๆ', time: '13:10 น.', image: null }
     ];
 
     function saveState() {
-      localStorage.setItem('dbo_students_v10', JSON.stringify(students));
-      localStorage.setItem('dbo_pending_slips_v10', JSON.stringify(pendingSlips));
-      localStorage.setItem('dbo_chat_messages_v10', JSON.stringify(chatMessages));
+      localStorage.setItem('dbo_students_v11', JSON.stringify(students));
+      localStorage.setItem('dbo_pending_slips_v11', JSON.stringify(pendingSlips));
+      localStorage.setItem('dbo_chat_messages_v11', JSON.stringify(chatMessages));
     }
 
     // Tab Navigation Switcher
@@ -1429,7 +1433,7 @@
       // Coach Oat Admin Bypass
       if (rawPhone === '0933199119') {
         isCoachAuth = true;
-        localStorage.setItem('dbo_is_coach_v10', 'true');
+        localStorage.setItem('dbo_is_coach_v11', 'true');
         updateCoachStateUI();
         switchTab('coach-roster');
         showToast('ยินดีต้อนรับ โค้ชโอ๊ต (Admin Portal 093-319-9119)');
@@ -1444,7 +1448,7 @@
       }
 
       loggedInStudent = matched[0];
-      localStorage.setItem('dbo_parent_logged_v10', JSON.stringify(loggedInStudent));
+      localStorage.setItem('dbo_parent_logged_v11', JSON.stringify(loggedInStudent));
       renderParentView(matched);
       showToast(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name}`);
     }
@@ -1640,7 +1644,7 @@
 
     function parentLogout() {
       loggedInStudent = null;
-      localStorage.removeItem('dbo_parent_logged_v10');
+      localStorage.removeItem('dbo_parent_logged_v11');
       document.getElementById('parentPhoneInput').value = '';
       renderParentView();
       switchTab('parent-portal');
@@ -1994,7 +1998,7 @@
       const pin = document.getElementById('coachPinInput').value.trim();
       if (pin === 'dbo2026' || pin === '0933199119') {
         isCoachAuth = true;
-        localStorage.setItem('dbo_is_coach_v10', 'true');
+        localStorage.setItem('dbo_is_coach_v11', 'true');
         closeCoachAuthModal();
         updateCoachStateUI();
         switchTab('coach-roster');
@@ -2006,7 +2010,7 @@
 
     function coachLogout() {
       isCoachAuth = false;
-      localStorage.setItem('dbo_is_coach_v10', 'false');
+      localStorage.setItem('dbo_is_coach_v11', 'false');
       updateCoachStateUI();
       switchTab('parent-portal');
       showToast('ออกจากโหมดโค้ชแล้ว');
@@ -2059,11 +2063,11 @@
       const search = (document.getElementById('coachSearchInput').value || '').trim().toLowerCase();
       tbody.innerHTML = '';
 
-      // Count categories
+      // Count categories (Dual enrolled students counted in both categories)
       const cAll = students.length;
-      const cReg = students.filter(s => s.courseType === 'regular' || !s.courseType).length;
+      const cReg = students.filter(s => s.courseType === 'regular' || s.courseType === 'both' || !s.courseType).length;
+      const cSat = students.filter(s => s.courseType === 'saturday' || s.courseType === 'both').length;
       const cMon = students.filter(s => s.courseType === 'monthly').length;
-      const cSat = students.filter(s => s.courseType === 'saturday').length;
 
       document.getElementById('count-all').innerText = cAll;
       document.getElementById('count-regular').innerText = cReg;
@@ -2074,57 +2078,104 @@
         const matchSearch = s.name.toLowerCase().includes(search) || s.phone.includes(search) || String(s.id).includes(search);
         if (!matchSearch) return false;
         if (currentCoachFilter === 'all') return true;
-        if (currentCoachFilter === 'regular') return s.courseType === 'regular' || !s.courseType;
-        return s.courseType === currentCoachFilter;
+        if (currentCoachFilter === 'regular') return s.courseType === 'regular' || s.courseType === 'both' || !s.courseType;
+        if (currentCoachFilter === 'saturday') return s.courseType === 'saturday' || s.courseType === 'both';
+        if (currentCoachFilter === 'monthly') return s.courseType === 'monthly';
+        return true;
       });
 
       filtered.forEach(s => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 transition";
-        const rem = s.remaining || 0;
+        
+        const isSaturdayFilter = (currentCoachFilter === 'saturday');
+        const rem = isSaturdayFilter ? (s.saturdayRemaining || 0) : (s.remaining || 0);
         
         let remBadge = '';
-        if (rem > 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800">${rem} ครั้ง</span>`;
-        else if (rem >= 1 && rem <= 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800">${rem} ครั้ง</span>`;
-        else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-rose-100 text-rose-800">${rem} ครั้ง</span>`;
+        if (isSaturdayFilter) {
+          if (rem > 1) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-indigo-100 text-indigo-900">${rem} / 4 เธเธฃเธฑเนเธ (เน€เธชเธฒเธฃเน)</span>`;
+          else if (rem === 1) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800">${rem} / 4 เธเธฃเธฑเนเธ (เน€เธชเธฒเธฃเน)</span>`;
+          else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-rose-100 text-rose-800">${rem} / 4 เธเธฃเธฑเนเธ (เน€เธชเธฒเธฃเน)</span>`;
+        } else if (s.courseType === 'both') {
+          remBadge = `
+            <div class="flex flex-col gap-1 items-center">
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-amber-100 text-amber-900">เธเธเธ•เธด: ${s.remaining} เธเธฃเธฑเนเธ</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-indigo-100 text-indigo-900">เน€เธชเธฒเธฃเน: ${s.saturdayRemaining} เธเธฃเธฑเนเธ</span>
+            </div>
+          `;
+        } else {
+          if (rem > 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800">${rem} เธเธฃเธฑเนเธ</span>`;
+          else if (rem >= 1 && rem <= 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800">${rem} เธเธฃเธฑเนเธ</span>`;
+          else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-rose-100 text-rose-800">${rem} เธเธฃเธฑเนเธ</span>`;
+        }
 
         let typeBadge = '';
-        if (s.courseType === 'monthly') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">รายเดือน (2วัน/wk)</span>`;
-        else if (s.courseType === 'saturday') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">วันเสาร์ (4 ครั้ง)</span>`;
-        else typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">ปกติ 10 ครั้ง</span>`;
+        if (s.courseType === 'both') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-300">เธเธเธ•เธด + เธงเธฑเธเน€เธชเธฒเธฃเน</span>`;
+        else if (s.courseType === 'monthly') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">เธฃเธฒเธขเน€เธ”เธทเธญเธ</span>`;
+        else if (s.courseType === 'saturday') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">เธงเธฑเธเน€เธชเธฒเธฃเน (4 เธเธฃเธฑเนเธ)</span>`;
+        else typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">เธเธเธ•เธด 10 เธเธฃเธฑเนเธ</span>`;
 
-        const renewalInfo = s.courseType === 'monthly'
-          ? `<span class="text-xs font-semibold text-emerald-700 block">ตัดรอบ: ${s.nextRenewal || 'วันที่ 1'}</span><span class="text-[10px] text-slate-400">เริ่ม: ${s.startDate || '-'}</span>`
-          : `<span class="text-xs text-slate-600 block">เริ่ม: ${s.startDate || '-'}</span>`;
+        let actionBtns = '';
+        if (isSaturdayFilter) {
+          actionBtns = `
+            <div class="inline-flex items-center gap-1">
+              <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เน€เธเนเธเธเธทเนเธญเธงเธฑเธเน€เธชเธฒเธฃเน (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 rounded-lg flex items-center gap-1 shadow-xs">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i> <span>เน€เธเนเธเน€เธชเธฒเธฃเน (-1)</span>
+              </button>
+              <button onclick="coachAdjustQuota(${s.id}, 1, 'saturday')" title="เน€เธเธดเนเธกเธชเธดเธ—เธเธดเน (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">+1</button>
+              <button onclick="coachAdjustQuota(${s.id}, 4, 'saturday')" title="เธ•เนเธญเธเธญเธฃเนเธชเน€เธชเธฒเธฃเน (+4)" class="px-2 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200">+4</button>
+            </div>
+          `;
+        } else if (s.courseType === 'both') {
+          actionBtns = `
+            <div class="flex flex-col gap-1 items-center">
+              <div class="inline-flex items-center gap-1">
+                <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เน€เธเนเธเธเธญเธฃเนเธชเธเธเธ•เธด (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-dbo-navy hover:bg-dbo-navySoft rounded-lg flex items-center gap-1">
+                  <span>เน€เธเนเธเธเธเธ•เธด (-1)</span>
+                </button>
+                <button onclick="coachAdjustQuota(${s.id}, 1, 'regular')" class="px-1.5 py-0.5 text-[11px] font-bold bg-slate-100 rounded">+1</button>
+                <button onclick="coachAdjustQuota(${s.id}, 10, 'regular')" class="px-1.5 py-0.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 rounded border border-emerald-200">+10</button>
+              </div>
+              <div class="inline-flex items-center gap-1">
+                <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เน€เธเนเธเธงเธฑเธเน€เธชเธฒเธฃเน (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-1">
+                  <span>เน€เธเนเธเน€เธชเธฒเธฃเน (-1)</span>
+                </button>
+                <button onclick="coachAdjustQuota(${s.id}, 1, 'saturday')" class="px-1.5 py-0.5 text-[11px] font-bold bg-slate-100 rounded">+1</button>
+                <button onclick="coachAdjustQuota(${s.id}, 4, 'saturday')" class="px-1.5 py-0.5 text-[11px] font-bold text-indigo-700 bg-indigo-50 rounded border border-indigo-200">+4</button>
+              </div>
+            </div>
+          `;
+        } else {
+          actionBtns = `
+            <div class="inline-flex items-center gap-1">
+              <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเน€เธฃเธตเธขเธ (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-dbo-navy hover:bg-dbo-navySoft rounded-lg flex items-center gap-1 shadow-xs">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-dbo-gold"></i> <span>เน€เธเนเธเธเธทเนเธญ (-1)</span>
+              </button>
+              <button onclick="coachAdjustQuota(${s.id}, 1, 'regular')" title="เน€เธเธดเนเธกเธชเธดเธ—เธเธดเน (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">+1</button>
+              <button onclick="coachAdjustQuota(${s.id}, 10, 'regular')" title="เธ•เนเธญเธเธญเธฃเนเธช (+10)" class="px-2 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200">+10</button>
+            </div>
+          `;
+        }
 
         tr.innerHTML = `
           <td class="py-2.5 px-3 text-center font-mono text-xs text-slate-400">${s.id}</td>
           <td class="py-2.5 px-3">
-            <strong class="text-xs sm:text-sm font-bold text-dbo-navy block">น้อง ${s.name}</strong>
+            <strong class="text-xs sm:text-sm font-bold text-dbo-navy block">เธเนเธญเธ ${s.name}</strong>
             <span class="text-[10px] text-slate-500 font-mono">${s.phone}</span>
           </td>
           <td class="py-2.5 px-3">${typeBadge}</td>
-          <td class="py-2.5 px-3">${renewalInfo}</td>
-          <td class="py-2.5 px-3 text-center">${remBadge}</td>
-          <td class="py-2.5 px-3 text-center">
-            <div class="inline-flex items-center gap-1">
-              <button onclick="coachCheckInAction(${s.id}, -1)" title="เช็คชื่อเข้าเรียน (-1) และส่งแจ้งเตือน ผปค." class="px-2.5 py-1 text-xs font-bold text-white bg-dbo-navy hover:bg-dbo-navySoft rounded-lg flex items-center gap-1 shadow-xs">
-                <i data-lucide="check" class="w-3.5 h-3.5 text-dbo-gold"></i> <span>เช็คชื่อ (-1)</span>
-              </button>
-              <button onclick="coachAdjustQuota(${s.id}, 1)" title="เพิ่มสิทธิ์ (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">
-                +1
-              </button>
-              <button onclick="coachAdjustQuota(${s.id}, 10)" title="ต่อคอร์ส (+10)" class="px-2 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200">
-                +10
-              </button>
-            </div>
+          <td class="py-2.5 px-3">
+            <span class="text-xs text-slate-600 block">เน€เธฃเธดเนเธก: ${s.startDate || '-'}</span>
+            ${s.nextRenewal ? `<span class="text-[10px] text-emerald-700 font-semibold">เธฃเธญเธเธ•เนเธญ: ${s.nextRenewal}</span>` : ''}
           </td>
+          <td class="py-2.5 px-3 text-center">${remBadge}</td>
+          <td class="py-2.5 px-3 text-center">${actionBtns}</td>
           <td class="py-2.5 px-3 text-center">
             <div class="inline-flex items-center gap-1">
-              <button onclick="openEditStudentModal(${s.id})" title="แก้ไขข้อมูล" class="p-1 rounded-lg text-slate-500 hover:text-dbo-gold hover:bg-slate-100">
+              <button onclick="openEditStudentModal(${s.id})" title="เนเธเนเนเธเธเนเธญเธกเธนเธฅ" class="p-1 rounded-lg text-slate-500 hover:text-dbo-gold hover:bg-slate-100">
                 <i data-lucide="edit-3" class="w-4 h-4"></i>
               </button>
-              <button onclick="coachDeleteStudent(${s.id})" title="ลบชื่อออกจากระบบ" class="p-1 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50">
+              <button onclick="coachDeleteStudent(${s.id})" title="เธฅเธเธเธทเนเธญเธญเธญเธเธเธฒเธเธฃเธฐเธเธ" class="p-1 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
             </div>
@@ -2136,11 +2187,15 @@
     }
 
     // Coach Check-in Action with Instant Telegram-Style Popup
-    function coachCheckInAction(studentId, delta) {
+    function coachCheckInAction(studentId, delta, target = 'regular') {
       const student = students.find(s => s.id === studentId);
       if (!student) return;
 
-      student.remaining = (student.remaining || 0) + delta;
+      if (target === 'saturday') {
+        student.saturdayRemaining = (student.saturdayRemaining || 0) + delta;
+      } else {
+        student.remaining = (student.remaining || 0) + delta;
+      }
       saveState();
       renderCoachRosterTable();
 
@@ -2149,26 +2204,32 @@
         renderParentView();
       }
 
-      // Trigger Telegram-style Notification for Parent
-      const msg = `🏀 น้อง ${student.name} เช็คชื่อเข้าฝึกซ้อมคลาสวันนี้เรียบร้อยแล้วครับ! (โควต้าคงเหลือ: ${student.remaining} ครั้ง) คลาสวันนี้มีเพื่อนร่วมฝึก 12 คน`;
+      const courseName = (target === 'saturday') ? 'เธเธฅเธฒเธชเธงเธฑเธเน€เธชเธฒเธฃเน Basic Coach Oat' : 'เธเธฅเธฒเธชเธเธเธ•เธด';
+      const curRem = (target === 'saturday') ? student.saturdayRemaining : student.remaining;
+      const msg = `๐€ เธเนเธญเธ ${student.name} เน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเธเธถเธเธเนเธญเธก${courseName}เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธงเธเธฃเธฑเธ! (เนเธเธงเธ•เนเธฒเธเธเน€เธซเธฅเธทเธญ: ${curRem} เธเธฃเธฑเนเธ)`;
       triggerTelegramPush(msg);
-      showToast(`เช็คชื่อน้อง ${student.name} สำเร็จ (ส่งแจ้งเตือน ผปค. แล้ว)`);
+      showToast(`เน€เธเนเธเธเธทเนเธญเธเนเธญเธ ${student.name} (${courseName}) เธชเธณเน€เธฃเนเธ`);
     }
 
-    function coachAdjustQuota(studentId, delta) {
+    function coachAdjustQuota(studentId, delta, target = 'regular') {
       const student = students.find(s => s.id === studentId);
       if (!student) return;
-      student.remaining = (student.remaining || 0) + delta;
+
+      if (target === 'saturday') {
+        student.saturdayRemaining = (student.saturdayRemaining || 0) + delta;
+        showToast(`เธเธฃเธฑเธเนเธเธงเธ•เธฒเธงเธฑเธเน€เธชเธฒเธฃเนเธเนเธญเธ ${student.name} เน€เธเนเธ ${student.saturdayRemaining} เธเธฃเธฑเนเธ`);
+      } else {
+        student.remaining = (student.remaining || 0) + delta;
+        showToast(`เธเธฃเธฑเธเนเธเธงเธ•เธฒเธเธเธ•เธดเธเนเธญเธ ${student.name} เน€เธเนเธ ${student.remaining} เธเธฃเธฑเนเธ`);
+      }
       saveState();
       renderCoachRosterTable();
       if (loggedInStudent && loggedInStudent.id === studentId) {
         loggedInStudent = student;
         renderParentView();
       }
-      showToast(`ปรับโควต้าของน้อง ${student.name} เป็น ${student.remaining} ครั้ง`);
     }
 
-    // Coach Delete Student (Removes from system permanently)
     function coachDeleteStudent(studentId) {
       const student = students.find(s => s.id === studentId);
       if (!student) return;
@@ -2438,11 +2499,12 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Clear legacy storage versions once to guarantee fresh 51 students roster
-      if (localStorage.getItem('dbo_app_version') !== 'v10.0') {
+      // Clear legacy storage versions once to guarantee fresh 54 students roster
+      if (localStorage.getItem('dbo_app_version') !== 'v11.0') {
         localStorage.removeItem('dbo_students_v8');
         localStorage.removeItem('dbo_students_v9');
-        localStorage.setItem('dbo_app_version', 'v10.0');
+        localStorage.removeItem('dbo_students_v10');
+        localStorage.setItem('dbo_app_version', 'v11.0');
       }
 
       renderParentView();
@@ -2450,6 +2512,12 @@
       renderMasterCalendar();
       renderPendingSlips();
       lucide.createIcons();
+
+      // Dual Google Sheets Realtime Auto-Sync
+      syncDataFromGoogleSheet(true);
+      setInterval(() => {
+        syncDataFromGoogleSheet(true);
+      }, 45000);
     });
   </script>
 </body>
