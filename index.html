@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th" class="h-full">
 <head>
   <meta charset="UTF-8">
@@ -27,6 +27,8 @@
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Real-time Multi-device Live Sync Engine -->
+  <script src="https://unpkg.com/mqtt@5.3.5/dist/mqtt.min.js"></script>
 
   <script>
     tailwind.config = {
@@ -261,20 +263,22 @@
     </div>
   </header>
 
-  <!-- Live Notice Strip -->
-  <div class="bg-dbo-goldLight border-b border-dbo-gold/20 py-1.5 px-4">
+  <!-- Standalone Live Database Notice Strip (No Google Sheets) -->
+  <div class="bg-slate-50 border-b border-slate-200 py-1.5 px-4">
     <div class="max-w-6xl mx-auto flex items-center justify-between text-xs text-dbo-textSecondary flex-wrap gap-2">
       <div class="flex items-center gap-2">
-        <span id="liveSyncBadge" class="inline-flex items-center text-xs font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-200">
+        <span id="liveSyncBadge" class="inline-flex items-center text-xs font-semibold text-emerald-900 bg-emerald-100/90 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-2xs">
           <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
-          ซิงค์ Google Sheets อัตโนมัติ (Live)
+          ฐานข้อมูลหลัก DBO Academy (Standalone & Live Database)
         </span>
-        <span class="hidden sm:inline text-slate-600">| สิทธิ์เตชะวิทย์: คอร์สปกติ <strong>3,990.-</strong> (10 ครั้ง) | เสาร์ <strong>1,500.-</strong> (4 ครั้ง)</span>
+        <span class="hidden sm:inline text-slate-500">| ข้อมูลเป็นอิสระจากชีท อัปเดตสดแบบเรียลไทม์</span>
       </div>
-      <button onclick="syncDataFromGoogleSheet(false)" class="text-dbo-gold hover:text-dbo-goldHover font-bold flex items-center gap-1 text-[11px] bg-white px-2.5 py-1 rounded-full border border-dbo-gold/30 shadow-xs">
-        <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-        <span>ดึงข้อมูลล่าสุด</span>
-      </button>
+      <div class="flex items-center gap-2">
+        <span id="realtimeLiveIndicator" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-full border border-emerald-300 shadow-xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+          <span>⚡ เรียลไทม์ ออนไลน์</span>
+        </span>
+      </div>
     </div>
   </div>
 
@@ -1726,8 +1730,8 @@
   <!-- JAVASCRIPT APPLICATION CORE                              -->
   <!-- ======================================================== -->
   <script>
-    const GOOGLE_SHEET_REGULAR_URL = 'https://docs.google.com/spreadsheets/d/1l45Id-MEgde9iP4DjNzPLZgzUKhojWE1TKvrenQ6XwQ/export?format=csv&gid=1234243027';
-    const GOOGLE_SHEET_SATURDAY_URL = 'https://docs.google.com/spreadsheets/d/1l45Id-MEgde9iP4DjNzPLZgzUKhojWE1TKvrenQ6XwQ/export?format=csv&gid=1407999894';
+    // Google Sheets disconnected - Web App is Standalone Master Database
+    const REALTIME_SYNC_TOPIC = 'dbo_academy/realtime_sync_v2';
 
     // Initial student data with Course Types (regular, monthly, saturday, single)
     const initialRawData = [
@@ -1896,12 +1900,45 @@
       }
     };
 
-    function saveState() {
+    function saveState(broadcastRemote = true, actionDesc = '') {
       localStorage.setItem('dbo_students_v13', JSON.stringify(students));
       localStorage.setItem('dbo_pending_slips_v13', JSON.stringify(pendingSlips));
       localStorage.setItem('dbo_parent_registrations_v13', JSON.stringify(parentRegistrations));
       localStorage.setItem('dbo_daily_attendance_v13', JSON.stringify(dailyAttendance));
       if (currentStaff) localStorage.setItem('dbo_current_staff', JSON.stringify(currentStaff));
+
+      // 1. Cross-tab instant local broadcast
+      if (window.dboRealtimeBC) {
+        try {
+          window.dboRealtimeBC.postMessage({
+            type: 'STATE_CHANGED',
+            actionDesc: actionDesc || 'เธกเธตเธเธฒเธฃเธเธฑเธเธ—เธถเธเธเนเธญเธกเธนเธฅเธฅเนเธฒเธชเธธเธ”',
+            data: { students, pendingSlips, parentRegistrations, dailyAttendance }
+          });
+        } catch (e) { console.log('BC post error:', e); }
+      }
+
+      // 2. Multi-device live WebSocket broadcast via MQTT
+      if (broadcastRemote && window.realtimeMqttClient && window.realtimeMqttClient.connected) {
+        try {
+          const clientId = window.dboClientId || 'dbo_peer';
+          const payload = {
+            senderId: clientId,
+            type: 'REALTIME_STATE_UPDATE',
+            actionDesc: actionDesc || 'เธกเธตเธเธฒเธฃเธญเธฑเธเน€เธ”เธ•เธเนเธญเธกเธนเธฅ',
+            timestamp: Date.now(),
+            data: {
+              students,
+              pendingSlips,
+              parentRegistrations,
+              dailyAttendance
+            }
+          };
+          window.realtimeMqttClient.publish(REALTIME_SYNC_TOPIC, JSON.stringify(payload), { qos: 0 });
+        } catch (e) {
+          console.log('Remote MQTT broadcast error:', e);
+        }
+      }
     }
 
     function getTodayDateKey() {
@@ -3753,38 +3790,221 @@
       showToast('ส่งออกไฟล์ข้อมูล CSV เรียบร้อยแล้ว');
     }
 
-    // Google Sheets Realtime Auto-Sync (Dual Sheets: Regular + Saturday)
-    async function syncDataFromGoogleSheet(silent = true) {
-      const syncStatusEl = document.getElementById('liveSyncBadge');
-      if (syncStatusEl && !silent) {
-        syncStatusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-spin mr-1"></span> กำลังดึงชีตล่าสุด...';
+    // ========================================================
+    // STANDALONE REAL-TIME LIVE SYNC ENGINE & BACKUP UTILITIES
+    // ========================================================
+
+    function exportDatabaseJSON() {
+      const fullDb = {
+        exportedAt: new Date().toISOString(),
+        version: 'v13.0',
+        students,
+        dailyAttendance,
+        parentRegistrations,
+        pendingSlips
+      };
+      const blob = new Blob([JSON.stringify(fullDb, null, 2)], { type: 'application/json' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `DBO_Academy_FullDB_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('เธชเธณเธฃเธญเธเธเธฒเธเธเนเธญเธกเธนเธฅเธฃเธฐเธเธ JSON เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธง');
+    }
+
+    function importDatabaseJSON(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported.students && Array.isArray(imported.students)) {
+            if (!confirm(`เธ•เนเธญเธเธเธฒเธฃเธเธนเนเธเธทเธเธเธฒเธเธเนเธญเธกเธนเธฅ (${imported.students.length} เธเธ) เน€เธเนเธฒเธชเธนเนเธฃเธฐเธเธเนเธเนเธซเธฃเธทเธญเนเธกเน?\n* เธเนเธญเธกเธนเธฅเธเธฑเธเธเธธเธเธฑเธเธเธฐเธ–เธนเธเนเธ—เธเธ—เธตเนเธ”เนเธงเธขเนเธเธฅเนเธชเธณเธฃเธญเธเธเธตเน`)) return;
+            applyIncomingState(imported, 'เธเธนเนเธเธทเธเธเธฒเธเธเนเธญเธกเธนเธฅเธเธฒเธเนเธเธฅเนเธชเธณเธฃเธญเธเธชเธณเน€เธฃเนเธ');
+            saveState(true, 'เธเธนเนเธเธทเธเธเธฒเธเธเนเธญเธกเธนเธฅเธเธฒเธเนเธเธฅเนเธชเธณเธฃเธญเธ');
+            showToast(`เธเธนเนเธเธทเธเธเธฒเธเธเนเธญเธกเธนเธฅเธชเธณเน€เธฃเนเธ (${imported.students.length} เธเธ)`);
+          } else {
+            showToast('เธฃเธนเธเนเธเธเนเธเธฅเนเธชเธณเธฃเธญเธเนเธกเนเธ–เธนเธเธ•เนเธญเธ');
+          }
+        } catch (err) {
+          showToast('เธญเนเธฒเธเนเธเธฅเน JSON เนเธกเนเธชเธณเน€เธฃเนเธ: ' + err.message);
+        }
+      };
+      reader.readAsText(input.files[0]);
+    }
+
+    function reloadStateFromStorage() {
+      try {
+        students = JSON.parse(localStorage.getItem('dbo_students_v13')) || students;
+        dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v13')) || dailyAttendance;
+        parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrations_v13')) || parentRegistrations;
+        pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v13')) || pendingSlips;
+        refreshAllViews();
+      } catch (e) {
+        console.log('Reload storage error:', e);
+      }
+    }
+
+    function applyIncomingState(incomingData, actionDesc = '') {
+      if (!incomingData) return;
+      let hasChanges = false;
+
+      if (incomingData.students && Array.isArray(incomingData.students)) {
+        students = incomingData.students;
+        localStorage.setItem('dbo_students_v13', JSON.stringify(students));
+        hasChanges = true;
+      }
+      if (incomingData.dailyAttendance && typeof incomingData.dailyAttendance === 'object') {
+        dailyAttendance = incomingData.dailyAttendance;
+        localStorage.setItem('dbo_daily_attendance_v13', JSON.stringify(dailyAttendance));
+        hasChanges = true;
+      }
+      if (incomingData.parentRegistrations && Array.isArray(incomingData.parentRegistrations)) {
+        parentRegistrations = incomingData.parentRegistrations;
+        localStorage.setItem('dbo_parent_registrations_v13', JSON.stringify(parentRegistrations));
+        hasChanges = true;
+      }
+      if (incomingData.pendingSlips && Array.isArray(incomingData.pendingSlips)) {
+        pendingSlips = incomingData.pendingSlips;
+        localStorage.setItem('dbo_pending_slips_v13', JSON.stringify(pendingSlips));
+        hasChanges = true;
       }
 
-      try {
-        const fetchOptions = { cache: 'no-store' };
-        const resRegular = await fetch(`${GOOGLE_SHEET_REGULAR_URL}&_t=${Date.now()}`, fetchOptions);
-        
-        if (resRegular.ok) {
-          const csvText = await resRegular.text();
-          if (csvText && csvText.length > 50) {
-            // Updated successfully from online Google Sheet
-            const nowStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-            if (syncStatusEl) {
-              syncStatusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> อัปเดตชีตล่าสุด: ${nowStr} น. (${students.length} คน)`;
-            }
-            if (!silent) showToast(`ดึงข้อมูล Google Sheet สำเร็จ (อัปเดต ${nowStr} น.)`);
-            return;
+      if (hasChanges) {
+        if (loggedInStudent) {
+          const fresh = students.find(s => s.id === loggedInStudent.id);
+          if (fresh) {
+            loggedInStudent = fresh;
+            localStorage.setItem('dbo_parent_logged_v13', JSON.stringify(loggedInStudent));
+            renderParentView();
           }
         }
-      } catch (err) {
-        console.log('Online sheet sync using cached roster:', err);
+
+        refreshAllViews();
+
+        if (actionDesc) {
+          showToast(`โก เธเธดเธเธเนเธเนเธญเธกเธนเธฅเน€เธฃเธตเธขเธฅเนเธ—เธกเน: ${actionDesc}`);
+          playNotificationChime();
+        }
+      }
+    }
+
+    function refreshAllViews() {
+      if (isCoachAuth) {
+        renderCoachRosterTable();
+        renderPendingSlips();
+        renderParentRegistrations();
+      }
+      if (loggedInStudent) {
+        renderParentView();
+      }
+      renderDailyAttendanceBoard();
+      lucide.createIcons();
+    }
+
+    window.dboClientId = 'dbo_client_' + Math.random().toString(36).substring(2, 9);
+
+    function initRealtimeEngine() {
+      // 1. Cross-tab Local BroadcastChannel
+      try {
+        if ('BroadcastChannel' in window) {
+          window.dboRealtimeBC = new BroadcastChannel('dbo_academy_bus');
+          window.dboRealtimeBC.onmessage = (event) => {
+            if (event.data && event.data.type === 'STATE_CHANGED' && event.data.data) {
+              applyIncomingState(event.data.data, event.data.actionDesc);
+            }
+          };
+        }
+      } catch (e) {
+        console.log('BroadcastChannel init error:', e);
       }
 
-      if (syncStatusEl) {
-        const nowStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-        syncStatusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> ข้อมูลล่าสุด: ${nowStr} น. (${students.length} คน)`;
+      // Storage event listener (fallback for cross-tab)
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'dbo_students_v13' || e.key === 'dbo_daily_attendance_v13' || e.key === 'dbo_parent_registrations_v13') {
+          reloadStateFromStorage();
+        }
+      });
+
+      // 2. Multi-device Cloud WebSocket Realtime via MQTT
+      try {
+        if (typeof mqtt !== 'undefined') {
+          const brokerUrl = 'wss://broker.emqx.io:8084/mqtt';
+          window.realtimeMqttClient = mqtt.connect(brokerUrl, {
+            clientId: window.dboClientId,
+            keepalive: 45,
+            clean: true,
+            reconnectPeriod: 3000
+          });
+
+          window.realtimeMqttClient.on('connect', () => {
+            console.log('โก DBO Real-Time Cloud Engine Connected:', window.dboClientId);
+            updateRealtimeIndicator(true);
+            window.realtimeMqttClient.subscribe(REALTIME_SYNC_TOPIC, { qos: 0 });
+
+            // Request latest state from active peers
+            setTimeout(() => {
+              if (window.realtimeMqttClient && window.realtimeMqttClient.connected) {
+                window.realtimeMqttClient.publish(REALTIME_SYNC_TOPIC, JSON.stringify({
+                  senderId: window.dboClientId,
+                  type: 'REQUEST_SYNC'
+                }));
+              }
+            }, 800);
+          });
+
+          window.realtimeMqttClient.on('message', (topic, message) => {
+            if (topic === REALTIME_SYNC_TOPIC) {
+              try {
+                const payload = JSON.parse(message.toString());
+                if (!payload || payload.senderId === window.dboClientId) return;
+
+                if (payload.type === 'REALTIME_STATE_UPDATE' && payload.data) {
+                  applyIncomingState(payload.data, payload.actionDesc);
+                } else if (payload.type === 'REQUEST_SYNC' && isCoachAuth) {
+                  // Staff client shares state snapshot
+                  window.realtimeMqttClient.publish(REALTIME_SYNC_TOPIC, JSON.stringify({
+                    senderId: window.dboClientId,
+                    type: 'REALTIME_STATE_UPDATE',
+                    actionDesc: 'เธชเนเธเธ•เนเธญเธเนเธญเธกเธนเธฅเธฅเนเธฒเธชเธธเธ”เนเธซเนเธเธฑเธเธญเธธเธเธเธฃเธ“เนเนเธซเธกเน',
+                    data: { students, pendingSlips, parentRegistrations, dailyAttendance }
+                  }));
+                }
+              } catch (err) {
+                console.log('Realtime message handle error:', err);
+              }
+            }
+          });
+
+          window.realtimeMqttClient.on('error', (err) => {
+            console.log('Realtime MQTT error:', err);
+            updateRealtimeIndicator(false);
+          });
+
+          window.realtimeMqttClient.on('offline', () => {
+            updateRealtimeIndicator(false);
+          });
+
+          window.realtimeMqttClient.on('reconnect', () => {
+            updateRealtimeIndicator(true);
+          });
+        }
+      } catch (err) {
+        console.log('MQTT Engine init error:', err);
       }
-      if (!silent) showToast('ข้อมูลนักเรียนเป็นปัจจุบันและพร้อมใช้งานแล้ว ✅');
+    }
+
+    function updateRealtimeIndicator(isOnline) {
+      const ind = document.getElementById('realtimeLiveIndicator');
+      if (!ind) return;
+      if (isOnline) {
+        ind.className = 'inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-full border border-emerald-300 shadow-xs';
+        ind.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span>โก เน€เธฃเธตเธขเธฅเนเธ—เธกเน เธญเธญเธเนเธฅเธเน</span>';
+      } else {
+        ind.className = 'inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200';
+        ind.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> <span>เธญเธญเธเนเธฅเธเน (เน€เธเธเนเธเน€เธเธฃเธทเนเธญเธ)</span>';
+      }
     }
 
     // Service Worker Registration for PWA & System Notifications
@@ -3830,11 +4050,8 @@
         console.log('Query param check error:', e);
       }
 
-      // Dual Google Sheets Realtime Auto-Sync
-      syncDataFromGoogleSheet(true);
-      setInterval(() => {
-        syncDataFromGoogleSheet(true);
-      }, 60000);
+      // Initialize Real-Time Multi-Device Engine (Standalone Database)
+      initRealtimeEngine();
     });
   </script>
 </body>
