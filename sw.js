@@ -1,7 +1,5 @@
-// Network-First Service Worker for DBO Basketball Academy
-// Ensures real-time instant updates on every deploy
-const CACHE_NAME = 'dbo-live-v3';
-
+// DBO Basketball Academy - Safe Clean Service Worker
+// Unregister any stale service workers and avoid loop reloads
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
@@ -9,32 +7,13 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => caches.delete(key))
-      );
-    })
+      return Promise.all(keys.map((k) => caches.delete(k)));
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Network-First: Always fetch freshest version from server first
+// Pass-through fetch without aggressive caching to prevent infinite reload loops
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  
-  event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return networkResponse;
-      })
-      .catch(() => {
-        // Fallback to cache only if device is offline
-        return caches.match(event.request);
-      })
-  );
+  // Let browser handle network normally
+  return;
 });

@@ -1080,24 +1080,11 @@
     <span id="globalToastText">บันทึกเรียบร้อย</span>
   </div>
 
-  <!-- Service Worker Real-time Update Engine -->
+  <!-- Clean PWA Registration (Without infinite reload loops) -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=' + Date.now()).then((reg) => {
-          reg.update(); // Force check updates every load
-          reg.onupdatefound = () => {
-            const installing = reg.installing;
-            if (installing) {
-              installing.onstatechange = () => {
-                if (installing.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New content available, reload automatically to get freshest code
-                  window.location.reload();
-                }
-              };
-            }
-          };
-        }).catch((err) => console.log('SW reg error:', err));
+        navigator.serviceWorker.register('./sw.js').catch((err) => console.log('SW reg:', err));
       });
     }
   </script>
