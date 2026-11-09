@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <title>DBO Basketball Academy — Portal ผู้ปกครอง & เช็คชื่อนักเรียน</title>
+  
+  <!-- PWA & Mobile Web App Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0A1128">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DBO Academy">
+  <link rel="apple-touch-icon" href="assets/images/dbo-logo.png">
+
+  <!-- Typography: Prompt & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dbo: {
+              navy: '#0A1128',
+              navySoft: '#131F42',
+              gold: '#C59B27',
+              goldHover: '#B0881E',
+              goldLight: '#FEF9E7',
+              slateBg: '#F8FAFC',
+              cardBg: '#FFFFFF',
+              border: '#E2E8F0',
+              textPrimary: '#0F172A',
+              textSecondary: '#475569',
+              textMuted: '#94A3B8'
+            }
+          },
+          fontFamily: {
+            sans: ['Prompt', 'Inter', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      color-scheme: light;
+    }
+
+    body {
+      background-color: #F8FAFC;
+      color: #0F172A;
+      overflow-x: clip;
+      font-family: 'Prompt', sans-serif;
+    }
+
+    .hero-title {
+      font-size: clamp(22px, 4.5vw, 32px);
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .section-title {
+      font-size: clamp(18px, 3vw, 24px);
+      line-height: 1.25;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+    }
+
+    .card-clean {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+    }
+
+    .card-clean-interactive {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+      transition: all 0.2s ease;
+    }
+    .card-clean-interactive:hover {
+      border-color: #CBD5E1;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-touch {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-touch:active {
+      transform: scale(0.97);
+    }
+
+    .pill-tab {
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pill-tab.active {
+      background: #0A1128;
+      color: #FFFFFF;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(10, 17, 40, 0.15);
+    }
+    .pill-tab.inactive {
+      color: #64748B;
+      background: transparent;
+    }
+    .pill-tab.inactive:hover {
+      color: #0F172A;
+      background: #EDF2F7;
+    }
+
+    /* Mobile Bottom Navigation Bar */
+    .mobile-bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid #E2E8F0;
+      z-index: 40;
+      padding-bottom: max(6px, env(safe-area-inset-bottom));
+    }
+
+    .mobile-tab-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 4px;
+      color: #64748B;
+      font-size: 11px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      gap: 2px;
+    }
+    .mobile-tab-btn.active {
+      color: #C59B27;
+      font-weight: 700;
+    }
+
+    /* Message Simulator Dialog */
+    .sms-toast-overlay {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      width: calc(100% - 32px);
+      max-width: 440px;
+      animation: dropDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes dropDown {
+      from { opacity: 0; transform: translate(-50%, -20px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col pb-24 md:pb-12">
+
+  <!-- ======================================================== -->
+  <!-- 1. CLEAN WHITE HEADER                                    -->
+  <!-- ======================================================== -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-dbo-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16 sm:h-20 gap-3">
+        
+        <!-- Logo & Name -->
+        <a href="javascript:void(0)" onclick="switchTab('parent-portal')" class="flex items-center gap-3 min-w-0">
+          <img src="assets/images/dbo-logo.png" alt="DBO Basketball Logo" class="h-11 sm:h-12 w-auto object-contain flex-shrink-0">
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="text-base sm:text-lg font-bold text-dbo-navy tracking-tight truncate">DBO Basketball</span>
+              <span class="text-[10px] font-semibold bg-dbo-goldLight text-dbo-gold px-2 py-0.5 rounded-full border border-dbo-gold/30">Academy</span>
+            </div>
+            <p class="text-xs text-dbo-textSecondary hidden sm:block">Basic to Pro • พัฒนาทักษะและวิทยาศาสตร์การกีฬา</p>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Tabs -->
+        <nav class="hidden md:flex items-center bg-slate-100/80 p-1 rounded-full border border-slate-200">
+          <button onclick="switchTab('parent-portal')" id="nav-parent-portal" class="pill-tab active">
+            <i data-lucide="user" class="w-4 h-4"></i>
+            <span>ข้อมูลลูกหลาน</span>
+          </button>
+          
+          <!-- Renew Tab: Only visible if logged in -->
+          <button onclick="switchTab('renew-payment')" id="nav-renew-payment" class="pill-tab inactive hidden text-dbo-gold font-semibold">
+            <i data-lucide="refresh-cw" class="w-4 h-4 text-dbo-gold"></i>
+            <span>ต่อคอร์สเรียน</span>
+          </button>
+
+          <!-- Register Tab: Visible if NOT logged in -->
+          <button onclick="switchTab('register-new')" id="nav-register-new" class="pill-tab inactive">
+            <i data-lucide="user-plus" class="w-4 h-4 text-emerald-600"></i>
+            <span>สมัครเรียนใหม่</span>
+          </button>
+
+          <button onclick="switchTab('calendar')" id="nav-calendar" class="pill-tab inactive">
+            <i data-lucide="calendar" class="w-4 h-4"></i>
+            <span>ตารางเรียน</span>
+          </button>
+          
+          <button onclick="switchTab('private-class')" id="nav-private-class" class="pill-tab inactive">
+            <i data-lucide="target" class="w-4 h-4"></i>
+            <span>Private Class</span>
+          </button>
+
+          <!-- Coach Panel Tab: Only visible when Coach Auth -->
+          <button onclick="switchTab('coach-roster')" id="nav-coach-roster" class="pill-tab inactive hidden text-indigo-700 bg-indigo-50">
+            <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
+            <span>แผงโค้ช (เช็คชื่อ)</span>
+          </button>
+        </nav>
+
+        <!-- Right Quick Actions: App Install & Staff Login -->
+        <div class="flex items-center gap-2">
+          <!-- Install App Button (PWA) -->
+          <button id="pwaInstallBtn" onclick="installAppPrompt()" class="hidden btn-touch px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 flex items-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">ติดตั้งลงมือถือ</span>
+            <span class="sm:hidden">ติดตั้งแอป</span>
+          </button>
+
+          <!-- Coach Login Switch -->
+          <button onclick="toggleCoachAuth()" id="role-auth-btn" class="btn-touch px-3.5 py-1.5 rounded-full text-xs font-medium border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5">
+            <span id="role-dot" class="w-2 h-2 rounded-full bg-slate-400"></span>
+            <span id="role-label">เข้าสู่ระบบโค้ช</span>
+            <i data-lucide="lock" id="role-icon" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Notice Strip -->
+  <div class="bg-dbo-goldLight border-b border-dbo-gold/20 py-2 px-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between text-xs text-dbo-textSecondary flex-wrap gap-2">
+      <div class="flex items-center gap-2">
+        <span id="liveSyncBadge" class="inline-flex items-center text-xs font-semibold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+          ซิงค์ Google Sheets อัตโนมัติ (Live)
+        </span>
+        <span class="hidden sm:inline text-slate-600">| สิทธิ์นักเรียนเตชะวิทย์: คอร์สปกติ <strong>3,990.-</strong> (10 ครั้ง) | เสาร์ Coach Oat <strong>1,500.-</strong> (4 ครั้ง)</span>
+      </div>
+      <button onclick="syncDataFromGoogleSheet(false)" class="text-dbo-gold hover:text-dbo-goldHover font-bold flex items-center gap-1 text-[11px] bg-white px-2.5 py-1 rounded-full border border-dbo-gold/30 shadow-xs">
+        <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+        <span>กดดึงข้อมูลล่าสุด</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: PARENT PORTAL (LOGIN GATE & STUDENT DASHBOARD)    -->
+    <!-- ======================================================== -->
+    <section id="tab-parent-portal" class="space-y-6">
+
+      <!-- STATE A: PHONE LOGIN GATE (FOR UNLOGGED PARENTS) -->
+      <div id="parent-login-box" class="card-clean p-6 sm:p-10 max-w-md mx-auto text-center space-y-6">
+        <div class="w-16 h-16 rounded-full bg-dbo-goldLight border border-dbo-gold/30 flex items-center justify-center mx-auto text-dbo-gold">
+          <i data-lucide="smartphone" class="w-8 h-8"></i>
+        </div>
+
+        <div class="space-y-1.5">
+          <span class="text-xs font-bold uppercase tracking-wider text-dbo-gold">Parent Access</span>
+          <h1 class="hero-title text-dbo-navy">เข้าสู่ระบบสำหรับผู้ปกครอง</h1>
+          <p class="text-xs sm:text-sm text-dbo-textSecondary">
+            กรอก <strong>เบอร์โทรศัพท์มือถือ</strong> ของผู้ปกครอง เพื่อดูโควต้าคงเหลือ วันที่มาเรียน และการต่อคอร์สของบุตรหลาน
+          </p>
+        </div>
+
+        <form onsubmit="handleParentPhoneLogin(event)" class="space-y-4 text-left">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-dbo-textSecondary">เบอร์โทรศัพท์ผู้ปกครอง (10 หลัก)</label>
+            <div class="relative">
+              <i data-lucide="phone" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input 
+                type="tel" 
+                id="parentPhoneInput" 
+                placeholder="เช่น 0812345678" 
+                maxlength="12"
+                required
+                class="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-dbo-navy placeholder-slate-400 focus:outline-none focus:border-dbo-gold focus:ring-2 focus:ring-dbo-gold/20 text-sm font-mono tracking-wider transition"
+              >
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">
+              💡 <em>ทดสอบระบบด่วน:</em> <button type="button" onclick="quickFillPhone('0812345678')" class="text-dbo-gold font-medium underline">081-234-5678 (น้องอิฐ)</button> หรือ <button type="button" onclick="quickFillPhone('0898765432')" class="text-dbo-gold font-medium underline">089-876-5432 (น้องซับ)</button>
+            </p>
+          </div>
+
+          <button type="submit" class="btn-touch w-full py-3 rounded-xl font-bold text-sm bg-dbo-navy text-white hover:bg-dbo-navySoft shadow-md flex items-center justify-center gap-2">
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            <span>เข้าดูข้อมูลลูกหลาน</span>
+          </button>
+        </form>
+
+        <div class="pt-4 border-t border-slate-100 text-xs text-dbo-textSecondary flex items-center justify-center gap-2">
+          <span>ยังไม่เคยเป็นนักเรียนที่นี่?</span>
+          <button onclick="switchTab('register-new')" class="text-dbo-gold font-bold hover:underline">สมัครเรียนใหม่ที่นี่</button>
+        </div>
+      </div>
+
+      <!-- STATE B: PARENT DASHBOARD (WHEN LOGGED IN) -->
+      <div id="parent-dashboard" class="hidden space-y-6">
+        
+        <!-- Welcome Top Banner -->
+        <div class="card-clean p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-white via-white to-slate-50">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-14 h-14 rounded-full bg-dbo-goldLight border border-dbo-gold/40 flex items-center justify-center text-dbo-gold text-xl font-bold font-mono flex-shrink-0">
+              <span id="dash-avatar">#</span>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <h2 id="dash-student-name" class="text-xl sm:text-2xl font-bold text-dbo-navy truncate">น้อง...</h2>
+                <span id="dash-student-id" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-slate-100 text-slate-600 border border-slate-200">ID: #0</span>
+              </div>
+              <p class="text-xs text-dbo-textSecondary mt-0.5">
+                ผู้ปกครอง: <span id="dash-parent-phone" class="font-mono font-medium text-dbo-navy">08x-xxx-xxxx</span> • DBO Basketball Academy
+              </p>
+            </div>
+          </div>
+
+          <!-- Top Action Buttons for Parent -->
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap sm:flex-nowrap">
+            <select id="siblingSelect" onchange="switchSibling(this.value)" class="hidden bg-white border border-slate-300 rounded-full px-3 py-1.5 text-xs text-dbo-navy focus:outline-none focus:border-dbo-gold font-medium"></select>
+
+            <button onclick="switchTab('renew-payment')" class="btn-touch px-4 py-2 rounded-full text-xs font-bold bg-dbo-gold text-white hover:bg-dbo-goldHover shadow-sm flex items-center gap-1.5">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span>ต่อคอร์สใหม่ (3,990.-)</span>
+            </button>
+
+            <button onclick="parentLogout()" class="btn-touch px-3.5 py-2 rounded-full text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1">
+              <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+              <span>ออกจากระบบ</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3 Essential KPI Cards for Parent (Clean White, High Legibility) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- Card 1: Quota Balance -->
+          <div class="card-clean p-5 space-y-3 border-l-4 border-l-dbo-gold">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-dbo-textSecondary">โควต้าเรียนคงเหลือ</span>
+              <span id="dash-badge-status" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">พร้อมเรียน</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span id="dash-remaining-number" class="text-4xl sm:text-5xl font-black text-dbo-navy font-mono">--</span>
+              <span class="text-sm text-slate-400 font-medium">/ 10 ครั้ง</span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="space-y-1">
+              <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
+                <div id="dash-progress-bar" class="h-2.5 rounded-full bg-dbo-gold transition-all duration-300" style="width: 70%"></div>
+              </div>
+              <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+                <span>0 ครั้ง</span>
+                <span id="dash-renew-notice">เหลือ -- ครั้ง</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Next Class Date -->
+          <div class="card-clean p-5 space-y-2 border-l-4 border-l-emerald-500">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-dbo-textSecondary">คลาสเรียนรอบถัดไป</span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            </div>
+            <div class="pt-1">
+              <span class="text-lg font-bold text-dbo-navy block">พฤหัสบดีนี้ (17:00 – 19:00 น.)</span>
+              <span class="text-xs text-slate-500">คลาส Game Situation &amp; Team</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs text-dbo-textSecondary pt-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-dbo-gold"></i>
+              <span>โรงเรียนเตชะวิทย์ (Techawit School)</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Coach Feedback -->
+          <div class="card-clean p-5 space-y-2 border-l-4 border-l-indigo-500">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-dbo-textSecondary">บันทึกพัฒนาการจากโค้ช</span>
+              <i data-lucide="message-square" class="w-4 h-4 text-indigo-500"></i>
+            </div>
+            <p id="dash-coach-remark" class="text-xs text-dbo-textPrimary leading-relaxed line-clamp-3 pt-1">
+              น้องมีความตั้งใจสูง ฟอร์มชู้ตและสปีดการเคลื่อนไหวคล่องตัวขึ้นอย่างเห็นได้ชัด
+            </p>
+            <span class="text-[10px] text-slate-400 block pt-1 font-medium">ทีมผู้ฝึกสอน: Coach Oat &amp; Coach Oak</span>
+          </div>
+
+        </div>
+
+        <!-- Attendance History Table (Clean White Table) -->
+        <div class="card-clean overflow-hidden">
+          <div class="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/60 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="clipboard-check" class="w-4 h-4 text-dbo-gold"></i>
+              <h3 class="card-title text-dbo-navy">ประวัติการเช็คชื่อเข้าฝึกซ้อมของน้อง</h3>
+            </div>
+            <span class="text-xs text-slate-500 font-mono">บันทึกเรียลไทม์</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse">
+              <thead class="bg-slate-100/70 text-xs text-slate-500 uppercase border-b border-slate-200">
+                <tr>
+                  <th scope="col" class="py-3 px-4 font-semibold">วันที่ฝึกซ้อม</th>
+                  <th scope="col" class="py-3 px-4 font-semibold">ประเภทคลาส</th>
+                  <th scope="col" class="py-3 px-4 font-semibold text-center">ผลการเช็คชื่อ</th>
+                  <th scope="col" class="py-3 px-4 font-semibold text-center">การตัดโควต้า</th>
+                </tr>
+              </thead>
+              <tbody id="dash-history-tbody" class="divide-y divide-slate-100">
+                <!-- Dynamically injected -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Action Banner to Renew Course -->
+        <div class="card-clean p-6 bg-gradient-to-r from-dbo-goldLight via-amber-50 to-white border border-dbo-gold/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <h4 class="text-base font-bold text-dbo-navy">ต้องการต่อคอร์สใหม่เพื่อความต่อเนื่องของน้อง?</h4>
+            <p class="text-xs text-slate-600">
+              ราคาพิเศษสำหรับนักเรียนเก่าที่ต่อคอร์ส 10 ครั้ง เพียง <strong>3,990 บาท</strong> (จากราคาแรกเข้า 4,290.-)
+            </p>
+          </div>
+          <button onclick="switchTab('renew-payment')" class="btn-touch px-6 py-3 rounded-xl font-bold text-sm bg-dbo-navy text-white hover:bg-dbo-navySoft shadow-md flex items-center gap-2 flex-shrink-0">
+            <i data-lucide="qr-code" class="w-4 h-4 text-dbo-gold"></i>
+            <span>กดสแกน QR ต่อคอร์สทันที</span>
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: RENEW COURSE & QR PAYMENT (LOCKED UNTIL LOGIN)    -->
+    <!-- ======================================================== -->
+    <section id="tab-renew-payment" class="hidden space-y-6 sm:space-y-8">
+      
+      <!-- Security Gate: If parent is NOT logged in -->
+      <div id="renew-locked-gate" class="card-clean p-8 sm:p-12 text-center max-w-lg mx-auto space-y-4">
+        <div class="w-16 h-16 rounded-full bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center mx-auto">
+          <i data-lucide="lock" class="w-8 h-8"></i>
+        </div>
+        <h2 class="section-title text-dbo-navy">เฉพาะผู้ปกครองนักเรียนปัจจุบัน</h2>
+        <p class="text-xs sm:text-sm text-dbo-textSecondary max-w-sm mx-auto">
+          ระบบต่อคอร์สและราคาพิเศษนี้สงวนไว้สำหรับนักเรียนที่มีประวัติในระบบแล้ว กรุณาเข้าสู่ระบบด้วยเบอร์โทรศัพท์ก่อนทำรายการต่อคอร์ส
+        </p>
+        <div class="pt-2 flex flex-col sm:flex-row justify-center gap-2">
+          <button onclick="switchTab('parent-portal')" class="btn-touch px-6 py-2.5 rounded-xl font-bold text-xs bg-dbo-navy text-white hover:bg-dbo-navySoft">
+            ไปที่หน้าเข้าสู่ระบบด้วยเบอร์โทร
+          </button>
+          <button onclick="switchTab('register-new')" class="btn-touch px-6 py-2.5 rounded-xl font-semibold text-xs bg-slate-100 hover:bg-slate-200 text-slate-700">
+            สมัครเรียนใหม่ (แรกเข้า 4,290.-)
+          </button>
+        </div>
+      </div>
+
+      <!-- Renew Content: Displayed when parent IS logged in -->
+      <div id="renew-content" class="hidden space-y-6">
+        
+        <div class="card-clean p-6 sm:p-8 space-y-2 border-t-4 border-t-dbo-gold">
+          <span class="text-xs font-bold uppercase tracking-wider text-dbo-gold">Existing Student Renewal</span>
+          <h2 class="hero-title text-dbo-navy">ต่อคอร์สเรียน DBO Basketball Academy</h2>
+          <p class="text-xs sm:text-sm text-dbo-textSecondary">
+            ต่อคอร์สสำหรับ: <strong id="renewingStudentName" class="text-dbo-navy text-base">น้อง...</strong> (เบอร์ <span id="renewingStudentPhone" class="font-mono text-dbo-navy">08x-xxx-xxxx</span>)
+          </p>
+        </div>
+
+        <!-- 3 Renewal Package Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- Package 1: Regular 10 Sessions (Special Renewal Price: 3,990) -->
+          <div class="card-clean-interactive p-5 flex flex-col justify-between border-2 border-dbo-gold relative">
+            <div class="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-dbo-gold text-white uppercase tracking-wider">
+              ราคาต่อคอร์สพิเศษ
+            </div>
+            <div class="space-y-3">
+              <span class="text-xs font-bold text-dbo-gold uppercase">คอร์สปกติ จันทร์ • อังคาร • พฤหัส</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-3xl sm:text-4xl font-extrabold text-dbo-navy font-mono">3,990</span>
+                <span class="text-xs text-slate-500">บาท (10 ครั้ง)</span>
+              </div>
+              <p class="text-xs text-emerald-600 font-semibold">
+                ประหยัด 300.- จากราคาแรกเข้าทั่วไป (4,290.-)
+              </p>
+              <ul class="space-y-1.5 text-xs text-dbo-textSecondary pt-2 border-t border-slate-100">
+                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> เรียน 10 ครั้ง (ครั้งละ 2 ชั่วโมงเต็ม)</li>
+                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> ซ้อม 17:00 – 19:00 น. ณ Techawit School</li>
+                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> เพิ่มสิทธิ์เข้าบัญชีน้องทันทีหลังส่งสลิป</li>
+              </ul>
+            </div>
+            <button onclick="selectRenewPackage('ต่อคอร์สปกติ 10 ครั้ง (ราคาเด็กเก่า)', 3990)" class="btn-touch w-full mt-5 py-2.5 rounded-xl font-bold text-xs bg-dbo-navy text-white hover:bg-dbo-navySoft transition">
+              เลือกแพ็กเกจนี้ (3,990.-)
+            </button>
+          </div>
+
+          <!-- Package 2: Monthly Flexible Plan (2,790 / Month) -->
+          <div class="card-clean-interactive p-5 flex flex-col justify-between border-2 border-emerald-500">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-emerald-600 uppercase">แพ็กเกจรายเดือนใหม่</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">2 วัน/สัปดาห์</span>
+              </div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-3xl sm:text-4xl font-extrabold text-dbo-navy font-mono">2,790</span>
+                <span class="text-xs text-slate-500">บาท / เดือน</span>
+              </div>
+              <p class="text-xs text-slate-600">
+                ยืดหยุ่นสูง: มาเรียนได้ <strong>2 วันต่อสัปดาห์</strong> วันใดก็ได้
+              </p>
+              <ul class="space-y-1.5 text-xs text-dbo-textSecondary pt-2 border-t border-slate-100">
+                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> เลือกระหว่าง จันทร์, อังคาร หรือ พฤหัสบดี</li>
+                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> อายุคอร์ส 1 เดือน (ระบบตัดรอบทุกเดือน)</li>
+              </ul>
+            </div>
+            <button onclick="selectRenewPackage('แพ็กเกจรายเดือน (มาได้ 2 วัน/สัปดาห์)', 2790)" class="btn-touch w-full mt-5 py-2.5 rounded-xl font-bold text-xs bg-emerald-600 text-white hover:bg-emerald-700 transition">
+              เลือกแพ็กเกจรายเดือน (2,790.-)
+            </button>
+          </div>
+
+          <!-- Package 3: Saturday Coach Oat (Academy Student: 1,500) -->
+          <div class="card-clean-interactive p-5 flex flex-col justify-between border-2 border-indigo-400">
+            <div class="space-y-3">
+              <span class="text-xs font-bold text-indigo-600 uppercase">คอร์สวันเสาร์ Basic Coach Oat</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-3xl sm:text-4xl font-extrabold text-dbo-navy font-mono">1,500</span>
+                <span class="text-xs text-slate-500">บาท (4 ครั้ง/เดือน)</span>
+              </div>
+              <p class="text-xs text-indigo-700 font-semibold">
+                ราคาพิเศษสำหรับเด็กในอคาเดมี (ทั่วไป 1,690.-)
+              </p>
+              <ul class="space-y-1.5 text-xs text-dbo-textSecondary pt-2 border-t border-slate-100">
+                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-600"></i> เรียนทุกวันเสาร์ เวลา 10:00 – 12:00 น.</li>
+                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-600"></i> เน้นฟอร์มชู้ตและระบบ RAMP Protocol</li>
+              </ul>
+            </div>
+            <button onclick="selectRenewPackage('คอร์สวันเสาร์ Basic Coach Oat (เด็กในอคาเดมี)', 1500)" class="btn-touch w-full mt-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 text-white hover:bg-indigo-700 transition">
+              เลือกคอร์สวันเสาร์ (1,500.-)
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Payment Checkout Section (QR & Slip Upload) -->
+        <div id="renewCheckoutSection" class="card-clean p-6 sm:p-8 space-y-6">
+          <div class="border-b border-slate-200 pb-4">
+            <h3 class="card-title text-dbo-navy">สแกนชำระเงิน &amp; แนบสลิปเพื่อต่อคอร์ส</h3>
+            <p class="text-xs text-slate-500">โอนเงินเข้าบัญชีกสิกรไทย หรือ สแกน QR ด้านล่าง แล้วอัปโหลดสลิป</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            
+            <!-- Real KBank QR Code Display -->
+            <div class="md:col-span-5 text-center space-y-3 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+              <span class="text-xs font-bold text-slate-600 uppercase tracking-wider block">Thai QR Payment (Make by KBank)</span>
+              
+              <div class="w-60 max-w-full mx-auto bg-white p-2.5 rounded-2xl shadow-md border border-slate-200">
+                <img src="assets/images/kbank-qr.jpg" alt="QR กสิกรไทย ศราวุธ สระแกทอง" class="w-full h-auto object-contain rounded-xl">
+              </div>
+
+              <div class="text-left bg-white p-3.5 rounded-xl border border-slate-200 text-xs space-y-1.5">
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-500">ธนาคาร:</span>
+                  <span class="font-bold text-emerald-600 flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> กสิกรไทย (KBANK)
+                  </span>
+                </div>
+                <div class="flex justify-between items-center py-0.5">
+                  <span class="text-slate-500">เลขที่บัญชี:</span>
+                  <div class="flex items-center gap-1.5">
+                    <strong class="font-mono text-sm font-bold text-dbo-navy">150-2-79563-1</strong>
+                    <button type="button" onclick="copyAccountNum()" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-[10px] text-slate-700 font-medium">คัดลอก</button>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-1 border-t border-slate-100">
+                  <span class="text-slate-500">ชื่อบัญชี:</span>
+                  <strong class="text-slate-800">นายศราวุธ สระแกทอง (โค้ชโอ๊ต)</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upload Slip Form -->
+            <div class="md:col-span-7">
+              <form onsubmit="handleSlipSubmit(event)" class="space-y-4">
+                
+                <div class="space-y-1">
+                  <label class="block text-xs font-semibold text-slate-600">แพ็กเกจที่เลือก</label>
+                  <input type="text" id="selectedPackageName" readonly value="ต่อคอร์สปกติ 10 ครั้ง (ราคาเด็กเก่า)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-dbo-navy font-semibold min-h-[44px]">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="space-y-1">
+                    <label class="block text-xs font-semibold text-slate-600">ยอดที่ต้องโอน (บาท)</label>
+                    <input type="number" id="selectedPackagePrice" readonly value="3990" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-base font-bold text-emerald-600 font-mono min-h-[44px]">
+                  </div>
+                  <div class="space-y-1">
+                    <label class="block text-xs font-semibold text-slate-600">ชื่อนักเรียน</label>
+                    <input type="text" id="slipStudentName" readonly class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-dbo-navy font-semibold min-h-[44px]">
+                  </div>
+                </div>
+
+                <!-- Slip File Attachment -->
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-semibold text-slate-600">แนบรูปภาพสลิปโอนเงิน <span class="text-rose-500">*</span></label>
+                  <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center hover:border-dbo-gold transition cursor-pointer bg-slate-50">
+                    <input type="file" id="slipFileInput" accept="image/*" required class="hidden" onchange="previewSlip(this)">
+                    <label for="slipFileInput" class="cursor-pointer block space-y-1">
+                      <i data-lucide="upload-cloud" class="w-7 h-7 mx-auto text-dbo-gold"></i>
+                      <span id="slipFileLabel" class="text-xs text-dbo-navy font-medium block">คลิกเพื่อเลือกไฟล์สลิป (JPG, PNG)</span>
+                      <span class="text-[10px] text-slate-400 block">ระบบจะจำลองการเพิ่มสิทธิ์เข้าบัญชีน้องทันที</span>
+                    </label>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn-touch w-full py-3 rounded-xl font-bold text-sm bg-dbo-navy text-white hover:bg-dbo-navySoft shadow-md flex items-center justify-center gap-2">
+                  <i data-lucide="check-circle" class="w-4 h-4 text-dbo-gold"></i>
+                  <span>ส่งหลักฐานการต่อคอร์ส</span>
+                </button>
+
+              </form>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: NEW STUDENT REGISTRATION (PUBLIC ENROLLMENT)       -->
+    <!-- ======================================================== -->
+    <section id="tab-register-new" class="hidden space-y-6">
+      
+      <div class="card-clean p-6 sm:p-10 max-w-2xl mx-auto space-y-6">
+        
+        <div class="text-center space-y-2 pb-6 border-b border-slate-200">
+          <div class="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto mb-1">
+            <i data-lucide="user-plus" class="w-7 h-7"></i>
+          </div>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">New Student Online Registration</span>
+          <h1 class="hero-title text-dbo-navy">ใบสมัครนักเรียนใหม่ DBO Basketball Academy</h1>
+          <p class="text-xs sm:text-sm text-dbo-textSecondary max-w-md mx-auto">
+            กรอกข้อมูลนักเรียนใหม่ โดยเบอร์โทรศัพท์ของผู้ปกครองจะถูกใช้เป็นรหัสผ่านเข้าดูข้อมูลในครั้งถัดไป
+          </p>
+        </div>
+
+        <!-- Course Pricing Notice for Newcomers -->
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900 space-y-1.5">
+          <div class="font-bold flex items-center justify-between text-amber-800 flex-wrap gap-1">
+            <span class="flex items-center gap-1.5"><i data-lucide="tag" class="w-4 h-4"></i> อัตราค่าบริการสำหรับนักเรียนสมัครใหม่:</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200 text-amber-900 border border-amber-300">★ สิทธิ์พิเศษนักเรียนโรงเรียนเตชะวิทย์</span>
+          </div>
+          <ul class="list-disc list-inside space-y-1 text-slate-700 pl-1">
+            <li><strong>คอร์สปกติ (จันทร์/อังคาร/พฤหัส 10 ครั้ง):</strong> 
+              <span class="text-emerald-700 font-bold">3,990 บาท สำหรับนักเรียนโรงเรียนเตชะวิทย์</span> 
+              <span class="text-slate-500">(โรงเรียนอื่น/แรกเข้าทั่วไป 4,290.-)</span>
+            </li>
+            <li><strong>คอร์สวันเสาร์ Basic กับ Coach Oat (4 ครั้ง):</strong> 
+              <span class="text-indigo-700 font-bold">1,500 บาท สำหรับนักเรียนโรงเรียนเตชะวิทย์</span> 
+              <span class="text-slate-500">(โรงเรียนอื่น/แรกเข้าทั่วไป 1,690.-)</span>
+            </li>
+            <li><strong>คอร์สรายเดือนยืดหยุ่น:</strong> 2,790 บาท / เดือน (เลือกมาเรียนได้ 2 วันต่อสัปดาห์)</li>
+          </ul>
+        </div>
+
+        <form id="newStudentForm" onsubmit="handleNewStudentRegister(event)" class="space-y-4">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2 space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">ชื่อ - นามสกุล นักเรียน <span class="text-rose-500">*</span></label>
+              <input type="text" id="regFullName" required placeholder="เช่น ด.ช. ธนกร พัฒนาดี" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-dbo-navy focus:outline-none focus:border-dbo-gold min-h-[44px]">
+            </div>
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">ชื่อเล่นน้อง <span class="text-rose-500">*</span></label>
+              <input type="text" id="regNickName" required placeholder="เช่น น้องเจเจ" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-dbo-navy focus:outline-none focus:border-dbo-gold min-h-[44px]">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">วัน/เดือน/ปีเกิด <span class="text-rose-500">*</span></label>
+              <input type="date" id="regBirthDate" required onchange="calculateAge(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-dbo-navy focus:outline-none focus:border-dbo-gold min-h-[44px]">
+            </div>
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">อายุ (ปี)</label>
+              <input type="number" id="regAge" placeholder="เช่น 10 ปี" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-dbo-navy min-h-[44px]">
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-slate-700">โรงเรียนปัจจุบัน <span class="text-rose-500">*</span></label>
+            <div class="flex gap-2">
+              <input type="text" id="regSchool" required oninput="checkTechawitSchool(this.value)" placeholder="เช่น โรงเรียนเตชะวิทย์, อัสสัมชัญ..." class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-dbo-navy focus:outline-none focus:border-dbo-gold min-h-[44px]">
+              <button type="button" onclick="setTechawitSchool()" class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 transition flex-shrink-0">
+                เลือกเตชะวิทย์
+              </button>
+            </div>
+            <p id="techawitDiscountBadge" class="hidden text-[11px] text-emerald-700 font-bold mt-1">
+              🎉 ได้รับสิทธิ์นักเรียนเตชะวิทย์: คอร์สปกติ 3,990.- (จาก 4,290.-) | วันเสาร์ 1,500.- (จาก 1,690.-)
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">ชื่อผู้ปกครอง</label>
+              <input type="text" id="regParentName" placeholder="เช่น คุณแม่ธนกร" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-dbo-navy focus:outline-none focus:border-dbo-gold min-h-[44px]">
+            </div>
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">เบอร์โทรศัพท์มือถือ (ใช้ล็อกอิน) <span class="text-rose-500">*</span></label>
+              <input type="tel" id="regParentPhone" required placeholder="08x-xxx-xxxx" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-dbo-navy font-mono focus:outline-none focus:border-dbo-gold min-h-[44px]">
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="block text-xs font-semibold text-slate-700">เลือกแพ็กเกจคอร์สที่สนใจแรกเข้า</label>
+            <select id="regCourseInterest" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-dbo-navy focus:outline-none focus:border-dbo-gold min-h-[44px]">
+              <option value="regular_techawit">คอร์สปกติ 10 ครั้ง: สิทธิ์นักเรียนเตชะวิทย์ 3,990 บาท (10 ครั้ง)</option>
+              <option value="regular_new">คอร์สปกติ 10 ครั้ง: โรงเรียนอื่น/ทั่วไปแรกเข้า 4,290 บาท (10 ครั้ง)</option>
+              <option value="saturday_techawit">คอร์สวันเสาร์ Coach Oat: สิทธิ์นักเรียนเตชะวิทย์ 1,500 บาท (4 ครั้ง)</option>
+              <option value="saturday_new">คอร์สวันเสาร์ Coach Oat: โรงเรียนอื่น/ทั่วไปแรกเข้า 1,690 บาท (4 ครั้ง)</option>
+              <option value="monthly_new">คอร์สรายเดือนยืดหยุ่น (2 วัน/สัปดาห์) 2,790 บาท/เดือน</option>
+              <option value="private_new">Private Class ส่วนตัว</option>
+            </select>
+          </div>
+
+          <div class="pt-4">
+            <button type="submit" class="btn-touch w-full py-3.5 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-md flex items-center justify-center gap-2">
+              <i data-lucide="check" class="w-4 h-4"></i>
+              <span>ยืนยันการสมัครเรียนใหม่</span>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: MASTER CALENDAR (SCHEDULE OVERVIEW)               -->
+    <!-- ======================================================== -->
+    <section id="tab-calendar" class="hidden space-y-6">
+      <div class="card-clean p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pb-4 border-b border-slate-200">
+          <div>
+            <h2 class="section-title text-dbo-navy">ปฏิทินกลางคลาสเรียน (Master Schedule)</h2>
+            <p class="text-xs text-dbo-textSecondary">ตารางการฝึกซ้อมทั้งหมดของ DBO Basketball Academy ณ โรงเรียนเตชะวิทย์</p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
+              จันทร์, อังคาร, พฤหัส (17:00-19:00 น.)
+            </span>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200">
+              เสาร์: Basic Coach Oat (10:00-12:00 น.)
+            </span>
+          </div>
+        </div>
+
+        <!-- Calendar Month Grid -->
+        <div class="pt-2">
+          <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center text-xs font-bold text-slate-500 uppercase mb-2">
+            <div class="py-1.5 text-rose-500">อาทิตย์</div>
+            <div class="py-1.5 text-dbo-navy bg-slate-100 rounded-lg">จันทร์*</div>
+            <div class="py-1.5 text-dbo-navy bg-slate-100 rounded-lg">อังคาร*</div>
+            <div class="py-1.5">พุธ</div>
+            <div class="py-1.5 text-dbo-navy bg-slate-100 rounded-lg">พฤหัส*</div>
+            <div class="py-1.5">ศุกร์</div>
+            <div class="py-1.5 text-indigo-700 bg-indigo-50 rounded-lg">เสาร์ (Coach Oat)*</div>
+          </div>
+          <div id="masterCalendarGrid" class="grid grid-cols-7 gap-1 sm:gap-2 text-sm"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: PRIVATE CLASS BOOKING                             -->
+    <!-- ======================================================== -->
+    <section id="tab-private-class" class="hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+        
+        <div class="md:col-span-7 card-clean p-6 sm:p-8 space-y-5">
+          <div class="pb-3 border-b border-slate-200">
+            <h2 class="card-title text-dbo-navy">ระบบจอง Private Class</h2>
+            <p class="text-xs text-dbo-textSecondary">
+              1-3 คน (800.-/คน) • Private Group 4 คนขึ้นไป (650.-/คน) เรียน 2 ชั่วโมงเต็ม
+            </p>
+          </div>
+
+          <form onsubmit="handlePrivateBookingSubmit(event)" class="space-y-4">
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">ชื่อนักเรียน <span class="text-rose-500">*</span></label>
+              <input type="text" id="privateStudentNameInput" required placeholder="ระบุชื่อน้อง..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-dbo-navy focus:outline-none focus:border-dbo-gold min-h-[44px]">
+            </div>
+
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">เลือกโค้ช <span class="text-rose-500">*</span></label>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="flex items-center p-3 rounded-xl border border-slate-200 bg-slate-50 hover:border-dbo-gold cursor-pointer transition">
+                  <input type="radio" name="privateCoach" value="Coach Oat" checked class="text-dbo-gold focus:ring-0 mr-2.5">
+                  <div>
+                    <span class="text-xs font-bold text-slate-800 block">โค้ชโอ๊ต (สราวุธ)</span>
+                    <span class="text-[10px] text-slate-500 block">Basic &amp; Sports Science</span>
+                  </div>
+                </label>
+                <label class="flex items-center p-3 rounded-xl border border-slate-200 bg-slate-50 hover:border-dbo-gold cursor-pointer transition">
+                  <input type="radio" name="privateCoach" value="Coach Oak" class="text-dbo-gold focus:ring-0 mr-2.5">
+                  <div>
+                    <span class="text-xs font-bold text-slate-800 block">โค้ชโอ๊ค (ณัฐภัทร)</span>
+                    <span class="text-[10px] text-slate-500 block">Pro Skills &amp; Decision</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="space-y-1">
+                <label class="block text-xs font-semibold text-slate-700">วันที่ต้องการจอง <span class="text-rose-500">*</span></label>
+                <input type="date" id="privateDate" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm text-dbo-navy min-h-[44px]">
+              </div>
+              <div class="space-y-1">
+                <label class="block text-xs font-semibold text-slate-700">ช่วงเวลาที่สะดวก <span class="text-rose-500">*</span></label>
+                <select id="privateTimeSlot" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-dbo-navy min-h-[44px]">
+                  <option value="09:00 - 11:00 น.">09:00 – 11:00 น. (ช่วงเช้า)</option>
+                  <option value="13:30 - 15:30 น.">13:30 – 15:30 น. (ช่วงบ่าย)</option>
+                  <option value="15:30 - 17:30 น.">15:30 – 17:30 น. (ช่วงเย็น)</option>
+                  <option value="19:00 - 21:00 น.">19:00 – 21:00 น. (ค่ำ)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <label class="block text-xs font-semibold text-slate-700">เบอร์โทรศัพท์ติดต่อกลับ <span class="text-rose-500">*</span></label>
+              <input type="tel" id="privatePhoneInput" required placeholder="08x-xxx-xxxx" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-dbo-navy min-h-[44px]">
+            </div>
+
+            <button type="submit" class="btn-touch w-full py-3 rounded-xl font-bold text-sm bg-dbo-navy text-white hover:bg-dbo-navySoft shadow-md flex items-center justify-center gap-2">
+              <i data-lucide="calendar-plus" class="w-4 h-4 text-dbo-gold"></i>
+              <span>ส่งคำขอจอง Private Class</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Side: Booking List -->
+        <div class="md:col-span-5 card-clean p-6 space-y-4">
+          <h3 class="card-title text-dbo-navy">คำขอจองล่าสุด</h3>
+          <div id="privateBookingsList" class="space-y-3 max-h-[440px] overflow-y-auto"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 6: COACH ADMIN ROSTER (ATTENDANCE & SMS NOTIFY)      -->
+    <!-- ======================================================== -->
+    <section id="tab-coach-roster" class="hidden space-y-6">
+      
+      <div class="card-clean p-6 sm:p-8 space-y-5 border-l-4 border-l-indigo-600">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pb-4 border-b border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="section-title text-dbo-navy">แผงควบคุมการเช็คชื่อ &amp; แจ้งเตือนข้อความถึงผู้ปกครอง</h2>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">COACH MODE</span>
+            </div>
+            <p class="text-xs text-dbo-textSecondary">
+              เมื่อกดเช็คชื่อ (-1) ระบบจะส่งข้อความแจ้งเตือนเข้ามือถือผู้ปกครองทันทีว่าน้องมาเรียนและเหลือโควต้ากี่ครั้ง
+            </p>
+          </div>
+          <button onclick="coachLogout()" class="btn-touch px-4 py-2 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700">
+            <i data-lucide="lock" class="w-3.5 h-3.5 mr-1.5"></i> ออกจากโหมดโค้ช
+          </button>
+        </div>
+
+        <!-- Search Table -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <input 
+              type="text" 
+              id="coachSearchInput" 
+              placeholder="ค้นหาชื่อน้อง หรือ เบอร์โทรผู้ปกครอง..." 
+              oninput="renderCoachRosterTable()"
+              class="w-full sm:w-80 px-4 py-2 bg-white border border-slate-300 rounded-full text-xs text-dbo-navy focus:outline-none focus:border-dbo-gold"
+            >
+            <span class="text-xs text-slate-500 font-mono">นักเรียนทั้งหมด 49 คน</span>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="w-full text-left text-sm border-collapse min-w-[720px]">
+              <thead class="bg-slate-50 text-xs text-slate-500 uppercase border-b border-slate-200">
+                <tr>
+                  <th scope="col" class="py-3 px-4 text-center w-14">#</th>
+                  <th scope="col" class="py-3 px-4">ชื่อนักเรียน</th>
+                  <th scope="col" class="py-3 px-4">เบอร์โทร ผปค.</th>
+                  <th scope="col" class="py-3 px-4 text-center w-28">สิทธิ์คงเหลือ</th>
+                  <th scope="col" class="py-3 px-4 text-center w-60">ปุ่มเช็คชื่อ &amp; ส่งข้อความเตือน ผปค.</th>
+                </tr>
+              </thead>
+              <tbody id="coachRosterTbody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MOBILE BOTTOM NAVIGATION BAR                             -->
+  <!-- ======================================================== -->
+  <nav class="md:hidden mobile-bottom-nav">
+    <div class="grid grid-cols-4 text-center">
+      <button onclick="switchTab('parent-portal')" id="nav-m-parent-portal" class="mobile-tab-btn active">
+        <i data-lucide="user" class="w-5 h-5"></i>
+        <span>ข้อมูลลูก</span>
+      </button>
+
+      <!-- Renew Tab: Only visible if logged in -->
+      <button onclick="switchTab('renew-payment')" id="nav-m-renew-payment" class="mobile-tab-btn hidden">
+        <i data-lucide="refresh-cw" class="w-5 h-5 text-dbo-gold"></i>
+        <span>ต่อคอร์ส</span>
+      </button>
+
+      <!-- Register Tab: Visible if NOT logged in -->
+      <button onclick="switchTab('register-new')" id="nav-m-register-new" class="mobile-tab-btn">
+        <i data-lucide="user-plus" class="w-5 h-5 text-emerald-600"></i>
+        <span>สมัครเรียน</span>
+      </button>
+
+      <button onclick="switchTab('calendar')" id="nav-m-calendar" class="mobile-tab-btn">
+        <i data-lucide="calendar" class="w-5 h-5"></i>
+        <span>ปฏิทิน</span>
+      </button>
+
+      <button onclick="switchTab('private-class')" id="nav-m-private-class" class="mobile-tab-btn">
+        <i data-lucide="target" class="w-5 h-5"></i>
+        <span>Private</span>
+      </button>
+
+      <!-- Coach Tab in mobile (If Coach Mode) -->
+      <button onclick="switchTab('coach-roster')" id="nav-m-coach-roster" class="mobile-tab-btn hidden text-indigo-600">
+        <i data-lucide="shield-check" class="w-5 h-5"></i>
+        <span>แผงโค้ช</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Coach PIN Login Modal -->
+  <div id="coachAuthModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="card-clean max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+      <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
+        <i data-lucide="shield-lock" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h3 class="card-title text-dbo-navy">เข้าสู่ระบบทีมโค้ช</h3>
+        <p class="text-xs text-slate-500">กรอกรหัส PIN สตาฟเพื่อเช็คชื่อและส่งข้อความเตือน</p>
+      </div>
+
+      <form onsubmit="handleCoachPinSubmit(event)" class="space-y-3">
+        <input 
+          type="password" 
+          id="coachPinInput" 
+          placeholder="รหัส PIN (dbo2026)" 
+          maxlength="10" 
+          required
+          class="w-full text-center tracking-widest text-lg font-mono py-2.5 bg-white border border-slate-300 rounded-xl text-dbo-navy focus:outline-none focus:border-dbo-gold"
+        >
+        <span class="text-[10px] text-slate-400 block">* รหัสทดสอบ: <strong class="text-dbo-gold">dbo2026</strong></span>
+
+        <div class="flex gap-2">
+          <button type="button" onclick="closeCoachAuthModal()" class="btn-touch flex-1 py-2 rounded-xl text-xs bg-slate-100 text-slate-600">ยกเลิก</button>
+          <button type="submit" class="btn-touch flex-1 py-2 rounded-xl text-xs font-bold bg-dbo-navy text-white">ปลดล็อค</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PWA Simulated Install Banner Modal -->
+  <div id="pwaModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="card-clean max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+      <img src="assets/images/dbo-logo.png" alt="DBO Logo" class="h-16 w-auto mx-auto">
+      <h3 class="card-title text-dbo-navy">ติดตั้ง DBO Basketball Academy ลงในมือถือ</h3>
+      <p class="text-xs text-slate-600 leading-relaxed text-left bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+        📱 <strong>สำหรับ iPhone (Safari):</strong> แตะที่ปุ่มแชร์ <span class="font-bold">Share (ไอคอนสี่เหลี่ยมลูกศรชี้ขึ้น)</span> แล้วเลือก <span class="font-bold text-dbo-navy">"Add to Home Screen (เพิ่มไปยังหน้าจอโฮม)"</span><br><br>
+        🤖 <strong>สำหรับ Android (Chrome):</strong> แตะที่ปุ่ม <span class="font-bold">3 จุดมุมบนขวา</span> แล้วเลือก <span class="font-bold text-dbo-navy">"Install App (ติดตั้งแอป)"</span>
+      </p>
+      <button onclick="closePwaModal()" class="btn-touch w-full py-2.5 rounded-xl font-bold text-xs bg-dbo-navy text-white">เข้าใจแล้ว</button>
+    </div>
+  </div>
+
+  <!-- Simulated SMS Notification Message Dialog -->
+  <div id="smsSimulatorToast" class="hidden sms-toast-overlay">
+    <div class="bg-white border-2 border-dbo-navy rounded-2xl p-4 shadow-2xl flex items-start gap-3">
+      <div class="w-10 h-10 rounded-full bg-dbo-navy text-white flex items-center justify-center flex-shrink-0">
+        <i data-lucide="message-circle" class="w-5 h-5 text-dbo-gold"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between">
+          <strong class="text-xs font-bold text-dbo-navy">ข้อความ SMS ถึงผู้ปกครอง</strong>
+          <span class="text-[10px] text-slate-400 font-mono">เมื่อสักครู่</span>
+        </div>
+        <p id="smsToastContent" class="text-xs text-slate-700 mt-1 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-200"></p>
+        <div class="flex justify-end mt-2">
+          <button onclick="closeSmsToast()" class="text-[11px] font-bold text-dbo-gold hover:underline">รับทราบแล้ว</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="globalToast" class="hidden fixed bottom-20 md:bottom-6 right-4 z-50 bg-dbo-navy text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 text-xs font-medium border border-dbo-gold/30">
+    <i data-lucide="check-circle" class="w-4 h-4 text-dbo-gold"></i>
+    <span id="globalToastText">บันทึกเรียบร้อย</span>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT APPLICATION CORE                              -->
+  <!-- ======================================================== -->
+  <script>
+    // Real-time Auto-Sync Configuration (Google Sheets Live Endpoint)
+    const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1l45Id-MEgde9iP4DjNzPLZgzUKhojWE1TKvrenQ6XwQ/export?format=csv&gid=1234243027';
+    const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKmLxaXkYF4JOFXm_BiWBX-7F1nfGBlrlQDa_eSJ-X_u5D_YBOBQxtnbVJWc6GRUrpsA/exec';
+
+    // Auto-fetch data live from Google Sheets
+    async function syncDataFromGoogleSheet(silent = true) {
+      const syncStatusEl = document.getElementById('liveSyncBadge');
+      if (syncStatusEl) {
+        syncStatusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-spin mr-1"></span> ซิงค์ข้อมูลชีต...';
+      }
+
+      try {
+        // Fetch direct live CSV stream with cache buster
+        const response = await fetch(`${GOOGLE_SHEET_CSV_URL}&t=${Date.now()}`);
+        if (!response.ok) throw new Error('Network error');
+        const csvText = await response.text();
+
+        const lines = csvText.split('\n');
+        if (lines.length <= 3) return;
+
+        // Parse header dates from line 1
+        const headerCols = lines[1].split(',');
+        const date29 = headerCols[1] ? headerCols[1].trim() : '29/10';
+        const date1 = headerCols[2] ? headerCols[2].trim() : '1/11/26';
+        const date3 = headerCols[3] ? headerCols[3].trim() : '3/11/26';
+        const date5 = headerCols[4] ? headerCols[4].trim() : '5/11/26';
+
+        const updatedStudents = [];
+        for (let i = 2; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          const cols = line.split(',');
+          const rawName = cols[0] ? cols[0].trim() : '';
+          if (!rawName || rawName.includes('Natcha')) continue;
+
+          const idMatch = rawName.match(/^(\d+)/);
+          const id = idMatch ? parseInt(idMatch[1]) : i;
+          const cleanName = rawName.replace(/^\d+[\.\s]*/, '').trim();
+
+          const rec29 = cols[1] ? cols[1].trim() : '';
+          const rec1 = cols[2] ? cols[2].trim() : '';
+          const rec3 = cols[3] ? cols[3].trim() : '';
+          const rec5 = cols[4] ? cols[4].trim() : '';
+          const remRaw = cols[cols.length - 1] ? cols[cols.length - 1].trim() : '';
+          let rem = parseInt(remRaw);
+          if (isNaN(rem)) rem = 0;
+
+          // Preserve phone mapping or assign standard mapping
+          const prev = students.find(s => s.name === cleanName || s.id === id);
+          const phone = prev && prev.phone ? prev.phone : (id === 50 ? '0815550050' : (id === 51 ? '0815550051' : `08${String(id).padStart(8, '0')}`));
+          const remark = prev && prev.remark ? prev.remark : 'อัปเดตสถิติตรงจากสนามเรียลไทม์';
+
+          updatedStudents.push({
+            id: id,
+            name: cleanName,
+            phone: phone,
+            records: { "29/10": rec29, "1/11/26": rec1, "3/11/26": rec3, "5/11/26": rec5 },
+            remaining: rem,
+            remark: remark
+          });
+        }
+
+        if (updatedStudents.length > 0) {
+          students = updatedStudents;
+          saveState();
+
+          // Refresh active view
+          if (loggedInStudent) {
+            const current = students.find(s => s.name === loggedInStudent.name || s.phone === loggedInStudent.phone);
+            if (current) {
+              loggedInStudent = current;
+              localStorage.setItem('dbo_parent_logged_v6', JSON.stringify(loggedInStudent));
+              renderParentView();
+            }
+          }
+          if (isCoachAuth) renderCoachRosterTable();
+
+          if (syncStatusEl) {
+            syncStatusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5"></span> อัปเดตชีตล่าสุด: ${new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น. (${students.length} คน)`;
+          }
+
+          if (!silent) showToast(`ซิงค์ข้อมูลจาก Google Sheets สำเร็จ! อัปเดตล่าสุด ${students.length} คน`);
+        }
+      } catch (err) {
+        console.warn('Auto-sync notice:', err);
+        if (syncStatusEl) {
+          syncStatusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400 mr-1.5"></span> ออฟไลน์โหมด (ข้อมูลล่าสุดในเครื่อง)`;
+        }
+      }
+    }
+
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    // PWA Install Prompt Listener
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const installBtn = document.getElementById('pwaInstallBtn');
+      if (installBtn) installBtn.classList.remove('hidden');
+    });
+
+    function installAppPrompt() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          deferredPrompt = null;
+        });
+      } else {
+        document.getElementById('pwaModal').classList.remove('hidden');
+      }
+    }
+    function closePwaModal() {
+      document.getElementById('pwaModal').classList.add('hidden');
+    }
+
+    // Initial 49 Students
+    const initialRawData = [
+      { id: 1, name: "อิฐ", phone: "0812345678", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 4, remark: "ฟอร์มชู้ตพัฒนาได้เร็วมาก ความแข็งแรงดี มีสมาธิเยี่ยม" },
+      { id: 2, name: "ซับ", phone: "0898765432", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: -4, remark: "สิทธิ์เกิน 4 ครั้ง แนะนำกดต่อคอร์สใหม่" },
+      { id: 3, name: "ขุนศึก", phone: "0821112233", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: -11, remark: "คอร์สเกินสิทธิ์ กรุณาติดต่อโค้ช" },
+      { id: 4, name: "ต้นบุญ", phone: "0834445566", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: -1, remark: "สิทธิ์หมดแล้ว ต่อคอร์สเพื่อความต่อเนื่อง" },
+      { id: 5, name: "ต้นพุด", phone: "0847778899", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 10, remark: "เพิ่งต่อคอร์สใหม่ 10 ครั้งเต็ม พร้อมเรียน" },
+      { id: 6, name: "ไทม์", phone: "0851239874", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 6, remark: "มีความคล่องแคล่วในการเลี้ยงบอลสูง" },
+      { id: 7, name: "พัช", phone: "0863214567", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 0, remark: "ใช้สิทธิ์ครบ 10 ครั้งแล้ว แนะนำต่อคอร์ส" },
+      { id: 8, name: "แอร์บัส", phone: "0876541230", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 9, remark: "กระตือรือร้นในการฝึกซ้อมดีมาก" },
+      { id: 9, name: "วินแฟลค", phone: "0889990011", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 1, remark: "เหลือ 1 ครั้ง เตรียมต่อคอร์สรอบหน้าครับ" },
+      { id: 10, name: "ไวน์แฟรงค์", phone: "0891113355", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 6, remark: "พัฒนาการชู้ตระยะกลางสม่ำเสมอ" },
+      { id: 11, name: "ดลย์", phone: "0812224466", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 8, remark: "ร่างกายยืดหยุ่นดี มีวินัยสูง" },
+      { id: 12, name: "อคิณ", phone: "0823335577", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 0, remark: "สิทธิ์ครบ 10 ครั้งแล้วครับ" },
+      { id: 13, name: "ชัทเตอร์", phone: "0834446688", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 8, remark: "สปีดการวิ่งและเบสิคดีมาก" },
+      { id: 14, name: "บอสตัน", phone: "0845557799", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 2, remark: "เหลือ 2 ครั้ง แนะนำเตรียมต่อคอร์ส" },
+      { id: 15, name: "ฮาร์เด้น", phone: "0856668800", records: { "29/10": "", "1/11/26": "", "3/11/26": "" }, remaining: 10, remark: "พร้อมเรียนตามปกติ" },
+      { id: 16, name: "ไม้เอก", phone: "0867779911", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 3, remark: "เหลือ 3 ครั้ง แจ้งต่อคอร์สได้เลยครับ" },
+      { id: 17, name: "จัสติน", phone: "0878880022", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 3, remark: "เหลือ 3 ครั้ง การคอนโทรลบอลดีขึ้นมาก" },
+      { id: 18, name: "ชาลี", phone: "0889991133", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 1, remark: "เหลือ 1 ครั้งสุดท้าย แนะนำต่อคอร์สใหม่" },
+      { id: 19, name: "พีต้า", phone: "0890002244", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 3, remark: "การป้องกันและการเคลื่อนที่เร็วขึ้นมาก" },
+      { id: 20, name: "สตาร์ท", phone: "0811113355", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 5, remark: "พร้อมเรียนตามปกติ" },
+      { id: 21, name: "แอนฟิลด์", phone: "0822224466", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 0, remark: "หมดสิทธิ์คอร์สปัจจุบัน" },
+      { id: 22, name: "มาร์ค", phone: "0833335577", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 8, remark: "เล่นเกมบุกได้เฉียบคมมาก" },
+      { id: 23, name: "แกรนด์", phone: "0844446688", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 8, remark: "ตั้งใจฟังแบบฝึกซ้อมดีเยี่ยม" },
+      { id: 24, name: "แอร์เมส", phone: "0855557799", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 6, remark: "พร้อมเรียนตามปกติ" },
+      { id: 25, name: "มิวนิค", phone: "0866668800", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 0, remark: "หมดสิทธิ์แล้วครับ" },
+      { id: 26, name: "ตี๋", phone: "0877779911", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 1, remark: "เหลือ 1 ครั้งสุดท้าย" },
+      { id: 27, name: "มาตังค์", phone: "0888880022", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 8, remark: "พร้อมเรียนตามปกติ" },
+      { id: 28, name: "มันตา", phone: "0899991133", records: { "29/10": "", "1/11/26": "", "3/11/26": "" }, remaining: 6, remark: "พร้อมเรียนตามปกติ" },
+      { id: 29, name: "นํ้าขิง", phone: "0810002244", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 0, remark: "หมดสิทธิ์แล้วครับ" },
+      { id: 30, name: "ข้าวตั้ง", phone: "0821113355", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 7, remark: "การส่งบอลและสปีดดีขึ้น" },
+      { id: 31, name: "นานา", phone: "0832224466", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 8, remark: "พร้อมเรียนตามปกติ" },
+      { id: 32, name: "สรา", phone: "0843335577", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 8, remark: "ร่างกายแข็งแรงมาก" },
+      { id: 33, name: "Japan", phone: "0854446688", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 5, remark: "พร้อมเรียนตามปกติ" },
+      { id: 34, name: "JR.", phone: "0865557799", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 7, remark: "พร้อมเรียนตามปกติ" },
+      { id: 35, name: "IRyu", phone: "0876668800", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 4, remark: "พร้อมเรียนตามปกติ" },
+      { id: 36, name: "Sari", phone: "0887779911", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 10, remark: "เพิ่งต่อคอร์สใหม่ 10 ครั้ง" },
+      { id: 37, name: "Phupa", phone: "0898880022", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 1, remark: "เหลือ 1 ครั้งสุดท้าย" },
+      { id: 38, name: "Sky", phone: "0819991133", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: -1, remark: "เกินสิทธิ์ 1 ครั้ง แนะนำต่อคอร์ส" },
+      { id: 39, name: "Nada", phone: "0820002244", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 2, remark: "เหลือ 2 ครั้ง" },
+      { id: 40, name: "August", phone: "0831113355", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 6, remark: "พร้อมเรียนตามปกติ" },
+      { id: 41, name: "Prod", phone: "0842224466", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 7, remark: "พร้อมเรียนตามปกติ" },
+      { id: 42, name: "L J", phone: "0853335577", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 3, remark: "เหลือ 3 ครั้ง" },
+      { id: 43, name: "เป็นหนึ่ง", phone: "0864446688", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 7, remark: "พร้อมเรียนตามปกติ" },
+      { id: 44, name: "อินทัช", phone: "0875557799", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 7, remark: "พร้อมเรียนตามปกติ" },
+      { id: 45, name: "นาวิน", phone: "0886668800", records: { "29/10": "", "1/11/26": "", "3/11/26": "" }, remaining: 8, remark: "พร้อมเรียนตามปกติ" },
+      { id: 46, name: "ปลื้ม", phone: "0897779911", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 0, remark: "หมดสิทธิ์แล้วครับ" },
+      { id: 47, name: "มังกร", phone: "0818880022", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 2, remark: "เหลือ 2 ครั้ง" },
+      { id: 48, name: "T J", phone: "0829991133", records: { "29/10": "/", "1/11/26": "", "3/11/26": "" }, remaining: 1, remark: "เหลือ 1 ครั้งสุดท้าย" },
+      { id: 49, name: "ลูคัส", phone: "0830002244", records: { "29/10": "ลา", "1/11/26": "", "3/11/26": "" }, remaining: 7, remark: "พร้อมเรียนตามปกติ" }
+    ];
+
+    let students = JSON.parse(localStorage.getItem('dbo_students_v6')) || initialRawData;
+    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v6')) || null;
+    let isCoachAuth = localStorage.getItem('dbo_is_coach_v6') === 'true';
+
+    let privateBookings = JSON.parse(localStorage.getItem('dbo_private_bookings_v6')) || [
+      { studentName: 'ไทม์', coach: 'Coach Oat', date: '2026-11-07', timeSlot: '09:00 - 11:00 น.', status: 'ยืนยันคิวแล้ว' }
+    ];
+
+    function saveState() {
+      localStorage.setItem('dbo_students_v6', JSON.stringify(students));
+    }
+
+    // Switch Tab & Sync Bottom Nav
+    function switchTab(tabName) {
+      const tabs = ['parent-portal', 'renew-payment', 'register-new', 'calendar', 'private-class', 'coach-roster'];
+      
+      tabs.forEach(t => {
+        const sec = document.getElementById(`tab-${t}`);
+        const navBtn = document.getElementById(`nav-${t}`);
+        const navMBtn = document.getElementById(`nav-m-${t}`);
+
+        if (t === tabName) {
+          if (sec) sec.classList.remove('hidden');
+          if (navBtn) { navBtn.classList.add('active'); navBtn.classList.remove('inactive'); }
+          if (navMBtn) { navMBtn.classList.add('active'); }
+        } else {
+          if (sec) sec.classList.add('hidden');
+          if (navBtn) { navBtn.classList.remove('active'); navBtn.classList.add('inactive'); }
+          if (navMBtn) { navMBtn.classList.remove('active'); }
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      lucide.createIcons();
+    }
+
+    function quickFillPhone(phone) {
+      document.getElementById('parentPhoneInput').value = phone;
+    }
+
+    // Parent Login Logic
+    function handleParentPhoneLogin(e) {
+      e.preventDefault();
+      const rawPhone = document.getElementById('parentPhoneInput').value.replace(/[-\s]/g, '').trim();
+      const matched = students.filter(s => s.phone.replace(/[-\s]/g, '') === rawPhone);
+
+      if (matched.length === 0) {
+        showToast('ไม่พบข้อมูลเบอร์โทรนี้ในระบบ หากเป็นนักเรียนใหม่กรุณากดสมัครเรียนใหม่');
+        return;
+      }
+
+      loggedInStudent = matched[0];
+      localStorage.setItem('dbo_parent_logged_v6', JSON.stringify(loggedInStudent));
+      renderParentView(matched);
+      showToast(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name}`);
+    }
+
+    function renderParentView(matchedList) {
+      const loginBox = document.getElementById('parent-login-box');
+      const dashBox = document.getElementById('parent-dashboard');
+      const renewNav = document.getElementById('nav-renew-payment');
+      const renewMNav = document.getElementById('nav-m-renew-payment');
+      const regNav = document.getElementById('nav-register-new');
+      const regMNav = document.getElementById('nav-m-register-new');
+
+      const renewGate = document.getElementById('renew-locked-gate');
+      const renewContent = document.getElementById('renew-content');
+
+      if (!loggedInStudent) {
+        // NOT LOGGED IN
+        if (loginBox) loginBox.classList.remove('hidden');
+        if (dashBox) dashBox.classList.add('hidden');
+
+        // Hide Renew Tab, Show Register Tab
+        if (renewNav) renewNav.classList.add('hidden');
+        if (renewMNav) renewMNav.classList.add('hidden');
+        if (regNav) regNav.classList.remove('hidden');
+        if (regMNav) regMNav.classList.remove('hidden');
+
+        if (renewGate) renewGate.classList.remove('hidden');
+        if (renewContent) renewContent.classList.add('hidden');
+        return;
+      }
+
+      // LOGGED IN
+      if (loginBox) loginBox.classList.add('hidden');
+      if (dashBox) dashBox.classList.remove('hidden');
+
+      // Show Renew Tab, Hide Register Tab (or keep clean)
+      if (renewNav) renewNav.classList.remove('hidden');
+      if (renewMNav) renewMNav.classList.remove('hidden');
+      if (regNav) regNav.classList.add('hidden');
+      if (regMNav) regMNav.classList.add('hidden');
+
+      if (renewGate) renewGate.classList.add('hidden');
+      if (renewContent) renewContent.classList.remove('hidden');
+
+      // Student info in dashboard
+      document.getElementById('dash-avatar').innerText = loggedInStudent.name.charAt(0);
+      document.getElementById('dash-student-name').innerText = `น้อง ${loggedInStudent.name}`;
+      document.getElementById('dash-student-id').innerText = `ID: #${loggedInStudent.id}`;
+      document.getElementById('dash-parent-phone').innerText = loggedInStudent.phone;
+      document.getElementById('dash-coach-remark').innerText = loggedInStudent.remark || 'มีความตั้งใจสูงและปฏิบัติตามคำแนะนำของโค้ชอย่างเคร่งครัด';
+
+      // Pre-fill student name in renew form
+      document.getElementById('renewingStudentName').innerText = `น้อง ${loggedInStudent.name}`;
+      document.getElementById('renewingStudentPhone').innerText = loggedInStudent.phone;
+      document.getElementById('slipStudentName').value = loggedInStudent.name;
+
+      // Siblings switcher
+      const sibSelect = document.getElementById('siblingSelect');
+      if (matchedList && matchedList.length > 1) {
+        sibSelect.classList.remove('hidden');
+        sibSelect.innerHTML = '';
+        matchedList.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = `น้อง ${s.name}`;
+          if (s.id === loggedInStudent.id) opt.selected = true;
+          sibSelect.appendChild(opt);
+        });
+      } else {
+        sibSelect.classList.add('hidden');
+      }
+
+      // Remaining Quota
+      const rem = loggedInStudent.remaining;
+      const remNumEl = document.getElementById('dash-remaining-number');
+      const badgeStatusEl = document.getElementById('dash-badge-status');
+      const progBarEl = document.getElementById('dash-progress-bar');
+      const renewNoticeEl = document.getElementById('dash-renew-notice');
+
+      if (rem > 3) {
+        remNumEl.innerText = rem;
+        remNumEl.className = 'text-4xl sm:text-5xl font-black text-dbo-navy font-mono';
+        badgeStatusEl.innerText = '✅ พร้อมเรียน';
+        badgeStatusEl.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
+        const pct = Math.min(100, Math.max(0, (rem / 10) * 100));
+        progBarEl.style.width = pct + '%';
+        progBarEl.className = 'h-2.5 rounded-full bg-emerald-500';
+        renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง (เรียนไปแล้ว ${10 - rem} ครั้ง)`;
+      } else if (rem >= 1 && rem <= 3) {
+        remNumEl.innerText = rem;
+        remNumEl.className = 'text-4xl sm:text-5xl font-black text-amber-600 font-mono';
+        badgeStatusEl.innerText = '⚠️ ใกล้หมดสิทธิ์';
+        badgeStatusEl.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200';
+        const pct = (rem / 10) * 100;
+        progBarEl.style.width = pct + '%';
+        progBarEl.className = 'h-2.5 rounded-full bg-amber-500';
+        renewNoticeEl.innerText = `เหลือเพียง ${rem} ครั้ง แนะนำกดต่อคอร์สใหม่`;
+      } else {
+        remNumEl.innerText = rem;
+        remNumEl.className = 'text-4xl sm:text-5xl font-black text-rose-600 font-mono';
+        badgeStatusEl.innerText = rem === 0 ? '🚨 หมดสิทธิ์แล้ว' : `🚨 เกินสิทธิ์ (${Math.abs(rem)} ครั้ง)`;
+        badgeStatusEl.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200';
+        progBarEl.style.width = '0%';
+        progBarEl.className = 'h-2.5 rounded-full bg-rose-500';
+        renewNoticeEl.innerText = 'กรุณาต่อคอร์สใหม่เพื่อรักษาสิทธิ์';
+      }
+
+      // History Table
+      const historyTbody = document.getElementById('dash-history-tbody');
+      const recs = loggedInStudent.records || {};
+      historyTbody.innerHTML = `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3 px-4 font-mono text-xs font-medium text-slate-700">29 ต.ค. 2569</td>
+          <td class="py-3 px-4 text-xs text-slate-800">คลาสปกติ จันทร์-อังคาร-พฤหัส (17:00-19:00 น.)</td>
+          <td class="py-3 px-4 text-center">
+            ${recs['29/10'] === '/' 
+              ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">มาเรียน (/)</span>' 
+              : (recs['29/10'] === 'ลา' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">ลาเรียน</span>' : '<span class="text-slate-400">-</span>')}
+          </td>
+          <td class="py-3 px-4 text-center text-xs font-mono text-slate-500">${recs['29/10'] === '/' ? '-1 ครั้ง' : '0'}</td>
+        </tr>
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3 px-4 font-mono text-xs font-medium text-slate-700">1 พ.ย. 2569</td>
+          <td class="py-3 px-4 text-xs text-slate-800">คลาส Basic กับ Coach Oat (10:00-12:00 น.)</td>
+          <td class="py-3 px-4 text-center">
+            ${recs['1/11/26'] === '/' 
+              ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">มาเรียน (/)</span>' 
+              : (recs['1/11/26'] === 'ลา' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">ลาเรียน</span>' : (recs['1/11/26'] || '<span class="text-slate-400">-</span>'))}
+          </td>
+          <td class="py-3 px-4 text-center text-xs font-mono text-slate-500">${recs['1/11/26'] === '/' ? '-1 ครั้ง' : '0'}</td>
+        </tr>
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3 px-4 font-mono text-xs font-medium text-slate-700">3 พ.ย. 2569</td>
+          <td class="py-3 px-4 text-xs text-slate-800">คลาสปกติ (17:00-19:00 น.)</td>
+          <td class="py-3 px-4 text-center">
+            ${recs['3/11/26'] === '/' 
+              ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">มาเรียน (/)</span>' 
+              : (recs['3/11/26'] === 'ลา' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">ลาเรียน</span>' : (recs['3/11/26'] || '<span class="text-slate-400">-</span>'))}
+          </td>
+          <td class="py-3 px-4 text-center text-xs font-mono text-slate-500">${recs['3/11/26'] === '/' ? '-1 ครั้ง' : '0'}</td>
+        </tr>
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3 px-4 font-mono text-xs font-medium text-slate-700">5 พ.ย. 2569</td>
+          <td class="py-3 px-4 text-xs text-slate-800">คลาสปกติ (17:00-19:00 น.)</td>
+          <td class="py-3 px-4 text-center">
+            ${recs['5/11/26'] === '/' 
+              ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">มาเรียน (/)</span>' 
+              : (recs['5/11/26'] === 'ลา' ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">ลาเรียน</span>' : (recs['5/11/26'] || '<span class="text-slate-400">-</span>'))}
+          </td>
+          <td class="py-3 px-4 text-center text-xs font-mono text-slate-500">${recs['5/11/26'] === '/' ? '-1 ครั้ง' : '0'}</td>
+        </tr>
+      `;
+      lucide.createIcons();
+    }
+
+    function switchSibling(studentId) {
+      loggedInStudent = students.find(s => s.id === parseInt(studentId));
+      localStorage.setItem('dbo_parent_logged_v6', JSON.stringify(loggedInStudent));
+      renderParentView();
+    }
+
+    function parentLogout() {
+      loggedInStudent = null;
+      localStorage.removeItem('dbo_parent_logged_v6');
+      document.getElementById('parentPhoneInput').value = '';
+      renderParentView();
+      switchTab('parent-portal');
+      showToast('ออกจากระบบเรียบร้อย');
+    }
+
+    // Package Selector
+    function selectRenewPackage(name, price) {
+      document.getElementById('selectedPackageName').value = name;
+      document.getElementById('selectedPackagePrice').value = price;
+      
+      const el = document.getElementById('renewCheckoutSection');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        showToast(`เลือกแพ็กเกจ ${name} (${price}.-) สแกน QR และแนบสลิปด้านล่าง`);
+      }
+    }
+
+    function copyAccountNum() {
+      navigator.clipboard.writeText('1502795631');
+      showToast('คัดลอกเลขบัญชี 150-2-79563-1 แล้ว');
+    }
+
+    function previewSlip(input) {
+      if (input.files && input.files[0]) {
+        document.getElementById('slipFileLabel').innerText = `✓ แนบไฟล์แล้ว: ${input.files[0].name}`;
+      }
+    }
+
+    function handleSlipSubmit(e) {
+      e.preventDefault();
+      const pkg = document.getElementById('selectedPackageName').value;
+      const price = document.getElementById('selectedPackagePrice').value;
+      const sName = document.getElementById('slipStudentName').value.trim();
+
+      const existing = students.find(s => s.name.toLowerCase() === sName.toLowerCase());
+      if (existing) {
+        if (price == 3990) existing.remaining = (existing.remaining || 0) + 10;
+        else if (price == 1500) existing.remaining = (existing.remaining || 0) + 4;
+        else existing.remaining = (existing.remaining || 0) + 8; // Monthly ~8 sessions
+        saveState();
+        if (loggedInStudent && loggedInStudent.id === existing.id) {
+          loggedInStudent = existing;
+          renderParentView();
+        }
+      }
+
+      showToast(`ส่งหลักฐานชำระเงิน ${price} บาท สำหรับน้อง ${sName} สำเร็จ! อัปเดตสิทธิ์แล้ว`);
+      switchTab('parent-portal');
+    }
+
+    // New Student Registration Logic
+    function setTechawitSchool() {
+      const input = document.getElementById('regSchool');
+      input.value = 'โรงเรียนเตชะวิทย์';
+      checkTechawitSchool('โรงเรียนเตชะวิทย์');
+    }
+
+    function checkTechawitSchool(val) {
+      const badge = document.getElementById('techawitDiscountBadge');
+      const select = document.getElementById('regCourseInterest');
+      if (val.includes('เตชะวิทย์') || val.toLowerCase().includes('techawit')) {
+        badge.classList.remove('hidden');
+        if (select.value === 'regular_new') select.value = 'regular_techawit';
+        if (select.value === 'saturday_new') select.value = 'saturday_techawit';
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    function calculateAge(birthDateString) {
+      if (!birthDateString) return;
+      const birth = new Date(birthDateString);
+      const today = new Date();
+      let age = today.getFullYear() - birth.getFullYear();
+      const m = today.getMonth() - birth.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+      document.getElementById('regAge').value = age > 0 ? age : 7;
+    }
+
+    function handleNewStudentRegister(e) {
+      e.preventDefault();
+      const nickName = document.getElementById('regNickName').value.trim();
+      const fullName = document.getElementById('regFullName').value.trim();
+      const phone = document.getElementById('regParentPhone').value.trim();
+      const school = document.getElementById('regSchool').value.trim();
+      const course = document.getElementById('regCourseInterest').value;
+
+      const newId = students.length + 1;
+      const newStudent = {
+        id: newId,
+        name: nickName,
+        fullName: fullName,
+        phone: phone,
+        school: school,
+        records: { "29/10": "", "1/11/26": "", "3/11/26": "" },
+        remaining: (course.includes('regular') ? 10 : (course.includes('saturday') ? 4 : 8)),
+        remark: school.includes('เตชะวิทย์') 
+          ? 'นักเรียนโรงเรียนเตชะวิทย์ (ได้รับสิทธิ์ราคาพิเศษ 3,990.- / 1,500.-)' 
+          : 'นักเรียนใหม่ลงทะเบียนออนไลน์ — ยินดีต้อนรับสู่ DBO Academy!'
+      };
+
+      students.unshift(newStudent);
+      saveState();
+
+      // Auto login as new student
+      loggedInStudent = newStudent;
+      localStorage.setItem('dbo_parent_logged_v6', JSON.stringify(loggedInStudent));
+
+      showToast(`ยินดีต้อนรับ "น้อง ${nickName}" สมัครเรียนสำเร็จ! เบอร์โทร ${phone} ใช้เข้าสู่ระบบได้ทันที`);
+      renderParentView();
+      switchTab('parent-portal');
+    }
+
+    // Private Booking Logic
+    function renderPrivateBookings() {
+      const list = document.getElementById('privateBookingsList');
+      if (!list) return;
+      list.innerHTML = '';
+      privateBookings.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "p-3 rounded-xl border border-slate-200 bg-slate-50 space-y-1";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <strong class="text-xs text-dbo-navy">น้อง ${item.studentName} — ${item.coach}</strong>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">${item.status}</span>
+          </div>
+          <p class="text-xs text-slate-500 font-mono">${item.date} (${item.timeSlot})</p>
+        `;
+        list.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function handlePrivateBookingSubmit(e) {
+      e.preventDefault();
+      const sName = document.getElementById('privateStudentNameInput').value.trim();
+      const coach = document.querySelector('input[name="privateCoach"]:checked').value;
+      const date = document.getElementById('privateDate').value;
+      const timeSlot = document.getElementById('privateTimeSlot').value;
+      const phone = document.getElementById('privatePhoneInput').value.trim();
+
+      const newBooking = {
+        studentName: sName,
+        coach: coach,
+        date: date,
+        timeSlot: timeSlot,
+        phone: phone,
+        status: 'ยืนยันคิวแล้ว'
+      };
+
+      privateBookings.unshift(newBooking);
+      localStorage.setItem('dbo_private_bookings_v6', JSON.stringify(privateBookings));
+      renderPrivateBookings();
+      showToast(`ส่งคำขอจอง Private ให้ "น้อง ${sName}" เรียบร้อย โค้ชจะติดต่อกลับเบอร์ ${phone}`);
+    }
+
+    // Master Calendar
+    function renderMasterCalendar() {
+      const grid = document.getElementById('masterCalendarGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      const totalDays = 30;
+      const startDayOfWeek = 0;
+
+      for (let day = 1; day <= totalDays; day++) {
+        const dayOfWeek = (startDayOfWeek + (day - 1)) % 7; 
+        const isNormalClass = (dayOfWeek === 1 || dayOfWeek === 2 || dayOfWeek === 4);
+        const isSaturdayCoachOat = (dayOfWeek === 6);
+
+        const cell = document.createElement('div');
+        cell.className = `p-2 rounded-xl border min-h-[80px] flex flex-col justify-between transition-all ${
+          isSaturdayCoachOat 
+            ? 'bg-indigo-50/70 border-indigo-200 text-indigo-900' 
+            : (isNormalClass ? 'bg-amber-50/50 border-amber-200 text-slate-800' : 'bg-white border-slate-200 text-slate-400')
+        }`;
+
+        let statusBadge = '';
+        if (isSaturdayCoachOat) {
+          statusBadge = `
+            <div class="mt-1">
+              <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-100 text-indigo-700 font-mono">
+                10:00 Coach Oat
+              </span>
+              <p class="text-[10px] text-indigo-800 font-medium truncate hidden sm:block">Basic Class</p>
+            </div>
+          `;
+        } else if (isNormalClass) {
+          statusBadge = `
+            <div class="mt-1">
+              <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-100 text-emerald-800 font-mono">
+                17:00 คลาสปกติ
+              </span>
+            </div>
+          `;
+        }
+
+        cell.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs font-mono ${isSaturdayCoachOat ? 'text-indigo-700' : (isNormalClass ? 'text-dbo-navy' : 'text-slate-400')}">${day}</span>
+            ${isSaturdayCoachOat ? '<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>' : (isNormalClass ? '<span class="w-1.5 h-1.5 rounded-full bg-dbo-gold"></span>' : '')}
+          </div>
+          ${statusBadge}
+        `;
+        grid.appendChild(cell);
+      }
+    }
+
+    // Coach Mode & SMS Notification Simulator
+    function toggleCoachAuth() {
+      if (isCoachAuth) {
+        if (confirm('ต้องการออกจากโหมดโค้ชใช่หรือไม่?')) coachLogout();
+      } else {
+        document.getElementById('coachAuthModal').classList.remove('hidden');
+        document.getElementById('coachPinInput').value = '';
+        document.getElementById('coachPinInput').focus();
+      }
+    }
+
+    function closeCoachAuthModal() {
+      document.getElementById('coachAuthModal').classList.add('hidden');
+    }
+
+    function handleCoachPinSubmit(e) {
+      e.preventDefault();
+      const pin = document.getElementById('coachPinInput').value.trim();
+      if (pin === 'dbo2026') {
+        isCoachAuth = true;
+        localStorage.setItem('dbo_is_coach_v6', 'true');
+        closeCoachAuthModal();
+        updateCoachStateUI();
+        switchTab('coach-roster');
+        showToast('ปลดล็อคโหมดโค้ชสำเร็จ! เข้าสู่หน้าเช็คชื่อ');
+      } else {
+        showToast('รหัส PIN ไม่ถูกต้อง (ทดสอบ: dbo2026)');
+      }
+    }
+
+    function coachLogout() {
+      isCoachAuth = false;
+      localStorage.setItem('dbo_is_coach_v6', 'false');
+      updateCoachStateUI();
+      switchTab('parent-portal');
+      showToast('ออกจากโหมดโค้ชแล้ว');
+    }
+
+    function updateCoachStateUI() {
+      const coachTab = document.getElementById('nav-coach-roster');
+      const coachMTab = document.getElementById('nav-m-coach-roster');
+      const roleLabel = document.getElementById('role-label');
+      const roleDot = document.getElementById('role-dot');
+      const roleIcon = document.getElementById('role-icon');
+
+      if (isCoachAuth) {
+        if (coachTab) coachTab.classList.remove('hidden');
+        if (coachMTab) coachMTab.classList.remove('hidden');
+        if (roleLabel) roleLabel.innerText = 'โหมดโค้ช (Online)';
+        if (roleDot) roleDot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+        if (roleIcon) roleIcon.setAttribute('data-lucide', 'unlock');
+        renderCoachRosterTable();
+      } else {
+        if (coachTab) coachTab.classList.add('hidden');
+        if (coachMTab) coachMTab.classList.add('hidden');
+        if (roleLabel) roleLabel.innerText = 'เข้าสู่ระบบโค้ช';
+        if (roleDot) roleDot.className = 'w-2 h-2 rounded-full bg-slate-400';
+        if (roleIcon) roleIcon.setAttribute('data-lucide', 'lock');
+      }
+      lucide.createIcons();
+    }
+
+    function renderCoachRosterTable() {
+      const tbody = document.getElementById('coachRosterTbody');
+      if (!tbody) return;
+      const search = (document.getElementById('coachSearchInput').value || '').trim().toLowerCase();
+      tbody.innerHTML = '';
+
+      const filtered = students.filter(s => s.name.toLowerCase().includes(search) || s.phone.includes(search) || String(s.id).includes(search));
+
+      filtered.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+        const rem = s.remaining;
+        let badge = '';
+        if (rem > 3) badge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-100 text-emerald-800">${rem} ครั้ง</span>`;
+        else if (rem >= 1 && rem <= 3) badge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-100 text-amber-800">${rem} ครั้ง</span>`;
+        else badge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-rose-100 text-rose-800">${rem} ครั้ง</span>`;
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 text-center font-mono text-xs text-slate-400">${s.id}</td>
+          <td class="py-3 px-4 font-bold text-dbo-navy">น้อง ${s.name}</td>
+          <td class="py-3 px-4 font-mono text-xs text-slate-600">${s.phone}</td>
+          <td class="py-3 px-4 text-center">${badge}</td>
+          <td class="py-3 px-4 text-center">
+            <div class="inline-flex gap-1.5" role="group">
+              <button onclick="coachCheckInAndNotify(${s.id})" title="เช็คชื่อเข้าเรียน พร้อมส่ง SMS แจ้ง ผปค." class="px-3 py-1.5 text-xs font-bold text-white bg-dbo-navy hover:bg-dbo-navySoft rounded-lg transition flex items-center gap-1 shadow-sm">
+                <i data-lucide="send" class="w-3.5 h-3.5 text-dbo-gold"></i> <span>เช็คชื่อ + แจ้ง ผปค.</span>
+              </button>
+              <button onclick="coachQuickAdd10(${s.id})" title="ต่อคอร์สใหม่ (+10 ครั้ง)" class="px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-1">
+                <i data-lucide="plus" class="w-3 h-3"></i> <span>+10</span>
+              </button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      lucide.createIcons();
+    }
+
+    // Coach check in and trigger SMS popup simulation
+    function coachCheckInAndNotify(studentId) {
+      const student = students.find(s => s.id === studentId);
+      if (!student) return;
+
+      student.remaining = (student.remaining || 0) - 1;
+      saveState();
+      renderCoachRosterTable();
+
+      if (loggedInStudent && loggedInStudent.id === studentId) {
+        loggedInStudent = student;
+        renderParentView();
+      }
+
+      // Simulate sending SMS to parent
+      const smsMsg = `[DBO Basketball Academy] น้อง ${student.name} ได้เข้าฝึกซ้อมวันนี้เรียบร้อยแล้วครับ 🏀 โควต้าเรียนคงเหลืออีก ${student.remaining} ครั้ง ขอบคุณผู้ปกครองครับ`;
+      triggerSmsToast(smsMsg);
+      showToast(`เช็คชื่อและส่งข้อความแจ้งเตือนถึงเบอร์ ${student.phone} เรียบร้อย`);
+    }
+
+    function coachQuickAdd10(studentId) {
+      const student = students.find(s => s.id === studentId);
+      if (!student) return;
+      student.remaining = (student.remaining || 0) + 10;
+      saveState();
+      renderCoachRosterTable();
+      if (loggedInStudent && loggedInStudent.id === studentId) {
+        loggedInStudent = student;
+        renderParentView();
+      }
+      showToast(`เพิ่ม 10 ครั้งให้ "น้อง ${student.name}" สำเร็จ`);
+    }
+
+    function triggerSmsToast(content) {
+      document.getElementById('smsToastContent').innerText = content;
+      document.getElementById('smsSimulatorToast').classList.remove('hidden');
+    }
+    function closeSmsToast() {
+      document.getElementById('smsSimulatorToast').classList.add('hidden');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('globalToast');
+      document.getElementById('globalToastText').innerText = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => { toast.classList.add('hidden'); }, 3500);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      const privDate = document.getElementById('privateDate');
+      if (privDate) privDate.value = today;
+
+      renderParentView();
+      updateCoachStateUI();
+      renderMasterCalendar();
+      renderPrivateBookings();
+      lucide.createIcons();
+
+      // Start Real-time Auto-Sync with Google Sheets
+      syncDataFromGoogleSheet(true);
+      // Auto-poll every 45 seconds so coaches don't need to do anything manually
+      setInterval(() => {
+        syncDataFromGoogleSheet(true);
+      }, 45000);
+    });
+  </script>
+</body>
+</html>
