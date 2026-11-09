@@ -55,21 +55,20 @@
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
       color-scheme: light;
-      --app-scale: 1;
-    }
-
-    /* Auto Scale wrapper for all mobile screen sizes */
-    #app-viewport-scaler {
-      transform-origin: top center;
-      transition: transform 0.2s ease-out;
-      width: 100%;
     }
 
     body {
       background-color: #F8FAFC;
       color: #0F172A;
-      overflow-x: clip;
+      overflow-x: hidden;
       font-family: 'Prompt', sans-serif;
+    }
+
+    /* Auto Scale wrapper for mobile screen sizes (no overflow) */
+    #app-viewport-scaler {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
     }
 
     .hero-title {
@@ -224,7 +223,7 @@
         <nav class="hidden md:flex items-center bg-slate-100/80 p-1 rounded-full border border-slate-200">
           <button onclick="switchTab('parent-portal')" id="nav-parent-portal" class="pill-tab active">
             <i data-lucide="user" class="w-4 h-4"></i>
-            <span>ข้อมูลลูกหลาน</span>
+            <span>หน้าหลัก</span>
           </button>
           
           <!-- Renew Tab: Only visible if logged in -->
@@ -239,14 +238,10 @@
             <span>สมัครเรียนใหม่</span>
           </button>
 
-          <button onclick="switchTab('calendar')" id="nav-calendar" class="pill-tab inactive">
+          <!-- Calendar Tab: Visible only when logged in -->
+          <button onclick="switchTab('calendar')" id="nav-calendar" class="pill-tab inactive hidden">
             <i data-lucide="calendar" class="w-4 h-4"></i>
-            <span>ตารางเรียน</span>
-          </button>
-          
-          <button onclick="switchTab('private-class')" id="nav-private-class" class="pill-tab inactive">
-            <i data-lucide="target" class="w-4 h-4"></i>
-            <span>Private Class</span>
+            <span>ตารางเรียน (ปฏิทิน)</span>
           </button>
 
           <!-- Coach Panel Tab: Only visible when Coach Auth -->
@@ -256,20 +251,13 @@
           </button>
         </nav>
 
-        <!-- Right Quick Actions: Auto Scale, App Install & Staff Login -->
+        <!-- Right Quick Actions: App Install & Staff Login -->
         <div class="flex items-center gap-1.5 sm:gap-2">
           
-          <!-- Auto Scale Toggle Button (For Perfect Mobile Fit) -->
-          <button onclick="toggleMobileAutoScale()" id="autoScaleBtn" title="ปรับสเกลพอดีหน้าจอมือถืออัตโนมัติ" class="btn-touch px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 flex items-center gap-1 shadow-xs transition">
-            <i data-lucide="scan" id="autoScaleIcon" class="w-3.5 h-3.5 text-amber-700"></i>
-            <span id="autoScaleText" class="font-mono">Auto 100%</span>
-          </button>
-
           <!-- Install App Button (PWA) -->
           <button id="pwaInstallBtn" onclick="installAppPrompt()" class="hidden btn-touch px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 flex items-center gap-1.5">
             <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            <span class="hidden sm:inline">ติดตั้งลงมือถือ</span>
-            <span class="sm:hidden">ติดตั้งแอป</span>
+            <span class="hidden sm:inline">ติดตั้งแอป</span>
           </button>
 
           <!-- Coach Login Switch -->
@@ -975,7 +963,7 @@
     <div id="mobileBottomNavContainer" class="flex items-center justify-around text-center px-1">
       <button onclick="switchTab('parent-portal')" id="nav-m-parent-portal" class="mobile-tab-btn active flex-1">
         <i data-lucide="user" class="w-5 h-5"></i>
-        <span>ข้อมูลลูก</span>
+        <span>หน้าหลัก</span>
       </button>
 
       <!-- Renew Tab: Only visible if logged in -->
@@ -990,14 +978,10 @@
         <span>สมัครเรียน</span>
       </button>
 
-      <button onclick="switchTab('calendar')" id="nav-m-calendar" class="mobile-tab-btn flex-1">
+      <!-- Calendar Tab: Visible only when logged in -->
+      <button onclick="switchTab('calendar')" id="nav-m-calendar" class="mobile-tab-btn hidden flex-1">
         <i data-lucide="calendar" class="w-5 h-5"></i>
         <span>ปฏิทิน</span>
-      </button>
-
-      <button onclick="switchTab('private-class')" id="nav-m-private-class" class="mobile-tab-btn flex-1">
-        <i data-lucide="target" class="w-5 h-5"></i>
-        <span>Private</span>
       </button>
 
       <!-- Coach Tab in mobile (If Coach Mode) -->
@@ -1023,12 +1007,12 @@
         <input 
           type="password" 
           id="coachPinInput" 
-          placeholder="รหัส PIN (dbo2026)" 
-          maxlength="10" 
+          placeholder="รหัส PIN หรือเบอร์แอดมิน" 
+          maxlength="12" 
           required
           class="w-full text-center tracking-widest text-lg font-mono py-2.5 bg-white border border-slate-300 rounded-xl text-dbo-navy focus:outline-none focus:border-dbo-gold"
         >
-        <span class="text-[10px] text-slate-400 block">* รหัสทดสอบ: <strong class="text-dbo-gold">dbo2026</strong></span>
+        <span class="text-[10px] text-slate-400 block">* เข้าด้วยเบอร์: <strong class="text-dbo-gold">0933199119</strong> หรือ PIN: <strong class="text-dbo-gold">dbo2026</strong></span>
 
         <div class="flex gap-2">
           <button type="button" onclick="closeCoachAuthModal()" class="btn-touch flex-1 py-2 rounded-xl text-xs bg-slate-100 text-slate-600">ยกเลิก</button>
@@ -1297,6 +1281,17 @@
     function handleParentPhoneLogin(e) {
       e.preventDefault();
       const rawPhone = document.getElementById('parentPhoneInput').value.replace(/[-\s]/g, '').trim();
+
+      // COACH OAT ADMIN SHORTCUT LOGIN (0933199119)
+      if (rawPhone === '0933199119') {
+        isCoachAuth = true;
+        localStorage.setItem('dbo_is_coach_v6', 'true');
+        updateCoachStateUI();
+        switchTab('coach-roster');
+        showToast('เข้าสู่ระบบแอดมิน โค้ชโอ๊ต (093-319-9119) สำเร็จ!');
+        return;
+      }
+
       const matched = students.filter(s => s.phone.replace(/[-\s]/g, '') === rawPhone);
 
       if (matched.length === 0) {
@@ -1317,35 +1312,43 @@
       const renewMNav = document.getElementById('nav-m-renew-payment');
       const regNav = document.getElementById('nav-register-new');
       const regMNav = document.getElementById('nav-m-register-new');
+      const calNav = document.getElementById('nav-calendar');
+      const calMNav = document.getElementById('nav-m-calendar');
 
       const renewGate = document.getElementById('renew-locked-gate');
       const renewContent = document.getElementById('renew-content');
 
       if (!loggedInStudent) {
-        // NOT LOGGED IN
+        // NOT LOGGED IN: Hide private data (Renew, Calendar) - Show only Login & Register
         if (loginBox) loginBox.classList.remove('hidden');
         if (dashBox) dashBox.classList.add('hidden');
 
-        // Hide Renew Tab, Show Register Tab
         if (renewNav) renewNav.classList.add('hidden');
         if (renewMNav) renewMNav.classList.add('hidden');
         if (regNav) regNav.classList.remove('hidden');
         if (regMNav) regMNav.classList.remove('hidden');
+
+        // Hide Calendar
+        if (calNav) calNav.classList.add('hidden');
+        if (calMNav) calMNav.classList.add('hidden');
 
         if (renewGate) renewGate.classList.remove('hidden');
         if (renewContent) renewContent.classList.add('hidden');
         return;
       }
 
-      // LOGGED IN
+      // LOGGED IN: Show Dashboard, Renew Tab, Calendar Tab
       if (loginBox) loginBox.classList.add('hidden');
       if (dashBox) dashBox.classList.remove('hidden');
 
-      // Show Renew Tab, Hide Register Tab (or keep clean)
       if (renewNav) renewNav.classList.remove('hidden');
       if (renewMNav) renewMNav.classList.remove('hidden');
       if (regNav) regNav.classList.add('hidden');
       if (regMNav) regMNav.classList.add('hidden');
+
+      // Show Calendar for Logged-in Parents
+      if (calNav) calNav.classList.remove('hidden');
+      if (calMNav) calMNav.classList.remove('hidden');
 
       if (renewGate) renewGate.classList.add('hidden');
       if (renewContent) renewContent.classList.remove('hidden');
@@ -1627,13 +1630,20 @@
       showToast(`ส่งคำขอจอง Private ให้ "น้อง ${sName}" เรียบร้อย โค้ชจะติดต่อกลับเบอร์ ${phone}`);
     }
 
-    // Master Calendar
+    // Master Calendar (Responsive Mobile & Tablet View)
     function renderMasterCalendar() {
       const grid = document.getElementById('masterCalendarGrid');
       if (!grid) return;
       grid.innerHTML = '';
       const totalDays = 30;
-      const startDayOfWeek = 0;
+      const startDayOfWeek = 0; // 1 Nov 2026 = Sunday
+
+      // Blank slots before Day 1
+      for (let b = 0; b < startDayOfWeek; b++) {
+        const blank = document.createElement('div');
+        blank.className = 'hidden sm:block p-1';
+        grid.appendChild(blank);
+      }
 
       for (let day = 1; day <= totalDays; day++) {
         const dayOfWeek = (startDayOfWeek + (day - 1)) % 7; 
@@ -1641,27 +1651,26 @@
         const isSaturdayCoachOat = (dayOfWeek === 6);
 
         const cell = document.createElement('div');
-        cell.className = `p-2 rounded-xl border min-h-[80px] flex flex-col justify-between transition-all ${
+        cell.className = `p-1 sm:p-2 rounded-lg sm:rounded-xl border min-h-[52px] sm:min-h-[75px] flex flex-col justify-between transition-all ${
           isSaturdayCoachOat 
-            ? 'bg-indigo-50/70 border-indigo-200 text-indigo-900' 
-            : (isNormalClass ? 'bg-amber-50/50 border-amber-200 text-slate-800' : 'bg-white border-slate-200 text-slate-400')
+            ? 'bg-indigo-50/80 border-indigo-200 text-indigo-900' 
+            : (isNormalClass ? 'bg-amber-50/60 border-amber-200 text-slate-800' : 'bg-white border-slate-200 text-slate-400')
         }`;
 
         let statusBadge = '';
         if (isSaturdayCoachOat) {
           statusBadge = `
-            <div class="mt-1">
-              <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-100 text-indigo-700 font-mono">
-                10:00 Coach Oat
+            <div class="mt-0.5">
+              <span class="inline-block px-1 py-0.5 rounded text-[8px] sm:text-[9px] font-bold bg-indigo-100 text-indigo-700 font-mono leading-none">
+                10:00 Oat
               </span>
-              <p class="text-[10px] text-indigo-800 font-medium truncate hidden sm:block">Basic Class</p>
             </div>
           `;
         } else if (isNormalClass) {
           statusBadge = `
-            <div class="mt-1">
-              <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-100 text-emerald-800 font-mono">
-                17:00 คลาสปกติ
+            <div class="mt-0.5">
+              <span class="inline-block px-1 py-0.5 rounded text-[8px] sm:text-[9px] font-semibold bg-emerald-100 text-emerald-800 font-mono leading-none">
+                17:00 ซ้อม
               </span>
             </div>
           `;
@@ -1669,7 +1678,7 @@
 
         cell.innerHTML = `
           <div class="flex items-center justify-between">
-            <span class="font-bold text-xs font-mono ${isSaturdayCoachOat ? 'text-indigo-700' : (isNormalClass ? 'text-dbo-navy' : 'text-slate-400')}">${day}</span>
+            <span class="font-bold text-[11px] sm:text-xs font-mono ${isSaturdayCoachOat ? 'text-indigo-700' : (isNormalClass ? 'text-dbo-navy' : 'text-slate-400')}">${day}</span>
             ${isSaturdayCoachOat ? '<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>' : (isNormalClass ? '<span class="w-1.5 h-1.5 rounded-full bg-dbo-gold"></span>' : '')}
           </div>
           ${statusBadge}
@@ -1696,15 +1705,15 @@
     function handleCoachPinSubmit(e) {
       e.preventDefault();
       const pin = document.getElementById('coachPinInput').value.trim();
-      if (pin === 'dbo2026') {
+      if (pin === 'dbo2026' || pin === '0933199119') {
         isCoachAuth = true;
         localStorage.setItem('dbo_is_coach_v6', 'true');
         closeCoachAuthModal();
         updateCoachStateUI();
         switchTab('coach-roster');
-        showToast('ปลดล็อคโหมดโค้ชสำเร็จ! เข้าสู่หน้าเช็คชื่อ');
+        showToast('ปลดล็อคโหมดแอดมิน/โค้ชโอ๊ต สำเร็จ!');
       } else {
-        showToast('รหัส PIN ไม่ถูกต้อง (ทดสอบ: dbo2026)');
+        showToast('รหัสหรือเบอร์โทรไม่ถูกต้อง (ใช้ 0933199119 หรือ dbo2026)');
       }
     }
 
@@ -1826,67 +1835,11 @@
       setTimeout(() => { toast.classList.add('hidden'); }, 3500);
     }
 
-    // ========================================================
-    // MOBILE AUTO-SCALE ADAPTIVE ENGINE
-    // ========================================================
-    const scaleModes = ['auto', '100', '90', '85'];
-    let currentScaleIndex = parseInt(localStorage.getItem('dbo_mobile_scale_idx') || '0');
-
-    function applyScreenScale() {
-      const scaler = document.getElementById('app-viewport-scaler');
-      const btnText = document.getElementById('autoScaleText');
-      if (!scaler || !btnText) return;
-
-      const mode = scaleModes[currentScaleIndex % scaleModes.length];
-      let scale = 1.0;
-
-      if (mode === 'auto') {
-        const screenW = window.innerWidth;
-        if (screenW < 360) {
-          scale = screenW / 375; // Adaptive scale for ultra compact phones
-        } else if (screenW >= 360 && screenW <= 414) {
-          scale = 1.0; // Perfect standard 1:1 mobile
-        } else if (screenW > 414 && screenW < 768) {
-          scale = Math.min(1.05, screenW / 414);
-        } else {
-          scale = 1.0;
-        }
-        btnText.innerText = 'Auto ' + Math.round(scale * 100) + '%';
-      } else {
-        scale = parseInt(mode) / 100;
-        btnText.innerText = mode + '%';
-      }
-
-      scaler.style.transform = `scale(${scale})`;
-      if (scale < 1.0) {
-        scaler.style.width = `${100 / scale}%`;
-        scaler.style.transformOrigin = 'top left';
-      } else {
-        scaler.style.width = '100%';
-        scaler.style.transformOrigin = 'top center';
-      }
-    }
-
-    function toggleMobileAutoScale() {
-      currentScaleIndex = (currentScaleIndex + 1) % scaleModes.length;
-      localStorage.setItem('dbo_mobile_scale_idx', currentScaleIndex);
-      applyScreenScale();
-      const currentMode = scaleModes[currentScaleIndex];
-      showToast(`ปรับขนาดการแสดงผลหน้าจอ: ${document.getElementById('autoScaleText').innerText}`);
-    }
-
-    window.addEventListener('resize', () => {
-      if (scaleModes[currentScaleIndex % scaleModes.length] === 'auto') {
-        applyScreenScale();
-      }
-    });
-
     window.addEventListener('DOMContentLoaded', () => {
       const today = new Date().toISOString().split('T')[0];
       const privDate = document.getElementById('privateDate');
       if (privDate) privDate.value = today;
 
-      applyScreenScale();
       renderParentView();
       updateCoachStateUI();
       renderMasterCalendar();
