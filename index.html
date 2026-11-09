@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th" class="h-full">
 <head>
   <meta charset="UTF-8">
@@ -407,7 +407,7 @@
                 <h3 class="text-xs sm:text-sm font-bold text-dbo-navy">สถานะการเข้าเรียนวันนี้ของน้อง</h3>
               </div>
               <p class="text-[11px] text-slate-500 mt-0.5" id="parentTodayDateLabel">
-                วันจันทร์ที่ 9 พ.ย. 2569 • คลาสปกติ 17:00 - 19:00 น. ณ ยิมเตชะวิทย์
+                วันจันทร์ที่ 9 พ.ย. 2569 • คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์
               </p>
             </div>
             <div id="parentTodayStatusBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1.5">
@@ -483,7 +483,7 @@
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
             </div>
             <div class="pt-0.5">
-              <span class="text-base font-bold text-dbo-navy block">พฤหัสบดีนี้ (17:00 – 19:00 น.)</span>
+              <span class="text-base font-bold text-dbo-navy block">พฤหัสบดีนี้ (17:30 – 19:30 น.)</span>
               <span class="text-xs text-slate-500">คลาส Game Situation & Team</span>
             </div>
             <div class="flex items-center gap-1.5 text-xs text-dbo-textSecondary pt-0.5">
@@ -511,7 +511,7 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <i data-lucide="users" class="w-4 h-4 text-sky-600"></i>
-              <h3 class="text-xs sm:text-sm font-bold text-dbo-navy">เพื่อนร่วมฝึกซ้อมในรอบวันนี้ (คลาส 17:00 น.)</h3>
+              <h3 class="text-xs sm:text-sm font-bold text-dbo-navy">เพื่อนร่วมฝึกซ้อมในรอบวันนี้ (คลาส 17:30 น.)</h3>
             </div>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">สนามเตชะวิทย์</span>
           </div>
@@ -614,7 +614,7 @@
               </p>
               <ul class="space-y-1 text-xs text-dbo-textSecondary pt-2 border-t border-slate-100">
                 <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> เรียน 10 ครั้ง (ครั้งละ 2 ชม.)</li>
-                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> ซ้อม 17:00 – 19:00 น. ณ เตชะวิทย์</li>
+                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i> ซ้อม 17:30 – 19:30 น. ณ เตชะวิทย์</li>
               </ul>
             </div>
             <button onclick="selectRenewPackage('ต่อคอร์สปกติ 10 ครั้ง (ราคาเด็กเก่า)', 3990)" class="btn-touch w-full mt-4 py-2.5 rounded-xl font-bold text-xs bg-dbo-navy text-white hover:bg-dbo-navySoft transition">
@@ -658,7 +658,7 @@
                 ราคาพิเศษเด็กในอคาเดมี (ทั่วไป 1,690.-)
               </p>
               <ul class="space-y-1 text-xs text-dbo-textSecondary pt-2 border-t border-slate-100">
-                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-600"></i> เรียนทุกวันเสาร์ เวลา 10:00 – 12:00 น.</li>
+                <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-600"></i> เรียนทุกวันเสาร์ เวลา 16:00 – 18:00 น.</li>
                 <li class="flex items-center gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-indigo-600"></i> เน้นฟอร์มชู้ตและระบบ RAMP Protocol</li>
               </ul>
             </div>
@@ -771,7 +771,7 @@
             <span>กระดานเช็คชื่อ & เพื่อนร่วมคลาสวันนี้</span>
           </h2>
           <p class="text-xs text-indigo-200/90" id="dailyBoardDateLabel">
-            วันจันทร์ที่ 9 พฤศจิกายน 2569 • คลาสปกติ 17:00 - 19:00 น.
+            วันจันทร์ที่ 9 พฤศจิกายน 2569 • คลาสปกติ 17:30 - 19:30 น.
           </p>
         </div>
 
@@ -889,10 +889,10 @@
           <div class="space-y-1.5">
             <label class="block text-xs font-bold text-slate-800">เลือกประเภทคอร์สที่ต้องการสมัคร / จอง <span class="text-rose-500">*</span></label>
             <select id="regCourseType" onchange="handleCourseTypeChange(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-dbo-navy font-semibold focus:outline-none focus:border-dbo-gold focus:bg-white min-h-[44px]">
-              <option value="regular">คอร์สปกติ 10 ครั้ง (จ./อ./พฤ. 17:00-19:00 น.) — 3,990 / 4,290.-</option>
-              <option value="saturday">คอร์สวันเสาร์ 4 ครั้ง Coach Oat (10:00-12:00 น.) — 1,500 / 1,690.-</option>
+              <option value="regular">คอร์สปกติ 10 ครั้ง (จ./อ./พฤ. 17:30-19:30 น.) — 3,990 / 4,290.-</option>
+              <option value="saturday">คอร์สวันเสาร์ 4 ครั้ง Coach Oat (16:00-18:00 น.) — 1,500 / 1,690.-</option>
               <option value="monthly">แพ็กเกจรายเดือนสม่ำเสมอ (ซ้อม 2 วัน/สัปดาห์) — 3,500.- / เดือน</option>
-              <option value="private">Private Class คลาสส่วนตัว 2 ชม. (เลือกโค้ชโอ๊ต หรือ โค้ชโอ๊ค)</option>
+              <option value="private">Private Class คลาสส่วนตัว (เลือกช่วงเวลาและโค้ชได้เอง)</option>
             </select>
           </div>
 
@@ -900,7 +900,7 @@
           <div id="privateClassGroup" class="hidden p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-3">
             <div class="flex items-center gap-2 text-indigo-950 font-bold text-xs">
               <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
-              <span>รายละเอียด Private Class (เรียนเข้มข้น 2 ชั่วโมงเต็ม)</span>
+              <span>รายละเอียด Private Class (ผู้ปกครองเลือกเวลาและโค้ชได้ตามต้องการ)</span>
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -913,28 +913,60 @@
               </div>
 
               <div>
-                <label class="block text-[11px] font-semibold text-slate-700 mb-1">ช่วงเวลาที่สะดวก *</label>
-                <select id="privateTimeSlot" class="w-full bg-white border border-indigo-200 rounded-xl px-3 py-2 text-xs text-dbo-navy">
-                  <option value="09:00 - 11:00 น. (ช่วงเช้า)">09:00 - 11:00 น. (ช่วงเช้า)</option>
-                  <option value="14:00 - 16:00 น. (ช่วงบ่าย)">14:00 - 16:00 น. (ช่วงบ่าย)</option>
-                </select>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-1">วันที่ต้องการฝึกซ้อม *</label>
+                <input type="date" id="privateDate" class="w-full bg-white border border-indigo-200 rounded-xl px-3 py-2 text-xs text-dbo-navy">
+              </div>
+            </div>
+
+            <!-- Custom Time Picker & Quick Duration Pills -->
+            <div class="space-y-1.5">
+              <label class="block text-[11px] font-semibold text-slate-700">กำหนดช่วงเวลาฝึกซ้อม (ระบบคำนวณชั่วโมงและค่าเรียนอัตโนมัติ) *</label>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-0.5">เวลาเริ่ม:</span>
+                  <input type="time" id="privateStartTime" value="16:00" onchange="calculateFee()" class="w-full bg-white border border-indigo-200 rounded-xl px-3 py-2 text-xs text-dbo-navy font-semibold">
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-500 block mb-0.5">เวลาสิ้นสุด:</span>
+                  <input type="time" id="privateEndTime" value="18:00" onchange="calculateFee()" class="w-full bg-white border border-indigo-200 rounded-xl px-3 py-2 text-xs text-dbo-navy font-semibold">
+                </div>
+              </div>
+
+              <!-- Quick Duration Pills -->
+              <div class="flex items-center gap-1.5 pt-1 flex-wrap">
+                <span class="text-[10px] text-slate-500">เลือกชั่วโมงด่วน:</span>
+                <button type="button" onclick="setPrivateDuration(1)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 transition">1 ชม.</button>
+                <button type="button" onclick="setPrivateDuration(1.5)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 transition">1.5 ชม.</button>
+                <button type="button" onclick="setPrivateDuration(2)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-indigo-600 text-white shadow-2xs">2 ชม.</button>
+                <button type="button" onclick="setPrivateDuration(2.5)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 transition">2.5 ชม.</button>
+                <button type="button" onclick="setPrivateDuration(3)" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 transition">3 ชม.</button>
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <label class="block text-[11px] font-semibold text-slate-700 mb-1">รูปแบบกลุ่ม & อัตราค่าเรียน</label>
-                <select id="privateTierSelect" onchange="calculateFee()" class="w-full bg-white border border-indigo-200 rounded-xl px-3 py-2 text-xs text-dbo-navy font-semibold">
-                  <option value="1-3">1 - 3 คน (800.- / คน)</option>
-                  <option value="4+">กลุ่ม 4 คนขึ้นไป (650.- / คน)</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-700 mb-1">จำนวนผู้เรียน (คน)</label>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-1">จำนวนผู้เรียน (คน) *</label>
                 <input type="number" id="privateStudentCount" value="1" min="1" max="15" oninput="calculateFee()" class="w-full bg-white border border-indigo-200 rounded-xl px-3 py-2 text-xs text-dbo-navy font-bold">
               </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-700 mb-1">สถานที่ฝึกซ้อม</label>
+                <input type="text" id="privateLocation" value="โรงยิม โรงเรียนเตชะวิทย์" placeholder="ระบุสถานที่" class="w-full bg-white border border-indigo-200 rounded-xl px-3 py-2 text-xs text-dbo-navy">
+              </div>
             </div>
-            <p class="text-[11px] text-indigo-700 font-medium">📍 สถานที่ฝึกซ้อม: โรงยิมเนเซียม โรงเรียนเตชะวิทย์</p>
+
+            <!-- Dynamic Fee Calculation Summary Box -->
+            <div id="privateFeeSummaryBox" class="p-2.5 rounded-xl bg-white border border-indigo-200 text-xs space-y-1">
+              <div class="flex items-center justify-between font-bold text-indigo-950">
+                <span>สรุปเวลาคำนวณ:</span>
+                <span id="privateHoursDisplay" class="font-mono text-indigo-600">2.0 ชั่วโมง (16:00 - 18:00)</span>
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-slate-600">
+                <span id="privateRateDescription">อัตรากลุ่ม 1-3 คน (400.- / คน / ชม.)</span>
+                <span id="privateSubtotalDisplay" class="font-bold text-slate-800">800 บาท (1 คน × 2.0 ชม.)</span>
+              </div>
+            </div>
+
+            <p class="text-[11px] text-indigo-700 font-medium">📍 หมายเหตุ: ผู้ปกครองเลือกช่วงเวลาได้เองตามสะดวก ระบบจะคำนวณยอดชำระตามจำนวนชั่วโมงและจำนวนผู้เรียนอัตโนมัติ</p>
           </div>
 
           <!-- Student Info -->
@@ -1087,7 +1119,7 @@
                   <div class="flex items-center gap-2.5">
                     <span class="w-9 h-9 rounded-xl bg-amber-500 text-white font-bold text-sm flex items-center justify-center shadow-xs">จ</span>
                     <div>
-                      <h4 class="text-sm font-bold text-slate-900">วันจันทร์ (17:00 - 19:00 น.)</h4>
+                      <h4 class="text-sm font-bold text-slate-900">วันจันทร์ (17:30 - 19:30 น.)</h4>
                       <p class="text-[11px] text-amber-700 font-semibold">คลาสปกติ 2 ชม. • สนามโรงเรียนเตชะวิทย์</p>
                     </div>
                   </div>
@@ -1119,7 +1151,7 @@
                   <div class="flex items-center gap-2.5">
                     <span class="w-9 h-9 rounded-xl bg-amber-500 text-white font-bold text-sm flex items-center justify-center shadow-xs">อ</span>
                     <div>
-                      <h4 class="text-sm font-bold text-slate-900">วันอังคาร (17:00 - 19:00 น.)</h4>
+                      <h4 class="text-sm font-bold text-slate-900">วันอังคาร (17:30 - 19:30 น.)</h4>
                       <p class="text-[11px] text-amber-700 font-semibold">คลาสปกติ 2 ชม. • สนามโรงเรียนเตชะวิทย์</p>
                     </div>
                   </div>
@@ -1151,7 +1183,7 @@
                   <div class="flex items-center gap-2.5">
                     <span class="w-9 h-9 rounded-xl bg-amber-500 text-white font-bold text-sm flex items-center justify-center shadow-xs">พฤ</span>
                     <div>
-                      <h4 class="text-sm font-bold text-slate-900">วันพฤหัสบดี (17:00 - 19:00 น.)</h4>
+                      <h4 class="text-sm font-bold text-slate-900">วันพฤหัสบดี (17:30 - 19:30 น.)</h4>
                       <p class="text-[11px] text-amber-700 font-semibold">คลาสปกติ 2 ชม. • สนามโรงเรียนเตชะวิทย์</p>
                     </div>
                   </div>
@@ -1183,7 +1215,7 @@
                   <div class="flex items-center gap-2.5">
                     <span class="w-9 h-9 rounded-xl bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shadow-xs">ส</span>
                     <div>
-                      <h4 class="text-sm font-bold text-indigo-950">วันเสาร์: Basic Coach Oat (10:00 - 12:00 น.)</h4>
+                      <h4 class="text-sm font-bold text-indigo-950">วันเสาร์: Basic Coach Oat (16:00 - 18:00 น.)</h4>
                       <p class="text-[11px] text-indigo-700 font-semibold">คลาสเฉพาะโค้ชโอ๊ต • 4 ครั้งต่อคอร์ส (1,500.-)</p>
                     </div>
                   </div>
@@ -1228,8 +1260,8 @@
 
           <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-center justify-between flex-wrap gap-2">
             <div class="flex items-center gap-3">
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> คลาสปกติ 17:00 น. (จ., อ., พฤ.)</span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span> เสาร์ 10:00 น. Basic Coach Oat</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> คลาสปกติ 17:30 น. (จ., อ., พฤ.)</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span> เสาร์ 16:00 น. Basic Coach Oat</span>
             </div>
             <span class="text-slate-400 text-[11px]">แตะที่วันเพื่อดูรายละเอียด</span>
           </div>
@@ -1439,8 +1471,8 @@
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">รอบเวลา</label>
           <select id="rsvpTimeSlot" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-dbo-navy">
-            <option value="17:00 - 19:00 น. (คลาสปกติ)">17:00 - 19:00 น. (คลาสปกติ จ./อ./พฤ.)</option>
-            <option value="10:00 - 12:00 น. (คลาสวันเสาร์ Coach Oat)">10:00 - 12:00 น. (คลาสวันเสาร์ Coach Oat)</option>
+            <option value="17:30 - 19:30 น. (คลาสปกติ)">17:30 - 19:30 น. (คลาสปกติ จ./อ./พฤ.)</option>
+            <option value="16:00 - 18:00 น. (คลาสวันเสาร์ Coach Oat)">16:00 - 18:00 น. (คลาสวันเสาร์ Coach Oat)</option>
           </select>
         </div>
         <div class="flex gap-2 pt-2">
@@ -1500,7 +1532,7 @@
         <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
           <div class="flex items-center justify-between text-xs">
             <span class="text-slate-500 font-medium">เวลาฝึกซ้อม:</span>
-            <span id="calModalTime" class="font-bold text-dbo-navy">17:00 - 19:00 น.</span>
+            <span id="calModalTime" class="font-bold text-dbo-navy">17:30 - 19:30 น.</span>
           </div>
           <div class="flex items-center justify-between text-xs">
             <span class="text-slate-500 font-medium">สถานที่:</span>
@@ -1834,15 +1866,15 @@
       }
     };
 
-    let students = JSON.parse(localStorage.getItem('dbo_students_v13')) || null;
+    let students = JSON.parse(localStorage.getItem('dbo_students_v14')) || null;
     if (!students) {
       students = initialRawData.map(s => ({
         ...s,
-        phone: s.phone || '',
-        parentName: s.parentName || '',
-        parentRelation: s.parentRelation || ''
+        phone: '',
+        parentName: '',
+        parentRelation: ''
       }));
-      localStorage.setItem('dbo_students_v13', JSON.stringify(students));
+      localStorage.setItem('dbo_students_v14', JSON.stringify(students));
     } else {
       students.forEach(s => {
         if (s.phone && (s.phone.startsWith('08000000') || s.phone === '0812345678' || s.phone === '0898765432')) {
@@ -1851,60 +1883,25 @@
       });
     }
 
-    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v13')) || null;
-    let isCoachAuth = localStorage.getItem('dbo_is_coach_v13') === 'true';
+    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v14')) || null;
+    let isCoachAuth = localStorage.getItem('dbo_is_coach_v14') === 'true';
     let currentStaff = JSON.parse(localStorage.getItem('dbo_current_staff')) || (isCoachAuth ? AUTHORIZED_STAFF['0933199119'] : null);
     let currentCoachFilter = 'all';
 
-    // Pending Slips Queue for Admin Verification
-    let pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v13')) || [
-      {
-        id: 'slip-101',
-        studentName: 'น้องเจเจ',
-        parentName: 'คุณแม่ธนกร',
-        phone: '0815559988',
-        courseType: 'regular',
-        amount: 3990,
-        slipImage: 'assets/images/kbank-qr.jpg',
-        date: '09 พ.ย. 2569 (12:30 น.)',
-        school: 'โรงเรียนเตชะวิทย์',
-        status: 'รอตรวจสอบ'
-      }
-    ];
+    // Pending Slips Queue for Admin Verification (Pure Factual, empty initially)
+    let pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v14')) || [];
 
-    // Parent Account Registrations (Awaiting Coach Approval)
-    let parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrations_v13')) || [
-      {
-        id: 'reg-demo-1',
-        phone: '0812345678',
-        parentName: 'คุณแม่น้องอิฐ',
-        relation: 'คุณแม่',
-        studentId: 1,
-        studentName: 'อิฐ',
-        status: 'pending',
-        note: 'ขอลงทะเบียนผูกเบอร์เข้าดูข้อมูลน้องอิฐ',
-        createdAt: new Date().toISOString(),
-        createdDateStr: 'วันนี้ 15:30 น.'
-      }
-    ];
+    // Parent Account Registrations (Awaiting Coach Approval) (Pure Factual, empty initially)
+    let parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrations_v14')) || [];
 
-    // Daily Attendance Registry (Keyed by date: 'YYYY-MM-DD')
-    let dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v13')) || {
-      '2026-11-09': {
-        1: { studentId: 1, name: 'อิฐ', status: 'attending', time: '14:20 น.', updatedBy: 'parent' },
-        2: { studentId: 2, name: 'ซับ', status: 'attending', time: '14:35 น.', updatedBy: 'parent' },
-        3: { studentId: 3, name: 'ขุนศึก', status: 'attending', time: '15:10 น.', updatedBy: 'parent' },
-        8: { studentId: 8, name: 'แอร์บัส', status: 'attending', time: '15:15 น.', updatedBy: 'parent' },
-        5: { studentId: 5, name: 'ต้นพุด', status: 'leave', leaveReason: 'ติดสอบปลายภาค', time: '13:50 น.', updatedBy: 'parent' },
-        47: { studentId: 47, name: 'มังกร', status: 'leave', leaveReason: 'ไม่สบาย มีไข้', time: '14:05 น.', updatedBy: 'parent' }
-      }
-    };
+    // Daily Attendance Registry (Pure Factual, empty initially)
+    let dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v14')) || {};
 
     function saveState(broadcastRemote = true, actionDesc = '') {
-      localStorage.setItem('dbo_students_v13', JSON.stringify(students));
-      localStorage.setItem('dbo_pending_slips_v13', JSON.stringify(pendingSlips));
-      localStorage.setItem('dbo_parent_registrations_v13', JSON.stringify(parentRegistrations));
-      localStorage.setItem('dbo_daily_attendance_v13', JSON.stringify(dailyAttendance));
+      localStorage.setItem('dbo_students_v14', JSON.stringify(students));
+      localStorage.setItem('dbo_pending_slips_v14', JSON.stringify(pendingSlips));
+      localStorage.setItem('dbo_parent_registrations_v14', JSON.stringify(parentRegistrations));
+      localStorage.setItem('dbo_daily_attendance_v14', JSON.stringify(dailyAttendance));
       if (currentStaff) localStorage.setItem('dbo_current_staff', JSON.stringify(currentStaff));
 
       // 1. Cross-tab instant local broadcast
@@ -2018,10 +2015,10 @@
         const staff = AUTHORIZED_STAFF[cleanPhone];
         isCoachAuth = true;
         currentStaff = staff;
-        localStorage.setItem('dbo_is_coach_v13', 'true');
+        localStorage.setItem('dbo_is_coach_v14', 'true');
         localStorage.setItem('dbo_current_staff', JSON.stringify(staff));
         loggedInStudent = null;
-        localStorage.removeItem('dbo_parent_logged_v13');
+        localStorage.removeItem('dbo_parent_logged_v14');
 
         updateCoachStateUI();
         updateHeaderProfileUI();
@@ -2037,11 +2034,11 @@
       if (matched.length > 0) {
         isCoachAuth = false;
         currentStaff = null;
-        localStorage.setItem('dbo_is_coach_v13', 'false');
+        localStorage.setItem('dbo_is_coach_v14', 'false');
         localStorage.removeItem('dbo_current_staff');
 
         loggedInStudent = matched[0];
-        localStorage.setItem('dbo_parent_logged_v13', JSON.stringify(loggedInStudent));
+        localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
         updateCoachStateUI();
         updateHeaderProfileUI();
         renderParentView(matched);
@@ -2164,7 +2161,7 @@
         typeBadge.innerText = 'คอร์สวันเสาร์ 4 ครั้ง (Coach Oat)';
         typeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-300';
         maxQuotaEl.innerText = '/ 4 ครั้ง';
-        periodEl.innerText = 'เรียนเฉพาะวันเสาร์ 10:00-12:00 น.';
+        periodEl.innerText = 'เรียนเฉพาะวันเสาร์ 16:00-18:00 น.';
       } else {
         typeBadge.innerText = 'คอร์สปกติ 10 ครั้ง';
         typeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300';
@@ -2227,7 +2224,7 @@
         rowsHtml += `
           <tr class="bg-emerald-50/50 hover:bg-emerald-50 transition border-b border-emerald-100">
             <td class="py-2.5 px-3.5 font-mono text-xs font-bold text-emerald-950">วันนี้ (9 พ.ย. 2569)</td>
-            <td class="py-2.5 px-3.5 text-xs text-slate-800">คลาสปกติ (17:00-19:00 น.)</td>
+            <td class="py-2.5 px-3.5 text-xs text-slate-800">คลาสปกติ (17:30-19:30 น.)</td>
             <td class="py-2.5 px-3.5 text-center">
               ${todayAtt.status === 'attending' 
                 ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">🟢 ยืนยันเข้าเรียนแล้ว</span>' 
@@ -2240,10 +2237,10 @@
 
       // Past recorded dates
       const pastDates = [
-        { label: '5 พ.ย. 2569', classType: 'คลาสปกติ (17:00-19:00 น.)', key: '5/11/26' },
-        { label: '3 พ.ย. 2569', classType: 'คลาสปกติ (17:00-19:00 น.)', key: '3/11/26' },
+        { label: '5 พ.ย. 2569', classType: 'คลาสปกติ (17:30-19:30 น.)', key: '5/11/26' },
+        { label: '3 พ.ย. 2569', classType: 'คลาสปกติ (17:30-19:30 น.)', key: '3/11/26' },
         { label: '1 พ.ย. 2569', classType: 'คลาส Basic กับ Coach Oat', key: '1/11/26' },
-        { label: '29 ต.ค. 2569', classType: 'คลาสปกติ (17:00-19:00 น.)', key: '29/10' }
+        { label: '29 ต.ค. 2569', classType: 'คลาสปกติ (17:30-19:30 น.)', key: '29/10' }
       ];
 
       pastDates.forEach(d => {
@@ -2278,17 +2275,25 @@
       lucide.createIcons();
     }
 
-    // Render Peers in class today (Clean badges)
+    // Render Peers in class today (Strictly Factual: Only students with confirmed 'attending' status)
     function renderLivePeers() {
       const peerContainer = document.getElementById('todayPeerList');
       if (!peerContainer) return;
       peerContainer.innerHTML = '';
 
-      const peers = students.slice(0, 10);
-      peers.forEach(p => {
+      const todayKey = getTodayDateKey();
+      const records = dailyAttendance[todayKey] || {};
+      const attending = students.filter(st => records[st.id] && records[st.id].status === 'attending');
+
+      if (attending.length === 0) {
+        peerContainer.innerHTML = '<span class="text-xs text-slate-400 italic py-1">ยังไม่มีเพื่อนร่วมชั้นแจ้งลงชื่อเข้าเรียนในวันนี้ (จะแสดงรายชื่ออัตโนมัติเมื่อมีผู้ปกครองแจ้งลงชื่อหรือโค้ชเช็คชื่อ)</span>';
+        return;
+      }
+
+      attending.forEach(p => {
         const span = document.createElement('span');
-        span.className = "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-800 border border-slate-200";
-        span.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> น้อง ${p.name}`;
+        span.className = "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200";
+        span.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> น้อง ${p.name}`;
         peerContainer.appendChild(span);
       });
     }
@@ -2391,7 +2396,7 @@
       
       if (val === 'private') {
         if (privateGroup) privateGroup.classList.remove('hidden');
-        if (hint) hint.innerText = '* คลาสส่วนตัว 2 ชม. เลือกโค้ชและช่วงเวลาที่สะดวกได้ตามต้องการ';
+        if (hint) hint.innerText = '* คลาสส่วนตัว กำหนดช่วงเวลาและเลือกโค้ชได้ตามต้องการ ระบบคำนวณยอดชำระตามชั่วโมงจริง';
       } else {
         if (privateGroup) privateGroup.classList.add('hidden');
         if (hint) {
@@ -2405,6 +2410,39 @@
       calculateFee();
     }
 
+    function setPrivateDuration(dur) {
+      const startInput = document.getElementById('privateStartTime');
+      const endInput = document.getElementById('privateEndTime');
+      if (!startInput || !endInput) return;
+      const startVal = startInput.value || '16:00';
+      const parts = startVal.split(':').map(Number);
+      const h = isNaN(parts[0]) ? 16 : parts[0];
+      const m = isNaN(parts[1]) ? 0 : parts[1];
+      const totalMinutes = h * 60 + m + Math.round(dur * 60);
+      const endH = Math.floor(totalMinutes / 60) % 24;
+      const endM = totalMinutes % 60;
+      endInput.value = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+      calculateFee();
+    }
+
+    function getPrivateHours() {
+      const startInput = document.getElementById('privateStartTime');
+      const endInput = document.getElementById('privateEndTime');
+      if (!startInput || !endInput) return 2.0;
+      const start = startInput.value || '16:00';
+      const end = endInput.value || '18:00';
+      const parts1 = start.split(':').map(Number);
+      const parts2 = end.split(':').map(Number);
+      const h1 = isNaN(parts1[0]) ? 16 : parts1[0];
+      const m1 = isNaN(parts1[1]) ? 0 : parts1[1];
+      const h2 = isNaN(parts2[0]) ? 18 : parts2[0];
+      const m2 = isNaN(parts2[1]) ? 0 : parts2[1];
+      let diffMin = (h2 * 60 + m2) - (h1 * 60 + m1);
+      if (diffMin <= 0) diffMin += 24 * 60;
+      const hours = Math.round((diffMin / 60) * 10) / 10;
+      return hours > 0 ? hours : 2.0;
+    }
+
     function calculateFee() {
       const courseType = document.getElementById('regCourseType').value;
       const school = (document.getElementById('regSchool').value || '').trim();
@@ -2413,10 +2451,21 @@
 
       let amount = 3990;
       if (courseType === 'private') {
-        const tier = document.getElementById('privateTierSelect').value;
         const count = parseInt(document.getElementById('privateStudentCount').value) || 1;
-        const rate = (tier === '4+' || count >= 4) ? 650 : 800;
-        amount = rate * count;
+        const hours = getPrivateHours();
+        // Rate per person per hour: 1-3 people = 400.-/hr, 4+ people = 325.-/hr
+        const ratePerHour = count >= 4 ? 325 : 400;
+        amount = Math.round(ratePerHour * count * hours);
+
+        const hoursDisp = document.getElementById('privateHoursDisplay');
+        const rateDesc = document.getElementById('privateRateDescription');
+        const subtotalDisp = document.getElementById('privateSubtotalDisplay');
+        const startTime = document.getElementById('privateStartTime') ? document.getElementById('privateStartTime').value : '16:00';
+        const endTime = document.getElementById('privateEndTime') ? document.getElementById('privateEndTime').value : '18:00';
+        
+        if (hoursDisp) hoursDisp.innerText = `${hours.toFixed(1)} ชั่วโมง (${startTime} - ${endTime})`;
+        if (rateDesc) rateDesc.innerText = count >= 4 ? `กลุ่ม 4+ คน (${ratePerHour}.- / คน / ชม.)` : `กลุ่ม 1-3 คน (${ratePerHour}.- / คน / ชม.)`;
+        if (subtotalDisp) subtotalDisp.innerText = `${amount.toLocaleString()} บาท (${count} คน × ${hours.toFixed(1)} ชม.)`;
       } else if (courseType === 'saturday') {
         amount = isTechawit ? 1500 : 1690;
       } else if (courseType === 'monthly') {
@@ -2486,9 +2535,13 @@
       let extraDetail = '';
       if (courseType === 'private') {
         const coach = document.getElementById('privateCoachSelect').value;
-        const timeSlot = document.getElementById('privateTimeSlot').value;
+        const startTime = document.getElementById('privateStartTime').value;
+        const endTime = document.getElementById('privateEndTime').value;
+        const hours = getPrivateHours();
         const count = document.getElementById('privateStudentCount').value;
-        extraDetail = ` | โค้ช: ${coach} | เวลา: ${timeSlot} | จำนวน: ${count} คน`;
+        const pDate = document.getElementById('privateDate').value || '-';
+        const pLoc = document.getElementById('privateLocation').value || 'โรงเรียนเตชะวิทย์';
+        extraDetail = ` | โค้ช: ${coach} | วันที่: ${pDate} | เวลา: ${startTime} - ${endTime} (${hours} ชม.) | จำนวน: ${count} คน | สถานที่: ${pLoc}`;
       }
 
       const pendingItem = {
@@ -2969,9 +3022,9 @@
 
         let badge = '';
         if (isSaturdayCoachOat) {
-          badge = `<span class="text-[9px] font-bold text-indigo-700 bg-indigo-100/80 px-1 py-0.5 rounded text-center truncate">10:00</span>`;
+          badge = `<span class="text-[9px] font-bold text-indigo-700 bg-indigo-100/80 px-1 py-0.5 rounded text-center truncate">16:00</span>`;
         } else if (isNormalClass) {
-          badge = `<span class="text-[9px] font-bold text-amber-800 bg-amber-100/80 px-1 py-0.5 rounded text-center truncate">17:00</span>`;
+          badge = `<span class="text-[9px] font-bold text-amber-800 bg-amber-100/80 px-1 py-0.5 rounded text-center truncate">17:30</span>`;
         }
 
         cell.innerHTML = `
@@ -3005,12 +3058,12 @@
 
       if (isSat) {
         dot.className = 'w-3 h-3 rounded-full bg-indigo-600';
-        time.innerText = '10:00 - 12:00 น. (คลาสวันเสาร์)';
+        time.innerText = '16:00 - 18:00 น. (คลาสวันเสาร์)';
         coach.innerText = 'โค้ชโอ๊ต (Head Coach)';
         topic.innerHTML = '<strong>คลาส Basic Coach Oat:</strong> วิทยาศาสตร์การกีฬาสำหรับเด็ก การเคลื่อนไหว ความคล่องตัว (Agility Speed Ladder) การประสานงานร่างกาย และเสริมสร้างกล้ามเนื้อมัดเล็ก';
       } else if (isNormal) {
         dot.className = 'w-3 h-3 rounded-full bg-amber-500';
-        time.innerText = '17:00 - 19:00 น. (คลาสปกติ)';
+        time.innerText = '17:30 - 19:30 น. (คลาสปกติ)';
         if (dayOfWeek === 1) {
           coach.innerText = 'โค้ชโอ๊ต & โค้ชโอ๊ค';
           topic.innerHTML = '<strong>Fundamental Dribbling:</strong> ทักษะการทรงตัว บาสเกตบอลฟันดาเมนทัล สปีดเลี้ยงบอลสองมือ Footwork การเปลี่ยนทิศทาง และสมรรถภาพร่างกาย';
@@ -3044,9 +3097,7 @@
         if (!confirm(`คุณต้องการออกจากระบบ ${staffName} ใช่หรือไม่?`)) return;
         isCoachAuth = false;
         currentStaff = null;
-        localStorage.setItem('dbo_is_coach_v13', 'false');
-        localStorage.setItem('dbo_is_coach_v12', 'false');
-        localStorage.setItem('dbo_is_coach_v11', 'false');
+        localStorage.setItem('dbo_is_coach_v14', 'false');
         localStorage.removeItem('dbo_current_staff');
         updateCoachStateUI();
         updateHeaderProfileUI();
@@ -3055,9 +3106,7 @@
       } else if (loggedInStudent) {
         const sName = loggedInStudent.name;
         loggedInStudent = null;
-        localStorage.removeItem('dbo_parent_logged_v13');
-        localStorage.removeItem('dbo_parent_logged_v12');
-        localStorage.removeItem('dbo_parent_logged_v11');
+        localStorage.removeItem('dbo_parent_logged_v14');
         updateCoachStateUI();
         updateHeaderProfileUI();
         renderParentView();
@@ -3836,10 +3885,10 @@
 
     function reloadStateFromStorage() {
       try {
-        students = JSON.parse(localStorage.getItem('dbo_students_v13')) || students;
-        dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v13')) || dailyAttendance;
-        parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrations_v13')) || parentRegistrations;
-        pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v13')) || pendingSlips;
+        students = JSON.parse(localStorage.getItem('dbo_students_v14')) || students;
+        dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v14')) || dailyAttendance;
+        parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrations_v14')) || parentRegistrations;
+        pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v14')) || pendingSlips;
         refreshAllViews();
       } catch (e) {
         console.log('Reload storage error:', e);
@@ -3852,22 +3901,22 @@
 
       if (incomingData.students && Array.isArray(incomingData.students)) {
         students = incomingData.students;
-        localStorage.setItem('dbo_students_v13', JSON.stringify(students));
+        localStorage.setItem('dbo_students_v14', JSON.stringify(students));
         hasChanges = true;
       }
       if (incomingData.dailyAttendance && typeof incomingData.dailyAttendance === 'object') {
         dailyAttendance = incomingData.dailyAttendance;
-        localStorage.setItem('dbo_daily_attendance_v13', JSON.stringify(dailyAttendance));
+        localStorage.setItem('dbo_daily_attendance_v14', JSON.stringify(dailyAttendance));
         hasChanges = true;
       }
       if (incomingData.parentRegistrations && Array.isArray(incomingData.parentRegistrations)) {
         parentRegistrations = incomingData.parentRegistrations;
-        localStorage.setItem('dbo_parent_registrations_v13', JSON.stringify(parentRegistrations));
+        localStorage.setItem('dbo_parent_registrations_v14', JSON.stringify(parentRegistrations));
         hasChanges = true;
       }
       if (incomingData.pendingSlips && Array.isArray(incomingData.pendingSlips)) {
         pendingSlips = incomingData.pendingSlips;
-        localStorage.setItem('dbo_pending_slips_v13', JSON.stringify(pendingSlips));
+        localStorage.setItem('dbo_pending_slips_v14', JSON.stringify(pendingSlips));
         hasChanges = true;
       }
 
@@ -3876,7 +3925,7 @@
           const fresh = students.find(s => s.id === loggedInStudent.id);
           if (fresh) {
             loggedInStudent = fresh;
-            localStorage.setItem('dbo_parent_logged_v13', JSON.stringify(loggedInStudent));
+            localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
             renderParentView();
           }
         }
@@ -3922,7 +3971,7 @@
 
       // Storage event listener (fallback for cross-tab)
       window.addEventListener('storage', (e) => {
-        if (e.key === 'dbo_students_v13' || e.key === 'dbo_daily_attendance_v13' || e.key === 'dbo_parent_registrations_v13') {
+        if (e.key === 'dbo_students_v14' || e.key === 'dbo_daily_attendance_v14' || e.key === 'dbo_parent_registrations_v14') {
           reloadStateFromStorage();
         }
       });
@@ -4017,15 +4066,45 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Clear legacy storage versions once to guarantee fresh roster & data model
-      if (localStorage.getItem('dbo_app_version') !== 'v13.0') {
+      // Clear legacy storage versions once to guarantee fresh roster & pure factual data
+      if (localStorage.getItem('dbo_app_version') !== 'v14.0') {
         localStorage.removeItem('dbo_students_v8');
         localStorage.removeItem('dbo_students_v9');
         localStorage.removeItem('dbo_students_v10');
         localStorage.removeItem('dbo_students_v11');
         localStorage.removeItem('dbo_students_v12');
-        localStorage.setItem('dbo_app_version', 'v13.0');
+        localStorage.removeItem('dbo_students_v13');
+        localStorage.removeItem('dbo_daily_attendance_v13');
+        localStorage.removeItem('dbo_parent_registrations_v13');
+        localStorage.removeItem('dbo_pending_slips_v13');
+        localStorage.setItem('dbo_app_version', 'v14.0');
       }
+
+      // Dynamic live date & class schedule banner based on real calendar
+      try {
+        const now = new Date();
+        const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+        const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        const thaiMonthsFull = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+        const dayNum = now.getDate();
+        const dayW = now.getDay();
+        const thaiYear = now.getFullYear() + 543;
+
+        let scheduleNote = '';
+        if (dayW === 1 || dayW === 2 || dayW === 4) {
+          scheduleNote = 'คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์';
+        } else if (dayW === 6) {
+          scheduleNote = 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 18:00 น. ณ ยิมเตชะวิทย์';
+        } else {
+          scheduleNote = 'วันนี้ไม่มีคลาสรวม (วันพักฟื้น / นัดหมาย Private Class)';
+        }
+
+        const pLabel = document.getElementById('parentTodayDateLabel');
+        if (pLabel) pLabel.innerText = `${thaiDays[dayW]}ที่ ${dayNum} ${thaiMonths[now.getMonth()]} ${thaiYear} • ${scheduleNote}`;
+
+        const bLabel = document.getElementById('dailyBoardDateLabel');
+        if (bLabel) bLabel.innerText = `${thaiDays[dayW]}ที่ ${dayNum} ${thaiMonthsFull[now.getMonth()]} ${thaiYear} • ${scheduleNote}`;
+      } catch (e) { console.log('Date banner update error:', e); }
 
       renderParentView();
       updateCoachStateUI();
