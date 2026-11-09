@@ -301,7 +301,7 @@
           </p>
         </div>
 
-        <form onsubmit="handleParentPhoneLogin(event)" class="space-y-4 text-left">
+        <form id="phoneLoginForm" onsubmit="handleParentPhoneLogin(event)" class="space-y-4 text-left">
           <div class="space-y-1.5">
             <label class="block text-xs font-semibold text-dbo-textSecondary">เบอร์โทรศัพท์มือถือ (10 หลัก)</label>
             <div class="relative">
@@ -310,14 +310,15 @@
                 type="tel" 
                 id="parentPhoneInput" 
                 placeholder="ระบุเบอร์โทรศัพท์มือถือ 10 หลัก" 
-                maxlength="12"
+                maxlength="16"
                 required
                 class="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-dbo-navy placeholder-slate-400 focus:outline-none focus:border-dbo-gold focus:ring-2 focus:ring-dbo-gold/20 text-sm font-mono tracking-wider transition"
               >
             </div>
+            <div id="loginFeedback" class="hidden text-xs py-2 px-3 rounded-xl transition-all"></div>
           </div>
 
-          <button type="submit" class="btn-touch w-full py-3 rounded-xl font-bold text-sm bg-dbo-navy text-white hover:bg-dbo-navySoft shadow-md flex items-center justify-center gap-2">
+          <button type="submit" id="btnLoginSubmit" class="btn-touch w-full py-3 rounded-xl font-bold text-sm bg-dbo-navy text-white hover:bg-dbo-navySoft shadow-md flex items-center justify-center gap-2 cursor-pointer">
             <i data-lucide="log-in" class="w-4 h-4"></i>
             <span>เข้าสู่ระบบ</span>
           </button>
@@ -1829,7 +1830,7 @@
       }
     };
 
-    let students = JSON.parse(localStorage.getItem('dbo_students_v12')) || null;
+    let students = JSON.parse(localStorage.getItem('dbo_students_v13')) || null;
     if (!students) {
       students = initialRawData.map(s => ({
         ...s,
@@ -1837,7 +1838,7 @@
         parentName: s.parentName || '',
         parentRelation: s.parentRelation || ''
       }));
-      localStorage.setItem('dbo_students_v12', JSON.stringify(students));
+      localStorage.setItem('dbo_students_v13', JSON.stringify(students));
     } else {
       students.forEach(s => {
         if (s.phone && (s.phone.startsWith('08000000') || s.phone === '0812345678' || s.phone === '0898765432')) {
@@ -1846,13 +1847,13 @@
       });
     }
 
-    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v12')) || null;
-    let isCoachAuth = localStorage.getItem('dbo_is_coach_v12') === 'true';
+    let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v13')) || null;
+    let isCoachAuth = localStorage.getItem('dbo_is_coach_v13') === 'true';
     let currentStaff = JSON.parse(localStorage.getItem('dbo_current_staff')) || (isCoachAuth ? AUTHORIZED_STAFF['0933199119'] : null);
     let currentCoachFilter = 'all';
 
     // Pending Slips Queue for Admin Verification
-    let pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v12')) || [
+    let pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v13')) || [
       {
         id: 'slip-101',
         studentName: 'น้องเจเจ',
@@ -1868,7 +1869,7 @@
     ];
 
     // Parent Account Registrations (Awaiting Coach Approval)
-    let parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrations_v12')) || [
+    let parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrations_v13')) || [
       {
         id: 'reg-demo-1',
         phone: '0812345678',
@@ -1884,7 +1885,7 @@
     ];
 
     // Daily Attendance Registry (Keyed by date: 'YYYY-MM-DD')
-    let dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v12')) || {
+    let dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v13')) || {
       '2026-11-09': {
         1: { studentId: 1, name: 'อิฐ', status: 'attending', time: '14:20 น.', updatedBy: 'parent' },
         2: { studentId: 2, name: 'ซับ', status: 'attending', time: '14:35 น.', updatedBy: 'parent' },
@@ -1896,10 +1897,10 @@
     };
 
     function saveState() {
-      localStorage.setItem('dbo_students_v12', JSON.stringify(students));
-      localStorage.setItem('dbo_pending_slips_v12', JSON.stringify(pendingSlips));
-      localStorage.setItem('dbo_parent_registrations_v12', JSON.stringify(parentRegistrations));
-      localStorage.setItem('dbo_daily_attendance_v12', JSON.stringify(dailyAttendance));
+      localStorage.setItem('dbo_students_v13', JSON.stringify(students));
+      localStorage.setItem('dbo_pending_slips_v13', JSON.stringify(pendingSlips));
+      localStorage.setItem('dbo_parent_registrations_v13', JSON.stringify(parentRegistrations));
+      localStorage.setItem('dbo_daily_attendance_v13', JSON.stringify(dailyAttendance));
       if (currentStaff) localStorage.setItem('dbo_current_staff', JSON.stringify(currentStaff));
     }
 
@@ -1948,54 +1949,107 @@
 
     // Unified Phone Login Logic (Staff Whitelist: 0933199119, 0952974593, 0803745694, 0946365206)
     function handleParentPhoneLogin(e) {
-      e.preventDefault();
-      const rawPhone = document.getElementById('parentPhoneInput').value.replace(/[-\s]/g, '').trim();
+      if (e && e.preventDefault) e.preventDefault();
+      const inputEl = document.getElementById('parentPhoneInput');
+      const feedbackEl = document.getElementById('loginFeedback');
+      if (!inputEl) return;
 
-      // 1. Check Authorized Staff Whitelist
-      if (AUTHORIZED_STAFF[rawPhone]) {
-        const staff = AUTHORIZED_STAFF[rawPhone];
+      let rawVal = (inputEl.value || '').trim();
+      if (!rawVal) {
+        showToast('กรุณาระบุเบอร์โทรศัพท์มือถือครับ');
+        return;
+      }
+
+      // Replace Thai numerals to Arabic numerals
+      const thaiDigits = ['๐','๑','๒','๓','๔','๕','๖','๗','๘','๙'];
+      thaiDigits.forEach((td, idx) => {
+        rawVal = rawVal.split(td).join(idx.toString());
+      });
+
+      // Strip non-digits and normalize country code
+      let cleanPhone = rawVal.replace(/[^\d+]/g, '');
+      if (cleanPhone.startsWith('+66')) cleanPhone = '0' + cleanPhone.slice(3);
+      if (cleanPhone.startsWith('66') && cleanPhone.length === 11) cleanPhone = '0' + cleanPhone.slice(2);
+
+      if (feedbackEl) {
+        feedbackEl.classList.add('hidden');
+        feedbackEl.innerHTML = '';
+      }
+
+      // 1. Check Authorized Staff Whitelist (Coach Oat, Coach Oak, Iris, Aom)
+      if (AUTHORIZED_STAFF[cleanPhone]) {
+        const staff = AUTHORIZED_STAFF[cleanPhone];
         isCoachAuth = true;
         currentStaff = staff;
-        localStorage.setItem('dbo_is_coach_v12', 'true');
+        localStorage.setItem('dbo_is_coach_v13', 'true');
         localStorage.setItem('dbo_current_staff', JSON.stringify(staff));
         loggedInStudent = null;
-        localStorage.removeItem('dbo_parent_logged_v12');
+        localStorage.removeItem('dbo_parent_logged_v13');
 
         updateCoachStateUI();
         updateHeaderProfileUI();
         switchTab('coach-roster');
-        showToast(`ยินดีต้อนรับ ${staff.fullName} เข้าสู่แผงควบคุมระบบ (Admin)`);
+        showToast(`ยินดีต้อนรับ ${staff.fullName} เข้าสู่ระบบแอดมิน DBO`);
         triggerTelegramPush(`🛡️ ${staff.title} เข้าสู่ระบบจัดการเรียบร้อยแล้ว`, 'DBO Academy Admin Access');
         return;
       }
 
-      // 2. Check Student Phone
-      const matched = students.filter(s => (s.phone || '').replace(/[-\s]/g, '') === rawPhone);
+      // 2. Check Linked Student Phone for Parents
+      const matched = students.filter(s => (s.phone || '').replace(/[^\d]/g, '') === cleanPhone && cleanPhone !== '');
 
-      if (matched.length === 0) {
-        const pending = parentRegistrations.find(r => r.phone.replace(/[-\s]/g, '') === rawPhone && r.status === 'pending');
-        if (pending) {
-          showToast(`เบอร์ ${rawPhone} ลงทะเบียนไว้แล้ว (น้อง${pending.studentName}) อยู่ระหว่างรอโค้ชโอ๊ตอนุมัติครับ`);
-          return;
-        }
+      if (matched.length > 0) {
+        isCoachAuth = false;
+        currentStaff = null;
+        localStorage.setItem('dbo_is_coach_v13', 'false');
+        localStorage.removeItem('dbo_current_staff');
 
-        showToast('ไม่พบข้อมูลเบอร์โทรนี้ในระบบ กรุณาลงทะเบียนผูกเบอร์กับลูกหลานเพื่อส่งให้โค้ชอนุมัติครับ');
-        openParentLinkModal(rawPhone);
+        loggedInStudent = matched[0];
+        localStorage.setItem('dbo_parent_logged_v13', JSON.stringify(loggedInStudent));
+        updateCoachStateUI();
+        updateHeaderProfileUI();
+        renderParentView(matched);
+        showToast(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name}`);
+        triggerTelegramPush(`🏀 ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name} เข้าสู่ระบบ DBO`, 'DBO Basketball Academy');
         return;
       }
 
-      isCoachAuth = false;
-      currentStaff = null;
-      localStorage.setItem('dbo_is_coach_v12', 'false');
-      localStorage.removeItem('dbo_current_staff');
+      // 3. Check Pending Registrations
+      const pending = parentRegistrations.find(r => r.phone.replace(/[^\d]/g, '') === cleanPhone && r.status === 'pending');
+      if (pending) {
+        if (feedbackEl) {
+          feedbackEl.className = 'text-xs p-3 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 block space-y-1.5';
+          feedbackEl.innerHTML = `
+            <div class="font-bold flex items-center gap-1.5 text-amber-800">
+              <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+              <span>อยู่ระหว่างรอโค้ชโอ๊ตอนุมัติ</span>
+            </div>
+            <p>เบอร์ <strong>${cleanPhone}</strong> ได้ลงทะเบียนผูกกับ <strong>น้อง${pending.studentName}</strong> ไว้แล้ว อยู่ระหว่างรอโค้ชโอ๊ตหรือทีมงานกดยืนยันคำขอครับ</p>
+          `;
+          feedbackEl.classList.remove('hidden');
+          lucide.createIcons();
+        }
+        showToast(`เบอร์ ${cleanPhone} อยู่ระหว่างรอโค้ชโอ๊ตอนุมัติครับ`);
+        return;
+      }
 
-      loggedInStudent = matched[0];
-      localStorage.setItem('dbo_parent_logged_v12', JSON.stringify(loggedInStudent));
-      updateCoachStateUI();
-      updateHeaderProfileUI();
-      renderParentView(matched);
-      showToast(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name}`);
-      triggerTelegramPush(`🏀 ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name} เข้าสู่ระบบ DBO`, 'DBO Basketball Academy');
+      // 4. Phone Not Registered Yet -> Prompt Registration
+      if (feedbackEl) {
+        feedbackEl.className = 'text-xs p-3 rounded-xl bg-sky-50 text-sky-900 border border-sky-200 block space-y-1.5';
+        feedbackEl.innerHTML = `
+          <div class="font-bold flex items-center gap-1.5 text-sky-900">
+            <i data-lucide="info" class="w-4 h-4 text-sky-600"></i>
+            <span>ยังไม่ได้ลงทะเบียนผูกเบอร์</span>
+          </div>
+          <p>ระบบได้ลบเบอร์โทรเก่าออกทั้งหมด กรุณากดปุ่มด้านล่างเพื่อเลือกชื่อน้องและส่งให้โค้ชอนุมัติครับ</p>
+          <button type="button" onclick="openParentLinkModal('${cleanPhone}')" class="w-full mt-1 py-2 px-3 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition">
+            <span>📝 แตะตรงนี้เพื่อลงทะเบียนผูกเบอร์กับน้อง</span>
+          </button>
+        `;
+        feedbackEl.classList.remove('hidden');
+        lucide.createIcons();
+      }
+      showToast('ไม่พบข้อมูลเบอร์โทรนี้ในระบบ กรุณาลงทะเบียนผูกเบอร์กับน้องเพื่อส่งให้โค้ชอนุมัติครับ');
+      openParentLinkModal(cleanPhone);
     }
 
     function renderParentView(matchedList) {
@@ -2203,15 +2257,7 @@
     }
 
     function parentLogout() {
-      loggedInStudent = null;
-      localStorage.removeItem('dbo_parent_logged_v12');
-      document.getElementById('parentPhoneInput').value = '';
-      renderParentView();
-      switchTab('parent-portal');
-      showToast('ออกจากระบบเรียบร้อย');
-    }
-      switchTab('parent-portal');
-      showToast('ออกจากระบบเรียบร้อย');
+      appLogout();
     }
 
     // RSVP & Leave Modals Logic
@@ -2961,15 +3007,19 @@
         if (!confirm(`คุณต้องการออกจากระบบ ${staffName} ใช่หรือไม่?`)) return;
         isCoachAuth = false;
         currentStaff = null;
+        localStorage.setItem('dbo_is_coach_v13', 'false');
+        localStorage.setItem('dbo_is_coach_v12', 'false');
         localStorage.setItem('dbo_is_coach_v11', 'false');
         localStorage.removeItem('dbo_current_staff');
         updateCoachStateUI();
         updateHeaderProfileUI();
         switchTab('parent-portal');
-        showToast('ออกจากระบบแอดมินเรียบร้อยแล้ว');
+        showToast('ออกจากระบบเรียบร้อยแล้ว');
       } else if (loggedInStudent) {
         const sName = loggedInStudent.name;
         loggedInStudent = null;
+        localStorage.removeItem('dbo_parent_logged_v13');
+        localStorage.removeItem('dbo_parent_logged_v12');
         localStorage.removeItem('dbo_parent_logged_v11');
         updateCoachStateUI();
         updateHeaderProfileUI();
@@ -3748,12 +3798,13 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       // Clear legacy storage versions once to guarantee fresh roster & data model
-      if (localStorage.getItem('dbo_app_version') !== 'v12.0') {
+      if (localStorage.getItem('dbo_app_version') !== 'v13.0') {
         localStorage.removeItem('dbo_students_v8');
         localStorage.removeItem('dbo_students_v9');
         localStorage.removeItem('dbo_students_v10');
         localStorage.removeItem('dbo_students_v11');
-        localStorage.setItem('dbo_app_version', 'v12.0');
+        localStorage.removeItem('dbo_students_v12');
+        localStorage.setItem('dbo_app_version', 'v13.0');
       }
 
       renderParentView();
