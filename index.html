@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th" class="h-full">
 <head>
   <meta charset="UTF-8">
@@ -22,7 +22,7 @@
   <!-- Typography: Prompt & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -65,29 +65,31 @@
       color-scheme: light;
     }
 
-    /* Universal Prompt Font Across ALL Elements */
-    *, *::before, *::after, html, body, button, input, select, textarea, table, th, td, p, h1, h2, h3, h4, h5, h6, span, label, div {
-      font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
-    }
-
-    body {
+    /* Universal Clean Prompt Font for Thai & Inter for English */
+    html, body {
       background-color: #F8FAFC;
       color: #0F172A;
       overflow-x: hidden;
-      font-family: 'Prompt', sans-serif !important;
+      font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
       padding-top: env(safe-area-inset-top, 0px);
     }
 
+    button, input, select, textarea {
+      font-family: inherit;
+    }
+
+    /* Monospace & Tabular Numbers for Accurate Alignment */
     .font-mono, .tabular-nums {
-      font-family: 'Prompt', monospace !important;
-      font-variant-numeric: tabular-nums !important;
+      font-family: 'Inter', 'Prompt', monospace !important;
+      font-variant-numeric: tabular-nums lining-nums !important;
     }
 
     .hero-title {
       font-size: clamp(20px, 4.2vw, 30px);
-      line-height: 1.25;
+      line-height: 1.35;
       font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: 0;
     }
 
     .card-clean {
@@ -1909,7 +1911,7 @@
         try {
           window.dboRealtimeBC.postMessage({
             type: 'STATE_CHANGED',
-            actionDesc: actionDesc || 'เธกเธตเธเธฒเธฃเธเธฑเธเธ—เธถเธเธเนเธญเธกเธนเธฅเธฅเนเธฒเธชเธธเธ”',
+            actionDesc: actionDesc || 'มีการบันทึกข้อมูลล่าสุด',
             data: { students, pendingSlips, parentRegistrations, dailyAttendance }
           });
         } catch (e) { console.log('BC post error:', e); }
@@ -1922,7 +1924,7 @@
           const payload = {
             senderId: clientId,
             type: 'REALTIME_STATE_UPDATE',
-            actionDesc: actionDesc || 'เธกเธตเธเธฒเธฃเธญเธฑเธเน€เธ”เธ•เธเนเธญเธกเธนเธฅ',
+            actionDesc: actionDesc || 'มีการอัปเดตข้อมูล',
             timestamp: Date.now(),
             data: {
               students,
@@ -3859,7 +3861,7 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast('เธชเธณเธฃเธญเธเธเธฒเธเธเนเธญเธกเธนเธฅเธฃเธฐเธเธ JSON เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธง');
+      showToast('สำรองฐานข้อมูลระบบ JSON เรียบร้อยแล้ว');
     }
 
     function importDatabaseJSON(input) {
@@ -3869,15 +3871,15 @@
         try {
           const imported = JSON.parse(e.target.result);
           if (imported.students && Array.isArray(imported.students)) {
-            if (!confirm(`เธ•เนเธญเธเธเธฒเธฃเธเธนเนเธเธทเธเธเธฒเธเธเนเธญเธกเธนเธฅ (${imported.students.length} เธเธ) เน€เธเนเธฒเธชเธนเนเธฃเธฐเธเธเนเธเนเธซเธฃเธทเธญเนเธกเน?\n* เธเนเธญเธกเธนเธฅเธเธฑเธเธเธธเธเธฑเธเธเธฐเธ–เธนเธเนเธ—เธเธ—เธตเนเธ”เนเธงเธขเนเธเธฅเนเธชเธณเธฃเธญเธเธเธตเน`)) return;
-            applyIncomingState(imported, 'เธเธนเนเธเธทเธเธเธฒเธเธเนเธญเธกเธนเธฅเธเธฒเธเนเธเธฅเนเธชเธณเธฃเธญเธเธชเธณเน€เธฃเนเธ');
-            saveState(true, 'เธเธนเนเธเธทเธเธเธฒเธเธเนเธญเธกเธนเธฅเธเธฒเธเนเธเธฅเนเธชเธณเธฃเธญเธ');
-            showToast(`เธเธนเนเธเธทเธเธเธฒเธเธเนเธญเธกเธนเธฅเธชเธณเน€เธฃเนเธ (${imported.students.length} เธเธ)`);
+            if (!confirm(`ต้องการกู้คืนฐานข้อมูล (${imported.students.length} คน) เข้าสู่ระบบใช่หรือไม่?\n* ข้อมูลปัจจุบันจะถูกแทนที่ด้วยไฟล์สำรองนี้`)) return;
+            applyIncomingState(imported, 'กู้คืนฐานข้อมูลจากไฟล์สำรองสำเร็จ');
+            saveState(true, 'กู้คืนฐานข้อมูลจากไฟล์สำรอง');
+            showToast(`กู้คืนฐานข้อมูลสำเร็จ (${imported.students.length} คน)`);
           } else {
-            showToast('เธฃเธนเธเนเธเธเนเธเธฅเนเธชเธณเธฃเธญเธเนเธกเนเธ–เธนเธเธ•เนเธญเธ');
+            showToast('รูปแบบไฟล์สำรองไม่ถูกต้อง');
           }
         } catch (err) {
-          showToast('เธญเนเธฒเธเนเธเธฅเน JSON เนเธกเนเธชเธณเน€เธฃเนเธ: ' + err.message);
+          showToast('อ่านไฟล์ JSON ไม่สำเร็จ: ' + err.message);
         }
       };
       reader.readAsText(input.files[0]);
@@ -3933,7 +3935,7 @@
         refreshAllViews();
 
         if (actionDesc) {
-          showToast(`โก เธเธดเธเธเนเธเนเธญเธกเธนเธฅเน€เธฃเธตเธขเธฅเนเธ—เธกเน: ${actionDesc}`);
+          showToast(`⚡ ซิงค์ข้อมูลเรียลไทม์: ${actionDesc}`);
           playNotificationChime();
         }
       }
@@ -4016,7 +4018,7 @@
                   window.realtimeMqttClient.publish(REALTIME_SYNC_TOPIC, JSON.stringify({
                     senderId: window.dboClientId,
                     type: 'REALTIME_STATE_UPDATE',
-                    actionDesc: 'เธชเนเธเธ•เนเธญเธเนเธญเธกเธนเธฅเธฅเนเธฒเธชเธธเธ”เนเธซเนเธเธฑเธเธญเธธเธเธเธฃเธ“เนเนเธซเธกเน',
+                    actionDesc: 'ส่งต่อข้อมูลล่าสุดให้กับอุปกรณ์ใหม้',
                     data: { students, pendingSlips, parentRegistrations, dailyAttendance }
                   }));
                 }
@@ -4049,10 +4051,10 @@
       if (!ind) return;
       if (isOnline) {
         ind.className = 'inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-full border border-emerald-300 shadow-xs';
-        ind.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span>โก เน€เธฃเธตเธขเธฅเนเธ—เธกเน เธญเธญเธเนเธฅเธเน</span>';
+        ind.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span>⚡ เรียลไทม์ ออนไลน์</span>';
       } else {
         ind.className = 'inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200';
-        ind.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> <span>เธญเธญเธเนเธฅเธเน (เน€เธเธเนเธเน€เธเธฃเธทเนเธญเธ)</span>';
+        ind.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> <span>ออฟไลน์ (บันทึกในเครื่อง)</span>';
       }
     }
 
