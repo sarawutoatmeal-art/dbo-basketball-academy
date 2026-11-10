@@ -45,8 +45,14 @@ function mergeStates(existing, incoming) {
     dailyAttendance: {},
     parentRegistrations: [],
     pendingSlips: [],
-    assistantCoaches: []
+    assistantCoaches: [],
+    weeklySchedule: null
   };
+
+  // 1. Merge weeklySchedule (latest timestamp wins)
+  result.weeklySchedule = (incoming.weeklySchedule && (incoming.updatedAt || 0) >= (existing.updatedAt || 0))
+    ? incoming.weeklySchedule
+    : (existing.weeklySchedule || incoming.weeklySchedule || null);
 
   // 1. Merge deletedStudentIds timestamps
   const delMap = {};
