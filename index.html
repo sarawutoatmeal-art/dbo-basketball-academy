@@ -339,64 +339,24 @@
           </span>
           <h1 class="hero-title text-dbo-navy text-2xl sm:text-3xl font-black tracking-tight">เข้าสู่ระบบ (Login)</h1>
           <p class="text-xs sm:text-sm text-dbo-textSecondary max-w-sm mx-auto">
-            กรอกเบอร์มือถือ หรือ เลือกเข้าใช้งานด่วน เพื่อดูสิทธิ์เรียนและเช็คชื่อเข้าคลาส
+            กรอกเบอร์โทรศัพท์มือถือ เพื่อเข้าสู่ระบบผู้ปกครองหรือโค้ชผู้สอน
           </p>
         </div>
 
-        <!-- Quick 1-Tap Fast Login Tiles -->
-        <div class="bg-white/90 p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-2 text-left">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-dbo-navy flex items-center gap-1.5">
-              <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500 fill-amber-500"></i>
-              <span>เข้าสู่ระบบด่วน 1-Tap (แตะเข้าใช้งานทันที)</span>
-            </span>
-            <span class="text-[10px] text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">ไม่ต้องพิมพ์</span>
-          </div>
-          <div class="grid grid-cols-2 gap-2 pt-1">
-            <button type="button" onclick="quickLoginRole('coach_oat')" class="btn-touch p-2.5 rounded-xl text-left bg-gradient-to-r from-slate-900 to-indigo-950 text-white hover:brightness-110 transition shadow-xs flex items-center gap-2 border border-indigo-900/40 cursor-pointer">
-              <div class="w-7 h-7 rounded-lg bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center flex-shrink-0">🏀</div>
-              <div class="min-w-0 flex-1">
-                <div class="text-xs font-bold text-amber-300 truncate">โค้ชโอ๊ต</div>
-                <div class="text-[10px] text-slate-300 font-mono truncate">093-319-9119</div>
-              </div>
-            </button>
-            <button type="button" onclick="quickLoginRole('coach_oak')" class="btn-touch p-2.5 rounded-xl text-left bg-gradient-to-r from-slate-900 to-indigo-950 text-white hover:brightness-110 transition shadow-xs flex items-center gap-2 border border-indigo-900/40 cursor-pointer">
-              <div class="w-7 h-7 rounded-lg bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center flex-shrink-0">🎯</div>
-              <div class="min-w-0 flex-1">
-                <div class="text-xs font-bold text-amber-300 truncate">โค้ชโอ๊ค</div>
-                <div class="text-[10px] text-slate-300 font-mono truncate">095-297-4593</div>
-              </div>
-            </button>
-            <button type="button" onclick="quickLoginRole('admin_iris')" class="btn-touch p-2.5 rounded-xl text-left bg-slate-50 hover:bg-slate-100 text-slate-800 transition shadow-xs flex items-center gap-2 border border-slate-200 cursor-pointer">
-              <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center flex-shrink-0">📋</div>
-              <div class="min-w-0 flex-1">
-                <div class="text-xs font-bold text-slate-800 truncate">คุณไอริส</div>
-                <div class="text-[10px] text-slate-500 font-mono truncate">080-374-5694</div>
-              </div>
-            </button>
-            <button type="button" onclick="quickLoginRole('demo_parent')" class="btn-touch p-2.5 rounded-xl text-left bg-amber-50 hover:bg-amber-100 text-amber-950 transition shadow-xs flex items-center gap-2 border border-amber-200 cursor-pointer">
-              <div class="w-7 h-7 rounded-lg bg-amber-200 text-amber-900 font-bold text-xs flex items-center justify-center flex-shrink-0">👤</div>
-              <div class="min-w-0 flex-1">
-                <div class="text-xs font-bold text-amber-900 truncate">น้องอิฐ (ผปค.)</div>
-                <div class="text-[10px] text-amber-700 font-mono truncate">081-234-5678</div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Phone / Name Form Input -->
+        <!-- Phone / Staff Login Form -->
         <form id="phoneLoginForm" onsubmit="handleParentPhoneLogin(event)" class="space-y-4 text-left">
           <div class="space-y-1.5">
-            <label class="block text-xs font-semibold text-dbo-textSecondary">หรือกรอกเบอร์โทรศัพท์มือถือ / ชื่อผู้ใช้งาน</label>
+            <label class="block text-xs font-semibold text-dbo-textSecondary">เบอร์โทรศัพท์มือถือ (10 หลัก)</label>
             <div class="relative">
               <i data-lucide="phone" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
               <input 
-                type="text" 
+                type="tel" 
                 id="parentPhoneInput" 
-                placeholder="ระบุเบอร์โทร 10 หลัก หรือพิมพ์ชื่อ เช่น โค้ชโอ๊ต, น้องอิฐ" 
-                maxlength="30"
+                placeholder="ระบุเบอร์โทรศัพท์ เช่น 093-319-9119" 
+                maxlength="20"
                 required
-                class="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-dbo-navy placeholder-slate-400 focus:outline-none focus:border-dbo-gold focus:ring-2 focus:ring-dbo-gold/20 text-sm font-mono tracking-wider transition"
+                autocomplete="tel"
+                class="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-dbo-navy placeholder-slate-400 focus:outline-none focus:border-dbo-gold focus:ring-2 focus:ring-dbo-gold/20 text-base font-mono tracking-wider transition"
               >
             </div>
             <div id="loginFeedback" class="hidden text-xs py-2 px-3 rounded-xl transition-all"></div>
@@ -406,6 +366,10 @@
             <i data-lucide="log-in" class="w-4 h-4 text-amber-400"></i>
             <span>เข้าสู่ระบบทันที</span>
           </button>
+
+          <p class="text-[11px] text-center text-slate-400 pt-1">
+            ผู้ปกครองที่ยังไม่ได้ผูกเบอร์ สามารถกดแท็บ "สมัครเรียน" เพื่อส่งคำขอเชื่อมต่อเบอร์ได้
+          </p>
         </form>
 
         <!-- New Parent Registration Link Card -->
@@ -1778,18 +1742,18 @@
           <!-- Dynamically populated mobile cards -->
         </div>
 
-        <!-- Main Roster Table with Edit/Delete/Checkin (Desktop view) -->
+        <!-- Main Roster Table with Edit/Delete/Checkin (Desktop & Tablet view) -->
         <div id="coachRosterDesktopTable" class="hidden overflow-x-auto rounded-xl border border-slate-200">
-          <table class="w-full text-left text-xs sm:text-sm border-collapse min-w-[760px]">
+          <table class="w-full text-left text-xs sm:text-sm border-collapse">
             <thead class="bg-slate-50 text-slate-500 uppercase border-b border-slate-200">
               <tr>
-                <th scope="col" class="py-2.5 px-3 text-center w-12">#</th>
-                <th scope="col" class="py-2.5 px-3">ชื่อนักเรียน</th>
-                <th scope="col" class="py-2.5 px-3">ประเภทคอร์ส</th>
-                <th scope="col" class="py-2.5 px-3">รอบตัดยอด/วันเริ่ม</th>
-                <th scope="col" class="py-2.5 px-3 text-center w-28">สิทธิ์คงเหลือ</th>
-                <th scope="col" class="py-2.5 px-3 text-center w-64">เช็คชื่อ & โควต้า</th>
-                <th scope="col" class="py-2.5 px-3 text-center w-24">จัดการ</th>
+                <th scope="col" class="py-2.5 px-2 text-center w-8">#</th>
+                <th scope="col" class="py-2.5 px-2">ชื่อนักเรียน</th>
+                <th scope="col" class="py-2.5 px-2 hidden sm:table-cell">ประเภทคอร์ส</th>
+                <th scope="col" class="py-2.5 px-2 hidden md:table-cell">รอบตัดยอด/วันเริ่ม</th>
+                <th scope="col" class="py-2.5 px-2 text-center">สิทธิ์คงเหลือ</th>
+                <th scope="col" class="py-2.5 px-2 text-center">เช็คชื่อ & โควต้า</th>
+                <th scope="col" class="py-2.5 px-2 text-center w-16">จัดการ</th>
               </tr>
             </thead>
             <tbody id="coachRosterTbody" class="divide-y divide-slate-100"></tbody>
@@ -2458,7 +2422,7 @@
     ];
 
     let assistantCoaches = JSON.parse(localStorage.getItem('dbo_assistant_coaches_v14')) || defaultAssistantCoaches;
-    let coachRosterViewMode = localStorage.getItem('dbo_roster_view_mode_v2') || 'cards';
+    let coachRosterViewMode = (window.innerWidth < 768) ? 'cards' : (localStorage.getItem('dbo_roster_view_mode_v2') || 'cards');
 
     let students = JSON.parse(localStorage.getItem('dbo_students_v14')) || null;
     if (!students) {
@@ -3003,23 +2967,6 @@
       }
     }
 
-    function quickFillPhone(phone) {
-      const input = document.getElementById('parentPhoneInput');
-      if (input) input.value = phone;
-    }
-
-    function quickLoginRole(roleKey) {
-      if (roleKey === 'coach_oat') {
-        handleParentPhoneLogin(null, '0933199119');
-      } else if (roleKey === 'coach_oak') {
-        handleParentPhoneLogin(null, '0952974593');
-      } else if (roleKey === 'admin_iris') {
-        handleParentPhoneLogin(null, '0803745694');
-      } else if (roleKey === 'demo_parent') {
-        handleParentPhoneLogin(null, '0812345678');
-      }
-    }
-
     // Unified Phone / Name Login Logic (Staff Whitelist: 0933199119, 0952974593, 0803745694, 0946365206)
     function handleParentPhoneLogin(e, forcedInput = null) {
       if (e && e.preventDefault) e.preventDefault();
@@ -3204,6 +3151,9 @@
       const renewGate = document.getElementById('renew-locked-gate');
       const renewContent = document.getElementById('renew-content');
 
+      const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
+      const mPortalIcon = document.querySelector('#nav-m-parent-portal i');
+
       // State 1: Coach Logged In
       if (isCoachAuth && currentStaff) {
         if (loginBox) loginBox.classList.add('hidden');
@@ -3214,9 +3164,7 @@
           if (nameEl) nameEl.innerText = `${currentStaff.fullName} (${currentStaff.role})`;
         }
 
-        const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
         if (mPortalLabel) mPortalLabel.innerText = 'แผงโค้ช';
-        const mPortalIcon = document.querySelector('#nav-m-parent-portal i');
         if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'shield-check');
 
         if (renewNav) renewNav.classList.add('hidden');
@@ -3238,9 +3186,7 @@
         if (dashBox) dashBox.classList.add('hidden');
         if (coachPortalBox) coachPortalBox.classList.add('hidden');
 
-        const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
         if (mPortalLabel) mPortalLabel.innerText = 'เข้าสู่ระบบ';
-        const mPortalIcon = document.querySelector('#nav-m-parent-portal i');
         if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'user');
 
         if (renewNav) renewNav.classList.add('hidden');
@@ -3263,28 +3209,8 @@
       if (coachPortalBox) coachPortalBox.classList.add('hidden');
       if (dashBox) dashBox.classList.remove('hidden');
 
-      const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
       if (mPortalLabel) mPortalLabel.innerText = `น้อง${loggedInStudent.name}`;
-      const mPortalIcon = document.querySelector('#nav-m-parent-portal i');
       if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'user');
-
-      if (renewNav) renewNav.classList.remove('hidden');
-      if (renewMNav) renewMNav.classList.remove('hidden');
-      if (dailyNav) dailyNav.classList.remove('hidden');
-      if (dailyMNav) dailyMNav.classList.remove('hidden');
-      if (calNav) calNav.classList.remove('hidden');
-      if (calMNav) calMNav.classList.remove('hidden');
-      if (regNav) regNav.classList.remove('hidden');
-      if (regMNav) regMNav.classList.remove('hidden');
-
-      if (renewGate) renewGate.classList.add('hidden');
-      if (renewContent) renewContent.classList.remove('hidden');
-
-      // Logged in State
-      const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
-      if (mPortalLabel) mPortalLabel.innerText = 'ข้อมูลลูก';
-      if (loginBox) loginBox.classList.add('hidden');
-      if (dashBox) dashBox.classList.remove('hidden');
 
       if (renewNav) renewNav.classList.remove('hidden');
       if (renewMNav) renewMNav.classList.remove('hidden');
@@ -4843,21 +4769,24 @@
           }
 
           tr.innerHTML = `
-            <td class="py-2.5 px-3 text-center text-xs text-slate-400 font-bold">${s.id}</td>
-            <td class="py-2.5 px-3">
-              <strong class="text-xs sm:text-sm font-bold text-dbo-navy block">น้อง ${s.name}</strong>
-              ${s.phone ? `<span class="font-mono text-emerald-700 font-bold text-xs">📞 ${s.phone}</span>` : `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">⏳ รอ ผปค. ผูกเบอร์</span>`}
-              ${isAttending ? `<span class="ml-1 text-[10px] font-bold text-emerald-700">🟢 มา (${sessionAtt.time || ''})</span>` : ''}
-              ${isLeave ? `<span class="ml-1 text-[10px] font-bold text-amber-700">🟡 ลา (${sessionAtt.leaveReason || ''})</span>` : ''}
+            <td class="py-2.5 px-2 text-center text-xs text-slate-400 font-bold">${s.id}</td>
+            <td class="py-2.5 px-2">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <strong class="text-xs sm:text-sm font-bold text-dbo-navy">น้อง ${s.name}</strong>
+                <span class="sm:hidden">${typeBadge}</span>
+              </div>
+              ${s.phone ? `<span class="font-mono text-emerald-700 font-bold text-xs block">📞 ${s.phone}</span>` : `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">⏳ รอ ผปค. ผูกเบอร์</span>`}
+              ${isAttending ? `<span class="text-[10px] font-bold text-emerald-700 block">🟢 มา (${sessionAtt.time || ''})</span>` : ''}
+              ${isLeave ? `<span class="text-[10px] font-bold text-amber-700 block">🟡 ลา (${sessionAtt.leaveReason || ''})</span>` : ''}
             </td>
-            <td class="py-2.5 px-3">${typeBadge}</td>
-            <td class="py-2.5 px-3">
+            <td class="py-2.5 px-2 hidden sm:table-cell">${typeBadge}</td>
+            <td class="py-2.5 px-2 hidden md:table-cell">
               <span class="text-xs text-slate-600 block">เริ่ม: ${s.startDate || '-'}</span>
               ${s.nextRenewal ? `<span class="text-[10px] text-emerald-700 font-semibold">รอบต่อ: ${s.nextRenewal}</span>` : ''}
             </td>
-            <td class="py-2.5 px-3 text-center">${remBadge}</td>
-            <td class="py-2.5 px-3 text-center">${actionBtns}</td>
-            <td class="py-2.5 px-3 text-center">
+            <td class="py-2.5 px-2 text-center whitespace-nowrap">${remBadge}</td>
+            <td class="py-2.5 px-2 text-center">${actionBtns}</td>
+            <td class="py-2.5 px-2 text-center">
               <div class="inline-flex items-center gap-1">
                 <button onclick="openEditStudentModal(${s.id})" title="แก้ไข/บันทึกสมรรถภาพ" class="p-1 rounded-lg text-slate-500 hover:text-dbo-gold hover:bg-slate-100">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
@@ -5328,9 +5257,6 @@
         students.unshift(newStudent);
         showToast(`เพิ่มนักเรียนน้อง ${name} เข้าสู่ระบบสำเร็จ`);
       }
-        students.unshift(newStudent);
-        showToast(`เพิ่มนักเรียนน้อง ${name} เข้าสู่ระบบสำเร็จ`);
-      }
 
       saveState();
       closeStudentModal();
@@ -5338,8 +5264,8 @@
       if (loggedInStudent && loggedInStudent.phone === phone) {
         loggedInStudent = students.find(s => s.phone === phone);
         ensureHistoricalDatesSeeded();
-      updateSessionDateDisplay();
-      renderParentView();
+        updateSessionDateDisplay();
+        renderParentView();
       }
     }
 
