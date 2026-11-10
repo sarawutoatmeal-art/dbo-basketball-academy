@@ -325,7 +325,7 @@
                 <input 
                   type="tel" 
                   id="parentPhoneInput" 
-                  placeholder="ระบุเบอร์โทรศัพท์ เช่น 093-319-9119" 
+                  placeholder="กรอกเบอร์โทรศัพท์มือถือ 10 หลัก" 
                   maxlength="20"
                   required
                   autocomplete="tel"
@@ -341,16 +341,16 @@
             </button>
 
             <p class="text-[11px] text-center text-slate-400 pt-1">
-              ผู้ปกครองที่ยังไม่ได้ผูกเบอร์ สามารถกดแท็บ "สมัครเรียน" เพื่อส่งคำขอเชื่อมต่อเบอร์ได้
+              ผู้ปกครองที่เข้าใช้งานครั้งแรก สามารถผูกเบอร์โทรกับชื่อบุตรหลานเพื่อดูสิทธิ์เรียนคงเหลือได้ทันที
             </p>
           </form>
 
           <!-- New Parent Registration Link Card -->
           <div class="pt-3 border-t border-slate-100 space-y-2">
-            <p class="text-xs text-slate-500">สำหรับผู้ปกครองที่ยังไม่ได้ผูกเบอร์เข้าสู่ระบบ:</p>
-            <button type="button" onclick="openParentLinkModal()" class="btn-touch w-full py-2.5 px-4 rounded-lg font-medium text-xs bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200 flex items-center justify-center gap-2 transition-colors">
+            <p class="text-xs text-slate-500">สำหรับผู้ปกครองที่ยังไม่ได้ผูกเบอร์กับบุตรหลาน:</p>
+            <button type="button" onclick="openParentLinkModal()" class="btn-touch w-full py-2.5 px-4 rounded-lg font-medium text-xs bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200 flex items-center justify-center gap-2 transition-colors cursor-pointer">
               <i data-lucide="user-plus" class="w-4 h-4 text-emerald-600"></i>
-              <span>ผู้ปกครองลงทะเบียนผูกเบอร์กับนักเรียน</span>
+              <span>ผูกเบอร์ผู้ปกครองกับชื่อนักเรียน (ดูจำนวนครั้งคงเหลือ)</span>
             </button>
           </div>
 
@@ -1470,17 +1470,17 @@
           </div>
           <div>
             <div class="flex items-center gap-2 flex-wrap">
-              <span id="staffCardBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30">Head Coach</span>
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> เข้าสู่ระบบแล้ว
+              <span id="staffCardBadge" class="px-2.5 py-0.5 rounded-md text-[10px] font-medium bg-amber-400/20 text-amber-300 border border-amber-400/30">Head Coach</span>
+              <span class="px-2.5 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ยืนยันตัวตนแล้ว
               </span>
             </div>
-            <h2 id="staffCardName" class="text-base sm:text-xl font-bold text-white mt-1">โค้ชโอ๊ต</h2>
-            <p id="staffCardDesc" class="text-xs text-indigo-200/80 mt-0.5">เบอร์โทร: <span id="staffCardPhone" class="font-bold text-white">093-319-9119</span> • สิทธิ์เข้าถึงและจัดการระบบ DBO Academy ทั้งหมด</p>
+            <h2 id="staffCardName" class="text-base sm:text-xl font-semibold text-white mt-1">โค้ชโอ๊ต</h2>
+            <p id="staffCardDesc" class="text-xs text-slate-300 mt-0.5"><span id="staffCardPhone" class="hidden"></span>สิทธิ์เข้าถึงและจัดการระบบ DBO Academy ทั้งหมด</p>
           </div>
         </div>
         <div class="flex items-center gap-2 self-end sm:self-auto">
-          <button onclick="appLogout()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-rose-500/30 text-white hover:text-rose-200 border border-white/20 flex items-center gap-1.5 transition">
+          <button onclick="appLogout()" class="px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white/10 hover:bg-rose-500/30 text-white hover:text-rose-200 border border-white/20 flex items-center gap-1.5 transition-colors">
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
             <span>ออกจากระบบ</span>
           </button>
@@ -1488,12 +1488,12 @@
       </div>
 
       <!-- Coach Header & Switch Filter -->
-      <div class="card-clean p-4 sm:p-6 space-y-4 border-l-4 border-l-indigo-600">
+      <div class="card-clean p-4 sm:p-6 space-y-4">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pb-3 border-b border-slate-200">
           <div>
             <div class="flex items-center gap-2">
-              <h2 class="text-base sm:text-xl font-bold text-dbo-navy">แผงจัดการนักเรียน & ทีมโค้ช (DBO Admin)</h2>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">COACH MODE</span>
+              <h2 class="text-base sm:text-xl font-semibold text-dbo-navy">แผงจัดการนักเรียน & ทีมโค้ช (DBO Admin)</h2>
+              <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">Coach Mode</span>
             </div>
             <p class="text-xs text-dbo-textSecondary">
               เพิ่ม/ลบนักเรียน • จัดการโควต้า • แยกคอร์สรายเดือน/10ครั้ง/วันเสาร์ • ตรวจสอบสลิปอนุมัติสมาชิก
@@ -1634,9 +1634,15 @@
               </button>
               
               <!-- Daily Headcount History Button -->
-              <button onclick="openAttendanceHistoryModal()" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 transition-colors ml-auto sm:ml-0">
-                <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-slate-300"></i>
-                <span>ประวัติยอดคนรายวัน</span>
+              <button onclick="openAttendanceHistoryModal()" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 flex items-center gap-1.5 transition-colors">
+                <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-slate-600"></i>
+                <span>ประวัติรายวัน</span>
+              </button>
+
+              <!-- Top Quick Confirm & Submit Sync Button -->
+              <button type="button" onclick="submitAndBroadcastAttendanceSession()" id="btnTopSubmitSession" class="btn-touch px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                <span>ยืนยัน Submit ข้อมูล</span>
               </button>
             </div>
           </div>
@@ -1745,6 +1751,56 @@
             </thead>
             <tbody id="coachRosterTbody" class="divide-y divide-slate-100"></tbody>
           </table>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- BOTTOM CONFIRM & SUBMIT ATTENDANCE / QUOTA SYNC PANEL    -->
+        <!-- ======================================================== -->
+        <div id="coachBottomSubmitPanel" class="mt-4 p-4 sm:p-5 rounded-xl border border-slate-200 bg-slate-50/90 space-y-3.5 shadow-2xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <h4 class="text-sm sm:text-base font-semibold text-slate-900">
+                  ยืนยันการเช็คชื่อและอัปเดตสิทธิ์เรียนไปยังทุกเครื่อง (Submit ข้อมูล)
+                </h4>
+              </div>
+              <p id="bottomSubmitSummaryText" class="text-xs text-slate-600">
+                รอบวันนี้: มาเรียน <strong id="submitPanelAttendingCount" class="font-mono text-emerald-700">0</strong> คน • แจ้งลา <strong id="submitPanelLeaveCount" class="font-mono text-amber-700">0</strong> คน • ยังไม่เช็ค <strong id="submitPanelUncheckedCount" class="font-mono text-slate-700">54</strong> คน
+              </p>
+              <p id="lastSubmitStatusText" class="text-[11px] text-slate-500 font-mono">
+                เมื่อกดยืนยัน ระบบจะซิงค์จำนวนครั้งคงเหลือและรายชื่อเช็คชื่อไปยังเครื่องโค้ช สตาฟ และผู้ปกครองทุกคนทันที
+              </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-shrink-0">
+              <button type="button" onclick="submitAndBroadcastAttendanceSession()" id="btnBottomSubmitSession" class="btn-touch px-6 py-3 rounded-xl font-semibold text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs flex items-center justify-center gap-2 transition-colors cursor-pointer">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span>ยืนยัน Submit ข้อมูล (อัปเดตทุกเครื่อง)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sticky Floating Submit Bar (Appears when coach checks attendance or edits quotas) -->
+        <div id="coachStickySubmitBar" class="hidden fixed bottom-16 md:bottom-5 left-3 right-3 max-w-2xl mx-auto z-40">
+          <div class="bg-slate-900 text-white border border-slate-700 rounded-xl p-3 sm:px-4 sm:py-3 shadow-xl flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <p class="text-xs sm:text-sm font-semibold text-white truncate" id="stickySubmitTitle">
+                  มีรายการเช็คชื่อ/แก้ไขโควต้ารอ Submit ยืนยัน
+                </p>
+              </div>
+              <p class="text-[11px] text-slate-300 truncate mt-0.5" id="stickySubmitSubtitle">
+                กดปุ่มยืนยันเพื่อส่งข้อมูลอัปเดตไปยังทุกเครื่องที่ออนไลน์
+              </p>
+            </div>
+            <button type="button" onclick="submitAndBroadcastAttendanceSession()" id="btnStickySubmitSession" class="btn-touch px-4 py-2 rounded-lg font-semibold text-xs bg-emerald-500 hover:bg-emerald-600 text-slate-950 flex items-center gap-1.5 flex-shrink-0 transition-colors cursor-pointer">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              <span>ยืนยัน Submit ข้อมูล</span>
+            </button>
+          </div>
         </div>
 
       </div>
@@ -2143,12 +2199,12 @@
     <div class="card-clean max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center font-bold">
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center font-semibold">
             <i data-lucide="link" class="w-5 h-5"></i>
           </div>
           <div>
-            <h3 class="text-base font-bold text-dbo-navy">ลงทะเบียนผูกบัญชีผู้ปกครอง</h3>
-            <p class="text-[11px] text-slate-500">ส่งข้อมูลให้โค้ชโอ๊ตและทีมงานอนุมัติเพื่อเข้าใช้งาน</p>
+            <h3 class="text-base font-semibold text-dbo-navy">ผูกเบอร์โทรศัพท์ผู้ปกครองกับนักเรียน</h3>
+            <p class="text-[11px] text-slate-500">เชื่อมต่อเบอร์โทรศัพท์เพื่อดูจำนวนครั้งคงเหลือและประวัติการเรียนแบบเรียลไทม์</p>
           </div>
         </div>
         <button type="button" onclick="closeParentLinkModal()" class="text-slate-400 hover:text-slate-600 p-1">
@@ -2158,81 +2214,81 @@
 
       <form onsubmit="handleParentLinkSubmit(event)" class="space-y-3.5 text-left text-xs">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์ผู้ปกครอง (10 หลัก) <span class="text-rose-500">*</span></label>
+          <label class="block font-medium text-slate-700 mb-1">เบอร์โทรศัพท์ผู้ปกครอง (10 หลัก) <span class="text-rose-500">*</span></label>
           <input 
             type="tel" 
             id="linkParentPhone" 
-            placeholder="เช่น 081-234-5678" 
+            placeholder="กรอกเบอร์โทรศัพท์มือถือ 10 หลัก" 
             maxlength="12"
             required
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-sm focus:outline-none focus:border-dbo-gold focus:bg-white"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg font-mono text-sm focus:outline-none focus:border-dbo-navy focus:bg-white"
           >
-          <p class="text-[10px] text-slate-400 mt-0.5">เบอร์นี้จะใช้ในการล็อกอินเข้าสู่ระบบหลังจากโค้ชอนุมัติ</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">เบอร์นี้จะใช้ในการล็อกอินเข้าดูสิทธิ์คงเหลือของน้องในครั้งถัดไป</p>
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล หรือชื่อเรียกของผู้ปกครอง <span class="text-rose-500">*</span></label>
+          <label class="block font-medium text-slate-700 mb-1">ชื่อ-นามสกุล หรือชื่อเรียกของผู้ปกครอง <span class="text-rose-500">*</span></label>
           <input 
             type="text" 
             id="linkParentName" 
-            placeholder="เช่น คุณแม่น้องอิฐ / สมชาย มั่งมี" 
+            placeholder="ระบุชื่อผู้ปกครอง" 
             required
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-dbo-gold focus:bg-white"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:border-dbo-navy focus:bg-white"
           >
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">ความสัมพันธ์ <span class="text-rose-500">*</span></label>
-            <select id="linkRelation" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium focus:outline-none focus:border-dbo-gold focus:bg-white">
+            <label class="block font-medium text-slate-700 mb-1">ความสัมพันธ์ <span class="text-rose-500">*</span></label>
+            <select id="linkRelation" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-medium focus:outline-none focus:border-dbo-navy focus:bg-white">
               <option value="คุณแม่">คุณแม่</option>
               <option value="คุณพ่อ">คุณพ่อ</option>
               <option value="ผู้ปกครอง">ผู้ปกครอง / ญาติ</option>
             </select>
           </div>
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">เลือกลูกหลานในอคาเดมี่ <span class="text-rose-500">*</span></label>
-            <select id="linkStudentSelect" onchange="handleLinkStudentChange(this.value)" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold focus:outline-none focus:border-dbo-gold focus:bg-white">
+            <label class="block font-medium text-slate-700 mb-1">เลือกลูกหลานในอคาเดมี่ <span class="text-rose-500">*</span></label>
+            <select id="linkStudentSelect" onchange="handleLinkStudentChange(this.value)" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold focus:outline-none focus:border-dbo-navy focus:bg-white">
               <!-- Injected student options sorted by name -->
             </select>
           </div>
         </div>
 
         <div id="linkOtherStudentBox" class="hidden">
-          <label class="block font-semibold text-slate-700 mb-1">ชื่อ-นามสกุล หรือชื่อเล่นของน้อง (กรณีไม่มีในรายชื่อ)</label>
+          <label class="block font-medium text-slate-700 mb-1">ชื่อ-นามสกุล หรือชื่อเล่นของน้อง (กรณีไม่มีในรายชื่อ)</label>
           <input 
             type="text" 
             id="linkOtherStudentName" 
             placeholder="ระบุชื่อน้อง..." 
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-dbo-gold focus:bg-white"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:border-dbo-navy focus:bg-white"
           >
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+          <label class="block font-medium text-slate-700 mb-1">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
           <input 
             type="text" 
             id="linkNote" 
             placeholder="เช่น เบอร์โทรศัพท์สำรอง หรือข้อมูลเพิ่มเติม..." 
-            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-dbo-gold focus:bg-white"
+            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:border-dbo-navy focus:bg-white"
           >
         </div>
 
-        <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] space-y-1">
-          <div class="font-bold flex items-center gap-1">
-            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-600"></i>
-            <span>ขั้นตอนการอนุมัติ:</span>
+        <div class="p-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-[11px] space-y-1">
+          <div class="font-semibold flex items-center gap-1.5 text-slate-900">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+            <span>การเชื่อมต่อและซิงค์ข้อมูลเรียลไทม์:</span>
           </div>
-          <p>เมื่อกดส่งข้อมูล ระบบจะส่งคำขอไปยังโค้ชโอ๊ตและทีมงานเพื่อตรวจสอบ เมื่อโค้ชกดอนุมัติ (Approve) ท่านจะสามารถนำเบอร์โทรนี้เข้าสู่ระบบเพื่อดูข้อมูลลูกหลานได้ทันทีครับ</p>
+          <p>เมื่อเลือกชื่อบุตรหลานและกดยืนยัน ระบบจะผูกเบอร์โทรศัพท์และอัปเดตข้อมูลจำนวนครั้งคงเหลือให้ตรงกันทุกเครื่องทั้งผู้ปกครองและทีมโค้ชทันที</p>
         </div>
 
         <div class="flex items-center gap-2 pt-2">
-          <button type="button" onclick="closeParentLinkModal()" class="btn-touch flex-1 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600">
+          <button type="button" onclick="closeParentLinkModal()" class="btn-touch flex-1 py-2.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
             ยกเลิก
           </button>
-          <button type="submit" class="btn-touch flex-1 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center justify-center gap-1.5">
-            <i data-lucide="send" class="w-3.5 h-3.5"></i>
-            <span>ส่งข้อมูลให้โค้ชอนุมัติ</span>
+          <button type="submit" class="btn-touch flex-1 py-2.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+            <span>ยืนยันผูกเบอร์ & ดูข้อมูลน้อง</span>
           </button>
         </div>
       </form>
@@ -2464,13 +2520,73 @@
     // Daily Attendance Registry (Pure Factual, empty initially)
     let dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v14')) || {};
 
-    function saveState(broadcastRemote = true, actionDesc = '') {
+    // Cross-Device Cloud Sync Metadata & Submit Tracking
+    const CLOUD_STATE_TOPIC = 'dbo_basketball_academy/v16/retained_db_state';
+    const CLOUD_EVENT_TOPIC = 'dbo_basketball_academy/v16/live_events';
+    let deletedStudentIds = JSON.parse(localStorage.getItem('dbo_deleted_students_v16')) || {};
+    let processedSlipIds = JSON.parse(localStorage.getItem('dbo_processed_slips_v16')) || {};
+    let lastSubmittedAt = parseInt(localStorage.getItem('dbo_last_submitted_at_v16') || '0', 10);
+    let lastSubmittedBy = localStorage.getItem('dbo_last_submitted_by_v16') || '';
+    let pendingSessionChanges = 0;
+
+    function buildFullStateSnapshot() {
+      return {
+        updatedAt: Date.now(),
+        lastSubmittedAt,
+        lastSubmittedBy,
+        deletedStudentIds,
+        processedSlipIds,
+        students,
+        pendingSlips,
+        parentRegistrations,
+        dailyAttendance,
+        assistantCoaches
+      };
+    }
+
+    async function pushStateToCloudApi(snapshot) {
+      try {
+        const res = await fetch('/api/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: snapshot })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.ok && json.data) {
+            applyIncomingState(json.data, '', true);
+          }
+        }
+      } catch (e) {
+        // Offline or local file mode fallback
+      }
+    }
+
+    function publishToMqttBrokers(topic, payloadObj, options = { qos: 1, retain: false }) {
+      const msg = JSON.stringify(payloadObj);
+      const clients = [window.realtimeMqttClient, window.backupMqttClient].filter(Boolean);
+      clients.forEach(client => {
+        try {
+          if (client.connected) {
+            client.publish(topic, msg, options);
+          }
+        } catch (e) {}
+      });
+    }
+
+    function saveState(broadcastRemote = true, actionDesc = '', isExplicitSubmit = false) {
       localStorage.setItem('dbo_students_v14', JSON.stringify(students));
       localStorage.setItem('dbo_pending_slips_v14', JSON.stringify(pendingSlips));
       localStorage.setItem('dbo_parent_registrations_v14', JSON.stringify(parentRegistrations));
       localStorage.setItem('dbo_daily_attendance_v14', JSON.stringify(dailyAttendance));
       localStorage.setItem('dbo_assistant_coaches_v14', JSON.stringify(assistantCoaches));
+      localStorage.setItem('dbo_deleted_students_v16', JSON.stringify(deletedStudentIds));
+      localStorage.setItem('dbo_processed_slips_v16', JSON.stringify(processedSlipIds));
+      localStorage.setItem('dbo_last_submitted_at_v16', String(lastSubmittedAt));
+      localStorage.setItem('dbo_last_submitted_by_v16', lastSubmittedBy);
       if (currentStaff) localStorage.setItem('dbo_current_staff', JSON.stringify(currentStaff));
+
+      const snapshot = buildFullStateSnapshot();
 
       // 1. Cross-tab instant local broadcast
       if (window.dboRealtimeBC) {
@@ -2478,33 +2594,122 @@
           window.dboRealtimeBC.postMessage({
             type: 'STATE_CHANGED',
             actionDesc: actionDesc || 'มีการบันทึกข้อมูลล่าสุด',
-            data: { students, pendingSlips, parentRegistrations, dailyAttendance, assistantCoaches }
+            data: snapshot
           });
         } catch (e) { console.log('BC post error:', e); }
       }
 
-      // 2. Multi-device live WebSocket broadcast via MQTT
-      if (broadcastRemote && window.realtimeMqttClient && window.realtimeMqttClient.connected) {
-        try {
-          const clientId = window.dboClientId || 'dbo_peer';
-          const payload = {
+      if (broadcastRemote) {
+        // 2. Vercel Serverless Cloud Sync API
+        pushStateToCloudApi(snapshot);
+
+        // 3. Multi-device Retained Cloud MQTT Broadcast (Persists on Cloud Broker for offline/later devices)
+        const clientId = window.dboClientId || 'dbo_peer';
+        const payload = {
+          senderId: clientId,
+          type: 'REALTIME_STATE_UPDATE',
+          isExplicitSubmit: !!isExplicitSubmit,
+          actionDesc: actionDesc || 'มีการอัปเดตข้อมูล',
+          timestamp: Date.now(),
+          data: snapshot
+        };
+        publishToMqttBrokers(CLOUD_STATE_TOPIC, payload, { qos: 1, retain: true });
+        publishToMqttBrokers(REALTIME_SYNC_TOPIC, payload, { qos: 1, retain: true });
+        if (actionDesc) {
+          publishToMqttBrokers(CLOUD_EVENT_TOPIC, {
             senderId: clientId,
-            type: 'REALTIME_STATE_UPDATE',
-            actionDesc: actionDesc || 'มีการอัปเดตข้อมูล',
-            timestamp: Date.now(),
-            data: {
-              students,
-              pendingSlips,
-              parentRegistrations,
-              dailyAttendance,
-              assistantCoaches
-            }
-          };
-          window.realtimeMqttClient.publish(REALTIME_SYNC_TOPIC, JSON.stringify(payload), { qos: 0 });
-        } catch (e) {
-          console.log('Remote MQTT broadcast error:', e);
+            type: 'LIVE_NOTICE',
+            actionDesc,
+            timestamp: Date.now()
+          }, { qos: 1, retain: false });
         }
       }
+    }
+
+    function markPendingCoachChange(desc = '') {
+      pendingSessionChanges++;
+      updateSubmitBarUI(desc);
+    }
+
+    function updateSubmitBarUI(lastChangeDesc = '') {
+      const stickyBar = document.getElementById('coachStickySubmitBar');
+      const stickyTitle = document.getElementById('stickySubmitTitle');
+      const stickySub = document.getElementById('stickySubmitSubtitle');
+      const statusText = document.getElementById('lastSubmitStatusText');
+
+      if (stickyBar) {
+        if (isCoachAuth && pendingSessionChanges > 0) {
+          stickyBar.classList.remove('hidden');
+          if (stickyTitle) stickyTitle.innerText = `มีรายการเช็คชื่อ/แก้ไขโควต้า ${pendingSessionChanges} รายการ รอกดยืนยัน Submit`;
+          if (stickySub) stickySub.innerText = lastChangeDesc ? `ล่าสุด: ${lastChangeDesc} • กดยืนยันเพื่ออัปเดตทุกเครื่อง` : 'กดปุ่มยืนยันเพื่อส่งข้อมูลอัปเดตไปยังทุกเครื่องที่ออนไลน์';
+        } else {
+          stickyBar.classList.add('hidden');
+        }
+      }
+
+      if (statusText) {
+        if (pendingSessionChanges > 0) {
+          statusText.className = 'text-[11px] text-amber-700 font-medium';
+          statusText.innerText = `มีการแก้ไข ${pendingSessionChanges} รายการ — กรุณากดปุ่ม "ยืนยัน Submit ข้อมูล" เพื่อส่งอัปเดตไปยังทุกเครื่อง`;
+        } else if (lastSubmittedAt > 0) {
+          const d = new Date(lastSubmittedAt);
+          const tStr = d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' น.';
+          statusText.className = 'text-[11px] text-emerald-700 font-medium';
+          statusText.innerText = `ยืนยัน Submit ข้อมูลขึ้นระบบทุกเครื่องล่าสุดเมื่อ ${tStr}${lastSubmittedBy ? ' โดย ' + lastSubmittedBy : ''}`;
+        } else {
+          statusText.className = 'text-[11px] text-slate-500';
+          statusText.innerText = 'เมื่อกดยืนยัน ระบบจะซิงค์จำนวนครั้งคงเหลือและรายชื่อเช็คชื่อไปยังเครื่องโค้ช สตาฟ และผู้ปกครองทุกคนทันที';
+        }
+      }
+    }
+
+    async function submitAndBroadcastAttendanceSession() {
+      const nowTs = Date.now();
+      const staffName = currentStaff ? currentStaff.name : 'โค้ชโอ๊ต';
+      const sessionDateKey = activeAttendanceDate || getTodayDateKey();
+      const records = dailyAttendance[sessionDateKey] || {};
+      const attendingCount = Object.values(records).filter(r => r && r.status === 'attending').length;
+      const leaveCount = Object.values(records).filter(r => r && r.status === 'leave').length;
+
+      Object.values(records).forEach(r => {
+        if (r && !r.updatedAt) r.updatedAt = nowTs;
+      });
+      students.forEach(s => {
+        if (s && !s._updatedAt) s._updatedAt = nowTs - 500;
+      });
+
+      lastSubmittedAt = nowTs;
+      lastSubmittedBy = staffName;
+      pendingSessionChanges = 0;
+
+      const btnBottom = document.getElementById('btnBottomSubmitSession');
+      const btnTop = document.getElementById('btnTopSubmitSession');
+      if (btnBottom) {
+        btnBottom.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i><span>กำลังส่งข้อมูลไปยังทุกเครื่อง...</span>';
+      }
+
+      const summaryMsg = `${staffName} ยืนยัน Submit เช็คชื่อ (${sessionDateKey}): มาเรียน ${attendingCount} คน, ลา ${leaveCount} คน`;
+      saveState(true, summaryMsg, true);
+      updateSessionDateDisplay();
+      updateSubmitBarUI();
+
+      setTimeout(() => {
+        if (btnBottom) {
+          btnBottom.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i><span>ยืนยัน Submit ข้อมูลสำเร็จ (อัปเดตทุกเครื่องแล้ว)</span>';
+          lucide.createIcons();
+          setTimeout(() => {
+            if (btnBottom) {
+              btnBottom.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i><span>ยืนยัน Submit ข้อมูล (อัปเดตทุกเครื่อง)</span>';
+              lucide.createIcons();
+            }
+          }, 3000);
+        }
+      }, 250);
+
+      showToast(`ยืนยัน Submit ข้อมูลสำเร็จ — ซิงค์อัปเดตทุกเครื่องเรียบร้อย (มาเรียน ${attendingCount} คน, ลา ${leaveCount} คน)`);
+      triggerTelegramPush(`ยืนยันการเช็คชื่อรอบ ${sessionDateKey} สำเร็จ: มาเรียน ${attendingCount} คน • ลา ${leaveCount} คน • อัปเดตโควต้าทุกเครื่องเรียบร้อย`, 'DBO Attendance Submitted');
+      playNotificationChime();
+      lucide.createIcons();
     }
 
     // Date Session State & Historical Headcount Engine
@@ -2612,8 +2817,8 @@
 
       // Calculate Headcount for this dateKey
       const records = dailyAttendance[dateKey] || {};
-      const attendingList = Object.values(records).filter(r => r.status === 'attending');
-      const leaveList = Object.values(records).filter(r => r.status === 'leave');
+      const attendingList = Object.values(records).filter(r => r && r.status === 'attending');
+      const leaveList = Object.values(records).filter(r => r && r.status === 'leave');
       const total = (students || []).length;
       const unchecked = Math.max(0, total - attendingList.length - leaveList.length);
 
@@ -2626,6 +2831,15 @@
       if (elLeave) elLeave.innerText = leaveList.length;
       if (elUnchecked) elUnchecked.innerText = unchecked;
       if (elTotal) elTotal.innerText = total;
+
+      const subAtt = document.getElementById('submitPanelAttendingCount');
+      const subLeave = document.getElementById('submitPanelLeaveCount');
+      const subUnch = document.getElementById('submitPanelUncheckedCount');
+      if (subAtt) subAtt.innerText = attendingList.length;
+      if (subLeave) subLeave.innerText = leaveList.length;
+      if (subUnch) subUnch.innerText = unchecked;
+
+      updateSubmitBarUI();
     }
 
     function setSessionDateToToday() {
@@ -2872,16 +3086,22 @@
       const student = students.find(s => s.id === studentId);
       if (!student) return;
 
+      const nowTs = Date.now();
       const sessionDateKey = activeAttendanceDate || getTodayDateKey();
       if (target === 'saturday') {
         student.saturdayRemaining = (student.saturdayRemaining || 0) + 1;
       } else {
         student.remaining = (student.remaining || 0) + 1;
       }
+      student._updatedAt = nowTs;
 
-      if (dailyAttendance[sessionDateKey] && dailyAttendance[sessionDateKey][student.id]) {
-        delete dailyAttendance[sessionDateKey][student.id];
-      }
+      if (!dailyAttendance[sessionDateKey]) dailyAttendance[sessionDateKey] = {};
+      dailyAttendance[sessionDateKey][student.id] = {
+        studentId: student.id,
+        name: student.name,
+        status: 'unchecked',
+        updatedAt: nowTs
+      };
 
       if (student.checkInHistory) {
         const idx = student.checkInHistory.findIndex(h => h.sessionDate === sessionDateKey || (h.date && h.date.includes(sessionDateKey)));
@@ -2890,15 +3110,16 @@
         }
       }
 
-      saveState();
+      markPendingCoachChange(`คืนสิทธิ์น้อง ${student.name} (+1)`);
+      saveState(true, `คืนสิทธิ์น้อง ${student.name} (+1 ครั้ง)`);
       updateSessionDateDisplay();
       renderCoachRosterTable();
       if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
       if (loggedInStudent && loggedInStudent.id === studentId) {
         loggedInStudent = student;
         ensureHistoricalDatesSeeded();
-      updateSessionDateDisplay();
-      renderParentView();
+        updateSessionDateDisplay();
+        renderParentView();
       }
       showToast(`คืนสิทธิ์น้อง ${student.name} (+1 ครั้ง) เรียบร้อยแล้ว`);
     }
@@ -2906,8 +3127,13 @@
     function coachClearAttendanceRecord(studentId) {
       const sessionDateKey = activeAttendanceDate || getTodayDateKey();
       if (dailyAttendance[sessionDateKey] && dailyAttendance[sessionDateKey][studentId]) {
-        delete dailyAttendance[sessionDateKey][studentId];
-        saveState();
+        dailyAttendance[sessionDateKey][studentId] = {
+          studentId: studentId,
+          status: 'unchecked',
+          updatedAt: Date.now()
+        };
+        markPendingCoachChange('ล้างสถานะการเช็คชื่อ');
+        saveState(true, 'ล้างสถานะเช็คชื่อ');
         updateSessionDateDisplay();
         renderCoachRosterTable();
         if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
@@ -2954,7 +3180,7 @@
       }
     }
 
-    // Unified Phone / Name Login Logic (Staff Whitelist: 0933199119, 0952974593, 0803745694, 0946365206)
+    // Unified Phone Login Logic (Strict 10-Digit Phone Verification)
     function handleParentPhoneLogin(e, forcedInput = null) {
       if (e && e.preventDefault) e.preventDefault();
       const inputEl = document.getElementById('parentPhoneInput');
@@ -2962,7 +3188,7 @@
 
       let rawVal = forcedInput !== null ? String(forcedInput).trim() : (inputEl ? inputEl.value : '').trim();
       if (!rawVal) {
-        showToast('กรุณาระบุเบอร์โทรศัพท์มือถือ หรือ ชื่อผู้ใช้งานครับ');
+        showToast('กรุณากรอกเบอร์โทรศัพท์มือถือ 10 หลักครับ');
         return;
       }
 
@@ -2971,18 +3197,6 @@
       thaiDigits.forEach((td, idx) => {
         rawVal = rawVal.split(td).join(idx.toString());
       });
-
-      // Name-based fast shortcut recognition for coaches & staff
-      const lowerRaw = rawVal.toLowerCase();
-      if (lowerRaw.includes('โอ๊ต') || lowerRaw === 'oat' || lowerRaw === 'coach oat') {
-        rawVal = '0933199119';
-      } else if (lowerRaw.includes('โอ๊ค') || lowerRaw === 'oak' || lowerRaw === 'coach oak') {
-        rawVal = '0952974593';
-      } else if (lowerRaw.includes('ไอริส') || lowerRaw === 'iris') {
-        rawVal = '0803745694';
-      } else if (lowerRaw.includes('ออม') || lowerRaw === 'aom') {
-        rawVal = '0946365206';
-      }
 
       // Strip non-digits and normalize country code
       let cleanPhone = rawVal.replace(/[^\d+]/g, '');
@@ -2994,7 +3208,7 @@
         feedbackEl.innerHTML = '';
       }
 
-      // 1. Check Authorized Staff Whitelist (Coach Oat, Coach Oak, Iris, Aom)
+      // 1. Check Authorized Staff Whitelist (Requires exact 10-digit staff phone)
       if (AUTHORIZED_STAFF[cleanPhone]) {
         const staff = AUTHORIZED_STAFF[cleanPhone];
         isCoachAuth = true;
@@ -3008,7 +3222,6 @@
         updateHeaderProfileUI();
         switchTab('coach-roster');
         showToast(`ยินดีต้อนรับ ${staff.fullName} เข้าสู่ระบบแอดมิน DBO`);
-        triggerTelegramPush(`🛡️ ${staff.title} เข้าสู่ระบบจัดการเรียบร้อยแล้ว`, 'DBO Academy Admin Access');
         return;
       }
 
@@ -3036,34 +3249,11 @@
         updateHeaderProfileUI();
         switchTab('coach-roster');
         showToast(`ยินดีต้อนรับ ${matchedAsst.name} เข้าสู่ระบบผู้ช่วยโค้ช DBO`);
-        triggerTelegramPush(`⏱️ ${matchedAsst.name} เข้าสู่ระบบจัดการสนาม`, 'DBO Assistant Coach Access');
         return;
       }
 
       // 2. Check Linked Student Phone for Parents
       let matched = students.filter(s => (s.phone || '').replace(/[^\d]/g, '') === cleanPhone && cleanPhone !== '');
-
-      // 2.1 Demo parent shortcut phone (0812345678 -> links to น้องอิฐ id: 1)
-      if (matched.length === 0 && (cleanPhone === '0812345678' || cleanPhone === '081-234-5678')) {
-        const student1 = students.find(s => s.id === 1);
-        if (student1) {
-          student1.phone = '081-234-5678';
-          saveState();
-          matched = [student1];
-        }
-      }
-
-      // 2.2 Direct match by Student Name
-      if (matched.length === 0) {
-        const byName = students.filter(s => s.name && (lowerRaw.includes(s.name.toLowerCase()) || s.name.toLowerCase().includes(lowerRaw)));
-        if (byName.length > 0) {
-          matched = byName;
-          if (!matched[0].phone) {
-            matched[0].phone = '081-234-5678';
-            saveState();
-          }
-        }
-      }
 
       if (matched.length > 0) {
         isCoachAuth = false;
@@ -3339,10 +3529,13 @@
       // Check today's attendance
       const todayKey = getTodayDateKey();
       const todayAtt = dailyAttendance[todayKey] ? dailyAttendance[todayKey][loggedInStudent.id] : null;
-      if (todayAtt) {
+      if (todayAtt && (todayAtt.status === 'attending' || todayAtt.status === 'leave')) {
+        const nowD = new Date();
+        const thaiM = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+        const todayThaiStr = `วันนี้ (${nowD.getDate()} ${thaiM[nowD.getMonth()]} ${nowD.getFullYear() + 543})`;
         rowsHtml += `
           <tr class="bg-emerald-50/50 hover:bg-emerald-50 transition border-b border-emerald-100">
-            <td class="py-2.5 px-3.5 font-mono text-xs font-bold text-emerald-950">วันนี้ (9 พ.ย. 2569)</td>
+            <td class="py-2.5 px-3.5 font-mono text-xs font-semibold text-emerald-950">${todayThaiStr}</td>
             <td class="py-2.5 px-3.5 text-xs text-slate-800">คลาสปกติ (17:30-19:30 น.)</td>
             <td class="py-2.5 px-3.5 text-center">
               ${todayAtt.status === 'attending' 
@@ -3729,7 +3922,8 @@
       sorted.forEach(s => {
         const opt = document.createElement('option');
         opt.value = s.id;
-        const phoneLabel = s.phone ? '(ผูกเบอร์แล้ว)' : '(ยังไม่ผูกเบอร์)';
+        const rem = s.remaining !== undefined ? s.remaining : 0;
+        const phoneLabel = s.phone ? '(ผูกเบอร์แล้ว)' : `(คงเหลือ ${rem} ครั้ง • รอผูกเบอร์)`;
         opt.innerText = `น้อง ${s.name} ${phoneLabel}`;
         select.appendChild(opt);
       });
@@ -3767,8 +3961,15 @@
         return;
       }
 
+      if (AUTHORIZED_STAFF[rawPhone]) {
+        showToast('เบอร์นี้เป็นเบอร์สำหรับทีมโค้ช/แอดมิน กรุณาล็อกอินที่หน้าหลักโดยตรง');
+        closeParentLinkModal();
+        return;
+      }
+
       let studentId = null;
       let studentName = '';
+      let matchedStudent = null;
 
       if (selectVal === 'other') {
         if (!otherName) {
@@ -3783,32 +3984,63 @@
           showToast('กรุณาเลือกชื่อน้องในรายชื่อครับ');
           return;
         }
+        matchedStudent = st;
         studentName = st.name;
       }
 
+      const nowTs = Date.now();
+      const canAutoBind = matchedStudent && (!matchedStudent.phone || matchedStudent.phone.replace(/[^\d]/g, '') === rawPhone);
+
       const newReg = {
-        id: 'reg-' + Date.now(),
+        id: 'reg-' + nowTs,
         phone: rawPhone,
         parentName: parentName,
         relation: relation,
         studentId: studentId,
         studentName: studentName,
-        status: 'pending',
+        status: canAutoBind ? 'approved' : 'pending',
         note: note,
+        updatedAt: nowTs,
         createdAt: new Date().toISOString(),
         createdDateStr: 'วันนี้ ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.'
       };
 
       parentRegistrations.unshift(newReg);
-      saveState();
+
+      if (canAutoBind && matchedStudent) {
+        matchedStudent.phone = rawPhone;
+        matchedStudent.parentName = parentName;
+        matchedStudent.parentRelation = relation;
+        matchedStudent._updatedAt = nowTs;
+
+        saveState(true, `ผู้ปกครองผูกเบอร์กับน้อง ${matchedStudent.name}`, true);
+        closeParentLinkModal();
+
+        if (!isCoachAuth) {
+          loggedInStudent = matchedStudent;
+          localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
+          updateCoachStateUI();
+          updateHeaderProfileUI();
+          renderParentView([matchedStudent]);
+          switchTab('parent-portal');
+        } else {
+          renderCoachRosterTable();
+          renderParentRegistrations();
+        }
+
+        showToast(`ผูกเบอร์กับน้อง ${matchedStudent.name} สำเร็จ — คงเหลือสิทธิ์เรียน ${matchedStudent.remaining || 0} ครั้ง`);
+        triggerTelegramPush(`ผู้ปกครอง (${parentName} • ${rawPhone}) ผูกเบอร์กับน้อง ${matchedStudent.name} สำเร็จ (คงเหลือ ${matchedStudent.remaining || 0} ครั้ง)`, 'DBO Parent Account Linked');
+        playNotificationChime();
+        return;
+      }
+
+      saveState(true, `คำขอผูกเบอร์ใหม่: น้อง ${studentName}`, true);
       closeParentLinkModal();
 
-      // Show warm feedback
-      showToast('ส่งข้อมูลลงทะเบียนเรียบร้อยแล้ว! โค้ชจะตรวจสอบและอนุมัติให้โดยเร็วครับ');
-      triggerTelegramPush(`📝 มีผู้ปกครองลงทะเบียนใหม่: ${parentName} (${rawPhone}) ขอผูกกับน้อง ${studentName}`, 'DBO Parent Registration');
+      showToast('ส่งข้อมูลลงทะเบียนเรียบร้อยแล้ว โค้ชจะตรวจสอบและอนุมัติให้โดยเร็วครับ');
+      triggerTelegramPush(`มีผู้ปกครองลงทะเบียนใหม่: ${parentName} (${rawPhone}) ขอผูกกับน้อง ${studentName}`, 'DBO Parent Registration');
       playNotificationChime();
 
-      // If coach is logged in, re-render
       if (isCoachAuth) renderParentRegistrations();
     }
 
@@ -3862,6 +4094,7 @@
     function approveParentRegistration(regId) {
       const reg = parentRegistrations.find(r => r.id === regId);
       if (!reg) return;
+      const nowTs = Date.now();
 
       // Find or match student
       let st = null;
@@ -3876,9 +4109,10 @@
         st.phone = reg.phone;
         st.parentName = reg.parentName;
         st.parentRelation = reg.relation;
+        st._updatedAt = nowTs;
       } else {
         // Create new student record if not found
-        const newId = students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1;
+        const newId = students.length > 0 ? Math.max(...students.map(s => s.id || 0)) + 1 : 1;
         const newSt = {
           id: newId,
           name: reg.studentName,
@@ -3891,7 +4125,8 @@
           records: {},
           remaining: 10,
           saturdayRemaining: 0,
-          remark: 'สมัครใหม่ผ่านการอนุมัติผู้ปกครอง'
+          remark: 'สมัครใหม่ผ่านการอนุมัติผู้ปกครอง',
+          _updatedAt: nowTs
         };
         students.push(newSt);
         st = newSt;
@@ -3900,8 +4135,9 @@
       reg.status = 'approved';
       reg.approvedBy = currentStaff ? currentStaff.title : 'โค้ช';
       reg.approvedAt = new Date().toISOString();
+      reg.updatedAt = nowTs;
 
-      saveState();
+      saveState(true, `อนุมัติเบอร์ผู้ปกครองน้อง ${reg.studentName}`, true);
       renderParentRegistrations();
       renderCoachRosterTable();
       showToast(`อนุมัติเบอร์ ${reg.phone} ผูกกับน้อง ${reg.studentName} เรียบร้อยแล้ว`);
@@ -3915,7 +4151,8 @@
       if (!confirm(`ต้องการปฏิเสธคำขอของ ${reg.parentName} ใช่หรือไม่?`)) return;
 
       reg.status = 'rejected';
-      saveState();
+      reg.updatedAt = Date.now();
+      saveState(true, 'ปฏิเสธคำขอผูกเบอร์', true);
       renderParentRegistrations();
       showToast('ปฏิเสธคำขอเรียบร้อย');
     }
@@ -3942,10 +4179,11 @@
         status: status, // 'attending' | 'leave'
         leaveReason: leaveReason || (status === 'leave' ? 'แจ้งลาเรียน' : ''),
         time: nowTime,
-        updatedBy: 'parent'
+        updatedBy: 'parent',
+        updatedAt: Date.now()
       };
 
-      saveState();
+      saveState(true, `ผู้ปกครองแจ้ง${status === 'attending' ? 'มาเรียน' : 'ลา'}: น้อง ${loggedInStudent.name}`, true);
       updateParentTodayStatusUI();
       renderParentClassmatesList();
       renderDailyAttendanceBoard();
@@ -3968,7 +4206,7 @@
       const badge = document.getElementById('parentTodayStatusBadge');
       if (!badge) return;
 
-      if (!record) {
+      if (!record || record.status === 'unchecked') {
         badge.className = 'px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1.5';
         badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> ยังไม่ได้ระบุสถานะ';
       } else if (record.status === 'attending') {
@@ -4362,8 +4600,8 @@
           const descEl = document.getElementById('staffCardDesc');
           if (nameEl) nameEl.innerText = currentStaff.fullName;
           if (badgeEl) badgeEl.innerText = currentStaff.badge;
-          if (phoneEl) phoneEl.innerText = currentStaff.phone;
-          if (descEl) descEl.innerHTML = `เบอร์โทร: <span class="font-bold text-white">${currentStaff.phone}</span> • ${currentStaff.desc}`;
+          if (phoneEl) phoneEl.innerText = 'ยืนยันตัวตนแล้ว';
+          if (descEl) descEl.innerHTML = `${currentStaff.desc}`;
         }
 
         // Assistant Coach Permission Boundaries
@@ -4501,7 +4739,8 @@
         triggerTelegramPush(`${asst.name} บันทึกสิ้นสุดการสอน เวลา ${timeStr}`, 'Assistant Coach Duty Completed');
       }
 
-      saveState();
+      asst.updatedAt = Date.now();
+      saveState(true, `ผู้ช่วยโค้ช ${asst.name} บันทึกเวลาสอน`);
       updateCoachStateUI();
     }
 
@@ -4557,10 +4796,12 @@
 
       assistantCoaches[0].name = n1;
       assistantCoaches[0].phone = p1;
+      assistantCoaches[0].updatedAt = Date.now();
       assistantCoaches[1].name = n2;
       assistantCoaches[1].phone = p2;
+      assistantCoaches[1].updatedAt = Date.now();
 
-      saveState();
+      saveState(true, 'อัปเดตข้อมูลผู้ช่วยโค้ช');
       closeAssistantCoachModal();
       showToast('บันทึกข้อมูลเบอร์ผู้ช่วยโค้ชเรียบร้อยแล้ว');
     }
@@ -4582,9 +4823,11 @@
         time: timeStr,
         updatedBy: staffName,
         dateKey: sessionDateKey,
-        leaveReason: `โค้ช ${staffName} บันทึกลา`
+        leaveReason: `โค้ช ${staffName} บันทึกลา`,
+        updatedAt: Date.now()
       };
-      saveState();
+      markPendingCoachChange(`บันทึกลาน้อง ${student.name}`);
+      saveState(true, `โค้ชบันทึกลาน้อง ${student.name}`);
       updateSessionDateDisplay();
       renderCoachRosterTable();
       if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
@@ -4907,6 +5150,7 @@
       } else {
         student.remaining = (student.remaining || 0) + delta;
       }
+      student._updatedAt = Date.now();
 
       if (!student.checkInHistory) student.checkInHistory = [];
       student.checkInHistory.unshift({
@@ -4928,10 +5172,13 @@
         updatedBy: staffName,
         dateKey: sessionDateKey,
         courseType: target,
-        note: `เช็คชื่อโดย ${staffName}`
+        note: `เช็คชื่อโดย ${staffName}`,
+        updatedAt: Date.now()
       };
 
-      saveState();
+      const curRemAfter = (target === 'saturday') ? student.saturdayRemaining : student.remaining;
+      markPendingCoachChange(`เช็คชื่อน้อง ${student.name} (เหลือ ${curRemAfter} ครั้ง)`);
+      saveState(true, `เช็คชื่อน้อง ${student.name} (เหลือ ${curRemAfter} ครั้ง)`);
       updateSessionDateDisplay();
       renderCoachRosterTable();
       if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
@@ -4984,25 +5231,30 @@
         action: `${delta > 0 ? '+' + delta : delta} ครั้ง`
       });
 
-      saveState();
+      student._updatedAt = Date.now();
+      const newQuota = target === 'saturday' ? student.saturdayRemaining : student.remaining;
+      markPendingCoachChange(`ปรับโควตาน้อง ${student.name} เป็น ${newQuota} ครั้ง`);
+      saveState(true, `ปรับโควตาน้อง ${student.name} (เหลือ ${newQuota} ครั้ง)`);
       renderCoachRosterTable();
       if (loggedInStudent && loggedInStudent.id === studentId) {
         loggedInStudent = student;
         ensureHistoricalDatesSeeded();
-      updateSessionDateDisplay();
-      renderParentView();
+        updateSessionDateDisplay();
+        renderParentView();
       }
     }
 
     function coachDeleteStudent(studentId) {
       const student = students.find(s => s.id === studentId);
       if (!student) return;
-      if (!confirm(`คุณต้องการลบชื่อ "น้อง ${student.name}" (เบอร์ ${student.phone}) ออกจากระบบใช่หรือไม่?\n* ผู้ปกครองจะไม่สามารถล็อกอินเข้าดูข้อมูลได้อีกต่อไป`)) {
+      if (!confirm(`คุณต้องการลบชื่อ "น้อง ${student.name}" (${student.phone || 'ยังไม่ได้ผูกเบอร์'}) ออกจากระบบใช่หรือไม่?\n* ผู้ปกครองจะไม่สามารถล็อกอินเข้าดูข้อมูลได้อีกต่อไป`)) {
         return;
       }
 
+      deletedStudentIds[String(studentId)] = Date.now();
       students = students.filter(s => s.id !== studentId);
-      saveState();
+      markPendingCoachChange(`ลบชื่อน้อง ${student.name}`);
+      saveState(true, `ลบข้อมูลน้อง ${student.name}`);
       renderCoachRosterTable();
 
       if (loggedInStudent && loggedInStudent.id === studentId) {
@@ -5080,6 +5332,7 @@
       if (existing) {
         existing.remaining = (existing.remaining || 0) + quotaAdd;
         existing.courseType = item.courseType;
+        existing._updatedAt = Date.now();
         if (item.courseType === 'monthly') {
           existing.startDate = new Date().toISOString().split('T')[0];
           // Calculate next month renewal on the same day
@@ -5088,8 +5341,9 @@
           existing.nextRenewal = d.toISOString().split('T')[0];
         }
       } else {
+        const maxId = students.reduce((m, s) => Math.max(m, Number(s.id) || 0), 0);
         const newStudent = {
-          id: students.length + 1,
+          id: maxId + 1,
           name: item.studentName,
           fullName: item.fullName || `ด.ช. ${item.studentName}`,
           phone: item.phone,
@@ -5099,14 +5353,17 @@
           nextRenewal: item.courseType === 'monthly' ? new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0] : '-',
           remaining: quotaAdd,
           records: { "29/10": "", "1/11/26": "", "3/11/26": "" },
-          remark: `อนุมัติผ่านสลิป ${item.amount} บาท เข้าสู่ระบบอย่างเป็นทางการ`
+          remark: `อนุมัติผ่านสลิป ${item.amount} บาท เข้าสู่ระบบอย่างเป็นทางการ`,
+          _updatedAt: Date.now()
         };
         students.unshift(newStudent);
       }
 
       // Remove from pending
+      processedSlipIds[String(slipId)] = Date.now();
       pendingSlips.splice(itemIndex, 1);
-      saveState();
+      markPendingCoachChange(`อนุมัติสลิปน้อง ${item.studentName}`);
+      saveState(true, `อนุมัติสลิปและเพิ่มสิทธิ์น้อง ${item.studentName}`);
       renderPendingSlips();
       renderCoachRosterTable();
 
@@ -5115,8 +5372,9 @@
 
     function rejectSlip(slipId) {
       if (!confirm('ต้องการปฏิเสธสลิปนี้ใช่หรือไม่?')) return;
+      processedSlipIds[String(slipId)] = Date.now();
       pendingSlips = pendingSlips.filter(s => s.id !== slipId);
-      saveState();
+      saveState(true, 'ปฏิเสธสลิปโอนเงิน');
       renderPendingSlips();
       showToast('ปฏิเสธสลิปแล้ว');
     }
@@ -5221,12 +5479,15 @@
             const parts = startDate.split('-');
             student.nextRenewal = `วันที่ ${parts[2]} ของเดือนถัดไป`;
           }
+          student._updatedAt = Date.now();
         }
+        markPendingCoachChange(`แก้ไขข้อมูลน้อง ${name}`);
         showToast(`บันทึกข้อมูลและสมรรถภาพน้อง ${name} เรียบร้อย`);
       } else {
         // Add new
+        const maxId = students.reduce((m, s) => Math.max(m, Number(s.id) || 0), 0);
         const newStudent = {
-          id: students.length + 1,
+          id: maxId + 1,
           name: name,
           phone: phone,
           courseType: courseType,
@@ -5240,13 +5501,15 @@
           vJump: vJVal || 38,
           vJumpHistory: vJVal ? [{ date: 'แรกเข้า', val: vJVal }] : [],
           longJump: lJVal || 155,
-          longJumpHistory: lJVal ? [{ date: 'แรกเข้า', val: lJVal }] : []
+          longJumpHistory: lJVal ? [{ date: 'แรกเข้า', val: lJVal }] : [],
+          _updatedAt: Date.now()
         };
         students.unshift(newStudent);
+        markPendingCoachChange(`เพิ่มนักเรียนใหม่ น้อง ${name}`);
         showToast(`เพิ่มนักเรียนน้อง ${name} เข้าสู่ระบบสำเร็จ`);
       }
 
-      saveState();
+      saveState(true, `บันทึกข้อมูลน้อง ${name}`);
       closeStudentModal();
       renderCoachRosterTable();
       if (loggedInStudent && loggedInStudent.phone === phone) {
@@ -5522,30 +5785,172 @@
       if (!incomingData) return;
       let hasChanges = false;
 
+      // 1. Merge deletedStudentIds & processedSlipIds
+      if (incomingData.deletedStudentIds && typeof incomingData.deletedStudentIds === 'object') {
+        Object.keys(incomingData.deletedStudentIds).forEach(k => {
+          const ts = incomingData.deletedStudentIds[k];
+          if (!deletedStudentIds[k] || ts > deletedStudentIds[k]) {
+            deletedStudentIds[k] = ts;
+            hasChanges = true;
+          }
+        });
+        localStorage.setItem('dbo_deleted_students_v16', JSON.stringify(deletedStudentIds));
+      }
+
+      if (incomingData.processedSlipIds && typeof incomingData.processedSlipIds === 'object') {
+        Object.keys(incomingData.processedSlipIds).forEach(k => {
+          const ts = incomingData.processedSlipIds[k];
+          if (!processedSlipIds[k] || ts > processedSlipIds[k]) {
+            processedSlipIds[k] = ts;
+            hasChanges = true;
+          }
+        });
+        localStorage.setItem('dbo_processed_slips_v16', JSON.stringify(processedSlipIds));
+      }
+
+      // 2. Smart Record-by-Record Merge for Students (prevents stale devices from overwriting newer check-ins/linked phones)
       if (incomingData.students && Array.isArray(incomingData.students)) {
-        students = incomingData.students;
-        localStorage.setItem('dbo_students_v14', JSON.stringify(students));
-        hasChanges = true;
+        const studentMap = new Map();
+        students.forEach(s => {
+          if (s && s.id !== undefined && !deletedStudentIds[String(s.id)]) {
+            studentMap.set(Number(s.id), s);
+          }
+        });
+
+        incomingData.students.forEach(inc => {
+          if (!inc || inc.id === undefined) return;
+          const sid = Number(inc.id);
+          if (deletedStudentIds[String(sid)]) return;
+
+          const existing = studentMap.get(sid);
+          if (!existing) {
+            studentMap.set(sid, inc);
+            hasChanges = true;
+          } else {
+            const existingTs = existing._updatedAt || 0;
+            const incTs = inc._updatedAt || 0;
+            if (incTs > existingTs) {
+              studentMap.set(sid, {
+                ...existing,
+                ...inc,
+                phone: inc.phone || existing.phone || ''
+              });
+              hasChanges = true;
+            } else if (incTs === existingTs) {
+              if (inc.phone && !existing.phone) {
+                existing.phone = inc.phone;
+                hasChanges = true;
+              }
+              if ((inc.checkInHistory || []).length > (existing.checkInHistory || []).length) {
+                existing.remaining = inc.remaining;
+                existing.saturdayRemaining = inc.saturdayRemaining;
+                existing.checkInHistory = inc.checkInHistory;
+                hasChanges = true;
+              }
+              if (inc.remaining !== existing.remaining && incTs > 0) {
+                existing.remaining = inc.remaining;
+                hasChanges = true;
+              }
+            } else {
+              if (inc.phone && !existing.phone) {
+                existing.phone = inc.phone;
+                hasChanges = true;
+              }
+            }
+          }
+        });
+
+        const mergedList = Array.from(studentMap.values())
+          .filter(s => !deletedStudentIds[String(s.id)])
+          .sort((a, b) => Number(a.id) - Number(b.id));
+
+        if (JSON.stringify(mergedList) !== JSON.stringify(students)) {
+          students = mergedList;
+          localStorage.setItem('dbo_students_v14', JSON.stringify(students));
+          hasChanges = true;
+        }
       }
+
+      // 3. Smart Per-Date, Per-Student Merge for Daily Attendance
       if (incomingData.dailyAttendance && typeof incomingData.dailyAttendance === 'object') {
-        dailyAttendance = incomingData.dailyAttendance;
+        Object.keys(incomingData.dailyAttendance).forEach(dateKey => {
+          if (!dailyAttendance[dateKey]) dailyAttendance[dateKey] = {};
+          const incDay = incomingData.dailyAttendance[dateKey] || {};
+          Object.keys(incDay).forEach(stId => {
+            const incRec = incDay[stId];
+            const curRec = dailyAttendance[dateKey][stId];
+            if (!curRec) {
+              if (incRec && incRec.status !== 'unchecked') {
+                dailyAttendance[dateKey][stId] = incRec;
+                hasChanges = true;
+              }
+            } else {
+              const curTs = curRec.updatedAt || 0;
+              const incTs = (incRec && incRec.updatedAt) || 0;
+              if (incTs > curTs) {
+                if (incRec.status === 'unchecked') {
+                  delete dailyAttendance[dateKey][stId];
+                } else {
+                  dailyAttendance[dateKey][stId] = incRec;
+                }
+                hasChanges = true;
+              } else if (curTs === 0 && incTs === 0 && JSON.stringify(curRec) !== JSON.stringify(incRec)) {
+                dailyAttendance[dateKey][stId] = incRec;
+                hasChanges = true;
+              }
+            }
+          });
+        });
         localStorage.setItem('dbo_daily_attendance_v14', JSON.stringify(dailyAttendance));
-        hasChanges = true;
       }
+
+      // 4. Merge Parent Registrations
       if (incomingData.parentRegistrations && Array.isArray(incomingData.parentRegistrations)) {
-        parentRegistrations = incomingData.parentRegistrations;
+        const regMap = new Map();
+        parentRegistrations.forEach(r => { if (r && r.id) regMap.set(r.id, r); });
+        incomingData.parentRegistrations.forEach(inc => {
+          if (!inc || !inc.id) return;
+          const cur = regMap.get(inc.id);
+          if (!cur || (inc.updatedAt || 0) >= (cur.updatedAt || 0)) {
+            regMap.set(inc.id, inc);
+            hasChanges = true;
+          }
+        });
+        parentRegistrations = Array.from(regMap.values());
         localStorage.setItem('dbo_parent_registrations_v14', JSON.stringify(parentRegistrations));
-        hasChanges = true;
       }
+
+      // 5. Merge Pending Slips
       if (incomingData.pendingSlips && Array.isArray(incomingData.pendingSlips)) {
-        pendingSlips = incomingData.pendingSlips;
+        const slipMap = new Map();
+        pendingSlips.forEach(s => {
+          if (s && s.id && !processedSlipIds[String(s.id)]) slipMap.set(s.id, s);
+        });
+        incomingData.pendingSlips.forEach(inc => {
+          if (!inc || !inc.id || processedSlipIds[String(inc.id)]) return;
+          if (!slipMap.has(inc.id)) {
+            slipMap.set(inc.id, inc);
+            hasChanges = true;
+          }
+        });
+        pendingSlips = Array.from(slipMap.values());
         localStorage.setItem('dbo_pending_slips_v14', JSON.stringify(pendingSlips));
-        hasChanges = true;
       }
+
+      // 6. Merge Assistant Coaches
       if (incomingData.assistantCoaches && Array.isArray(incomingData.assistantCoaches)) {
-        assistantCoaches = incomingData.assistantCoaches;
+        const asstMap = new Map();
+        assistantCoaches.forEach(a => { if (a && a.id) asstMap.set(a.id, a); });
+        incomingData.assistantCoaches.forEach(inc => {
+          if (!inc || !inc.id) return;
+          const cur = asstMap.get(inc.id);
+          if (!cur || (inc.updatedAt || 0) > (cur.updatedAt || 0) || ((inc.workLogs || []).length > (cur.workLogs || []).length)) {
+            asstMap.set(inc.id, inc);
+            hasChanges = true;
+          }
+        });
+        assistantCoaches = Array.from(asstMap.values());
         localStorage.setItem('dbo_assistant_coaches_v14', JSON.stringify(assistantCoaches));
-        hasChanges = true;
       }
 
       if (hasChanges) {
@@ -5555,15 +5960,15 @@
             loggedInStudent = fresh;
             localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
             ensureHistoricalDatesSeeded();
-      updateSessionDateDisplay();
-      renderParentView();
+            updateSessionDateDisplay();
+            renderParentView();
           }
         }
 
         refreshAllViews();
 
         if (actionDesc) {
-          showToast(`ซิงค์ข้อมูล: ${actionDesc}`);
+          showToast(`อัปเดตข้อมูลล่าสุด: ${actionDesc}`);
           playNotificationChime();
         }
       }
@@ -5571,20 +5976,65 @@
 
     function refreshAllViews() {
       if (isCoachAuth) {
+        updateSessionDateDisplay();
         renderCoachRosterTable();
         renderPendingSlips();
         renderParentRegistrations();
       }
       if (loggedInStudent) {
         ensureHistoricalDatesSeeded();
-      updateSessionDateDisplay();
-      renderParentView();
+        updateSessionDateDisplay();
+        renderParentView();
       }
       renderDailyAttendanceBoard();
       lucide.createIcons();
     }
 
     window.dboClientId = 'dbo_client_' + Math.random().toString(36).substring(2, 9);
+
+    async function pullStateFromCloudApi() {
+      try {
+        const res = await fetch('/api/sync?t=' + Date.now(), {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          cache: 'no-store'
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.ok) {
+            if (json.state && json.state.students && json.state.students.length > 0) {
+              applyIncomingState(json.state, '');
+              updateRealtimeIndicator(true);
+            } else {
+              pushStateToCloudApi(buildSyncPayload('Initial Cloud Seed'));
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore offline/local static errors
+      }
+    }
+
+    function handleIncomingMqttMessage(topic, message) {
+      if (topic === CLOUD_STATE_TOPIC || topic === REALTIME_SYNC_TOPIC || topic === CLOUD_EVENT_TOPIC) {
+        try {
+          const payload = JSON.parse(message.toString());
+          if (!payload) return;
+          const isSelf = (payload.senderId === window.dboClientId);
+
+          if ((payload.type === 'REALTIME_STATE_UPDATE' || topic === CLOUD_STATE_TOPIC) && payload.data) {
+            applyIncomingState(payload.data, isSelf ? '' : (payload.actionDesc || ''));
+          } else if (payload.type === 'REQUEST_SYNC' && !isSelf) {
+            const hasNewerData = isCoachAuth || students.some(s => (s._updatedAt || 0) > 0);
+            if (hasNewerData) {
+              publishToMqttBrokers(buildSyncPayload(''));
+            }
+          }
+        } catch (err) {
+          console.log('Realtime message handle error:', err);
+        }
+      }
+    }
 
     function initRealtimeEngine() {
       // 1. Cross-tab Local BroadcastChannel
@@ -5608,12 +6058,21 @@
         }
       });
 
-      // 2. Multi-device Cloud WebSocket Realtime via MQTT
+      // 2. Pull from Vercel Cloud API on startup, tab focus, and periodic 8s interval
+      pullStateFromCloudApi();
+      setInterval(pullStateFromCloudApi, 8000);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          pullStateFromCloudApi();
+        }
+      });
+
+      // 3. Multi-device Cloud WebSocket Realtime via Dual Redundant MQTT Brokers (with Retained State!)
       try {
         if (typeof mqtt !== 'undefined') {
           const brokerUrl = 'wss://broker.emqx.io:8084/mqtt';
           window.realtimeMqttClient = mqtt.connect(brokerUrl, {
-            clientId: window.dboClientId,
+            clientId: window.dboClientId + '_emqx',
             keepalive: 45,
             clean: true,
             reconnectPeriod: 3000
@@ -5622,7 +6081,7 @@
           window.realtimeMqttClient.on('connect', () => {
             console.log('โก DBO Real-Time Cloud Engine Connected:', window.dboClientId);
             updateRealtimeIndicator(true);
-            window.realtimeMqttClient.subscribe(REALTIME_SYNC_TOPIC, { qos: 0 });
+            window.realtimeMqttClient.subscribe([CLOUD_STATE_TOPIC, REALTIME_SYNC_TOPIC, CLOUD_EVENT_TOPIC], { qos: 1 });
 
             // Request latest state from active peers
             setTimeout(() => {
@@ -5630,46 +6089,45 @@
                 window.realtimeMqttClient.publish(REALTIME_SYNC_TOPIC, JSON.stringify({
                   senderId: window.dboClientId,
                   type: 'REQUEST_SYNC'
-                }));
+                }), { qos: 1 });
               }
-            }, 800);
+            }, 600);
           });
 
-          window.realtimeMqttClient.on('message', (topic, message) => {
-            if (topic === REALTIME_SYNC_TOPIC) {
-              try {
-                const payload = JSON.parse(message.toString());
-                if (!payload || payload.senderId === window.dboClientId) return;
+          window.realtimeMqttClient.on('message', handleIncomingMqttMessage);
 
-                if (payload.type === 'REALTIME_STATE_UPDATE' && payload.data) {
-                  applyIncomingState(payload.data, payload.actionDesc);
-                } else if (payload.type === 'REQUEST_SYNC' && isCoachAuth) {
-                  // Staff client shares state snapshot
-                  window.realtimeMqttClient.publish(REALTIME_SYNC_TOPIC, JSON.stringify({
-                    senderId: window.dboClientId,
-                    type: 'REALTIME_STATE_UPDATE',
-                    actionDesc: 'ส่งต่อข้อมูลล่าสุดให้กับอุปกรณ์ใหม้',
-                    data: { students, pendingSlips, parentRegistrations, dailyAttendance }
-                  }));
-                }
-              } catch (err) {
-                console.log('Realtime message handle error:', err);
-              }
+          window.realtimeMqttClient.on('error', () => {
+            if (!window.backupMqttClient || !window.backupMqttClient.connected) {
+              updateRealtimeIndicator(false);
             }
           });
 
-          window.realtimeMqttClient.on('error', (err) => {
-            console.log('Realtime MQTT error:', err);
-            updateRealtimeIndicator(false);
-          });
-
           window.realtimeMqttClient.on('offline', () => {
-            updateRealtimeIndicator(false);
+            if (!window.backupMqttClient || !window.backupMqttClient.connected) {
+              updateRealtimeIndicator(false);
+            }
           });
 
           window.realtimeMqttClient.on('reconnect', () => {
             updateRealtimeIndicator(true);
           });
+
+          // Secondary Redundant Broker: HiveMQ WSS
+          const backupUrl = 'wss://broker.hivemq.com:8884/mqtt';
+          window.backupMqttClient = mqtt.connect(backupUrl, {
+            clientId: window.dboClientId + '_hive',
+            keepalive: 45,
+            clean: true,
+            reconnectPeriod: 4000
+          });
+
+          window.backupMqttClient.on('connect', () => {
+            updateRealtimeIndicator(true);
+            window.backupMqttClient.subscribe([CLOUD_STATE_TOPIC, REALTIME_SYNC_TOPIC, CLOUD_EVENT_TOPIC], { qos: 1 });
+          });
+
+          window.backupMqttClient.on('message', handleIncomingMqttMessage);
+          window.backupMqttClient.on('error', () => {});
         }
       } catch (err) {
         console.log('MQTT Engine init error:', err);
@@ -5699,7 +6157,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       // Clear legacy storage versions once to guarantee fresh roster & pure factual data
-      if (localStorage.getItem('dbo_app_version') !== 'v15.0') {
+      if (localStorage.getItem('dbo_app_version') !== 'v16.0') {
         localStorage.removeItem('dbo_students_v8');
         localStorage.removeItem('dbo_students_v9');
         localStorage.removeItem('dbo_students_v10');
@@ -5708,7 +6166,7 @@
         localStorage.removeItem('dbo_students_v13');
         localStorage.removeItem('dbo_roster_view_mode');
         localStorage.setItem('dbo_roster_view_mode_v2', 'cards');
-        localStorage.setItem('dbo_app_version', 'v15.0');
+        localStorage.setItem('dbo_app_version', 'v16.0');
       }
 
       // Dynamic live date & class schedule banner based on real calendar
