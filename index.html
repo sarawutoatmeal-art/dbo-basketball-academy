@@ -293,30 +293,108 @@
     <!-- ======================================================== -->
     <section id="tab-parent-portal" class="space-y-6">
 
-      <!-- STATE A: PHONE LOGIN GATE (FOR UNLOGGED PARENTS) -->
-      <div id="parent-login-box" class="card-clean p-6 sm:p-10 max-w-md mx-auto text-center space-y-6">
-        <div class="w-16 h-16 rounded-full bg-dbo-goldLight border border-dbo-gold/30 flex items-center justify-center mx-auto text-dbo-gold">
-          <i data-lucide="smartphone" class="w-8 h-8"></i>
+      <!-- Ambient Glow Behind Login Card -->
+      <div class="relative py-2 sm:py-4">
+        <div class="absolute inset-0 max-w-lg mx-auto bg-gradient-to-r from-amber-400/15 via-dbo-gold/20 to-indigo-600/15 rounded-3xl blur-2xl -z-10"></div>
+
+        <!-- STATE A: PHONE LOGIN GATE (FOR UNLOGGED PARENTS & COACHES) -->
+        <div id="parent-login-box" class="card-clean p-6 sm:p-9 max-w-lg mx-auto text-center space-y-6 bg-gradient-to-b from-white via-slate-50/80 to-amber-50/40 border border-amber-300/60 shadow-2xl rounded-3xl relative overflow-hidden backdrop-blur-sm">
+          <!-- Top Branded Accent Stripe -->
+          <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-dbo-navy via-amber-400 to-dbo-gold"></div>
+
+          <!-- Decorative Basketball Court Watermarks -->
+          <div class="absolute -right-10 -bottom-10 w-44 h-44 opacity-[0.03] pointer-events-none text-slate-900">
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4">
+              <circle cx="50" cy="50" r="46"/>
+              <line x1="50" y1="4" x2="50" y2="96"/>
+              <line x1="4" y1="50" x2="96" y2="50"/>
+              <path d="M 20 20 Q 50 50 20 80"/>
+              <path d="M 80 20 Q 50 50 80 80"/>
+            </svg>
+          </div>
+          <div class="absolute -left-10 -top-10 w-36 h-36 opacity-[0.035] pointer-events-none text-amber-600">
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4">
+              <circle cx="50" cy="50" r="46"/>
+              <circle cx="50" cy="50" r="22"/>
+            </svg>
+          </div>
+
+        <!-- DBO Official Academy Logo Emblem with Gold Glow Ring -->
+        <div class="relative mx-auto w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
+          <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-amber-400 via-amber-200 to-amber-500 opacity-70 blur-xs"></div>
+          <div class="relative w-full h-full rounded-full p-1 bg-gradient-to-tr from-amber-500 via-yellow-300 to-amber-600 shadow-xl shadow-amber-500/25 ring-4 ring-amber-400/20 flex items-center justify-center">
+            <div class="w-full h-full rounded-full bg-white p-2.5 flex items-center justify-center overflow-hidden border border-amber-200 shadow-inner">
+              <img src="assets/images/dbo-logo.png?v=7.0" alt="DBO Basketball Academy Logo" class="w-full h-full object-contain rounded-full transform transition duration-300 hover:scale-105">
+            </div>
+          </div>
+          <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-dbo-navy border-2 border-white flex items-center justify-center text-amber-400 shadow-md">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+          </div>
         </div>
 
+        <!-- Academy Title & Subtitle -->
         <div class="space-y-1.5">
-          <span class="text-xs font-bold uppercase tracking-wider text-dbo-gold">DBO Academy Access</span>
-          <h1 class="hero-title text-dbo-navy">เข้าสู่ระบบ (Login)</h1>
-          <p class="text-xs sm:text-sm text-dbo-textSecondary">
-            กรอก <strong>เบอร์โทรศัพท์มือถือ</strong> ของผู้ปกครอง หรือ ทีมงานโค้ช เพื่อเข้าสู่ระบบ
+          <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-bold bg-amber-100/80 text-amber-900 border border-amber-300/60 shadow-2xs">
+            <span>🏀 DBO BASKETBALL ACADEMY</span>
+          </span>
+          <h1 class="hero-title text-dbo-navy text-2xl sm:text-3xl font-black tracking-tight">เข้าสู่ระบบ (Login)</h1>
+          <p class="text-xs sm:text-sm text-dbo-textSecondary max-w-sm mx-auto">
+            กรอกเบอร์มือถือ หรือ เลือกเข้าใช้งานด่วน เพื่อดูสิทธิ์เรียนและเช็คชื่อเข้าคลาส
           </p>
         </div>
 
+        <!-- Quick 1-Tap Fast Login Tiles -->
+        <div class="bg-white/90 p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-2 text-left">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-dbo-navy flex items-center gap-1.5">
+              <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500 fill-amber-500"></i>
+              <span>เข้าสู่ระบบด่วน 1-Tap (แตะเข้าใช้งานทันที)</span>
+            </span>
+            <span class="text-[10px] text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">ไม่ต้องพิมพ์</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button type="button" onclick="quickLoginRole('coach_oat')" class="btn-touch p-2.5 rounded-xl text-left bg-gradient-to-r from-slate-900 to-indigo-950 text-white hover:brightness-110 transition shadow-xs flex items-center gap-2 border border-indigo-900/40 cursor-pointer">
+              <div class="w-7 h-7 rounded-lg bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center flex-shrink-0">🏀</div>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-amber-300 truncate">โค้ชโอ๊ต</div>
+                <div class="text-[10px] text-slate-300 font-mono truncate">093-319-9119</div>
+              </div>
+            </button>
+            <button type="button" onclick="quickLoginRole('coach_oak')" class="btn-touch p-2.5 rounded-xl text-left bg-gradient-to-r from-slate-900 to-indigo-950 text-white hover:brightness-110 transition shadow-xs flex items-center gap-2 border border-indigo-900/40 cursor-pointer">
+              <div class="w-7 h-7 rounded-lg bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center flex-shrink-0">🎯</div>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-amber-300 truncate">โค้ชโอ๊ค</div>
+                <div class="text-[10px] text-slate-300 font-mono truncate">095-297-4593</div>
+              </div>
+            </button>
+            <button type="button" onclick="quickLoginRole('admin_iris')" class="btn-touch p-2.5 rounded-xl text-left bg-slate-50 hover:bg-slate-100 text-slate-800 transition shadow-xs flex items-center gap-2 border border-slate-200 cursor-pointer">
+              <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center flex-shrink-0">📋</div>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-slate-800 truncate">คุณไอริส</div>
+                <div class="text-[10px] text-slate-500 font-mono truncate">080-374-5694</div>
+              </div>
+            </button>
+            <button type="button" onclick="quickLoginRole('demo_parent')" class="btn-touch p-2.5 rounded-xl text-left bg-amber-50 hover:bg-amber-100 text-amber-950 transition shadow-xs flex items-center gap-2 border border-amber-200 cursor-pointer">
+              <div class="w-7 h-7 rounded-lg bg-amber-200 text-amber-900 font-bold text-xs flex items-center justify-center flex-shrink-0">👤</div>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-bold text-amber-900 truncate">น้องอิฐ (ผปค.)</div>
+                <div class="text-[10px] text-amber-700 font-mono truncate">081-234-5678</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Phone / Name Form Input -->
         <form id="phoneLoginForm" onsubmit="handleParentPhoneLogin(event)" class="space-y-4 text-left">
           <div class="space-y-1.5">
-            <label class="block text-xs font-semibold text-dbo-textSecondary">เบอร์โทรศัพท์มือถือ (10 หลัก)</label>
+            <label class="block text-xs font-semibold text-dbo-textSecondary">หรือกรอกเบอร์โทรศัพท์มือถือ / ชื่อผู้ใช้งาน</label>
             <div class="relative">
               <i data-lucide="phone" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
               <input 
-                type="tel" 
+                type="text" 
                 id="parentPhoneInput" 
-                placeholder="ระบุเบอร์โทรศัพท์มือถือ 10 หลัก" 
-                maxlength="16"
+                placeholder="ระบุเบอร์โทร 10 หลัก หรือพิมพ์ชื่อ เช่น โค้ชโอ๊ต, น้องอิฐ" 
+                maxlength="30"
                 required
                 class="w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-dbo-navy placeholder-slate-400 focus:outline-none focus:border-dbo-gold focus:ring-2 focus:ring-dbo-gold/20 text-sm font-mono tracking-wider transition"
               >
@@ -324,9 +402,9 @@
             <div id="loginFeedback" class="hidden text-xs py-2 px-3 rounded-xl transition-all"></div>
           </div>
 
-          <button type="submit" id="btnLoginSubmit" class="btn-touch w-full py-3 rounded-xl font-bold text-sm bg-dbo-navy text-white hover:bg-dbo-navySoft shadow-md flex items-center justify-center gap-2 cursor-pointer">
-            <i data-lucide="log-in" class="w-4 h-4"></i>
-            <span>เข้าสู่ระบบ</span>
+          <button type="submit" id="btnLoginSubmit" class="btn-touch w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-dbo-navy to-slate-900 text-white hover:brightness-110 shadow-lg shadow-slate-900/15 flex items-center justify-center gap-2 cursor-pointer transition">
+            <i data-lucide="log-in" class="w-4 h-4 text-amber-400"></i>
+            <span>เข้าสู่ระบบทันที</span>
           </button>
         </form>
 
@@ -341,7 +419,38 @@
 
         <div class="pt-2 text-xs text-dbo-textSecondary flex items-center justify-center gap-2">
           <span>ยังไม่เคยเป็นนักเรียนที่นี่?</span>
-          <button onclick="switchTab('register-new')" class="text-dbo-gold font-bold hover:underline">สมัครเรียนใหม่ที่นี่</button>
+          <button type="button" onclick="switchTab('register-new')" class="text-dbo-gold font-bold hover:underline">สมัครเรียนใหม่ที่นี่</button>
+        </div>
+      </div>
+
+        <!-- STATE C: COACH LOGGED IN SHORTCUT (WHEN COACH VISITS PARENT TAB) -->
+        <div id="coach-active-portal-box" class="hidden card-clean p-6 sm:p-8 max-w-lg mx-auto text-center space-y-5 bg-gradient-to-b from-indigo-950 via-slate-900 to-indigo-900 text-white rounded-3xl shadow-xl border border-indigo-700/50">
+          <div class="w-20 h-20 mx-auto rounded-full p-1 bg-gradient-to-tr from-amber-400 to-amber-600 shadow-lg">
+            <div class="w-full h-full rounded-full bg-white p-2 flex items-center justify-center">
+              <img src="assets/images/dbo-logo.png?v=7.0" alt="DBO Basketball" class="w-full h-full object-contain rounded-full">
+            </div>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-amber-400 uppercase tracking-wider">DBO ACADEMY STAFF ACCESS</div>
+            <h2 class="text-xl sm:text-2xl font-black text-white mt-1" id="coachPortalStaffName">โค้ชโอ๊ต (Head Coach)</h2>
+            <p class="text-xs text-slate-300 mt-1">คุณเข้าสู่ระบบในฐานะทีมงานผู้ดูแลและผู้ฝึกสอน DBO Academy</p>
+          </div>
+          <div class="grid grid-cols-2 gap-2 pt-2">
+            <button type="button" onclick="switchTab('coach-roster')" class="btn-touch py-3 px-4 rounded-xl font-bold text-xs bg-amber-400 hover:bg-amber-300 text-slate-950 flex items-center justify-center gap-1.5 shadow-md cursor-pointer">
+              <i data-lucide="shield-check" class="w-4 h-4"></i>
+              <span>เปิดแผงโค้ช</span>
+            </button>
+            <button type="button" onclick="switchTab('daily-attendance')" class="btn-touch py-3 px-4 rounded-xl font-bold text-xs bg-white/10 hover:bg-white/20 text-white flex items-center justify-center gap-1.5 border border-white/20 cursor-pointer">
+              <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i>
+              <span>ดูคลาสวันนี้</span>
+            </button>
+          </div>
+          <div class="pt-3 border-t border-white/10 flex items-center justify-center gap-3 text-xs">
+            <button type="button" onclick="appLogout()" class="text-rose-400 hover:text-rose-300 font-medium flex items-center gap-1 cursor-pointer">
+              <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+              <span>ออกจากระบบทีมงาน</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1699,7 +1808,7 @@
   <!-- ======================================================== -->
   <nav class="md:hidden mobile-bottom-nav">
     <div id="mobileBottomNavContainer" class="flex items-center justify-around text-center px-1">
-      <button onclick="switchTab('parent-portal')" id="nav-m-parent-portal" class="mobile-tab-btn active flex-1">
+      <button onclick="handlePortalTabClick()" id="nav-m-parent-portal" class="mobile-tab-btn active flex-1">
         <i data-lucide="user" class="w-5 h-5"></i>
         <span>หน้าหลัก</span>
       </button>
@@ -2226,7 +2335,7 @@
 
     // Initial student data with Course Types (regular, monthly, saturday, single)
     const initialRawData = [
-      { id: 1, name: "อิฐ", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
+      { id: 1, name: "อิฐ", phone: "081-234-5678", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 2, name: "ซับ", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: -5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 3, name: "ขุนศึก", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -11, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 4, name: "ต้นบุญ", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
@@ -2349,15 +2458,15 @@
     ];
 
     let assistantCoaches = JSON.parse(localStorage.getItem('dbo_assistant_coaches_v14')) || defaultAssistantCoaches;
-    let coachRosterViewMode = localStorage.getItem('dbo_roster_view_mode') || 'cards';
+    let coachRosterViewMode = localStorage.getItem('dbo_roster_view_mode_v2') || 'cards';
 
     let students = JSON.parse(localStorage.getItem('dbo_students_v14')) || null;
     if (!students) {
       students = initialRawData.map(s => ({
         ...s,
-        phone: '',
-        parentName: '',
-        parentRelation: '',
+        phone: s.id === 1 ? '081-234-5678' : '',
+        parentName: s.id === 1 ? 'ผู้ปกครองน้องอิฐ (บัญชีทดสอบ)' : '',
+        parentRelation: s.id === 1 ? 'บิดา/มารดา' : '',
         remarkOat: 'น้องมีความตั้งใจฝึกซ้อมดี ฟอร์มชู้ตและการออกบอลพัฒนาขึ้นอย่างต่อเนื่อง',
         remarkOak: 'ทักษะ Footwork การทรงตัว และความคล่องตัวในการป้องกันพัฒนาขึ้นอย่างสม่ำเสมอ',
         vJump: 36 + (s.id % 12),
@@ -2376,7 +2485,10 @@
       localStorage.setItem('dbo_students_v14', JSON.stringify(students));
     } else {
       students.forEach(s => {
-        if (s.phone && (s.phone.startsWith('08000000') || s.phone === '0812345678' || s.phone === '0898765432')) {
+        if (s.id === 1 && !s.phone) {
+          s.phone = '081-234-5678';
+          s.parentName = 'ผู้ปกครองน้องอิฐ (บัญชีทดสอบ)';
+        } else if (s.phone && s.id !== 1 && (s.phone.startsWith('08000000') || s.phone === '0898765432')) {
           s.phone = '';
         }
         if (!s.remarkOat) s.remarkOat = 'น้องมีความตั้งใจฝึกซ้อมดี ฟอร์มชู้ตและการออกบอลพัฒนาขึ้นอย่างต่อเนื่อง';
@@ -2384,6 +2496,7 @@
         if (!s.vJump) s.vJump = 36 + (s.id % 12);
         if (!s.longJump) s.longJump = 145 + (s.id % 30);
       });
+      localStorage.setItem('dbo_students_v14', JSON.stringify(students));
     }
 
     let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v14')) || null;
@@ -2882,20 +2995,40 @@
       lucide.createIcons();
     }
 
-    function quickFillPhone(phone) {
-      document.getElementById('parentPhoneInput').value = phone;
+    function handlePortalTabClick() {
+      if (isCoachAuth && currentStaff) {
+        switchTab('coach-roster');
+      } else {
+        switchTab('parent-portal');
+      }
     }
 
-    // Unified Phone Login Logic (Staff Whitelist: 0933199119, 0952974593, 0803745694, 0946365206)
-    function handleParentPhoneLogin(e) {
+    function quickFillPhone(phone) {
+      const input = document.getElementById('parentPhoneInput');
+      if (input) input.value = phone;
+    }
+
+    function quickLoginRole(roleKey) {
+      if (roleKey === 'coach_oat') {
+        handleParentPhoneLogin(null, '0933199119');
+      } else if (roleKey === 'coach_oak') {
+        handleParentPhoneLogin(null, '0952974593');
+      } else if (roleKey === 'admin_iris') {
+        handleParentPhoneLogin(null, '0803745694');
+      } else if (roleKey === 'demo_parent') {
+        handleParentPhoneLogin(null, '0812345678');
+      }
+    }
+
+    // Unified Phone / Name Login Logic (Staff Whitelist: 0933199119, 0952974593, 0803745694, 0946365206)
+    function handleParentPhoneLogin(e, forcedInput = null) {
       if (e && e.preventDefault) e.preventDefault();
       const inputEl = document.getElementById('parentPhoneInput');
       const feedbackEl = document.getElementById('loginFeedback');
-      if (!inputEl) return;
 
-      let rawVal = (inputEl.value || '').trim();
+      let rawVal = forcedInput !== null ? String(forcedInput).trim() : (inputEl ? inputEl.value : '').trim();
       if (!rawVal) {
-        showToast('กรุณาระบุเบอร์โทรศัพท์มือถือครับ');
+        showToast('กรุณาระบุเบอร์โทรศัพท์มือถือ หรือ ชื่อผู้ใช้งานครับ');
         return;
       }
 
@@ -2904,6 +3037,18 @@
       thaiDigits.forEach((td, idx) => {
         rawVal = rawVal.split(td).join(idx.toString());
       });
+
+      // Name-based fast shortcut recognition for coaches & staff
+      const lowerRaw = rawVal.toLowerCase();
+      if (lowerRaw.includes('โอ๊ต') || lowerRaw === 'oat' || lowerRaw === 'coach oat') {
+        rawVal = '0933199119';
+      } else if (lowerRaw.includes('โอ๊ค') || lowerRaw === 'oak' || lowerRaw === 'coach oak') {
+        rawVal = '0952974593';
+      } else if (lowerRaw.includes('ไอริส') || lowerRaw === 'iris') {
+        rawVal = '0803745694';
+      } else if (lowerRaw.includes('ออม') || lowerRaw === 'aom') {
+        rawVal = '0946365206';
+      }
 
       // Strip non-digits and normalize country code
       let cleanPhone = rawVal.replace(/[^\d+]/g, '');
@@ -2962,7 +3107,29 @@
       }
 
       // 2. Check Linked Student Phone for Parents
-      const matched = students.filter(s => (s.phone || '').replace(/[^\d]/g, '') === cleanPhone && cleanPhone !== '');
+      let matched = students.filter(s => (s.phone || '').replace(/[^\d]/g, '') === cleanPhone && cleanPhone !== '');
+
+      // 2.1 Demo parent shortcut phone (0812345678 -> links to น้องอิฐ id: 1)
+      if (matched.length === 0 && (cleanPhone === '0812345678' || cleanPhone === '081-234-5678')) {
+        const student1 = students.find(s => s.id === 1);
+        if (student1) {
+          student1.phone = '081-234-5678';
+          saveState();
+          matched = [student1];
+        }
+      }
+
+      // 2.2 Direct match by Student Name
+      if (matched.length === 0) {
+        const byName = students.filter(s => s.name && (lowerRaw.includes(s.name.toLowerCase()) || s.name.toLowerCase().includes(lowerRaw)));
+        if (byName.length > 0) {
+          matched = byName;
+          if (!matched[0].phone) {
+            matched[0].phone = '081-234-5678';
+            saveState();
+          }
+        }
+      }
 
       if (matched.length > 0) {
         isCoachAuth = false;
@@ -2975,6 +3142,7 @@
         updateCoachStateUI();
         updateHeaderProfileUI();
         renderParentView(matched);
+        switchTab('parent-portal');
         showToast(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name}`);
         triggerTelegramPush(`🏀 ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name} เข้าสู่ระบบ DBO`, 'DBO Basketball Academy');
         return;
@@ -3001,14 +3169,15 @@
 
       // 4. Phone Not Registered Yet -> Prompt Registration
       if (feedbackEl) {
-        feedbackEl.className = 'text-xs p-3 rounded-xl bg-sky-50 text-sky-900 border border-sky-200 block space-y-1.5';
+        feedbackEl.className = 'text-xs p-3.5 rounded-2xl bg-sky-50 text-sky-950 border border-sky-200 block space-y-2';
         feedbackEl.innerHTML = `
-          <div class="font-bold flex items-center gap-1.5 text-sky-900">
+          <div class="font-bold flex items-center gap-1.5 text-sky-900 text-xs">
             <i data-lucide="info" class="w-4 h-4 text-sky-600"></i>
-            <span>ยังไม่ได้ลงทะเบียนผูกเบอร์</span>
+            <span>ยังไม่ได้ลงทะเบียนผูกเบอร์เข้าสู่ระบบ</span>
           </div>
-          <p>ระบบได้ลบเบอร์โทรเก่าออกทั้งหมด กรุณากดปุ่มด้านล่างเพื่อเลือกชื่อน้องและส่งให้โค้ชอนุมัติครับ</p>
-          <button type="button" onclick="openParentLinkModal('${cleanPhone}')" class="w-full mt-1 py-2 px-3 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition">
+          <p class="text-xs text-sky-800">ระบบได้รีเซ็ตเบอร์โทรเก่าเพื่อความปลอดภัย ผู้ปกครองสามารถแตะปุ่มด้านล่างเพื่อเลือกชื่อบุตรหลานและส่งขออนุมัติได้ทันทีครับ</p>
+          <button type="button" onclick="openParentLinkModal('${cleanPhone}')" class="w-full mt-1 py-2.5 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition cursor-pointer">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
             <span>📝 แตะตรงนี้เพื่อลงทะเบียนผูกเบอร์กับน้อง</span>
           </button>
         `;
@@ -3022,6 +3191,7 @@
     function renderParentView(matchedList) {
       const loginBox = document.getElementById('parent-login-box');
       const dashBox = document.getElementById('parent-dashboard');
+      const coachPortalBox = document.getElementById('coach-active-portal-box');
       const renewNav = document.getElementById('nav-renew-payment');
       const renewMNav = document.getElementById('nav-m-renew-payment');
       const dailyNav = document.getElementById('nav-daily-attendance');
@@ -3034,12 +3204,44 @@
       const renewGate = document.getElementById('renew-locked-gate');
       const renewContent = document.getElementById('renew-content');
 
+      // State 1: Coach Logged In
+      if (isCoachAuth && currentStaff) {
+        if (loginBox) loginBox.classList.add('hidden');
+        if (dashBox) dashBox.classList.add('hidden');
+        if (coachPortalBox) {
+          coachPortalBox.classList.remove('hidden');
+          const nameEl = document.getElementById('coachPortalStaffName');
+          if (nameEl) nameEl.innerText = `${currentStaff.fullName} (${currentStaff.role})`;
+        }
+
+        const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
+        if (mPortalLabel) mPortalLabel.innerText = 'แผงโค้ช';
+        const mPortalIcon = document.querySelector('#nav-m-parent-portal i');
+        if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'shield-check');
+
+        if (renewNav) renewNav.classList.add('hidden');
+        if (renewMNav) renewMNav.classList.add('hidden');
+        if (dailyNav) dailyNav.classList.remove('hidden');
+        if (dailyMNav) dailyMNav.classList.remove('hidden');
+        if (calNav) calNav.classList.remove('hidden');
+        if (calMNav) calMNav.classList.remove('hidden');
+        if (regNav) regNav.classList.remove('hidden');
+        if (regMNav) regMNav.classList.remove('hidden');
+
+        lucide.createIcons();
+        return;
+      }
+
+      // State 2: Not Logged In
       if (!loggedInStudent) {
         if (loginBox) loginBox.classList.remove('hidden');
         if (dashBox) dashBox.classList.add('hidden');
+        if (coachPortalBox) coachPortalBox.classList.add('hidden');
 
         const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
         if (mPortalLabel) mPortalLabel.innerText = 'เข้าสู่ระบบ';
+        const mPortalIcon = document.querySelector('#nav-m-parent-portal i');
+        if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'user');
 
         if (renewNav) renewNav.classList.add('hidden');
         if (renewMNav) renewMNav.classList.add('hidden');
@@ -3052,8 +3254,31 @@
 
         if (renewGate) renewGate.classList.remove('hidden');
         if (renewContent) renewContent.classList.add('hidden');
+        lucide.createIcons();
         return;
       }
+
+      // State 3: Parent Logged In
+      if (loginBox) loginBox.classList.add('hidden');
+      if (coachPortalBox) coachPortalBox.classList.add('hidden');
+      if (dashBox) dashBox.classList.remove('hidden');
+
+      const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
+      if (mPortalLabel) mPortalLabel.innerText = `น้อง${loggedInStudent.name}`;
+      const mPortalIcon = document.querySelector('#nav-m-parent-portal i');
+      if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'user');
+
+      if (renewNav) renewNav.classList.remove('hidden');
+      if (renewMNav) renewMNav.classList.remove('hidden');
+      if (dailyNav) dailyNav.classList.remove('hidden');
+      if (dailyMNav) dailyMNav.classList.remove('hidden');
+      if (calNav) calNav.classList.remove('hidden');
+      if (calMNav) calMNav.classList.remove('hidden');
+      if (regNav) regNav.classList.remove('hidden');
+      if (regMNav) regMNav.classList.remove('hidden');
+
+      if (renewGate) renewGate.classList.add('hidden');
+      if (renewContent) renewContent.classList.remove('hidden');
 
       // Logged in State
       const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
@@ -4265,7 +4490,7 @@
 
     function setCoachRosterViewMode(mode) {
       coachRosterViewMode = mode;
-      localStorage.setItem('dbo_roster_view_mode', mode);
+      localStorage.setItem('dbo_roster_view_mode_v2', mode);
       const btnCards = document.getElementById('btnViewCards');
       const btnTable = document.getElementById('btnViewTable');
       const cardsEl = document.getElementById('coachRosterMobileCards');
@@ -4432,11 +4657,11 @@
     function coachMarkStudentLeave(studentId) {
       const student = students.find(s => s.id === studentId);
       if (!student) return;
-      const staffName = currentStaff ? currentStaff.name : 'เนเธเนเธ';
+      const staffName = currentStaff ? currentStaff.name : 'โค้ช';
       const sessionDateKey = activeAttendanceDate || getTodayDateKey();
       const isToday = (sessionDateKey === getTodayDateKey());
       const now = new Date();
-      const timeStr = isToday ? (now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' เธ.') : 'เธเธฑเธเธ—เธถเธเนเธเธฃเธญเธ';
+      const timeStr = isToday ? (now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.') : 'บันทึกในรอบ';
 
       if (!dailyAttendance[sessionDateKey]) dailyAttendance[sessionDateKey] = {};
       dailyAttendance[sessionDateKey][student.id] = {
@@ -4446,13 +4671,13 @@
         time: timeStr,
         updatedBy: staffName,
         dateKey: sessionDateKey,
-        leaveReason: `เนเธเนเธ ${staffName} เธเธฑเธเธ—เธถเธเธฅเธฒ`
+        leaveReason: `โค้ช ${staffName} บันทึกลา`
       };
       saveState();
       updateSessionDateDisplay();
       renderCoachRosterTable();
       if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
-      showToast(`เธเธฑเธเธ—เธถเธเธชเธ–เธฒเธเธฐเธฅเธฒเธเนเธญเธ ${student.name} เธฃเธญเธเธเธตเนเน€เธฃเธตเธขเธเธฃเนเธญเธข`);
+      showToast(`บันทึกสถานะลาน้อง ${student.name} รอบนี้เรียบร้อย`);
     }
 
     // Filter by Course Categories
@@ -4518,27 +4743,27 @@
         
         let remBadge = '';
         if (isSaturdayFilter) {
-          if (rem > 1) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900">${rem} / 4 เธเธฃเธฑเนเธ (เน€เธชเธฒเธฃเน)</span>`;
-          else if (rem === 1) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">${rem} / 4 เธเธฃเธฑเนเธ (เน€เธชเธฒเธฃเน)</span>`;
-          else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">${rem} / 4 เธเธฃเธฑเนเธ (เน€เธชเธฒเธฃเน)</span>`;
+          if (rem > 1) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-900">${rem} / 4 ครั้ง (เสาร์)</span>`;
+          else if (rem === 1) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">${rem} / 4 ครั้ง (เสาร์)</span>`;
+          else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">${rem} / 4 ครั้ง (เสาร์)</span>`;
         } else if (s.courseType === 'both') {
           remBadge = `
             <div class="flex flex-col gap-1 items-center">
-              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900">เธเธเธ•เธด: ${s.remaining} เธเธฃเธฑเนเธ</span>
-              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-900">เน€เธชเธฒเธฃเน: ${s.saturdayRemaining} เธเธฃเธฑเนเธ</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900">ปกติ: ${s.remaining} ครั้ง</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-900">เสาร์: ${s.saturdayRemaining} ครั้ง</span>
             </div>
           `;
         } else {
-          if (rem > 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">${rem} เธเธฃเธฑเนเธ</span>`;
-          else if (rem >= 1 && rem <= 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">${rem} เธเธฃเธฑเนเธ</span>`;
-          else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">${rem} เธเธฃเธฑเนเธ</span>`;
+          if (rem > 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">${rem} ครั้ง</span>`;
+          else if (rem >= 1 && rem <= 3) remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">${rem} ครั้ง</span>`;
+          else remBadge = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">${rem} ครั้ง</span>`;
         }
 
         let typeBadge = '';
-        if (s.courseType === 'both') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-300">เธเธเธ•เธด + เธงเธฑเธเน€เธชเธฒเธฃเน</span>`;
-        else if (s.courseType === 'monthly') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">เธฃเธฒเธขเน€เธ”เธทเธญเธ</span>`;
-        else if (s.courseType === 'saturday') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">เธงเธฑเธเน€เธชเธฒเธฃเน (4 เธเธฃเธฑเนเธ)</span>`;
-        else typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">เธเธเธ•เธด 10 เธเธฃเธฑเนเธ</span>`;
+        if (s.courseType === 'both') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-300">ปกติ + วันเสาร์</span>`;
+        else if (s.courseType === 'monthly') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">รายเดือน</span>`;
+        else if (s.courseType === 'saturday') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">วันเสาร์ (4 ครั้ง)</span>`;
+        else typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">ปกติ 10 ครั้ง</span>`;
 
         const checkInTarget = isSaturdayFilter || s.courseType === 'saturday' ? 'saturday' : 'regular';
 
@@ -4552,10 +4777,10 @@
             actionBtns = `
               <div class="inline-flex items-center gap-1">
                 <span class="px-2.5 py-1 text-xs font-bold text-emerald-800 bg-emerald-100 rounded-lg flex items-center gap-1 border border-emerald-200">
-                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> <span>เธกเธฒเน€เธฃเธตเธขเธเนเธฅเนเธง</span>
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> <span>มาเรียนแล้ว</span>
                 </span>
-                <button onclick="coachUndoCheckIn(${s.id}, '${checkInTarget}')" title="เธขเธเน€เธฅเธดเธเน€เธเนเธเธเธทเนเธญเธฃเธญเธเธเธตเนเนเธฅเธฐเธเธทเธเธชเธดเธ—เธเธดเน (+1)" class="px-2 py-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 flex items-center gap-1">
-                  <i data-lucide="rotate-ccw" class="w-3 h-3"></i> <span>เธเธทเธเธชเธดเธ—เธเธดเน (+1)</span>
+                <button onclick="coachUndoCheckIn(${s.id}, '${checkInTarget}')" title="ยกเลิกเช็คชื่อรอบนี้และคืนสิทธิ์ (+1)" class="px-2 py-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 flex items-center gap-1">
+                  <i data-lucide="rotate-ccw" class="w-3 h-3"></i> <span>คืนสิทธิ์ (+1)</span>
                 </button>
               </div>
             `;
@@ -4563,40 +4788,40 @@
             actionBtns = `
               <div class="inline-flex items-center gap-1">
                 <span class="px-2.5 py-1 text-xs font-bold text-amber-800 bg-amber-100 rounded-lg flex items-center gap-1 border border-amber-200">
-                  <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600"></i> <span>เนเธเนเธเธฅเธฒ</span>
+                  <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600"></i> <span>แจ้งลา</span>
                 </span>
-                <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" title="เน€เธเธฅเธตเนเธขเธเน€เธเนเธเธกเธฒเน€เธฃเธตเธขเธ (-1)" class="px-2 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs">
-                  เน€เธเธฅเธตเนเธขเธเน€เธเนเธเธกเธฒ (-1)
+                <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" title="เปลี่ยนเป็นมาเรียน (-1)" class="px-2 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs">
+                  เปลี่ยนเป็นมา (-1)
                 </button>
-                <button onclick="coachClearAttendanceRecord(${s.id})" title="เธฅเนเธฒเธเธชเธ–เธฒเธเธฐเธฅเธฒ" class="px-1.5 py-1 text-xs text-slate-500 hover:text-slate-800 bg-slate-100 rounded-lg">โ•</button>
+                <button onclick="coachClearAttendanceRecord(${s.id})" title="ล้างสถานะลา" class="px-1.5 py-1 text-xs text-slate-500 hover:text-slate-800 bg-slate-100 rounded-lg">✕</button>
               </div>
             `;
           } else {
             if (isSaturdayFilter) {
               actionBtns = `
                 <div class="inline-flex items-center gap-1">
-                  <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เน€เธเนเธเธเธทเนเธญเธงเธฑเธเน€เธชเธฒเธฃเน (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 rounded-lg flex items-center gap-1 shadow-xs">
-                    <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i> <span>เน€เธเนเธเน€เธชเธฒเธฃเน (-1)</span>
+                  <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เช็คชื่อวันเสาร์ (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 rounded-lg flex items-center gap-1 shadow-xs">
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i> <span>เช็คเสาร์ (-1)</span>
                   </button>
-                  <button onclick="coachMarkStudentLeave(${s.id})" title="เธเธฑเธเธ—เธถเธเธฅเธฒเน€เธฃเธตเธขเธเธฃเธญเธเธเธตเน" class="px-2 py-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200">เธฅเธฒ</button>
-                  <button onclick="coachAdjustQuota(${s.id}, 1, 'saturday')" title="เน€เธเธดเนเธกเธชเธดเธ—เธเธดเน (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">+1</button>
-                  ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 4, 'saturday')" title="เธ•เนเธญเธเธญเธฃเนเธชเน€เธชเธฒเธฃเน (+4)" class="px-2 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200">+4</button>` : ''}
+                  <button onclick="coachMarkStudentLeave(${s.id})" title="บันทึกลาเรียนรอบนี้" class="px-2 py-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200">ลา</button>
+                  <button onclick="coachAdjustQuota(${s.id}, 1, 'saturday')" title="เพิ่มสิทธิ์ (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">+1</button>
+                  ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 4, 'saturday')" title="ต่อคอร์สเสาร์ (+4)" class="px-2 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200">+4</button>` : ''}
                 </div>
               `;
             } else if (s.courseType === 'both') {
               actionBtns = `
                 <div class="flex flex-col gap-1 items-center">
                   <div class="inline-flex items-center gap-1">
-                    <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เน€เธเนเธเธเธญเธฃเนเธชเธเธเธ•เธด (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-dbo-navy hover:bg-dbo-navySoft rounded-lg flex items-center gap-1">
-                      <span>เน€เธเนเธเธเธเธ•เธด (-1)</span>
+                    <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เช็คคอร์สปกติ (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-dbo-navy hover:bg-dbo-navySoft rounded-lg flex items-center gap-1">
+                      <span>เช็คปกติ (-1)</span>
                     </button>
-                    <button onclick="coachMarkStudentLeave(${s.id})" title="เธเธฑเธเธ—เธถเธเธฅเธฒ" class="px-1.5 py-0.5 text-[11px] font-bold text-amber-800 bg-amber-50 rounded border border-amber-200">เธฅเธฒ</button>
+                    <button onclick="coachMarkStudentLeave(${s.id})" title="บันทึกลา" class="px-1.5 py-0.5 text-[11px] font-bold text-amber-800 bg-amber-50 rounded border border-amber-200">ลา</button>
                     <button onclick="coachAdjustQuota(${s.id}, 1, 'regular')" class="px-1.5 py-0.5 text-[11px] font-bold bg-slate-100 rounded">+1</button>
                     ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 10, 'regular')" class="px-1.5 py-0.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 rounded border border-emerald-200">+10</button>` : ''}
                   </div>
                   <div class="inline-flex items-center gap-1">
-                    <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เน€เธเนเธเธงเธฑเธเน€เธชเธฒเธฃเน (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-1">
-                      <span>เน€เธเนเธเน€เธชเธฒเธฃเน (-1)</span>
+                    <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เช็ควันเสาร์ (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-1">
+                      <span>เช็คเสาร์ (-1)</span>
                     </button>
                     <button onclick="coachAdjustQuota(${s.id}, 1, 'saturday')" class="px-1.5 py-0.5 text-[11px] font-bold bg-slate-100 rounded">+1</button>
                     ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 4, 'saturday')" class="px-1.5 py-0.5 text-[11px] font-bold text-indigo-700 bg-indigo-50 rounded border border-indigo-200">+4</button>` : ''}
@@ -4606,12 +4831,12 @@
             } else {
               actionBtns = `
                 <div class="inline-flex items-center gap-1">
-                  <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเน€เธฃเธตเธขเธ (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg flex items-center gap-1 shadow-xs">
-                    <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i> <span>เน€เธเนเธเธเธทเนเธญ (-1)</span>
+                  <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เช็คชื่อเข้าเรียน (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg flex items-center gap-1 shadow-xs">
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i> <span>เช็คชื่อ (-1)</span>
                   </button>
-                  <button onclick="coachMarkStudentLeave(${s.id})" title="เธเธฑเธเธ—เธถเธเธฅเธฒเน€เธฃเธตเธขเธเธฃเธญเธเธเธตเน" class="px-2 py-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200">เธฅเธฒ</button>
-                  <button onclick="coachAdjustQuota(${s.id}, 1, 'regular')" title="เน€เธเธดเนเธกเธชเธดเธ—เธเธดเน (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">+1</button>
-                  ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 10, 'regular')" title="เธ•เนเธญเธเธญเธฃเนเธช (+10)" class="px-2 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200">+10</button>` : ''}
+                  <button onclick="coachMarkStudentLeave(${s.id})" title="บันทึกลาเรียนรอบนี้" class="px-2 py-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200">ลา</button>
+                  <button onclick="coachAdjustQuota(${s.id}, 1, 'regular')" title="เพิ่มสิทธิ์ (+1)" class="px-2 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg">+1</button>
+                  ${!isAsst ? `<button onclick="coachAdjustQuota(${s.id}, 10, 'regular')" title="ต่อคอร์ส (+10)" class="px-2 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200">+10</button>` : ''}
                 </div>
               `;
             }
@@ -4620,25 +4845,25 @@
           tr.innerHTML = `
             <td class="py-2.5 px-3 text-center text-xs text-slate-400 font-bold">${s.id}</td>
             <td class="py-2.5 px-3">
-              <strong class="text-xs sm:text-sm font-bold text-dbo-navy block">เธเนเธญเธ ${s.name}</strong>
-              ${s.phone ? `<span class="font-mono text-emerald-700 font-bold text-xs">๐“ ${s.phone}</span>` : `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">โณ เธฃเธญ เธเธเธ. เธเธนเธเน€เธเธญเธฃเน</span>`}
-              ${isAttending ? `<span class="ml-1 text-[10px] font-bold text-emerald-700">๐ข เธกเธฒ (${sessionAtt.time || ''})</span>` : ''}
-              ${isLeave ? `<span class="ml-1 text-[10px] font-bold text-amber-700">๐ก เธฅเธฒ (${sessionAtt.leaveReason || ''})</span>` : ''}
+              <strong class="text-xs sm:text-sm font-bold text-dbo-navy block">น้อง ${s.name}</strong>
+              ${s.phone ? `<span class="font-mono text-emerald-700 font-bold text-xs">📞 ${s.phone}</span>` : `<span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">⏳ รอ ผปค. ผูกเบอร์</span>`}
+              ${isAttending ? `<span class="ml-1 text-[10px] font-bold text-emerald-700">🟢 มา (${sessionAtt.time || ''})</span>` : ''}
+              ${isLeave ? `<span class="ml-1 text-[10px] font-bold text-amber-700">🟡 ลา (${sessionAtt.leaveReason || ''})</span>` : ''}
             </td>
             <td class="py-2.5 px-3">${typeBadge}</td>
             <td class="py-2.5 px-3">
-              <span class="text-xs text-slate-600 block">เน€เธฃเธดเนเธก: ${s.startDate || '-'}</span>
-              ${s.nextRenewal ? `<span class="text-[10px] text-emerald-700 font-semibold">เธฃเธญเธเธ•เนเธญ: ${s.nextRenewal}</span>` : ''}
+              <span class="text-xs text-slate-600 block">เริ่ม: ${s.startDate || '-'}</span>
+              ${s.nextRenewal ? `<span class="text-[10px] text-emerald-700 font-semibold">รอบต่อ: ${s.nextRenewal}</span>` : ''}
             </td>
             <td class="py-2.5 px-3 text-center">${remBadge}</td>
             <td class="py-2.5 px-3 text-center">${actionBtns}</td>
             <td class="py-2.5 px-3 text-center">
               <div class="inline-flex items-center gap-1">
-                <button onclick="openEditStudentModal(${s.id})" title="เนเธเนเนเธ/เธเธฑเธเธ—เธถเธเธชเธกเธฃเธฃเธ–เธ เธฒเธ" class="p-1 rounded-lg text-slate-500 hover:text-dbo-gold hover:bg-slate-100">
+                <button onclick="openEditStudentModal(${s.id})" title="แก้ไข/บันทึกสมรรถภาพ" class="p-1 rounded-lg text-slate-500 hover:text-dbo-gold hover:bg-slate-100">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
                 ${!isAsst ? `
-                <button onclick="coachDeleteStudent(${s.id})" title="เธฅเธเธเธทเนเธญเธญเธญเธเธเธฒเธเธฃเธฐเธเธ" class="p-1 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50">
+                <button onclick="coachDeleteStudent(${s.id})" title="ลบชื่อออกจากระบบ" class="p-1 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>` : ''}
               </div>
@@ -4654,9 +4879,9 @@
           
           let sessionStatusPill = '';
           if (isAttending) {
-            sessionStatusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">๐ข เธกเธฒเน€เธฃเธตเธขเธ (${sessionAtt.time || 'เธขเธทเธเธขเธฑเธ'})</span>`;
+            sessionStatusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">🟢 มาเรียน (${sessionAtt.time || 'ยืนยัน'})</span>`;
           } else if (isLeave) {
-            sessionStatusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">๐ก เธฅเธฒ (${sessionAtt.leaveReason || 'เธฅเธฒ'})</span>`;
+            sessionStatusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">🟡 ลา (${sessionAtt.leaveReason || 'ลา'})</span>`;
           }
 
           let mobileActionBar = '';
@@ -4665,13 +4890,13 @@
               <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
                 <div class="flex-1 py-1.5 px-2.5 rounded-xl bg-emerald-50 text-emerald-800 font-bold text-xs flex items-center justify-center gap-1.5 border border-emerald-200">
                   <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
-                  <span>เธกเธฒเน€เธฃเธตเธขเธเนเธฅเนเธง (${sessionAtt.time || 'เธขเธทเธเธขเธฑเธ'})</span>
+                  <span>มาเรียนแล้ว (${sessionAtt.time || 'ยืนยัน'})</span>
                 </div>
-                <button onclick="coachUndoCheckIn(${s.id}, '${checkInTarget}')" title="เธขเธเน€เธฅเธดเธเน€เธเนเธเธเธทเนเธญเธฃเธญเธเธเธตเน & เธเธทเธเธชเธดเธ—เธเธดเน (+1)" class="btn-touch py-1.5 px-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center gap-1">
+                <button onclick="coachUndoCheckIn(${s.id}, '${checkInTarget}')" title="ยกเลิกเช็คชื่อรอบนี้ & คืนสิทธิ์ (+1)" class="btn-touch py-1.5 px-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center gap-1">
                   <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                  <span>เธเธทเธเธชเธดเธ—เธเธดเน (+1)</span>
+                  <span>คืนสิทธิ์ (+1)</span>
                 </button>
-                <button onclick="openEditStudentModal(${s.id})" title="เนเธเนเนเธ/เธเธฑเธเธ—เธถเธเธชเธกเธฃเธฃเธ–เธ เธฒเธ" class="btn-touch p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
+                <button onclick="openEditStudentModal(${s.id})" title="แก้ไข/บันทึกสมรรถภาพ" class="btn-touch p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
               </div>
@@ -4681,13 +4906,13 @@
               <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
                 <div class="flex-1 py-1.5 px-2 rounded-xl bg-amber-50 text-amber-800 font-bold text-xs flex items-center justify-center gap-1 border border-amber-200 truncate">
                   <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
-                  <span class="truncate">เนเธเนเธเธฅเธฒ (${sessionAtt.leaveReason || 'เธฅเธฒ'})</span>
+                  <span class="truncate">แจ้งลา (${sessionAtt.leaveReason || 'ลา'})</span>
                 </div>
-                <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" title="เน€เธเธฅเธตเนเธขเธเน€เธเนเธเธกเธฒเน€เธฃเธตเธขเธ (-1)" class="btn-touch py-1.5 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs flex-shrink-0">
+                <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" title="เปลี่ยนเป็นมาเรียน (-1)" class="btn-touch py-1.5 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs flex-shrink-0">
                   <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                  <span>เน€เธเธฅเธตเนเธขเธเน€เธเนเธเธกเธฒ</span>
+                  <span>เปลี่ยนเป็นมา</span>
                 </button>
-                <button onclick="coachClearAttendanceRecord(${s.id})" title="เธฅเนเธฒเธเธชเธ–เธฒเธเธฐเธฅเธฒ" class="btn-touch p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex-shrink-0">
+                <button onclick="coachClearAttendanceRecord(${s.id})" title="ล้างสถานะลา" class="btn-touch p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex-shrink-0">
                   <i data-lucide="x" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
@@ -4697,20 +4922,20 @@
               <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100">
                 <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" class="btn-touch flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs">
                   <i data-lucide="check-circle" class="w-4 h-4"></i>
-                  <span>เน€เธเนเธเธเธทเนเธญ (-1)</span>
+                  <span>เช็คชื่อ (-1)</span>
                 </button>
-                <button onclick="coachMarkStudentLeave(${s.id})" title="เธเธฑเธเธ—เธถเธเธฅเธฒเน€เธฃเธตเธขเธเธฃเธญเธเธเธตเน" class="btn-touch py-2 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold text-xs flex items-center justify-center gap-1">
+                <button onclick="coachMarkStudentLeave(${s.id})" title="บันทึกลาเรียนรอบนี้" class="btn-touch py-2 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold text-xs flex items-center justify-center gap-1">
                   <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600"></i>
-                  <span>เธฅเธฒ</span>
+                  <span>ลา</span>
                 </button>
-                <button onclick="coachAdjustQuota(${s.id}, 1, '${checkInTarget}')" title="เน€เธเธดเนเธกเธชเธดเธ—เธเธดเน (+1)" class="btn-touch py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
+                <button onclick="coachAdjustQuota(${s.id}, 1, '${checkInTarget}')" title="เพิ่มสิทธิ์ (+1)" class="btn-touch py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
                   +1
                 </button>
-                <button onclick="openEditStudentModal(${s.id})" title="เนเธเนเนเธ/เธเธฑเธเธ—เธถเธเธชเธกเธฃเธฃเธ–เธ เธฒเธ" class="btn-touch p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
+                <button onclick="openEditStudentModal(${s.id})" title="แก้ไข/บันทึกสมรรถภาพ" class="btn-touch p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
                   <i data-lucide="edit-3" class="w-4 h-4"></i>
                 </button>
                 ${!isAsst ? `
-                <button onclick="coachDeleteStudent(${s.id})" title="เธฅเธเธเธทเนเธญ" class="btn-touch p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600">
+                <button onclick="coachDeleteStudent(${s.id})" title="ลบชื่อ" class="btn-touch p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600">
                   <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>` : ''}
               </div>
@@ -4724,9 +4949,9 @@
                   #${s.id}
                 </span>
                 <div class="min-w-0">
-                  <h4 class="font-bold text-dbo-navy text-sm sm:text-base leading-tight truncate">เธเนเธญเธ ${s.name}</h4>
+                  <h4 class="font-bold text-dbo-navy text-sm sm:text-base leading-tight truncate">น้อง ${s.name}</h4>
                   <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
-                    ${s.phone ? `<span class="text-[11px] font-mono text-emerald-700 font-medium">๐“ ${s.phone}</span>` : `<span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 border border-amber-200">โณ เธฃเธญ เธเธเธ. เธเธนเธเน€เธเธญเธฃเน</span>`}
+                    ${s.phone ? `<span class="text-[11px] font-mono text-emerald-700 font-medium">📞 ${s.phone}</span>` : `<span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 border border-amber-200">⏳ รอ ผปค. ผูกเบอร์</span>`}
                     ${sessionStatusPill}
                   </div>
                 </div>
@@ -4751,15 +4976,15 @@
       const student = students.find(s => s.id === studentId);
       if (!student) return;
 
-      const staffName = currentStaff ? currentStaff.name : 'เนเธเนเธเนเธญเนเธ•';
+      const staffName = currentStaff ? currentStaff.name : 'โค้ชโอ๊ต';
       const sessionDateKey = activeAttendanceDate || getTodayDateKey();
       const isToday = (sessionDateKey === getTodayDateKey());
       const now = new Date();
-      const timeStr = isToday ? (now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' เธ.') : 'เธเธฑเธเธ—เธถเธเนเธเธฃเธญเธ';
+      const timeStr = isToday ? (now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.') : 'บันทึกในรอบ';
 
       const parts = sessionDateKey.split('-');
       const sessionD = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-      const thaiMonthsShort = ['เธก.เธ.', 'เธ.เธ.', 'เธกเธต.เธ.', 'เน€เธก.เธข.', 'เธ.เธ.', 'เธกเธด.เธข.', 'เธ.เธ.', 'เธช.เธ.', 'เธ.เธข.', 'เธ•.เธ.', 'เธ.เธข.', 'เธ.เธ.'];
+      const thaiMonthsShort = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
       const formattedSessionThai = `${sessionD.getDate()} ${thaiMonthsShort[sessionD.getMonth()]} ${sessionD.getFullYear() + 543}`;
 
       if (target === 'saturday') {
@@ -4772,11 +4997,11 @@
       student.checkInHistory.unshift({
         date: `${formattedSessionThai} (${timeStr})`,
         sessionDate: sessionDateKey,
-        type: target === 'saturday' ? 'เธเธฅเธฒเธชเธงเธฑเธเน€เธชเธฒเธฃเน Basic Coach Oat' : 'เธเธฅเธฒเธชเธเธเธ•เธด 2 เธเธก. (เธ./เธญ./เธเธค.)',
+        type: target === 'saturday' ? 'คลาสวันเสาร์ Basic Coach Oat' : 'คลาสปกติ 2 ชม. (จ./อ./พฤ.)',
         coach: staffName,
-        status: 'เน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเธเธถเธเธเนเธญเธกเน€เธฃเธตเธขเธเธฃเนเธญเธข',
+        status: 'เช็คชื่อเข้าฝึกซ้อมเรียบร้อย',
         remaining: target === 'saturday' ? student.saturdayRemaining : student.remaining,
-        action: delta < 0 ? 'เธ•เธฑเธ”เนเธเธงเธ•เนเธฒ -1 เธเธฃเธฑเนเธ' : `เธเธฃเธฑเธเนเธเธงเธ•เนเธฒ +${delta}`
+        action: delta < 0 ? 'ตัดโควต้า -1 ครั้ง' : `ปรับโควต้า +${delta}`
       });
 
       if (!dailyAttendance[sessionDateKey]) dailyAttendance[sessionDateKey] = {};
@@ -4788,7 +5013,7 @@
         updatedBy: staffName,
         dateKey: sessionDateKey,
         courseType: target,
-        note: `เน€เธเนเธเธเธทเนเธญเนเธ”เธข ${staffName}`
+        note: `เช็คชื่อโดย ${staffName}`
       };
 
       saveState();
@@ -4799,22 +5024,22 @@
       if (loggedInStudent && loggedInStudent.id === studentId) {
         loggedInStudent = student;
         ensureHistoricalDatesSeeded();
-      updateSessionDateDisplay();
-      renderParentView();
+        updateSessionDateDisplay();
+        renderParentView();
       }
 
-      const courseName = (target === 'saturday') ? 'เธเธฅเธฒเธชเธงเธฑเธเน€เธชเธฒเธฃเน Basic Coach Oat' : 'เธเธฅเธฒเธชเธเธเธ•เธด';
+      const courseName = (target === 'saturday') ? 'คลาสวันเสาร์ Basic Coach Oat' : 'คลาสปกติ';
       const curRem = (target === 'saturday') ? student.saturdayRemaining : student.remaining;
-      const msg = `เธเนเธญเธ ${student.name} เน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเธเธถเธเธเนเธญเธก${courseName}เน€เธฃเธตเธขเธเธฃเนเธญเธขเนเธฅเนเธงเธเธฃเธฑเธ! (เนเธเธงเธ•เนเธฒเธเธเน€เธซเธฅเธทเธญ: ${curRem} เธเธฃเธฑเนเธ)`;
+      const msg = `น้อง ${student.name} เช็คชื่อเข้าฝึกซ้อม${courseName}เรียบร้อยแล้วครับ! (โควต้าคงเหลือ: ${curRem} ครั้ง)`;
       
       if (isToday) {
-        triggerTelegramPush(`๐€ ${msg}`, 'เธเธฒเธฃเน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเธเธถเธเธเนเธญเธก (Live Push)');
-        sendSystemNotification('๐€ DBO Academy เน€เธเนเธเธเธทเนเธญเน€เธเนเธฒเน€เธฃเธตเธขเธ', {
+        triggerTelegramPush(`🏀 ${msg}`, 'การเช็คชื่อเข้าฝึกซ้อม (Live Push)');
+        sendSystemNotification('🏀 DBO Academy เช็คชื่อเข้าเรียน', {
           body: msg,
           icon: 'assets/images/app-icon-192.png'
         });
       }
-      showToast(`เน€เธเนเธเธเธทเนเธญเธเนเธญเธ ${student.name} (${formattedSessionThai}) เธชเธณเน€เธฃเนเธ`);
+      showToast(`เช็คชื่อน้อง ${student.name} (${formattedSessionThai}) สำเร็จ`);
     }
 
     function coachAdjustQuota(studentId, delta, target = 'regular') {
@@ -5560,17 +5785,16 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       // Clear legacy storage versions once to guarantee fresh roster & pure factual data
-      if (localStorage.getItem('dbo_app_version') !== 'v14.0') {
+      if (localStorage.getItem('dbo_app_version') !== 'v15.0') {
         localStorage.removeItem('dbo_students_v8');
         localStorage.removeItem('dbo_students_v9');
         localStorage.removeItem('dbo_students_v10');
         localStorage.removeItem('dbo_students_v11');
         localStorage.removeItem('dbo_students_v12');
         localStorage.removeItem('dbo_students_v13');
-        localStorage.removeItem('dbo_daily_attendance_v13');
-        localStorage.removeItem('dbo_parent_registrations_v13');
-        localStorage.removeItem('dbo_pending_slips_v13');
-        localStorage.setItem('dbo_app_version', 'v14.0');
+        localStorage.removeItem('dbo_roster_view_mode');
+        localStorage.setItem('dbo_roster_view_mode_v2', 'cards');
+        localStorage.setItem('dbo_app_version', 'v15.0');
       }
 
       // Dynamic live date & class schedule banner based on real calendar
@@ -5610,6 +5834,13 @@
       renderParentRegistrations();
       renderDailyAttendanceBoard();
       lucide.createIcons();
+
+      // Auto-restore active view based on authentication state
+      if (isCoachAuth && currentStaff) {
+        switchTab('coach-roster');
+      } else if (loggedInStudent) {
+        switchTab('parent-portal');
+      }
 
       // Support direct link triggers (e.g. ?action=register-parent)
       try {
