@@ -2006,29 +2006,32 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <!-- Regular Quota Box -->
             <div class="p-2.5 bg-white rounded-xl border border-slate-200 space-y-2">
-              <label class="block text-[11px] font-bold text-slate-700">สิทธิ์คอร์สปกติคงเหลือ (ครั้ง) *</label>
+              <label class="block text-[11px] font-bold text-slate-700">สิทธิ์คอร์สปกติคงเหลือ (ครั้ง) * <span class="text-rose-600 font-normal">(ติดลบได้)</span></label>
               <div class="flex items-center gap-1.5">
                 <button type="button" onclick="stepModalQuota('modalStudentRemaining', -1)" class="w-8 h-8 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-sm flex items-center justify-center transition cursor-pointer">-1</button>
-                <input type="number" id="modalStudentRemaining" min="0" required class="w-full text-center bg-slate-50 border border-slate-300 rounded-lg py-1.5 text-sm font-mono font-bold text-dbo-navy">
+                <input type="number" id="modalStudentRemaining" required class="w-full text-center bg-slate-50 border border-slate-300 rounded-lg py-1.5 text-sm font-mono font-bold text-dbo-navy">
                 <button type="button" onclick="stepModalQuota('modalStudentRemaining', 1)" class="w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-sm flex items-center justify-center transition cursor-pointer">+1</button>
               </div>
-              <div class="flex items-center gap-1 justify-between pt-0.5">
-                <button type="button" onclick="setModalQuotaExact('modalStudentRemaining', 0)" class="flex-1 py-1 rounded text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer">เซ็ต 0</button>
-                <button type="button" onclick="stepModalQuota('modalStudentRemaining', 5)" class="flex-1 py-1 rounded text-[10px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition cursor-pointer">+5</button>
+              <div class="flex items-center gap-1 justify-between pt-0.5 flex-wrap">
+                <button type="button" onclick="setModalQuotaExact('modalStudentRemaining', -5)" class="px-2 py-1 rounded text-[10px] font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition cursor-pointer" title="เกินสิทธิ์ -5">-5</button>
+                <button type="button" onclick="setModalQuotaExact('modalStudentRemaining', -1)" class="px-2 py-1 rounded text-[10px] font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition cursor-pointer" title="เกินสิทธิ์ -1">-1</button>
+                <button type="button" onclick="setModalQuotaExact('modalStudentRemaining', 0)" class="px-2 py-1 rounded text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer">เซ็ต 0</button>
+                <button type="button" onclick="stepModalQuota('modalStudentRemaining', 5)" class="px-2 py-1 rounded text-[10px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition cursor-pointer">+5</button>
                 <button type="button" onclick="stepModalQuota('modalStudentRemaining', 10)" class="flex-1 py-1 rounded text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer">+10 ครั้ง</button>
               </div>
             </div>
 
             <!-- Saturday Quota Box -->
             <div class="p-2.5 bg-white rounded-xl border border-indigo-200/80 space-y-2">
-              <label class="block text-[11px] font-bold text-indigo-950">สิทธิ์คอร์สวันเสาร์คงเหลือ (ครั้ง)</label>
+              <label class="block text-[11px] font-bold text-indigo-950">สิทธิ์คอร์สวันเสาร์คงเหลือ (ครั้ง) <span class="text-rose-600 font-normal">(ติดลบได้)</span></label>
               <div class="flex items-center gap-1.5">
                 <button type="button" onclick="stepModalQuota('modalStudentSaturdayRemaining', -1)" class="w-8 h-8 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-sm flex items-center justify-center transition cursor-pointer">-1</button>
-                <input type="number" id="modalStudentSaturdayRemaining" min="0" value="0" class="w-full text-center bg-indigo-50/40 border border-indigo-200 rounded-lg py-1.5 text-sm font-mono font-bold text-indigo-950">
+                <input type="number" id="modalStudentSaturdayRemaining" value="0" class="w-full text-center bg-indigo-50/40 border border-indigo-200 rounded-lg py-1.5 text-sm font-mono font-bold text-indigo-950">
                 <button type="button" onclick="stepModalQuota('modalStudentSaturdayRemaining', 1)" class="w-8 h-8 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-sm flex items-center justify-center transition cursor-pointer">+1</button>
               </div>
-              <div class="flex items-center gap-1 justify-between pt-0.5">
-                <button type="button" onclick="setModalQuotaExact('modalStudentSaturdayRemaining', 0)" class="flex-1 py-1 rounded text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer">เซ็ต 0</button>
+              <div class="flex items-center gap-1 justify-between pt-0.5 flex-wrap">
+                <button type="button" onclick="setModalQuotaExact('modalStudentSaturdayRemaining', -1)" class="px-2 py-1 rounded text-[10px] font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition cursor-pointer" title="เกินสิทธิ์ -1">-1</button>
+                <button type="button" onclick="setModalQuotaExact('modalStudentSaturdayRemaining', 0)" class="px-2.5 py-1 rounded text-[10px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer">เซ็ต 0</button>
                 <button type="button" onclick="stepModalQuota('modalStudentSaturdayRemaining', 4)" class="flex-1 py-1 rounded text-[10px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition cursor-pointer">+4 ครั้ง (เสาร์)</button>
               </div>
             </div>
@@ -2452,9 +2455,9 @@
     // Initial student data with Course Types (regular, monthly, saturday, single)
     const initialRawData = [
       { id: 1, name: "อิฐ", phone: "081-234-5678", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
-      { id: 2, name: "ซับ", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (ครบคอร์สแล้ว)" },
-      { id: 3, name: "ขุนศึก", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (ครบคอร์สแล้ว)" },
-      { id: 4, name: "ต้นบุญ", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (ครบคอร์สแล้ว)" },
+      { id: 2, name: "ซับ", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: -5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (เกินสิทธิ์ -5 ครั้ง รอต่อคอร์ส)" },
+      { id: 3, name: "ขุนศึก", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -11, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (เกินสิทธิ์ -11 ครั้ง รอต่อคอร์ส)" },
+      { id: 4, name: "ต้นบุญ", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (เกินสิทธิ์ -1 ครั้ง รอต่อคอร์ส)" },
       { id: 5, name: "ต้นพุด", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 6, name: "ไทม์", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 6, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 7, name: "พัช", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 10, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
@@ -2488,7 +2491,7 @@
       { id: 35, name: "IRyu", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 36, name: "Sari", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"ลา"}, remaining: 9, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 37, name: "Phupa", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"/","1/11/26":"","29/10":"/"}, remaining: 0, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
-      { id: 38, name: "Sky", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (ครบคอร์สแล้ว)" },
+      { id: 38, name: "Sky", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: -1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (เกินสิทธิ์ -1 ครั้ง รอต่อคอร์ส)" },
       { id: 39, name: "Nada", phone: "", courseType: "both", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "เรียน 2 คอร์ส: คอร์สปกติ 10 ครั้ง + วันเสาร์ Basic Coach Oat" },
       { id: 40, name: "August", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 41, name: "Prod", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
@@ -2496,7 +2499,7 @@
       { id: 43, name: "เป็นหนึ่ง", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 44, name: "อินธัช", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"//","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (พี่น้องอินธัช-ธาวิน คอร์สเดียวกัน)", siblingGroupId: "sib_inthach_thawin" },
       { id: 45, name: "ธาวิน", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"","3/11/26":"","1/11/26":"","29/10":""}, remaining: 5, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (พี่น้องอินธัช-ธาวิน คอร์สเดียวกัน)", siblingGroupId: "sib_inthach_thawin" },
-      { id: 46, name: "ธีร์", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 0, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (ครบคอร์สแล้ว)" },
+      { id: 46, name: "ธีร์", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: -4, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง (เกินสิทธิ์ -4 ครั้ง รอต่อคอร์ส)" },
       { id: 47, name: "มังกร", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"/","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 48, name: "T J", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"/"}, remaining: 1, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
       { id: 49, name: "ลูคัส", phone: "", courseType: "regular", startDate: "2026-10-15", nextRenewal: "2026-11-15", records: {"5/11/26":"ลา","3/11/26":"ลา","1/11/26":"","29/10":"ลา"}, remaining: 7, saturdayRemaining: 0, remark: "คอร์สปกติ 10 ครั้ง" },
@@ -2721,8 +2724,8 @@
         if (!s.remarkOak) s.remarkOak = 'ทักษะ Footwork การทรงตัว และความคล่องตัวในการป้องกันพัฒนาขึ้นอย่างสม่ำเสมอ';
         if (!s.vJump) s.vJump = 36 + (s.id % 12);
         if (!s.longJump) s.longJump = 145 + (s.id % 30);
-        s.remaining = Math.max(0, s.remaining || 0);
-        s.saturdayRemaining = Math.max(0, s.saturdayRemaining || 0);
+        if (s.remaining === undefined) s.remaining = 0;
+        if (s.saturdayRemaining === undefined) s.saturdayRemaining = 0;
       });
       syncSiblingState(students);
       localStorage.setItem('dbo_students_v14', JSON.stringify(students));
@@ -3313,9 +3316,9 @@
       const nowTs = Date.now();
       const sessionDateKey = activeAttendanceDate || getTodayDateKey();
       if (target === 'saturday') {
-        student.saturdayRemaining = Math.max(0, (student.saturdayRemaining || 0) + 1);
+        student.saturdayRemaining = (student.saturdayRemaining || 0) + 1;
       } else {
-        student.remaining = Math.max(0, (student.remaining || 0) + 1);
+        student.remaining = (student.remaining || 0) + 1;
       }
       student._updatedAt = nowTs;
       syncSharedSiblingQuota(student, target);
@@ -5129,6 +5132,9 @@
           if (asstDutyCard) asstDutyCard.classList.add('hidden');
         }
 
+        if (window.innerWidth < 768) {
+          coachRosterViewMode = 'cards';
+        }
         setCoachRosterViewMode(coachRosterViewMode);
         renderCoachRosterTable();
         renderPendingSlips();
@@ -5725,9 +5731,9 @@
       const formattedSessionThai = `${sessionD.getDate()} ${thaiMonthsShort[sessionD.getMonth()]} ${sessionD.getFullYear() + 543}`;
 
       if (target === 'saturday') {
-        student.saturdayRemaining = Math.max(0, (student.saturdayRemaining || 0) + delta);
+        student.saturdayRemaining = (student.saturdayRemaining || 0) + delta;
       } else {
-        student.remaining = Math.max(0, (student.remaining || 0) + delta);
+        student.remaining = (student.remaining || 0) + delta;
       }
       student._updatedAt = Date.now();
       syncSharedSiblingQuota(student, target);
@@ -5794,10 +5800,10 @@
       const dateStr = now.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
 
       if (target === 'saturday') {
-        student.saturdayRemaining = Math.max(0, (student.saturdayRemaining || 0) + delta);
+        student.saturdayRemaining = (student.saturdayRemaining || 0) + delta;
         showToast(`ปรับโควตาวันเสาร์น้อง ${student.name} เป็น ${student.saturdayRemaining} ครั้ง`);
       } else {
-        student.remaining = Math.max(0, (student.remaining || 0) + delta);
+        student.remaining = (student.remaining || 0) + delta;
         showToast(`ปรับโควตาปกติน้อง ${student.name} เป็น ${student.remaining} ครั้ง`);
       }
 
@@ -5965,13 +5971,13 @@
       const el = document.getElementById(inputId);
       if (!el) return;
       const cur = parseInt(el.value, 10) || 0;
-      el.value = Math.max(0, cur + delta);
+      el.value = cur + delta;
     }
 
     function setModalQuotaExact(inputId, val) {
       const el = document.getElementById(inputId);
       if (!el) return;
-      el.value = Math.max(0, parseInt(val, 10) || 0);
+      el.value = parseInt(val, 10) || 0;
     }
 
     function openAddNewStudentModal() {
@@ -6007,10 +6013,10 @@
       document.getElementById('modalStudentPhone').value = student.phone || '';
       document.getElementById('modalStudentCourseType').value = student.courseType || 'regular';
       document.getElementById('modalStudentStartDate').value = student.startDate || '';
-      document.getElementById('modalStudentRemaining').value = student.remaining !== undefined ? Math.max(0, student.remaining) : 0;
+      document.getElementById('modalStudentRemaining').value = student.remaining !== undefined ? student.remaining : 0;
       const satRemEl = document.getElementById('modalStudentSaturdayRemaining');
       if (satRemEl) {
-        satRemEl.value = student.saturdayRemaining !== undefined ? Math.max(0, student.saturdayRemaining) : 0;
+        satRemEl.value = student.saturdayRemaining !== undefined ? student.saturdayRemaining : 0;
       }
       document.getElementById('modalStudentRemark').value = student.remark || '';
       
@@ -6038,9 +6044,9 @@
       const phone = document.getElementById('modalStudentPhone').value.trim();
       const courseType = document.getElementById('modalStudentCourseType').value;
       const startDate = document.getElementById('modalStudentStartDate').value;
-      const remaining = Math.max(0, parseInt(document.getElementById('modalStudentRemaining').value, 10) || 0);
+      const remaining = parseInt(document.getElementById('modalStudentRemaining').value, 10) || 0;
       const satRemInput = document.getElementById('modalStudentSaturdayRemaining');
-      const saturdayRemaining = satRemInput ? Math.max(0, parseInt(satRemInput.value, 10) || 0) : 0;
+      const saturdayRemaining = satRemInput ? (parseInt(satRemInput.value, 10) || 0) : 0;
       const remark = document.getElementById('modalStudentRemark').value.trim();
       
       const rOat = (document.getElementById('modalStudentRemarkOat').value || '').trim();
@@ -6804,7 +6810,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       // Clear legacy storage versions once to guarantee fresh roster & pure factual data
-      if (localStorage.getItem('dbo_app_version') !== 'v17.0') {
+      if (localStorage.getItem('dbo_app_version') !== 'v18.0') {
         localStorage.removeItem('dbo_students_v8');
         localStorage.removeItem('dbo_students_v9');
         localStorage.removeItem('dbo_students_v10');
@@ -6814,7 +6820,7 @@
         localStorage.removeItem('dbo_students_v14');
         localStorage.removeItem('dbo_roster_view_mode');
         localStorage.setItem('dbo_roster_view_mode_v2', 'cards');
-        localStorage.setItem('dbo_app_version', 'v17.0');
+        localStorage.setItem('dbo_app_version', 'v18.0');
       }
 
       // Dynamic live date & class schedule banner based on real calendar
