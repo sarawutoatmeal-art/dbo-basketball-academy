@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const TMP_FILE = path.join('/tmp', 'dbo_cloud_state_v16.json');
+const TMP_FILE = path.join('/tmp', 'dbo_cloud_state_v17.json');
 
 function loadStoredState() {
   if (global.__dboCloudState) {

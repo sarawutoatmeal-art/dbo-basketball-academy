@@ -689,8 +689,8 @@
               </div>
               <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">Head Coach</span>
             </div>
-            <p id="dash-coach-oat-remark" class="text-xs text-slate-600 leading-relaxed line-clamp-3 pt-0.5">
-              น้องมีความตั้งใจสูง ฟอร์มชู้ตและสปีดการเคลื่อนไหวคล่องตัวขึ้นอย่างเห็นได้ชัด
+            <p id="dash-coach-oat-remark" class="text-xs text-slate-400 italic leading-relaxed line-clamp-3 pt-0.5">
+              อยู่ระหว่างการประเมินพัฒนาการโดยโค้ชโอ๊ต
             </p>
             <span class="text-[10px] text-slate-400 block pt-0.5 font-medium">ทักษะบาสเกตบอล & Game IQ</span>
           </div>
@@ -704,8 +704,8 @@
               </div>
               <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-sky-50 text-sky-800 border border-sky-200">Head Coach</span>
             </div>
-            <p id="dash-coach-oak-remark" class="text-xs text-slate-600 leading-relaxed line-clamp-3 pt-0.5">
-              ทักษะ Footwork การทรงตัว และความคล่องตัวในการป้องกันพัฒนาขึ้นอย่างสม่ำเสมอ
+            <p id="dash-coach-oak-remark" class="text-xs text-slate-400 italic leading-relaxed line-clamp-3 pt-0.5">
+              อยู่ระหว่างการประเมินพัฒนาการโดยโค้ชโอ๊ค
             </p>
             <span class="text-[10px] text-slate-400 block pt-0.5 font-medium">สมรรถภาพ & ทัศนคติการเล่น</span>
           </div>
@@ -734,18 +734,18 @@
                   <i data-lucide="arrow-up-circle" class="w-4 h-4 text-slate-600"></i>
                   <span class="text-xs font-medium text-slate-700">Vertical Jump (กระโดดสูงแนวดิ่ง)</span>
                 </div>
-                <span id="dash-vjump-diff" class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">+4 ซม.</span>
+                <span id="dash-vjump-diff" class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-500 border border-slate-200">รอทดสอบ</span>
               </div>
               <div class="flex items-baseline gap-2">
-                <span id="dash-vjump-val" class="text-3xl font-semibold text-slate-900 font-mono tracking-tight">42</span>
+                <span id="dash-vjump-val" class="text-3xl font-semibold text-slate-900 font-mono tracking-tight">-</span>
                 <span class="text-xs text-slate-500">เซนติเมตร (cm)</span>
               </div>
               <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                <div id="dash-vjump-bar" class="h-1.5 rounded-full bg-emerald-600" style="width: 70%"></div>
+                <div id="dash-vjump-bar" class="h-1.5 rounded-full bg-emerald-600" style="width: 0%"></div>
               </div>
               <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1">
                 <span class="font-medium text-slate-600">ประวัติการทดสอบ:</span>
-                <span id="dash-vjump-history" class="font-mono text-emerald-700 font-medium">36 ➔ 39 ➔ 42 ซม.</span>
+                <span id="dash-vjump-history" class="font-mono text-slate-400 font-medium">รอการทดสอบสมรรถภาพ</span>
               </div>
             </div>
 
@@ -756,18 +756,18 @@
                   <i data-lucide="move-right" class="w-4 h-4 text-slate-600"></i>
                   <span class="text-xs font-medium text-slate-700">Standing Long Jump (กระโดดไกลอยู่กับที่)</span>
                 </div>
-                <span id="dash-longjump-diff" class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">+12 ซม.</span>
+                <span id="dash-longjump-diff" class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-500 border border-slate-200">รอทดสอบ</span>
               </div>
               <div class="flex items-baseline gap-2">
-                <span id="dash-longjump-val" class="text-3xl font-semibold text-slate-900 font-mono tracking-tight">168</span>
+                <span id="dash-longjump-val" class="text-3xl font-semibold text-slate-900 font-mono tracking-tight">-</span>
                 <span class="text-xs text-slate-500">เซนติเมตร (cm)</span>
               </div>
               <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                <div id="dash-longjump-bar" class="h-1.5 rounded-full bg-dbo-navy" style="width: 75%"></div>
+                <div id="dash-longjump-bar" class="h-1.5 rounded-full bg-dbo-navy" style="width: 0%"></div>
               </div>
               <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1">
                 <span class="font-medium text-slate-600">ประวัติการทดสอบ:</span>
-                <span id="dash-longjump-history" class="font-mono text-slate-700 font-medium">150 ➔ 158 ➔ 168 ซม.</span>
+                <span id="dash-longjump-history" class="font-mono text-slate-400 font-medium">รอการทดสอบสมรรถภาพ</span>
               </div>
             </div>
           </div>
@@ -3004,20 +3004,12 @@
         phone: s.id === 1 ? '081-234-5678' : '',
         parentName: s.id === 1 ? 'ผู้ปกครองน้องอิฐ (บัญชีทดสอบ)' : '',
         parentRelation: s.id === 1 ? 'บิดา/มารดา' : '',
-        remarkOat: 'น้องมีความตั้งใจฝึกซ้อมดี ฟอร์มชู้ตและการออกบอลพัฒนาขึ้นอย่างต่อเนื่อง',
-        remarkOak: 'ทักษะ Footwork การทรงตัว และความคล่องตัวในการป้องกันพัฒนาขึ้นอย่างสม่ำเสมอ',
-        vJump: 36 + (s.id % 12),
-        vJumpHistory: [
-          { date: '15 ต.ค.', val: 32 + (s.id % 12) },
-          { date: '28 ต.ค.', val: 34 + (s.id % 12) },
-          { date: '5 พ.ย.', val: 36 + (s.id % 12) }
-        ],
-        longJump: 145 + (s.id % 30),
-        longJumpHistory: [
-          { date: '15 ต.ค.', val: 135 + (s.id % 30) },
-          { date: '28 ต.ค.', val: 140 + (s.id % 30) },
-          { date: '5 พ.ย.', val: 145 + (s.id % 30) }
-        ]
+        remarkOat: '',
+        remarkOak: '',
+        vJump: null,
+        vJumpHistory: [],
+        longJump: null,
+        longJumpHistory: []
       }));
       syncSiblingState(students);
       localStorage.setItem('dbo_students_v14', JSON.stringify(students));
@@ -3039,10 +3031,6 @@
         } else if (s.phone && s.id !== 1 && (s.phone.startsWith('08000000') || s.phone === '0898765432')) {
           s.phone = '';
         }
-        if (!s.remarkOat) s.remarkOat = 'น้องมีความตั้งใจฝึกซ้อมดี ฟอร์มชู้ตและการออกบอลพัฒนาขึ้นอย่างต่อเนื่อง';
-        if (!s.remarkOak) s.remarkOak = 'ทักษะ Footwork การทรงตัว และความคล่องตัวในการป้องกันพัฒนาขึ้นอย่างสม่ำเสมอ';
-        if (!s.vJump) s.vJump = 36 + (s.id % 12);
-        if (!s.longJump) s.longJump = 145 + (s.id % 30);
         if (s.remaining === undefined) s.remaining = 0;
         if (s.saturdayRemaining === undefined) s.saturdayRemaining = 0;
       });
@@ -3050,7 +3038,35 @@
       localStorage.setItem('dbo_students_v14', JSON.stringify(students));
     }
 
+    // Automatic Reset of Mock Metrics & Boilerplate Remarks across all students
+    // (Because coach hasn't conducted/entered the real physical tests & comments for everyone yet)
+    if (!localStorage.getItem('dbo_metrics_reset_v2')) {
+      students.forEach(s => {
+        s.remarkOat = '';
+        s.remarkOak = '';
+        s.vJump = null;
+        s.vJumpHistory = [];
+        s.longJump = null;
+        s.longJumpHistory = [];
+        s.isRealSportsMetrics = false;
+        s._updatedAt = Date.now();
+      });
+      localStorage.setItem('dbo_students_v14', JSON.stringify(students));
+      localStorage.setItem('dbo_metrics_reset_v2', 'true');
+    }
+
     let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v14')) || null;
+    if (loggedInStudent && !localStorage.getItem('dbo_parent_logged_metrics_reset_v2')) {
+      loggedInStudent.remarkOat = '';
+      loggedInStudent.remarkOak = '';
+      loggedInStudent.vJump = null;
+      loggedInStudent.vJumpHistory = [];
+      loggedInStudent.longJump = null;
+      loggedInStudent.longJumpHistory = [];
+      loggedInStudent.isRealSportsMetrics = false;
+      localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
+      localStorage.setItem('dbo_parent_logged_metrics_reset_v2', 'true');
+    }
     let isCoachAuth = localStorage.getItem('dbo_is_coach_v14') === 'true';
     let currentStaff = JSON.parse(localStorage.getItem('dbo_current_staff')) || (isCoachAuth ? AUTHORIZED_STAFF['0933199119'] : null);
     let currentCoachFilter = 'all';
@@ -4173,47 +4189,63 @@
       const oatRemarkEl = document.getElementById('dash-coach-oat-remark');
       const oakRemarkEl = document.getElementById('dash-coach-oak-remark');
       if (oatRemarkEl) {
-        oatRemarkEl.innerText = loggedInStudent.remarkOat || 'น้องมีความตั้งใจฝึกซ้อมดี ฟอร์มชู้ตและการออกบอลพัฒนาขึ้นอย่างต่อเนื่องครับ';
+        oatRemarkEl.innerHTML = (loggedInStudent.remarkOat && loggedInStudent.remarkOat.trim()) 
+          ? escapeHtml(loggedInStudent.remarkOat)
+          : '<span class="text-slate-400 italic">อยู่ระหว่างการประเมินพัฒนาการโดยโค้ชโอ๊ต</span>';
       }
       if (oakRemarkEl) {
-        oakRemarkEl.innerText = loggedInStudent.remarkOak || 'ทักษะ Footwork การทรงตัว และความคล่องตัวในการป้องกันพัฒนาขึ้นอย่างสม่ำเสมอครับ';
+        oakRemarkEl.innerHTML = (loggedInStudent.remarkOak && loggedInStudent.remarkOak.trim()) 
+          ? escapeHtml(loggedInStudent.remarkOak)
+          : '<span class="text-slate-400 italic">อยู่ระหว่างการประเมินพัฒนาการโดยโค้ชโอ๊ค</span>';
       }
 
-      // Sports Science Metrics
-      const vJumpVal = loggedInStudent.vJump || (36 + (loggedInStudent.id % 12));
-      const longJumpVal = loggedInStudent.longJump || (145 + (loggedInStudent.id % 30));
+      // Sports Science Metrics (Strictly show factual measurements only)
+      const vJumpVal = (loggedInStudent.vJump && Number(loggedInStudent.vJump) > 0) ? Number(loggedInStudent.vJump) : null;
+      const longJumpVal = (loggedInStudent.longJump && Number(loggedInStudent.longJump) > 0) ? Number(loggedInStudent.longJump) : null;
 
       const vJumpEl = document.getElementById('dash-vjump-val');
       const vJumpBar = document.getElementById('dash-vjump-bar');
       const vJumpHistEl = document.getElementById('dash-vjump-history');
       const vJumpDiff = document.getElementById('dash-vjump-diff');
 
-      if (vJumpEl) vJumpEl.innerText = vJumpVal;
-      if (vJumpBar) vJumpBar.style.width = Math.min(100, Math.round((vJumpVal / 60) * 100)) + '%';
+      if (vJumpEl) vJumpEl.innerText = vJumpVal !== null ? vJumpVal : '-';
+      if (vJumpBar) vJumpBar.style.width = vJumpVal !== null ? Math.min(100, Math.round((vJumpVal / 60) * 100)) + '%' : '0%';
       if (vJumpHistEl) {
-        if (loggedInStudent.vJumpHistory && loggedInStudent.vJumpHistory.length > 0) {
-          vJumpHistEl.innerText = loggedInStudent.vJumpHistory.map(h => `${h.val}`).join(' ➔ ') + ` ➔ ${vJumpVal} ซม.`;
+        if (vJumpVal !== null) {
+          if (loggedInStudent.vJumpHistory && loggedInStudent.vJumpHistory.length > 0) {
+            vJumpHistEl.innerText = loggedInStudent.vJumpHistory.map(h => `${h.val}`).join(' ➔ ') + ` ซม.`;
+          } else {
+            vJumpHistEl.innerText = `${vJumpVal} ซม.`;
+          }
         } else {
-          vJumpHistEl.innerText = `${Math.max(20, vJumpVal - 6)} ➔ ${Math.max(20, vJumpVal - 3)} ➔ ${vJumpVal} ซม.`;
+          vJumpHistEl.innerText = 'รอการทดสอบสมรรถภาพ';
         }
       }
-      if (vJumpDiff) vJumpDiff.innerText = `+${loggedInStudent.vJumpHistory ? loggedInStudent.vJumpHistory.length * 3 : 5} ซม.`;
+      if (vJumpDiff) {
+        vJumpDiff.innerText = vJumpVal !== null ? `${vJumpVal} ซม.` : 'รอทดสอบ';
+      }
 
       const longJumpEl = document.getElementById('dash-longjump-val');
       const longJumpBar = document.getElementById('dash-longjump-bar');
       const longJumpHistEl = document.getElementById('dash-longjump-history');
       const longJumpDiff = document.getElementById('dash-longjump-diff');
 
-      if (longJumpEl) longJumpEl.innerText = longJumpVal;
-      if (longJumpBar) longJumpBar.style.width = Math.min(100, Math.round((longJumpVal / 220) * 100)) + '%';
+      if (longJumpEl) longJumpEl.innerText = longJumpVal !== null ? longJumpVal : '-';
+      if (longJumpBar) longJumpBar.style.width = longJumpVal !== null ? Math.min(100, Math.round((longJumpVal / 220) * 100)) + '%' : '0%';
       if (longJumpHistEl) {
-        if (loggedInStudent.longJumpHistory && loggedInStudent.longJumpHistory.length > 0) {
-          longJumpHistEl.innerText = loggedInStudent.longJumpHistory.map(h => `${h.val}`).join(' ➔ ') + ` ➔ ${longJumpVal} ซม.`;
+        if (longJumpVal !== null) {
+          if (loggedInStudent.longJumpHistory && loggedInStudent.longJumpHistory.length > 0) {
+            longJumpHistEl.innerText = loggedInStudent.longJumpHistory.map(h => `${h.val}`).join(' ➔ ') + ` ซม.`;
+          } else {
+            longJumpHistEl.innerText = `${longJumpVal} ซม.`;
+          }
         } else {
-          longJumpHistEl.innerText = `${Math.max(100, longJumpVal - 16)} ➔ ${Math.max(100, longJumpVal - 8)} ➔ ${longJumpVal} ซม.`;
+          longJumpHistEl.innerText = 'รอการทดสอบสมรรถภาพ';
         }
       }
-      if (longJumpDiff) longJumpDiff.innerText = `+${loggedInStudent.longJumpHistory ? loggedInStudent.longJumpHistory.length * 7 : 14} ซม. 🚀`;
+      if (longJumpDiff) {
+        longJumpDiff.innerText = longJumpVal !== null ? `${longJumpVal} ซม.` : 'รอทดสอบ';
+      }
 
       // Render Classmates Attendance Today
       renderParentClassmatesList();
@@ -6825,8 +6857,9 @@
           student.remaining = remaining;
           student.saturdayRemaining = saturdayRemaining;
           student.remark = remark;
-          if (rOat) student.remarkOat = rOat;
-          if (rOak) student.remarkOak = rOak;
+          student.remarkOat = rOat;
+          student.remarkOak = rOak;
+          student.isRealSportsMetrics = !!(rOat || rOak || vJVal > 0 || lJVal > 0);
 
           // Update student name across dailyAttendance records so boards stay consistent
           Object.keys(dailyAttendance).forEach(dk => {
@@ -6858,6 +6891,9 @@
               student.vJumpHistory.push({ date: nowD, val: vJVal });
             }
             student.vJump = vJVal;
+          } else {
+            student.vJump = null;
+            student.vJumpHistory = [];
           }
 
           if (lJVal > 0) {
@@ -6867,6 +6903,9 @@
               student.longJumpHistory.push({ date: nowD, val: lJVal });
             }
             student.longJump = lJVal;
+          } else {
+            student.longJump = null;
+            student.longJumpHistory = [];
           }
 
           if (courseType === 'monthly' && startDate) {
@@ -6893,12 +6932,13 @@
           saturdayRemaining: saturdayRemaining,
           records: {},
           remark: remark || 'เพิ่มโดยทีมโค้ช',
-          remarkOat: rOat || 'น้องมีความตั้งใจฝึกซ้อมดี ฟอร์มชู้ตพัฒนาขึ้นอย่างต่อเนื่อง',
-          remarkOak: rOak || 'ทักษะ Footwork และความคล่องตัวในการป้องกันพัฒนาขึ้นอย่างสม่ำเสมอ',
-          vJump: vJVal || 38,
-          vJumpHistory: vJVal ? [{ date: 'แรกเข้า', val: vJVal }] : [],
-          longJump: lJVal || 155,
-          longJumpHistory: lJVal ? [{ date: 'แรกเข้า', val: lJVal }] : [],
+          remarkOat: rOat || '',
+          remarkOak: rOak || '',
+          vJump: vJVal > 0 ? vJVal : null,
+          vJumpHistory: vJVal > 0 ? [{ date: 'แรกเข้า', val: vJVal }] : [],
+          longJump: lJVal > 0 ? lJVal : null,
+          longJumpHistory: lJVal > 0 ? [{ date: 'แรกเข้า', val: lJVal }] : [],
+          isRealSportsMetrics: !!(rOat || rOak || vJVal > 0 || lJVal > 0),
           _updatedAt: Date.now()
         };
         students.unshift(newStudent);
@@ -7441,6 +7481,15 @@
 
         incomingData.students.forEach(inc => {
           if (!inc || inc.id === undefined) return;
+          // Ensure mock sports metrics & boilerplate comments are wiped if not verified
+          if (!inc.isRealSportsMetrics) {
+            inc.remarkOat = '';
+            inc.remarkOak = '';
+            inc.vJump = null;
+            inc.vJumpHistory = [];
+            inc.longJump = null;
+            inc.longJumpHistory = [];
+          }
           const sid = Number(inc.id);
           if (deletedStudentIds[String(sid)]) return;
 
@@ -7806,8 +7855,8 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Clear legacy storage versions once to guarantee fresh roster & pure factual data
-      if (localStorage.getItem('dbo_app_version') !== 'v19.0') {
+      // Clear legacy storage versions to reset mock metrics and guarantee pure factual data
+      if (localStorage.getItem('dbo_app_version') !== 'v20.0') {
         localStorage.removeItem('dbo_students_v8');
         localStorage.removeItem('dbo_students_v9');
         localStorage.removeItem('dbo_students_v10');
@@ -7815,9 +7864,20 @@
         localStorage.removeItem('dbo_students_v12');
         localStorage.removeItem('dbo_students_v13');
         localStorage.removeItem('dbo_students_v14');
+        localStorage.removeItem('dbo_parent_logged_v14');
         localStorage.removeItem('dbo_roster_view_mode');
         localStorage.setItem('dbo_roster_view_mode_v2', 'cards');
-        localStorage.setItem('dbo_app_version', 'v19.0');
+        localStorage.setItem('dbo_app_version', 'v20.0');
+      }
+
+      // Sync clean state to cloud
+      if (!localStorage.getItem('dbo_synced_clean_metrics_v20')) {
+        localStorage.setItem('dbo_synced_clean_metrics_v20', 'true');
+        setTimeout(() => {
+          if (typeof saveState === 'function') {
+            saveState(true, 'รีเซ็ตข้อมูลสมรรถภาพทางกายและคอมเมนต์โค้ชทุกคนเป็นค่าว่าง');
+          }
+        }, 600);
       }
 
       // Dynamic live date & class schedule banner based on real calendar
