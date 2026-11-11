@@ -582,24 +582,64 @@
           </div>
         </div>
 
-        <!-- Mobile Push Notification Status Card -->
-        <div id="pushNotificationBanner" class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div class="flex items-center gap-2.5">
-            <span class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center flex-shrink-0">
+        <!-- Mobile Push Notification & Lock Screen Notification Center Card -->
+        <div id="pushNotificationBanner" class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-3">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                <i data-lucide="bell-ring" class="w-5 h-5 text-emerald-400"></i>
+              </span>
+              <div>
+                <h4 class="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <span>ระบบแจ้งเตือนนอกแอป (Lock Screen Push Notifications)</span>
+                  <span id="pushStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600 border border-slate-200">ตรวจสอบสถานะ...</span>
+                </h4>
+                <p class="text-[11px] text-slate-500 mt-0.5">
+                  เด้งแจ้งเตือนบนหน้าจอมือถือ (Lock Screen) แม้ปิดแอป: เมื่อโค้ชเช็คชื่อ • ก่อนเริ่มคลาส 30 นาที, 15 นาที • และ 15 นาทีก่อนเลิกคลาส
+                </p>
+              </div>
+            </div>
+            <button id="btnEnableNotifications" onclick="requestNotificationPermission()" class="btn-touch px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors flex items-center gap-1.5 flex-shrink-0 w-full sm:w-auto justify-center shadow-xs cursor-pointer">
               <i data-lucide="bell" class="w-4 h-4"></i>
+              <span>เปิดรับการแจ้งเตือน</span>
+            </button>
+          </div>
+
+          <!-- Quick Test Buttons for Parents to test each notification scenario -->
+          <div class="pt-2 border-t border-slate-100">
+            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1.5">
+              🧪 ทดสอบส่งการแจ้งเตือนบนหน้าจอ (Lock Screen Test):
             </span>
-            <div>
-              <h4 class="text-xs font-semibold text-dbo-navy flex items-center gap-1.5">
-                <span>การแจ้งเตือนบนมือถือ (Push Notifications)</span>
-                <span id="pushStatusBadge" class="text-[10px] px-2 py-0.5 rounded-md font-medium bg-slate-200 text-slate-700">ยังไม่เปิดใช้งาน</span>
-              </h4>
-              <p class="text-[11px] text-slate-500 mt-0.5">รับข้อความแจ้งเตือนทันทีเมื่อโค้ชเช็คชื่อน้องเข้าฝึกซ้อม</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button type="button" onclick="testLockscreenNotification('15m_before')" class="btn-touch p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition cursor-pointer" title="แจ้งเตือนก่อนเริ่ม 15 นาที (แบบในรูป)">
+                <span class="text-[10px] font-bold text-slate-800 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> 15 นาทีก่อนเริ่ม
+                </span>
+                <span class="text-[10px] text-slate-500 block truncate">Class starts in 15m</span>
+              </button>
+
+              <button type="button" onclick="testLockscreenNotification('30m_before')" class="btn-touch p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition cursor-pointer" title="แจ้งเตือนก่อนเริ่ม 30 นาที">
+                <span class="text-[10px] font-bold text-slate-800 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> 30 นาทีก่อนเริ่ม
+                </span>
+                <span class="text-[10px] text-slate-500 block truncate">เตรียมความพร้อมน้อง</span>
+              </button>
+
+              <button type="button" onclick="testLockscreenNotification('15m_end')" class="btn-touch p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition cursor-pointer" title="แจ้งเตือนใกล้เลิกเรียน 15 นาที">
+                <span class="text-[10px] font-bold text-slate-800 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 15 นาทีก่อนเลิก
+                </span>
+                <span class="text-[10px] text-slate-500 block truncate">เตรียมตัวมารับน้อง</span>
+              </button>
+
+              <button type="button" onclick="testLockscreenNotification('checkin')" class="btn-touch p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition cursor-pointer" title="แจ้งเตือนโค้ชเช็คชื่อเข้าเรียน">
+                <span class="text-[10px] font-bold text-slate-800 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> โค้ชเช็คชื่อแล้ว
+                </span>
+                <span class="text-[10px] text-slate-500 block truncate">เข้าเรียน & สิทธิ์เหลือ</span>
+              </button>
             </div>
           </div>
-          <button id="btnEnableNotifications" onclick="requestNotificationPermission()" class="btn-touch px-3.5 py-1.5 rounded-lg text-xs font-medium bg-slate-900 hover:bg-slate-800 text-white transition-colors flex items-center gap-1.5 flex-shrink-0 w-full sm:w-auto justify-center">
-            <i data-lucide="bell" class="w-3.5 h-3.5"></i>
-            <span>เปิดแจ้งเตือน</span>
-          </button>
         </div>
 
         <!-- 2 KPI Cards for Parent (Next Class Date & Schedule Highlights) -->
@@ -1565,172 +1605,249 @@
           </div>
         </div>
 
-        <!-- Attendance Session Date Controller & Headcount Meter Bar -->
-        <div id="attendanceSessionControlBar" class="p-4 rounded-xl border border-slate-200 bg-white space-y-3 shadow-2xs">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-2.5 border-b border-slate-100">
-            <!-- Left: Current Session Indicator & Schedule -->
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg bg-slate-900 text-white flex items-center justify-center flex-shrink-0">
-                <i data-lucide="calendar" class="w-4 h-4"></i>
-              </div>
-              <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span id="coachSessionDateBadge" class="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> รอบวันนี้
-                  </span>
-                  <span id="coachSessionScheduleBadge" class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                    คลาสปกติ 17:30 - 19:30 น.
-                  </span>
-                </div>
-                <h3 id="coachSessionDateTitle" class="text-sm sm:text-base font-semibold text-slate-900 mt-0.5">
-                  วันอังคารที่ 10 พ.ย. 2569
-                </h3>
-              </div>
+        <!-- ===================================================================== -->
+        <!-- COACH PORTAL SUB-NAV: 1. STUDENT ROSTER & QUOTA | 2. POST-TEACHING RECORDS (TWS) -->
+        <!-- ===================================================================== -->
+        <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold">
+          <button type="button" id="coachSubTabRoster" onclick="switchCoachSubTab('roster')" class="flex-1 py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition bg-white text-slate-900 shadow-2xs cursor-pointer">
+            <i data-lucide="users" class="w-4 h-4 text-slate-700"></i>
+            <span>สิทธิ์ & รายชื่อนักเรียน</span>
+            <span id="subTabRosterCountBadge" class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-100 text-slate-700">54</span>
+          </button>
+          <button type="button" id="coachSubTabRecords" onclick="switchCoachSubTab('records')" class="flex-1 py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition text-slate-600 hover:text-slate-900 cursor-pointer">
+            <i data-lucide="clipboard-check" class="w-4 h-4 text-emerald-600"></i>
+            <span>บันทึกการสอน & เช็คชื่อ (TWS)</span>
+            <span id="subTabRecordsCountBadge" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-600 text-white">0</span>
+          </button>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 1: STUDENT ROSTER & REMAINING QUOTA (Clean, Uncluttered, No Inline Checkin) -->
+        <!-- ===================================================================== -->
+        <div id="coachRosterViewSection" class="space-y-3">
+          <!-- Top Banner: Notice & Call-to-action to New Record -->
+          <div class="p-3.5 rounded-xl bg-gradient-to-r from-emerald-50 via-slate-50 to-white border border-emerald-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs">
+            <div class="space-y-0.5">
+              <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>รายชื่อนักเรียน & สิทธิ์คงเหลือ (Student Roster)</span>
+              </span>
+              <p class="text-[11px] text-slate-600">
+                แสดงจำนวนสิทธิ์ที่เหลือของน้องแต่ละคน (ติดลบได้) • ต้องการเช็คชื่อเข้าเรียน ให้กดปุ่ม <strong>New Record</strong>
+              </p>
+            </div>
+            <button type="button" onclick="openNewTeachingRecordModal()" class="btn-touch px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs flex items-center gap-1.5 flex-shrink-0 cursor-pointer transition">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>+ บันทึกเช็คชื่อใหม่ (New Record)</span>
+            </button>
+          </div>
+
+          <!-- Course Category Filters, Search & View Switcher -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+            
+            <!-- Category Tabs Filter -->
+            <div class="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
+              <button onclick="filterCoachCategory('all')" id="btn-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-white transition-colors">ทั้งหมด (<span id="count-all">0</span>)</button>
+              <button onclick="filterCoachCategory('regular')" id="btn-filter-regular" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">10 ครั้ง (<span id="count-regular">0</span>)</button>
+              <button onclick="filterCoachCategory('monthly')" id="btn-filter-monthly" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">รายเดือน (<span id="count-monthly">0</span>)</button>
+              <button onclick="filterCoachCategory('saturday')" id="btn-filter-saturday" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">วันเสาร์ 4 ครั้ง (<span id="count-saturday">0</span>)</button>
             </div>
 
-            <!-- Right: Quick Date Navigation & History Modal Button -->
-            <div class="flex items-center gap-2 flex-wrap">
-              <!-- Date Picker Input -->
-              <div class="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs shadow-2xs">
-                <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-500"></i>
+            <!-- Controls: View Switcher & Search -->
+            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <!-- View Mode Switcher -->
+              <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs">
+                <button type="button" id="btnViewCards" onclick="setCoachRosterViewMode('cards')" class="px-2.5 py-1 rounded-md font-medium transition flex items-center gap-1 bg-white text-slate-900 shadow-2xs">
+                  <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                  <span>การ์ดหน้าเดียว</span>
+                </button>
+                <button type="button" id="btnViewTable" onclick="setCoachRosterViewMode('table')" class="px-2.5 py-1 rounded-md font-medium transition flex items-center gap-1 text-slate-600 hover:text-slate-900">
+                  <i data-lucide="table" class="w-3.5 h-3.5"></i>
+                  <span>ตาราง</span>
+                </button>
+              </div>
+
+              <!-- Search Input -->
+              <div class="relative flex-1 sm:w-56">
+                <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                 <input 
-                  type="date" 
-                  id="coachAttendanceDateInput" 
-                  onchange="changeCoachAttendanceDate(this.value)" 
-                  class="font-mono text-xs font-medium text-slate-800 bg-transparent focus:outline-none cursor-pointer"
-                  title="แตะเพื่อเลือกวันที่เช็คชื่อ"
+                  type="text" 
+                  id="coachSearchInput" 
+                  placeholder="ค้นหาชื่อน้อง, เบอร์โทร..." 
+                  oninput="renderCoachRosterTable()"
+                  class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-dbo-navy focus:outline-none focus:border-dbo-navy"
                 >
               </div>
-
-              <!-- Quick Date Buttons -->
-              <button onclick="setSessionDateToToday()" class="btn-touch px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 transition-colors">
-                วันนี้
-              </button>
-              <button onclick="stepSessionDate(-1)" class="btn-touch px-2 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition-colors" title="วันก่อนหน้า">
-                ◀
-              </button>
-              <button onclick="stepSessionDate(1)" class="btn-touch px-2 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition-colors" title="วันถัดไป">
-                ▶
-              </button>
-              
-              <!-- Daily Headcount History Button -->
-              <button onclick="openAttendanceHistoryModal()" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 flex items-center gap-1.5 transition-colors">
-                <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-slate-600"></i>
-                <span>ประวัติรายวัน</span>
-              </button>
-
-              <!-- Top Quick Confirm & Submit Sync Button -->
-              <button type="button" onclick="submitAndBroadcastAttendanceSession()" id="btnTopSubmitSession" class="btn-touch px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer">
-                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-                <span>ยืนยัน Submit ข้อมูล</span>
-              </button>
             </div>
           </div>
 
-          <!-- Real-Time Headcount Summary Counters -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-0.5">
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-              <span class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>มาเรียน</span>
-              </span>
-              <p class="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tracking-tight pt-1">
-                <span id="sessionAttendingCount">0</span> <span class="text-xs font-normal text-slate-500">คน</span>
-              </p>
-            </div>
+          <!-- Mobile Cards Stream Container (No horizontal scrolling, 100% single screen fit) -->
+          <div id="coachRosterMobileCards" class="space-y-2.5">
+            <!-- Dynamically populated mobile cards -->
+          </div>
 
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-              <span class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                <span>แจ้งลา</span>
-              </span>
-              <p class="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tracking-tight pt-1">
-                <span id="sessionLeaveCount">0</span> <span class="text-xs font-normal text-slate-500">คน</span>
-              </p>
-            </div>
-
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-              <span class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-slate-300"></span>
-                <span>ยังไม่เช็ค</span>
-              </span>
-              <p class="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tracking-tight pt-1">
-                <span id="sessionUncheckedCount">54</span> <span class="text-xs font-normal text-slate-500">คน</span>
-              </p>
-            </div>
-
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-              <span class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
-                <i data-lucide="users" class="w-3.5 h-3.5 text-slate-400"></i>
-                <span>ทั้งหมด</span>
-              </span>
-              <p class="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tracking-tight pt-1">
-                <span id="sessionTotalCount">54</span> <span class="text-xs font-normal text-slate-500">คน</span>
-              </p>
-            </div>
+          <!-- Main Roster Table with Edit/Delete/Checkin (Desktop & Tablet view) -->
+          <div id="coachRosterDesktopTable" class="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white">
+            <table class="w-full text-left text-xs sm:text-sm border-collapse">
+              <thead class="bg-slate-50 text-slate-500 uppercase border-b border-slate-200">
+                <tr>
+                  <th scope="col" class="py-2.5 px-2 text-center w-8">#</th>
+                  <th scope="col" class="py-2.5 px-2">ชื่อนักเรียน</th>
+                  <th scope="col" class="py-2.5 px-2 hidden sm:table-cell">ประเภทคอร์ส</th>
+                  <th scope="col" class="py-2.5 px-2 hidden md:table-cell">รอบตัดยอด/วันเริ่ม</th>
+                  <th scope="col" class="py-2.5 px-2 text-center">สิทธิ์คงเหลือ (ปรับได้)</th>
+                  <th scope="col" class="py-2.5 px-2 text-center w-24">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="coachRosterTbody" class="divide-y divide-slate-100"></tbody>
+            </table>
           </div>
         </div>
 
-        <!-- Course Category Filters, Search & View Switcher -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
-          
-          <!-- Category Tabs Filter -->
-          <div class="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
-            <button onclick="filterCoachCategory('all')" id="btn-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-dbo-navy text-white transition-colors">ทั้งหมด (<span id="count-all">0</span>)</button>
-            <button onclick="filterCoachCategory('regular')" id="btn-filter-regular" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">10 ครั้ง (<span id="count-regular">0</span>)</button>
-            <button onclick="filterCoachCategory('monthly')" id="btn-filter-monthly" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">รายเดือน (<span id="count-monthly">0</span>)</button>
-            <button onclick="filterCoachCategory('saturday')" id="btn-filter-saturday" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">วันเสาร์ 4 ครั้ง (<span id="count-saturday">0</span>)</button>
-          </div>
+        <!-- ===================================================================== -->
+        <!-- VIEW 2: POST-TEACHING & ATTENDANCE RECORDS (Techawit School TWS Style) -->
+        <!-- ===================================================================== -->
+        <div id="coachRecordsViewSection" class="hidden space-y-3">
+          <!-- Top Control Header for Records -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-white space-y-3 shadow-2xs">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2.5 border-b border-slate-100">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <h3 class="text-sm sm:text-base font-bold text-slate-900">
+                    บันทึกการสอน & ประวัติการเช็คชื่อ (Post-Teaching Records)
+                  </h3>
+                </div>
+                <p class="text-xs text-slate-500">
+                  ระบบบันทึกหลังการสอนแบบ Techawit School (TWS) • กด New Record เพื่อเลือกวันและเลือกคน • หากต้องการแก้ไขให้กดแก้ไขที่ Record โดยตรง
+                </p>
+              </div>
 
-          <!-- Controls: View Switcher & Search -->
-          <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-            <!-- View Mode Switcher -->
-            <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs">
-              <button type="button" id="btnViewCards" onclick="setCoachRosterViewMode('cards')" class="px-2.5 py-1 rounded-md font-medium transition flex items-center gap-1 bg-white text-dbo-navy shadow-xs">
-                <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
-                <span>การ์ดหน้าเดียว</span>
-              </button>
-              <button type="button" id="btnViewTable" onclick="setCoachRosterViewMode('table')" class="px-2.5 py-1 rounded-md font-medium transition flex items-center gap-1 text-slate-600 hover:text-slate-900">
-                <i data-lucide="table" class="w-3.5 h-3.5"></i>
-                <span>ตาราง</span>
-              </button>
+              <div class="flex items-center gap-2 flex-wrap">
+                <button type="button" onclick="openNewTeachingRecordModal()" class="btn-touch px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs flex items-center gap-2 transition cursor-pointer">
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>+ บันทึกเช็คชื่อใหม่ (New Record)</span>
+                </button>
+              </div>
             </div>
 
-            <!-- Search Input -->
-            <div class="relative flex-1 sm:w-56">
-              <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-              <input 
-                type="text" 
-                id="coachSearchInput" 
-                placeholder="ค้นหาชื่อน้อง, เบอร์โทร..." 
-                oninput="renderCoachRosterTable()"
-                class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-dbo-navy focus:outline-none focus:border-dbo-navy"
-              >
+            <!-- Records Filter & Summary Bar -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-semibold text-slate-700">กรองรอบวันที่:</span>
+                <input type="month" id="filterRecordMonth" onchange="filterTeachingRecordsByMonth(this.value)" class="bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-mono font-medium text-slate-800">
+                <button type="button" onclick="resetRecordMonthFilter()" class="px-2 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition cursor-pointer">ทั้งหมด</button>
+              </div>
+              <span id="recordCountSummaryText" class="text-xs text-slate-500 font-mono">
+                บันทึกทั้งหมด <strong id="totalTeachingRecordsCount" class="text-slate-900 font-bold">0</strong> รอบการสอน
+              </span>
             </div>
           </div>
-        </div>
 
-        <!-- Mobile Cards Stream Container (No horizontal scrolling, 100% single screen fit) -->
-        <div id="coachRosterMobileCards" class="space-y-2.5">
-          <!-- Dynamically populated mobile cards -->
-        </div>
+          <!-- Attendance Session Date Controller & Headcount Meter Bar (Available in Records View) -->
+          <div id="attendanceSessionControlBar" class="p-4 rounded-xl border border-slate-200 bg-white space-y-3 shadow-2xs">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-2.5 border-b border-slate-100">
+              <!-- Left: Current Session Indicator & Schedule -->
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-slate-900 text-white flex items-center justify-center flex-shrink-0">
+                  <i data-lucide="calendar" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span id="coachSessionDateBadge" class="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> รอบวันนี้
+                    </span>
+                    <span id="coachSessionScheduleBadge" class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                      คลาสปกติ 17:00 - 18:30 น.
+                    </span>
+                  </div>
+                  <h3 id="coachSessionDateTitle" class="text-sm sm:text-base font-semibold text-slate-900 mt-0.5">
+                    วันพุธที่ 11 พ.ย. 2569
+                  </h3>
+                </div>
+              </div>
 
-        <!-- Main Roster Table with Edit/Delete/Checkin (Desktop & Tablet view) -->
-        <div id="coachRosterDesktopTable" class="hidden overflow-x-auto rounded-xl border border-slate-200">
-          <table class="w-full text-left text-xs sm:text-sm border-collapse">
-            <thead class="bg-slate-50 text-slate-500 uppercase border-b border-slate-200">
-              <tr>
-                <th scope="col" class="py-2.5 px-2 text-center w-8">#</th>
-                <th scope="col" class="py-2.5 px-2">ชื่อนักเรียน</th>
-                <th scope="col" class="py-2.5 px-2 hidden sm:table-cell">ประเภทคอร์ส</th>
-                <th scope="col" class="py-2.5 px-2 hidden md:table-cell">รอบตัดยอด/วันเริ่ม</th>
-                <th scope="col" class="py-2.5 px-2 text-center">สิทธิ์คงเหลือ</th>
-                <th scope="col" class="py-2.5 px-2 text-center">เช็คชื่อ & โควต้า</th>
-                <th scope="col" class="py-2.5 px-2 text-center w-16">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="coachRosterTbody" class="divide-y divide-slate-100"></tbody>
-          </table>
+              <!-- Right: Quick Date Navigation & History Modal Button -->
+              <div class="flex items-center gap-2 flex-wrap">
+                <!-- Date Picker Input -->
+                <div class="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs shadow-2xs">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-500"></i>
+                  <input 
+                    type="date" 
+                    id="coachAttendanceDateInput" 
+                    onchange="changeCoachAttendanceDate(this.value)" 
+                    class="font-mono text-xs font-medium text-slate-800 bg-transparent focus:outline-none cursor-pointer"
+                    title="แตะเพื่อเลือกวันที่เช็คชื่อ"
+                  >
+                </div>
+
+                <!-- Quick Date Buttons -->
+                <button onclick="setSessionDateToToday()" class="btn-touch px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 transition-colors">
+                  วันนี้
+                </button>
+                <button onclick="stepSessionDate(-1)" class="btn-touch px-2 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition-colors" title="วันก่อนหน้า">
+                  ◀
+                </button>
+                <button onclick="stepSessionDate(1)" class="btn-touch px-2 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition-colors" title="วันถัดไป">
+                  ▶
+                </button>
+                
+                <!-- Daily Headcount History Button -->
+                <button onclick="openAttendanceHistoryModal()" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 flex items-center gap-1.5 transition-colors">
+                  <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-slate-600"></i>
+                  <span>ประวัติรายวัน</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Real-Time Headcount Summary Counters -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-0.5">
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                <span class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>มาเรียน</span>
+                </span>
+                <p class="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tracking-tight pt-1">
+                  <span id="sessionAttendingCount">0</span> <span class="text-xs font-normal text-slate-500">คน</span>
+                </p>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                <span class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                  <span>แจ้งลา</span>
+                </span>
+                <p class="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tracking-tight pt-1">
+                  <span id="sessionLeaveCount">0</span> <span class="text-xs font-normal text-slate-500">คน</span>
+                </p>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                <span class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+                  <span>ยังไม่เช็ค</span>
+                </span>
+                <p class="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tracking-tight pt-1">
+                  <span id="sessionUncheckedCount">54</span> <span class="text-xs font-normal text-slate-500">คน</span>
+                </p>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                <span class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-slate-400"></i>
+                  <span>ทั้งหมด</span>
+                </span>
+                <p class="text-xl sm:text-2xl font-semibold text-slate-900 font-mono tracking-tight pt-1">
+                  <span id="sessionTotalCount">54</span> <span class="text-xs font-normal text-slate-500">คน</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Teaching Records Feed Container -->
+          <div id="teachingRecordsList" class="space-y-3">
+            <!-- Dynamically populated Teaching Records cards -->
+          </div>
         </div>
 
         <!-- ======================================================== -->
@@ -2088,6 +2205,143 @@
     </div>
   </div>
 
+  <!-- ================================================================= -->
+  <!-- TEACHING RECORD MODAL (Techawit School TWS Post-Teaching Style)   -->
+  <!-- ================================================================= -->
+  <div id="teachingRecordModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+    <div class="card-clean max-w-2xl w-full p-4 sm:p-6 space-y-4 shadow-2xl max-h-[92vh] flex flex-col bg-white rounded-2xl border border-slate-200">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 flex-shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold flex-shrink-0">
+            <i data-lucide="clipboard-check" class="w-5 h-5 text-emerald-400"></i>
+          </div>
+          <div>
+            <h3 id="recordModalTitle" class="text-base sm:text-lg font-bold text-slate-900">
+              บันทึกการสอน & เช็คชื่อเข้าเรียน (New Record)
+            </h3>
+            <p class="text-xs text-slate-500">
+              ระบบเช็คชื่อสไตล์ Techawit School (TWS) • เลือกวันและเลือกคนที่มาเรียน • ตัดสิทธิ์และแจ้งเตือน ผปค
+            </p>
+          </div>
+        </div>
+        <button type="button" onclick="closeTeachingRecordModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Scrollable Modal Body -->
+      <div class="space-y-4 overflow-y-auto flex-1 pr-1">
+        <input type="hidden" id="editingRecordId" value="">
+
+        <!-- Section 1: Session Info -->
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+          <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-600"></i>
+            <span>1. ข้อมูลรอบการสอน & ผู้ฝึกสอน</span>
+          </span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <!-- Date -->
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">วันที่สอน *</label>
+              <input type="date" id="recordDateInput" required class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-medium text-slate-800 focus:outline-none focus:border-slate-800">
+            </div>
+
+            <!-- Class Slot -->
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">รอบเวลา & คลาส *</label>
+              <select id="recordSlotSelect" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:outline-none">
+                <option value="คลาสปกติ 17:00 - 18:30 น.">คลาสปกติ • 17:00 - 18:30 น.</option>
+                <option value="คลาสวันเสาร์ Basic Coach Oat 09:00 - 10:30 น.">คลาสวันเสาร์ Basic Coach Oat • 09:00 - 10:30 น.</option>
+                <option value="คลาสวันเสาร์ Team DBO 16:00 - 17:30 น.">คลาสวันเสาร์ Team DBO • 16:00 - 17:30 น.</option>
+                <option value="คลาสพิเศษ / Private Training">คลาสพิเศษ / Private Training</option>
+              </select>
+            </div>
+
+            <!-- Coach -->
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">โค้ชผู้สอน / ผู้บันทึก *</label>
+              <select id="recordCoachSelect" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:outline-none">
+                <option value="โค้ชโอ๊ต (Head Coach)">โค้ชโอ๊ต (Head Coach)</option>
+                <option value="โค้ชโอ๊ค">โค้ชโอ๊ค</option>
+                <option value="ผู้ช่วยโค้ช (Assistant)">ผู้ช่วยโค้ช (Assistant)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Topic / Drills -->
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 mb-1">หัวข้อการฝึกซ้อม / ทักษะที่เน้นในคลาสนี้</label>
+            <input type="text" id="recordTopicInput" placeholder="เช่น Shooting Form, Ball Handling, การเคลื่อนที่ Footwork หรือ 3x3 Game Play" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-slate-800">
+          </div>
+        </div>
+
+        <!-- Section 2: Student Check-in Checklist -->
+        <div class="space-y-2.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+              <i data-lucide="check-square" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>2. เช็คชื่อนักเรียน (เลือกคนที่มาเรียนในรอบนี้)</span>
+            </span>
+            <!-- Quick filters & buttons -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button type="button" onclick="recordSelectAllAttending()" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition cursor-pointer">
+                ✓ เลือกทุกคน (มาเรียน)
+              </button>
+              <button type="button" onclick="recordClearAllAttendance()" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer">
+                ล้างทั้งหมด
+              </button>
+            </div>
+          </div>
+
+          <!-- Search input for students inside checklist -->
+          <div class="relative">
+            <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="recordStudentSearchInput" oninput="filterRecordStudents(this.value)" placeholder="ค้นหาชื่อน้องเพื่อติ๊กเช็คชื่อ..." class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-slate-900">
+          </div>
+
+          <!-- Student Checklist Container -->
+          <div id="recordStudentChecklistContainer" class="divide-y divide-slate-100 border border-slate-200 rounded-xl bg-white max-h-64 overflow-y-auto p-1.5 space-y-1">
+            <!-- Dynamically populated student check-in rows -->
+          </div>
+
+          <!-- Summary Count Bar inside modal -->
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+            <span class="text-slate-700">
+              มาเรียน: <strong id="recordModalAttendingCount" class="font-mono text-emerald-700 font-bold">0</strong> คน • แจ้งลา: <strong id="recordModalLeaveCount" class="font-mono text-amber-700 font-bold">0</strong> คน • ขาด/ไม่มา: <strong id="recordModalAbsentCount" class="font-mono text-slate-500 font-bold">54</strong> คน
+            </span>
+            <span class="text-[11px] text-slate-500 font-mono">
+              *คนที่มาจะถูกหักสิทธิ์ 1 ครั้ง (ติดลบได้)
+            </span>
+          </div>
+        </div>
+
+        <!-- Section 3: Push Notification Toggle -->
+        <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="recordSendPushCheckbox" checked class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer">
+            <label for="recordSendPushCheckbox" class="text-xs font-semibold text-slate-900 cursor-pointer">
+              🔔 ส่งข้อความแจ้งเตือน (Lock Screen Push) เด้งไปที่เครื่อง ผปค ทันที
+            </label>
+          </div>
+          <span class="text-[10px] text-emerald-800 font-medium hidden sm:inline">แจ้งเวลาเข้าเรียน & สิทธิ์คงเหลือ</span>
+        </div>
+      </div>
+
+      <!-- Modal Footer Actions -->
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-shrink-0">
+        <button type="button" onclick="closeTeachingRecordModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+          ยกเลิก
+        </button>
+        <button type="button" onclick="saveTeachingRecordFromModal()" id="btnSaveTeachingRecord" class="btn-touch px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs flex items-center gap-2 transition cursor-pointer">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+          <span>บันทึก Record และส่งแจ้งเตือน ผปค</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Edit Weekly Schedule Modal (For Coaches to edit topics and duty coaches) -->
   <div id="editScheduleModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="card-clean max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -2404,6 +2658,39 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- NATIVE IOS / ANDROID LOCK SCREEN NOTIFICATION BANNER (Like Screenshot) -->
+  <!-- ================================================================= -->
+  <div id="lockScreenNotificationBanner" class="hidden fixed top-3 left-3 right-3 sm:left-auto sm:right-5 sm:max-w-md z-50 transition-all duration-300 ease-out transform -translate-y-4 opacity-0">
+    <div class="bg-[#1c1c1e]/95 backdrop-blur-2xl text-white border border-white/10 rounded-2xl p-3.5 shadow-2xl flex items-start gap-3 cursor-pointer hover:bg-[#2c2c2e] transition" onclick="dismissLockScreenBanner()">
+      <!-- Blue App Icon with White 4-Point Star (Matching user image) -->
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
+        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+        </svg>
+      </div>
+
+      <div class="flex-1 min-w-0 pr-1">
+        <div class="flex items-center justify-between">
+          <h5 id="lockScreenTitle" class="text-xs sm:text-sm font-semibold text-white tracking-tight truncate">
+            Class starts in 15 mins
+          </h5>
+          <span class="text-[10px] text-white/50 font-medium flex-shrink-0 ml-1">ตอนนี้</span>
+        </div>
+        <p id="lockScreenSubtitle" class="text-[11px] text-white/70 font-normal mt-0.5">
+          from DBO Academy
+        </p>
+        <p id="lockScreenBody" class="text-xs text-white/95 font-semibold mt-0.5">
+          น้องอิฐ • IN 17:00
+        </p>
+      </div>
+
+      <button type="button" onclick="event.stopPropagation(); dismissLockScreenBanner();" class="text-white/40 hover:text-white p-1 rounded-full">
+        ✕
+      </button>
     </div>
   </div>
 
@@ -2745,6 +3032,53 @@
     // Daily Attendance Registry (Pure Factual, empty initially)
     let dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v14')) || {};
 
+    // Teaching & Attendance Records (Techawit School TWS Style)
+    let teachingRecords = JSON.parse(localStorage.getItem('dbo_teaching_records_v19')) || [
+      {
+        id: 'rec_20261105_1700',
+        date: '2026-11-05',
+        slot: 'คลาสปกติ 17:00 - 18:30 น.',
+        coach: 'โค้ชโอ๊ต (Head Coach)',
+        topic: 'ฝึกซ้อม Shooting Form, Footwork & Fast Break 3v3',
+        attendingCount: 14,
+        leaveCount: 22,
+        attendingStudents: [
+          { id: 6, name: 'ไทม์' }, { id: 7, name: 'พัช' }, { id: 8, name: 'แอร์บัส' },
+          { id: 10, name: 'ไวล์แฟรงค์' }, { id: 17, name: 'ชาลี' }, { id: 18, name: 'พีต้า' },
+          { id: 24, name: 'แอร์เมส' }, { id: 27, name: 'มาตังค์' }, { id: 39, name: 'Nada' },
+          { id: 40, name: 'August' }, { id: 44, name: 'อินธัช' }, { id: 46, name: 'ธีร์' },
+          { id: 47, name: 'มังกร' }, { id: 50, name: 'ณฌา' }
+        ],
+        leaveStudents: [
+          { id: 1, name: 'อิฐ' }, { id: 2, name: 'ซับ' }, { id: 3, name: 'ขุนศึก' },
+          { id: 4, name: 'ต้นบุญ' }, { id: 5, name: 'ต้นพุด' }, { id: 9, name: 'วินแฟลค' }
+        ],
+        createdAt: 1793876400000,
+        updatedAt: 1793876400000
+      },
+      {
+        id: 'rec_20261103_1700',
+        date: '2026-11-03',
+        slot: 'คลาสปกติ 17:00 - 18:30 น.',
+        coach: 'โค้ชโอ๊ค',
+        topic: 'การเลี้ยงบอล Hand Switching, Layup ทรงตัว และ Defense Shuffling',
+        attendingCount: 16,
+        leaveCount: 20,
+        attendingStudents: [
+          { id: 2, name: 'ซับ' }, { id: 8, name: 'แอร์บัส' }, { id: 10, name: 'ไวล์แฟรงค์' },
+          { id: 17, name: 'ชาลี' }, { id: 20, name: 'แอนฟิลด์' }, { id: 24, name: 'แอร์เมส' },
+          { id: 27, name: 'มาตังค์' }, { id: 37, name: 'Phupa' }, { id: 42, name: 'L J' },
+          { id: 47, name: 'มังกร' }, { id: 48, name: 'T J' }
+        ],
+        leaveStudents: [
+          { id: 1, name: 'อิฐ' }, { id: 3, name: 'ขุนศึก' }, { id: 4, name: 'ต้นบุญ' },
+          { id: 5, name: 'ต้นพุด' }, { id: 6, name: 'ไทม์' }, { id: 7, name: 'พัช' }
+        ],
+        createdAt: 1793703600000,
+        updatedAt: 1793703600000
+      }
+    ];
+
     // Cross-Device Cloud Sync Metadata & Submit Tracking
     const CLOUD_STATE_TOPIC = 'dbo_basketball_academy/v16/retained_db_state';
     const CLOUD_EVENT_TOPIC = 'dbo_basketball_academy/v16/live_events';
@@ -2765,6 +3099,7 @@
         pendingSlips,
         parentRegistrations,
         dailyAttendance,
+        teachingRecords,
         assistantCoaches,
         weeklySchedule
       };
@@ -2805,6 +3140,7 @@
       localStorage.setItem('dbo_pending_slips_v14', JSON.stringify(pendingSlips));
       localStorage.setItem('dbo_parent_registrations_v14', JSON.stringify(parentRegistrations));
       localStorage.setItem('dbo_daily_attendance_v14', JSON.stringify(dailyAttendance));
+      localStorage.setItem('dbo_teaching_records_v19', JSON.stringify(teachingRecords));
       localStorage.setItem('dbo_assistant_coaches_v14', JSON.stringify(assistantCoaches));
       localStorage.setItem('dbo_weekly_schedule_v16', JSON.stringify(weeklySchedule));
       localStorage.setItem('dbo_deleted_students_v16', JSON.stringify(deletedStudentIds));
@@ -5360,7 +5696,55 @@
       renderCoachRosterTable();
     }
 
-    // Render Main Coach Table & Single-Screen Mobile Cards
+    // Privacy & Security: Mask Phone Numbers in public/coach displays
+    function maskPhone(phone) {
+      if (!phone) return '-';
+      const clean = String(phone).replace(/[^\d]/g, '');
+      if (clean.length === 10) {
+        return clean.slice(0, 3) + '-***-' + clean.slice(7);
+      }
+      if (clean.length === 9) {
+        return clean.slice(0, 2) + '-***-' + clean.slice(6);
+      }
+      return phone;
+    }
+
+    // Coach View Sub-Navigation Switcher (Clean Roster Quotas vs. Post-Teaching Records)
+    let activeCoachSubTab = 'roster';
+    function switchCoachSubTab(subTab) {
+      activeCoachSubTab = subTab;
+      const rosterSec = document.getElementById('coachRosterViewSection');
+      const recordsSec = document.getElementById('coachRecordsViewSection');
+      const btnRoster = document.getElementById('coachSubTabRoster');
+      const btnRecords = document.getElementById('coachSubTabRecords');
+
+      if (subTab === 'records') {
+        if (rosterSec) rosterSec.classList.add('hidden');
+        if (recordsSec) recordsSec.classList.remove('hidden');
+        if (btnRecords) {
+          btnRecords.className = 'btn-touch px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-900 text-white shadow-2xs';
+        }
+        if (btnRoster) {
+          btnRoster.className = 'btn-touch px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100';
+        }
+        renderTeachingRecordsList();
+      } else {
+        if (recordsSec) recordsSec.classList.add('hidden');
+        if (rosterSec) rosterSec.classList.remove('hidden');
+        if (btnRoster) {
+          btnRoster.className = 'btn-touch px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-900 text-white shadow-2xs';
+        }
+        if (btnRecords) {
+          btnRecords.className = 'btn-touch px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100';
+        }
+        renderCoachRosterTable();
+      }
+      lucide.createIcons();
+    }
+
+    // =========================================================================
+    // CLEAN STUDENT ROSTER TABLE (View 1: Quota Balance Display - No Clutter)
+    // =========================================================================
     function renderCoachRosterTable() {
       const tbody = document.getElementById('coachRosterTbody');
       const cardsContainer = document.getElementById('coachRosterMobileCards');
@@ -5395,22 +5779,17 @@
         return true;
       });
 
-      const sessionDateKey = activeAttendanceDate || getTodayDateKey();
-      const sessionAttRecords = dailyAttendance[sessionDateKey] || {};
       const isAsst = currentStaff && currentStaff.isAssistant;
 
       filtered.forEach(s => {
         const isSaturdayFilter = (currentCoachFilter === 'saturday');
         const rem = isSaturdayFilter ? (s.saturdayRemaining || 0) : (s.remaining || 0);
-        const sessionAtt = sessionAttRecords[s.id];
-        const isAttending = sessionAtt && sessionAtt.status === 'attending';
-        const isLeave = sessionAtt && sessionAtt.status === 'leave';
         
         let remBadge = '';
         let tableQuotaStepper = '';
         if (isSaturdayFilter || s.courseType === 'saturday') {
           const satRem = s.saturdayRemaining || 0;
-          const colorCls = satRem > 1 ? 'bg-indigo-100 text-indigo-900 border-indigo-200' : (satRem === 1 ? 'bg-amber-100 text-amber-800 border-amber-200' : 'bg-rose-100 text-rose-800 border-rose-200');
+          const colorCls = satRem > 1 ? 'bg-indigo-100 text-indigo-900 border-indigo-200' : (satRem === 1 ? 'bg-amber-100 text-amber-800 border-amber-200' : 'bg-rose-100 text-rose-800 border-rose-200 font-bold');
           remBadge = `<button type="button" onclick="openEditStudentModal(${s.id})" class="px-2.5 py-0.5 rounded-full text-xs font-bold border ${colorCls} cursor-pointer hover:opacity-80 transition" title="คลิกเพื่อแก้ไขสิทธิ์">${satRem} / 4 ครั้ง (เสาร์)</button>`;
           tableQuotaStepper = `
             <div class="inline-flex items-center gap-1 bg-slate-50 px-1.5 py-1 rounded-xl border border-slate-200">
@@ -5442,7 +5821,7 @@
             </div>
           `;
         } else {
-          const colorCls = rem > 3 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : (rem >= 1 ? 'bg-amber-100 text-amber-800 border-amber-200' : 'bg-rose-100 text-rose-800 border-rose-200');
+          const colorCls = rem > 3 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : (rem >= 1 ? 'bg-amber-100 text-amber-800 border-amber-200' : 'bg-rose-100 text-rose-800 border-rose-200 font-bold');
           remBadge = `<button type="button" onclick="openEditStudentModal(${s.id})" class="px-2.5 py-0.5 rounded-full text-xs font-bold border ${colorCls} cursor-pointer hover:opacity-80 transition" title="คลิกเพื่อแก้ไขสิทธิ์">${rem} ครั้ง</button>`;
           tableQuotaStepper = `
             <div class="inline-flex items-center gap-1 bg-slate-50 px-1.5 py-1 rounded-xl border border-slate-200">
@@ -5462,84 +5841,22 @@
 
         const checkInTarget = isSaturdayFilter || s.courseType === 'saturday' ? 'saturday' : 'regular';
 
-        // 1. Render Desktop Table Row
+        // 1. Render Clean Desktop Table Row (Clean Quota View without inline roll call clutter)
         if (tbody) {
           const tr = document.createElement('tr');
           tr.className = "hover:bg-slate-50 transition";
           
-          let actionBtns = '';
-          if (isAttending) {
-            actionBtns = `
-              <div class="inline-flex items-center gap-1">
-                <span class="px-2.5 py-1 text-xs font-bold text-emerald-800 bg-emerald-100 rounded-lg flex items-center gap-1 border border-emerald-200">
-                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i> <span>มาเรียนแล้ว</span>
-                </span>
-                <button onclick="coachUndoCheckIn(${s.id}, '${checkInTarget}')" title="ยกเลิกเช็คชื่อรอบนี้และคืนสิทธิ์ (+1)" class="px-2 py-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 flex items-center gap-1 cursor-pointer">
-                  <i data-lucide="rotate-ccw" class="w-3 h-3"></i> <span>คืนสิทธิ์ (+1)</span>
-                </button>
-              </div>
-            `;
-          } else if (isLeave) {
-            actionBtns = `
-              <div class="inline-flex items-center gap-1">
-                <span class="px-2.5 py-1 text-xs font-bold text-amber-800 bg-amber-100 rounded-lg flex items-center gap-1 border border-amber-200">
-                  <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600"></i> <span>แจ้งลา</span>
-                </span>
-                <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" title="เปลี่ยนเป็นมาเรียน (-1)" class="px-2 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs cursor-pointer">
-                  เปลี่ยนเป็นมา (-1)
-                </button>
-                <button onclick="coachClearAttendanceRecord(${s.id})" title="ล้างสถานะลา" class="px-1.5 py-1 text-xs text-slate-500 hover:text-slate-800 bg-slate-100 rounded-lg cursor-pointer">✕</button>
-              </div>
-            `;
-          } else {
-            if (isSaturdayFilter || s.courseType === 'saturday') {
-              actionBtns = `
-                <div class="inline-flex items-center gap-1">
-                  <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เช็คชื่อวันเสาร์ (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 rounded-lg flex items-center gap-1 shadow-xs cursor-pointer">
-                    <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i> <span>เช็คเสาร์ (-1)</span>
-                  </button>
-                  <button onclick="coachMarkStudentLeave(${s.id})" title="บันทึกลาเรียนรอบนี้" class="px-2 py-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200 cursor-pointer">ลา</button>
-                </div>
-              `;
-            } else if (s.courseType === 'both') {
-              actionBtns = `
-                <div class="flex flex-col gap-1 items-center">
-                  <div class="inline-flex items-center gap-1">
-                    <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เช็คคอร์สปกติ (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-dbo-navy hover:bg-dbo-navySoft rounded-lg flex items-center gap-1 cursor-pointer">
-                      <span>เช็คปกติ (-1)</span>
-                    </button>
-                    <button onclick="coachCheckInAction(${s.id}, -1, 'saturday')" title="เช็ควันเสาร์ (-1)" class="px-2 py-0.5 text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-1 cursor-pointer">
-                      <span>เช็คเสาร์ (-1)</span>
-                    </button>
-                    <button onclick="coachMarkStudentLeave(${s.id})" title="บันทึกลา" class="px-1.5 py-0.5 text-[11px] font-bold text-amber-800 bg-amber-50 rounded border border-amber-200 cursor-pointer">ลา</button>
-                  </div>
-                </div>
-              `;
-            } else {
-              actionBtns = `
-                <div class="inline-flex items-center gap-1">
-                  <button onclick="coachCheckInAction(${s.id}, -1, 'regular')" title="เช็คชื่อเข้าเรียน (-1)" class="px-2.5 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg flex items-center gap-1 shadow-xs cursor-pointer">
-                    <i data-lucide="check" class="w-3.5 h-3.5 text-white"></i> <span>เช็คชื่อ (-1)</span>
-                  </button>
-                  <button onclick="coachMarkStudentLeave(${s.id})" title="บันทึกลาเรียนรอบนี้" class="px-2 py-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200 cursor-pointer">ลา</button>
-                </div>
-              `;
-            }
-          }
-
           tr.innerHTML = `
             <td class="py-2.5 px-2 text-center text-xs text-slate-400 font-medium">${s.id}</td>
             <td class="py-2.5 px-2">
               <div class="flex items-center gap-1.5 flex-wrap">
                 <strong onclick="openEditStudentModal(${s.id})" class="text-xs sm:text-sm font-semibold text-dbo-navy hover:text-indigo-600 cursor-pointer underline decoration-dotted underline-offset-2" title="คลิกเพื่อแก้ไขชื่อ">น้อง ${s.name}</strong>
                 <button type="button" onclick="openEditStudentModal(${s.id})" class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 transition cursor-pointer" title="แก้ไขชื่อและข้อมูล">
-                  <i data-lucide="edit-2" class="w-2.5 h-2.5"></i> แก้ไขชื่อ
+                  <i data-lucide="edit-2" class="w-2.5 h-2.5"></i> แก้ไข
                 </button>
                 <span class="sm:hidden">${typeBadge}</span>
               </div>
-              ${s.phone ? `<span class="font-mono text-slate-600 text-xs flex items-center gap-1 pt-0.5"><i data-lucide="phone" class="w-3 h-3 text-slate-400"></i> ${s.phone}</span>` : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
-              ${isAttending ? `<span class="text-[10px] font-medium text-emerald-700 flex items-center gap-1 pt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> มาเรียน (${sessionAtt.time || ''})</span>` : ''}
-              ${isLeave ? `<span class="text-[10px] font-medium text-amber-700 flex items-center gap-1 pt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> ลา (${sessionAtt.leaveReason || ''})</span>` : ''}
+              ${s.phone ? `<span class="font-mono text-slate-500 text-xs flex items-center gap-1 pt-0.5" title="เบอร์โทรศัพท์ (ความปลอดภัย: ปกปิด)"><i data-lucide="phone" class="w-3 h-3 text-slate-400"></i> ${maskPhone(s.phone)}</span>` : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
             </td>
             <td class="py-2.5 px-2 hidden sm:table-cell">${typeBadge}</td>
             <td class="py-2.5 px-2 hidden md:table-cell">
@@ -5547,12 +5864,11 @@
               ${s.nextRenewal ? `<span class="text-[10px] text-emerald-700 font-medium">รอบต่อ: ${s.nextRenewal}</span>` : ''}
             </td>
             <td class="py-2.5 px-2 text-center whitespace-nowrap">${tableQuotaStepper}</td>
-            <td class="py-2.5 px-2 text-center">${actionBtns}</td>
             <td class="py-2.5 px-2 text-center">
               <div class="inline-flex items-center gap-1">
-                <button onclick="openEditStudentModal(${s.id})" title="แก้ไขชื่อ / ปรับสิทธิ์ / สมรรถภาพ" class="px-2 py-1 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 transition-colors cursor-pointer">
+                <button onclick="openEditStudentModal(${s.id})" title="แก้ไขชื่อ / ปรับสิทธิ์ / สมรรถภาพ" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 transition-colors cursor-pointer">
                   <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                  <span class="hidden lg:inline">แก้ไข</span>
+                  <span>แก้ไข</span>
                 </button>
                 ${!isAsst ? `
                 <button onclick="coachDeleteStudent(${s.id})" title="ลบชื่อออกจากระบบ" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer">
@@ -5564,17 +5880,10 @@
           tbody.appendChild(tr);
         }
 
-        // 2. Render Single-Screen Mobile Card (100% responsive, zero horizontal scrollbar)
+        // 2. Render Single-Screen Mobile Card (Clean & Responsive Quota Summary)
         if (cardsContainer) {
           const card = document.createElement('div');
-          card.className = "card-clean p-3 sm:p-4 rounded-xl border border-slate-200 bg-white space-y-2.5 shadow-2xs";
-          
-          let sessionStatusPill = '';
-          if (isAttending) {
-            sessionStatusPill = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> มาเรียน (${sessionAtt.time || 'ยืนยัน'})</span>`;
-          } else if (isLeave) {
-            sessionStatusPill = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> ลา (${sessionAtt.leaveReason || 'ลา'})</span>`;
-          }
+          card.className = "card-clean p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-white space-y-2.5 shadow-2xs";
 
           // Direct Quota Adjuster Row on Card (Always accessible for coaches)
           let mobileQuotaAdjustRow = '';
@@ -5616,67 +5925,6 @@
             `;
           }
 
-          let mobileActionBar = '';
-          if (isAttending) {
-            mobileActionBar = `
-              <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100">
-                <div class="flex-1 py-1.5 px-2.5 rounded-lg bg-emerald-50 text-emerald-800 font-medium text-xs flex items-center justify-center gap-1.5 border border-emerald-200">
-                  <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>
-                  <span>มาเรียนแล้ว (${sessionAtt.time || 'ยืนยัน'})</span>
-                </div>
-                <button onclick="coachUndoCheckIn(${s.id}, '${checkInTarget}')" title="ยกเลิกเช็คชื่อรอบนี้ & คืนสิทธิ์ (+1)" class="btn-touch py-1.5 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs flex items-center gap-1 transition-colors cursor-pointer">
-                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                  <span>คืนสิทธิ์ (+1)</span>
-                </button>
-                <button onclick="openEditStudentModal(${s.id})" title="แก้ไขชื่อ / ปรับสิทธิ์ / สมรรถภาพ" class="btn-touch py-1.5 px-2.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-semibold text-xs flex items-center gap-1 transition-colors cursor-pointer">
-                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                  <span>แก้ไข</span>
-                </button>
-              </div>
-            `;
-          } else if (isLeave) {
-            mobileActionBar = `
-              <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100">
-                <div class="flex-1 py-1.5 px-2 rounded-lg bg-amber-50 text-amber-800 font-medium text-xs flex items-center justify-center gap-1 border border-amber-200 truncate">
-                  <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
-                  <span class="truncate">แจ้งลา (${sessionAtt.leaveReason || 'ลา'})</span>
-                </div>
-                <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" title="เปลี่ยนเป็นมาเรียน (-1)" class="btn-touch py-1.5 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs flex items-center gap-1 flex-shrink-0 transition-colors cursor-pointer">
-                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                  <span>เปลี่ยนเป็นมา</span>
-                </button>
-                <button onclick="coachClearAttendanceRecord(${s.id})" title="ล้างสถานะลา" class="btn-touch p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex-shrink-0 transition-colors cursor-pointer">
-                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                </button>
-                <button onclick="openEditStudentModal(${s.id})" title="แก้ไขชื่อ / ปรับสิทธิ์" class="btn-touch py-1.5 px-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-semibold text-xs flex items-center gap-1 flex-shrink-0 transition-colors cursor-pointer">
-                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                  <span>แก้ไข</span>
-                </button>
-              </div>
-            `;
-          } else {
-            mobileActionBar = `
-              <div class="flex items-center gap-1.5 pt-1.5 border-t border-slate-100">
-                <button onclick="coachCheckInAction(${s.id}, -1, '${checkInTarget}')" class="btn-touch flex-1 py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
-                  <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                  <span>เช็คชื่อ (-1)</span>
-                </button>
-                <button onclick="coachMarkStudentLeave(${s.id})" title="บันทึกลาเรียนรอบนี้" class="btn-touch py-2 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 font-medium text-xs flex items-center justify-center gap-1 transition-colors cursor-pointer">
-                  <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-slate-500"></i>
-                  <span>ลา</span>
-                </button>
-                <button onclick="openEditStudentModal(${s.id})" title="แก้ไขชื่อ / ปรับสิทธิ์ / สมรรถภาพ" class="btn-touch py-2 px-2.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-semibold text-xs flex items-center gap-1 transition-colors cursor-pointer">
-                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                  <span>แก้ไขชื่อ/สิทธิ์</span>
-                </button>
-                ${!isAsst ? `
-                <button onclick="coachDeleteStudent(${s.id})" title="ลบชื่อ" class="btn-touch p-2 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>` : ''}
-              </div>
-            `;
-          }
-
           card.innerHTML = `
             <div class="flex items-start justify-between gap-2">
               <div class="flex items-center gap-2.5 min-w-0">
@@ -5687,12 +5935,11 @@
                   <div class="flex items-center gap-1.5 flex-wrap">
                     <h4 onclick="openEditStudentModal(${s.id})" class="font-semibold text-dbo-navy hover:text-indigo-600 text-sm leading-tight truncate cursor-pointer">น้อง ${s.name}</h4>
                     <button type="button" onclick="openEditStudentModal(${s.id})" class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-0.5 cursor-pointer">
-                      <i data-lucide="edit-2" class="w-2.5 h-2.5"></i> แก้ไขชื่อ
+                      <i data-lucide="edit-2" class="w-2.5 h-2.5"></i> แก้ไข
                     </button>
                   </div>
                   <div class="flex items-center gap-1.5 flex-wrap pt-0.5">
-                    ${s.phone ? `<span class="text-xs font-mono text-slate-600 flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3 text-slate-400"></i> ${s.phone}</span>` : `<span class="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
-                    ${sessionStatusPill}
+                    ${s.phone ? `<span class="text-xs font-mono text-slate-500 flex items-center gap-1" title="เบอร์โทรศัพท์ (ความปลอดภัย: ปกปิด)"><i data-lucide="phone" class="w-3 h-3 text-slate-400"></i> ${maskPhone(s.phone)}</span>` : `<span class="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
                   </div>
                 </div>
               </div>
@@ -5705,13 +5952,566 @@
             <!-- Direct Quota Stepper Row -->
             ${mobileQuotaAdjustRow}
 
-            <!-- 1-Tap Quick Action Bar (Fully fits in one screen!) -->
-            ${mobileActionBar}
+            <!-- Clean Action Bar -->
+            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
+              <button onclick="openEditStudentModal(${s.id})" class="btn-touch flex-1 py-1.5 px-3 rounded-lg bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 font-medium text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                <span>แก้ไขชื่อ & สิทธิ์ / สมรรถภาพ</span>
+              </button>
+              ${!isAsst ? `
+              <button onclick="coachDeleteStudent(${s.id})" title="ลบชื่อ" class="btn-touch p-1.5 rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>` : ''}
+            </div>
           `;
           cardsContainer.appendChild(card);
         }
       });
       lucide.createIcons();
+    }
+
+    // =========================================================================
+    // TECHAWIIT SCHOOL (TWS) POST-TEACHING ATTENDANCE RECORDS ENGINE
+    // =========================================================================
+
+    function renderTeachingRecordsList(filterMonth = null) {
+      const container = document.getElementById('teachingRecordsList');
+      const countEl = document.getElementById('totalTeachingRecordsCount');
+      if (!container) return;
+
+      let records = [...teachingRecords];
+      if (filterMonth) {
+        records = records.filter(r => r.date && r.date.startsWith(filterMonth));
+      }
+
+      if (countEl) countEl.innerText = records.length;
+
+      if (records.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-slate-400 space-y-3 bg-white rounded-2xl border border-slate-200">
+            <i data-lucide="clipboard-list" class="w-12 h-12 mx-auto text-slate-300"></i>
+            <div>
+              <p class="font-bold text-slate-700 text-sm">ยังไม่มีรายการบันทึกการสอน (No Teaching Records)</p>
+              <p class="text-xs text-slate-500 mt-1">กดปุ่ม "+ บันทึกเช็คชื่อใหม่ (New Record)" ด้านบน เพื่อบันทึกการฝึกซ้อมและเช็คชื่อนักเรียน</p>
+            </div>
+            <button type="button" onclick="openNewTeachingRecordModal()" class="btn-touch px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs inline-flex items-center gap-1.5 cursor-pointer">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>+ สร้าง New Record แรก</span>
+            </button>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = '';
+      records.forEach((rec) => {
+        const card = document.createElement('div');
+        card.className = "card-clean p-4 sm:p-5 rounded-2xl border border-slate-200 bg-white space-y-3 shadow-2xs";
+
+        // Format Thai Date
+        const parts = (rec.date || '').split('-');
+        let dateStr = rec.date;
+        let dayOfWeekName = '';
+        if (parts.length === 3) {
+          const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+          const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+          const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+          dayOfWeekName = thaiDays[d.getDay()] || '';
+          dateStr = `${dayOfWeekName}ที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear() + 543}`;
+        }
+
+        const attendingStudents = rec.attendingStudents || [];
+        const leaveStudents = rec.leaveStudents || [];
+
+        const attendingChips = attendingStudents.map(st => `
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span>น้อง ${st.name}</span>
+          </span>
+        `).join('') || '<span class="text-xs text-slate-400 italic">ไม่มีนักเรียนมาเรียน</span>';
+
+        const leaveChips = leaveStudents.map(st => `
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <span>น้อง ${st.name} (ลา)</span>
+          </span>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center flex-shrink-0 font-bold">
+                <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <strong class="text-sm sm:text-base font-bold text-slate-900">${dateStr}</strong>
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">${rec.slot || 'คลาสปกติ'}</span>
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">โค้ช: ${rec.coach || 'โค้ชโอ๊ต'}</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  ${rec.topic ? `หัวข้อฝึกซ้อม: <strong class="text-slate-800 font-semibold">${rec.topic}</strong>` : 'บันทึกการฝึกซ้อมและเช็คชื่อประจำวัน'}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> มาเรียน ${attendingStudents.length} คน
+              </span>
+              ${leaveStudents.length > 0 ? `
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> ลา ${leaveStudents.length} คน
+                </span>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- Attending Students Chips -->
+          <div class="space-y-1.5">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">รายชื่อนักเรียนที่เช็คชื่อเข้าเรียน:</span>
+            <div class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1">
+              ${attendingChips}
+            </div>
+            ${leaveStudents.length > 0 ? `
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block pt-1">รายชื่อนักเรียนที่แจ้งลา:</span>
+              <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1">
+                ${leaveChips}
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Card Action Buttons -->
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="openEditTeachingRecordModal('${rec.id}')" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 transition cursor-pointer shadow-2xs">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>✏️ ดู / แก้ไข Record นี้</span>
+              </button>
+              <button type="button" onclick="resendTeachingRecordNotifications('${rec.id}')" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 flex items-center gap-1.5 transition cursor-pointer" title="ส่งการแจ้งเตือนไปยังเครื่องผู้ปกครองอีกครั้ง">
+                <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>📢 ส่งแจ้งเตือน ผปค ซ้ำ</span>
+              </button>
+            </div>
+
+            <button type="button" onclick="deleteTeachingRecord('${rec.id}')" class="btn-touch px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 border border-rose-200 hover:border-rose-300 flex items-center gap-1 transition cursor-pointer" title="ลบ Record นี้ และคืนสิทธิ์ให้นักเรียน">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              <span>ลบ Record (คืนสิทธิ์)</span>
+            </button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function filterTeachingRecordsByMonth(monthVal) {
+      renderTeachingRecordsList(monthVal);
+    }
+
+    function resetRecordMonthFilter() {
+      const el = document.getElementById('filterRecordMonth');
+      if (el) el.value = '';
+      renderTeachingRecordsList();
+    }
+
+    function openNewTeachingRecordModal() {
+      const modal = document.getElementById('teachingRecordModal');
+      if (!modal) return;
+
+      document.getElementById('editingRecordId').value = '';
+      document.getElementById('recordModalTitle').innerText = 'บันทึกการสอน & เช็คชื่อเข้าเรียน (New Record)';
+      
+      const todayKey = activeAttendanceDate || getTodayDateKey();
+      document.getElementById('recordDateInput').value = todayKey;
+
+      // Set default coach
+      const coachSelect = document.getElementById('recordCoachSelect');
+      if (coachSelect && currentStaff) {
+        coachSelect.value = currentStaff.role.includes('ผู้ช่วย') ? 'ผู้ช่วยโค้ช (Assistant)' : (currentStaff.name.includes('โอ๊ค') ? 'โค้ชโอ๊ค' : 'โค้ชโอ๊ต (Head Coach)');
+      }
+
+      // Set default slot
+      const parts = todayKey.split('-');
+      const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      const slotSelect = document.getElementById('recordSlotSelect');
+      if (slotSelect) {
+        if (d.getDay() === 6) slotSelect.value = 'คลาสวันเสาร์ Basic Coach Oat 09:00 - 10:30 น.';
+        else slotSelect.value = 'คลาสปกติ 17:00 - 18:30 น.';
+      }
+
+      document.getElementById('recordTopicInput').value = '';
+      document.getElementById('recordStudentSearchInput').value = '';
+
+      // Check if today already has attendance in dailyAttendance
+      const existingDay = dailyAttendance[todayKey] || {};
+      populateRecordChecklist(existingDay);
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function openEditTeachingRecordModal(recordId) {
+      const modal = document.getElementById('teachingRecordModal');
+      if (!modal) return;
+
+      const rec = teachingRecords.find(r => r.id === recordId);
+      if (!rec) return;
+
+      document.getElementById('editingRecordId').value = rec.id;
+      document.getElementById('recordModalTitle').innerText = `แก้ไข Record การสอน (${rec.date})`;
+      document.getElementById('recordDateInput').value = rec.date || getTodayDateKey();
+      
+      const slotSelect = document.getElementById('recordSlotSelect');
+      if (slotSelect && rec.slot) slotSelect.value = rec.slot;
+
+      const coachSelect = document.getElementById('recordCoachSelect');
+      if (coachSelect && rec.coach) coachSelect.value = rec.coach;
+
+      document.getElementById('recordTopicInput').value = rec.topic || '';
+      document.getElementById('recordStudentSearchInput').value = '';
+
+      // Build state map from record
+      const stateMap = {};
+      (rec.attendingStudents || []).forEach(st => {
+        stateMap[st.id] = { status: 'attending' };
+      });
+      (rec.leaveStudents || []).forEach(st => {
+        stateMap[st.id] = { status: 'leave' };
+      });
+
+      populateRecordChecklist(stateMap);
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeTeachingRecordModal() {
+      const modal = document.getElementById('teachingRecordModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function populateRecordChecklist(stateMap = {}) {
+      const container = document.getElementById('recordStudentChecklistContainer');
+      if (!container) return;
+
+      container.innerHTML = '';
+      const sorted = [...students].sort((a, b) => a.name.localeCompare(b.name, 'th'));
+
+      sorted.forEach(s => {
+        const row = document.createElement('div');
+        row.className = "record-student-row flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 transition border-b border-slate-50";
+        row.setAttribute('data-student-id', s.id);
+        row.setAttribute('data-student-name', (s.name || '').toLowerCase());
+
+        const currentStatus = (stateMap[s.id] && stateMap[s.id].status) || 'absent';
+        const rem = s.remaining !== undefined ? s.remaining : 0;
+        const quotaColor = rem > 3 ? 'text-emerald-700' : (rem >= 1 ? 'text-amber-700' : 'text-rose-700 font-bold');
+
+        row.innerHTML = `
+          <div class="flex items-center gap-2.5 min-w-0 pr-2">
+            <span class="w-6 h-6 rounded-md bg-slate-100 text-slate-700 font-mono text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+              ${s.id}
+            </span>
+            <div class="min-w-0">
+              <strong class="text-xs sm:text-sm font-bold text-slate-900 block truncate">น้อง ${s.name}</strong>
+              <span class="text-[10px] text-slate-500 font-mono">
+                คงเหลือ: <span class="${quotaColor}">${rem} ครั้ง</span> ${s.saturdayRemaining ? `• เสาร์: ${s.saturdayRemaining}` : ''}
+              </span>
+            </div>
+          </div>
+
+          <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs flex-shrink-0">
+            <button type="button" onclick="setRecordStudentStatus(${s.id}, 'attending')" id="btnStatus_${s.id}_attending" class="btn-touch px-2.5 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${currentStatus === 'attending' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'}">
+              ✓ มา (-1)
+            </button>
+            <button type="button" onclick="setRecordStudentStatus(${s.id}, 'leave')" id="btnStatus_${s.id}_leave" class="btn-touch px-2 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${currentStatus === 'leave' ? 'bg-amber-500 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'}">
+              ลา
+            </button>
+            <button type="button" onclick="setRecordStudentStatus(${s.id}, 'absent')" id="btnStatus_${s.id}_absent" class="btn-touch px-2 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${currentStatus === 'absent' ? 'bg-slate-300 text-slate-800' : 'text-slate-500 hover:text-slate-900'}">
+              ไม่มา
+            </button>
+          </div>
+        `;
+
+        container.appendChild(row);
+      });
+
+      updateRecordModalCounts();
+    }
+
+    function setRecordStudentStatus(studentId, status) {
+      const btnAtt = document.getElementById(`btnStatus_${studentId}_attending`);
+      const btnLeave = document.getElementById(`btnStatus_${studentId}_leave`);
+      const btnAbsent = document.getElementById(`btnStatus_${studentId}_absent`);
+
+      if (btnAtt) btnAtt.className = `btn-touch px-2.5 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${status === 'attending' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`;
+      if (btnLeave) btnLeave.className = `btn-touch px-2 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${status === 'leave' ? 'bg-amber-500 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`;
+      if (btnAbsent) btnAbsent.className = `btn-touch px-2 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${status === 'absent' ? 'bg-slate-300 text-slate-800' : 'text-slate-500 hover:text-slate-900'}`;
+
+      updateRecordModalCounts();
+    }
+
+    function filterRecordStudents(query) {
+      const q = (query || '').trim().toLowerCase();
+      const rows = document.querySelectorAll('.record-student-row');
+      rows.forEach(r => {
+        const sName = r.getAttribute('data-student-name') || '';
+        const sId = r.getAttribute('data-student-id') || '';
+        if (sName.includes(q) || sId.includes(q)) {
+          r.classList.remove('hidden');
+        } else {
+          r.classList.add('hidden');
+        }
+      });
+    }
+
+    function recordSelectAllAttending() {
+      students.forEach(s => setRecordStudentStatus(s.id, 'attending'));
+    }
+
+    function recordClearAllAttendance() {
+      students.forEach(s => setRecordStudentStatus(s.id, 'absent'));
+    }
+
+    function updateRecordModalCounts() {
+      let attending = 0;
+      let leave = 0;
+      let absent = 0;
+
+      students.forEach(s => {
+        const btnAtt = document.getElementById(`btnStatus_${s.id}_attending`);
+        const btnLeave = document.getElementById(`btnStatus_${s.id}_leave`);
+        if (btnAtt && btnAtt.classList.contains('bg-emerald-600')) attending++;
+        else if (btnLeave && btnLeave.classList.contains('bg-amber-500')) leave++;
+        else absent++;
+      });
+
+      const elAtt = document.getElementById('recordModalAttendingCount');
+      const elLeave = document.getElementById('recordModalLeaveCount');
+      const elAbsent = document.getElementById('recordModalAbsentCount');
+      if (elAtt) elAtt.innerText = attending;
+      if (elLeave) elLeave.innerText = leave;
+      if (elAbsent) elAbsent.innerText = absent;
+    }
+
+    async function saveTeachingRecordFromModal() {
+      const editingId = document.getElementById('editingRecordId').value;
+      const dateVal = document.getElementById('recordDateInput').value;
+      const slotVal = document.getElementById('recordSlotSelect').value;
+      const coachVal = document.getElementById('recordCoachSelect').value;
+      const topicVal = document.getElementById('recordTopicInput').value.trim();
+      const sendPushCheckbox = document.getElementById('recordSendPushCheckbox');
+      const sendPush = sendPushCheckbox ? sendPushCheckbox.checked : true;
+
+      if (!dateVal) {
+        showToast('กรุณาระบุวันที่สอน');
+        return;
+      }
+
+      const nowTs = Date.now();
+      const isSaturday = slotVal.includes('วันเสาร์');
+      const targetField = isSaturday ? 'saturday' : 'regular';
+
+      const attending = [];
+      const leave = [];
+
+      students.forEach(s => {
+        const btnAtt = document.getElementById(`btnStatus_${s.id}_attending`);
+        const btnLeave = document.getElementById(`btnStatus_${s.id}_leave`);
+        if (btnAtt && btnAtt.classList.contains('bg-emerald-600')) {
+          attending.push({ id: s.id, name: s.name });
+        } else if (btnLeave && btnLeave.classList.contains('bg-amber-500')) {
+          leave.push({ id: s.id, name: s.name });
+        }
+      });
+
+      let previousRecord = null;
+      if (editingId) {
+        previousRecord = teachingRecords.find(r => r.id === editingId);
+      }
+
+      // Quota Adjustments:
+      if (previousRecord) {
+        const prevAttMap = new Set((previousRecord.attendingStudents || []).map(a => a.id));
+        const newAttMap = new Set(attending.map(a => a.id));
+
+        // Students removed from attending -> Refund +1
+        prevAttMap.forEach(sid => {
+          if (!newAttMap.has(sid)) {
+            const st = students.find(s => s.id === sid);
+            if (st) {
+              if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) + 1;
+              else st.remaining = (st.remaining || 0) + 1;
+              st._updatedAt = nowTs;
+              syncSharedSiblingQuota(st, targetField);
+            }
+          }
+        });
+
+        // Students newly added to attending -> Deduct -1 (Can be negative)
+        newAttMap.forEach(sid => {
+          if (!prevAttMap.has(sid)) {
+            const st = students.find(s => s.id === sid);
+            if (st) {
+              if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) - 1;
+              else st.remaining = (st.remaining || 0) - 1;
+              st._updatedAt = nowTs;
+              syncSharedSiblingQuota(st, targetField);
+            }
+          }
+        });
+
+        // Update existing record
+        previousRecord.date = dateVal;
+        previousRecord.slot = slotVal;
+        previousRecord.coach = coachVal;
+        previousRecord.topic = topicVal;
+        previousRecord.attendingCount = attending.length;
+        previousRecord.leaveCount = leave.length;
+        previousRecord.attendingStudents = attending;
+        previousRecord.leaveStudents = leave;
+        previousRecord.updatedAt = nowTs;
+      } else {
+        // New Record -> Deduct -1 for each attendee (Can be negative)
+        attending.forEach(a => {
+          const st = students.find(s => s.id === a.id);
+          if (st) {
+            if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) - 1;
+            else st.remaining = (st.remaining || 0) - 1;
+            st._updatedAt = nowTs;
+            syncSharedSiblingQuota(st, targetField);
+          }
+        });
+
+        const newRecord = {
+          id: 'rec_' + dateVal.replace(/-/g, '') + '_' + Date.now().toString(36),
+          date: dateVal,
+          slot: slotVal,
+          coach: coachVal,
+          topic: topicVal,
+          attendingCount: attending.length,
+          leaveCount: leave.length,
+          attendingStudents: attending,
+          leaveStudents: leave,
+          createdAt: nowTs,
+          updatedAt: nowTs
+        };
+        teachingRecords.unshift(newRecord);
+      }
+
+      // Sync dailyAttendance[dateVal]
+      dailyAttendance[dateVal] = {};
+      const nowTimeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+      attending.forEach(a => {
+        dailyAttendance[dateVal][a.id] = {
+          studentId: a.id,
+          name: a.name,
+          status: 'attending',
+          time: nowTimeStr,
+          updatedBy: coachVal,
+          dateKey: dateVal,
+          updatedAt: nowTs
+        };
+      });
+      leave.forEach(l => {
+        dailyAttendance[dateVal][l.id] = {
+          studentId: l.id,
+          name: l.name,
+          status: 'leave',
+          time: nowTimeStr,
+          leaveReason: 'แจ้งลาใน Record',
+          updatedBy: coachVal,
+          dateKey: dateVal,
+          updatedAt: nowTs
+        };
+      });
+
+      // Dispatch Lock Screen Push Notifications if enabled
+      if (sendPush) {
+        attending.forEach((a, i) => {
+          const st = students.find(s => s.id === a.id);
+          const remAfter = st ? (targetField === 'saturday' ? st.saturdayRemaining : st.remaining) : 0;
+          setTimeout(() => {
+            notifyAttendanceCheckIn(a.name, coachVal, nowTimeStr, remAfter);
+          }, i * 200);
+        });
+      }
+
+      saveState(true, `บันทึกการสอน & เช็คชื่อ (${dateVal}): มาเรียน ${attending.length} คน`, true);
+      closeTeachingRecordModal();
+      renderTeachingRecordsList();
+      renderCoachRosterTable();
+      updateSessionDateDisplay();
+      if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+      if (loggedInStudent) {
+        renderParentView();
+      }
+
+      showToast(`บันทึก Record การสอนสำเร็จ (มาเรียน ${attending.length} คน, ลา ${leave.length} คน)`);
+      triggerTelegramPush(`บันทึกการสอนรอบ ${dateVal} โดย ${coachVal}: มาเรียน ${attending.length} คน, ลา ${leave.length} คน • อัปเดตทุกเครื่องแล้ว`, 'DBO Post-Teaching Record');
+    }
+
+    function deleteTeachingRecord(recordId) {
+      const rec = teachingRecords.find(r => r.id === recordId);
+      if (!rec) return;
+
+      const count = (rec.attendingStudents || []).length;
+      if (!confirm(`คุณต้องการลบ Record การสอนวันที่ "${rec.date}" (${rec.slot}) ใช่หรือไม่?\n\n* ระบบจะคืนสิทธิ์ (+1 ครั้ง) ให้กับนักเรียนที่มาเรียนในรอบนี้ทั้งหมด ${count} คนอัตโนมัติ`)) {
+        return;
+      }
+
+      const nowTs = Date.now();
+      const isSaturday = (rec.slot || '').includes('วันเสาร์');
+      const targetField = isSaturday ? 'saturday' : 'regular';
+
+      // Refund quota +1 to all attendees
+      (rec.attendingStudents || []).forEach(a => {
+        const st = students.find(s => s.id === a.id);
+        if (st) {
+          if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) + 1;
+          else st.remaining = (st.remaining || 0) + 1;
+          st._updatedAt = nowTs;
+          syncSharedSiblingQuota(st, targetField);
+        }
+      });
+
+      // Clear daily attendance for this date
+      if (dailyAttendance[rec.date]) {
+        delete dailyAttendance[rec.date];
+      }
+
+      teachingRecords = teachingRecords.filter(r => r.id !== recordId);
+      saveState(true, `ลบ Record การสอนวันที่ ${rec.date} และคืนสิทธิ์นักเรียน`, true);
+      renderTeachingRecordsList();
+      renderCoachRosterTable();
+      updateSessionDateDisplay();
+      if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+
+      showToast(`ลบ Record วันที่ ${rec.date} และคืนสิทธิ์ให้นักเรียนเรียบร้อยแล้ว`);
+    }
+
+    function resendTeachingRecordNotifications(recordId) {
+      const rec = teachingRecords.find(r => r.id === recordId);
+      if (!rec) return;
+
+      const attendees = rec.attendingStudents || [];
+      if (attendees.length === 0) {
+        showToast('ไม่มีรายชื่อนักเรียนที่เช็คชื่อเข้าเรียนใน Record นี้');
+        return;
+      }
+
+      attendees.forEach((a, i) => {
+        const st = students.find(s => s.id === a.id);
+        const rem = st ? st.remaining : 0;
+        setTimeout(() => {
+          notifyAttendanceCheckIn(a.name, rec.coach || 'โค้ชโอ๊ต', '17:00 น.', rem);
+        }, i * 250);
+      });
+
+      showToast(`ส่งการแจ้งเตือนไปยังเครื่อง ผปค ของนักเรียนทั้ง ${attendees.length} คน เรียบร้อยแล้ว`);
     }
 
     // Coach Check-in Action with Instant Web Notification & Telegram-Style Popup
@@ -6349,6 +7149,169 @@
       setTimeout(() => { toast.classList.add('hidden'); }, 3500);
     }
 
+    // =========================================================================
+    // NATIVE LOCK SCREEN NOTIFICATION & LOCK SCREEN BANNER ENGINE
+    // (Matches Screenshot with App Icon, Subtitle, Time, and 4 Alert Scenarios)
+    // =========================================================================
+    let lockScreenDismissTimer = null;
+
+    function sendSystemLockscreenNotification({ title, subtitle, body, tag, icon }) {
+      playNotificationChime();
+
+      const titleEl = document.getElementById('lockScreenTitle');
+      const subEl = document.getElementById('lockScreenSubtitle');
+      const bodyEl = document.getElementById('lockScreenBody');
+      const banner = document.getElementById('lockScreenNotificationBanner');
+
+      if (titleEl) titleEl.innerText = title || 'Class starts in 15 mins';
+      if (subEl) subEl.innerText = subtitle || 'from DBO Academy';
+      if (bodyEl) bodyEl.innerText = body || '';
+
+      if (banner) {
+        banner.classList.remove('hidden');
+        // Force reflow for CSS transition
+        void banner.offsetWidth;
+        banner.classList.remove('-translate-y-4', 'opacity-0');
+        banner.classList.add('translate-y-0', 'opacity-100');
+
+        clearTimeout(lockScreenDismissTimer);
+        lockScreenDismissTimer = setTimeout(() => {
+          dismissLockScreenBanner();
+        }, 8000);
+      }
+
+      // Send to OS native lock screen via Web Notification API & Service Worker
+      sendSystemNotification(title, {
+        body: `${subtitle ? subtitle + ' • ' : ''}${body}`,
+        tag: tag || ('dbo-lockscreen-' + Date.now()),
+        icon: icon || 'assets/images/app-icon-192.png'
+      });
+    }
+
+    function dismissLockScreenBanner() {
+      const banner = document.getElementById('lockScreenNotificationBanner');
+      if (!banner) return;
+      banner.classList.remove('translate-y-0', 'opacity-100');
+      banner.classList.add('-translate-y-4', 'opacity-0');
+      setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 300);
+    }
+
+    // 1. แจ้งเตือนเมื่อโค้ชเช็คชื่อ: เด้งหาเครื่อง ผปค ระบุเวลาเข้าเรียนและสิทธิ์คงเหลือ
+    function notifyAttendanceCheckIn(studentName, coachName, timeStr, remainingCount) {
+      sendSystemLockscreenNotification({
+        title: 'เช็คชื่อเข้าฝึกซ้อมแล้ว',
+        subtitle: 'from DBO Academy',
+        body: `น้อง ${studentName} • IN ${timeStr || '17:00'} • สิทธิ์คงเหลือ: ${remainingCount} ครั้ง`,
+        tag: 'checkin-' + studentName
+      });
+      triggerTelegramPush(`น้อง ${studentName} เข้าฝึกซ้อมเรียบร้อยแล้ว (${timeStr || '17:00 น.'}) โดย ${coachName || 'โค้ช'} • โควต้าคงเหลือ: ${remainingCount} ครั้ง`, '🏀 เช็คชื่อเข้าเรียนสำเร็จ');
+    }
+
+    // 2. แจ้งเตือน 15 นาทีก่อนเริ่มคลาส (ตรงตามรูปผู้ใช้: Class starts in 15 mins • from DBO Academy • [ชื่อ] • IN 17:00)
+    function notifyClassStartsIn15Mins(studentName = 'อิฐ', startTime = '17:00') {
+      sendSystemLockscreenNotification({
+        title: 'Class starts in 15 mins',
+        subtitle: 'from DBO Academy',
+        body: `น้อง ${studentName} • IN ${startTime}`,
+        tag: 'class-15m-before'
+      });
+      triggerTelegramPush(`คลาสกำลังจะเริ่มในอีก 15 นาที (${startTime} น.) • น้อง ${studentName} เตรียมตัวลงสนามได้เลยครับ`, '⏰ Class starts in 15 mins');
+    }
+
+    // 3. แจ้งเตือน 30 นาทีก่อนเริ่มคลาส
+    function notifyClassStartsIn30Mins(studentName = 'อิฐ', startTime = '17:00') {
+      sendSystemLockscreenNotification({
+        title: 'Class starts in 30 mins',
+        subtitle: 'from DBO Academy',
+        body: `น้อง ${studentName} • เตรียมตัวเริ่มคลาสเวลา ${startTime} น.`,
+        tag: 'class-30m-before'
+      });
+      triggerTelegramPush(`คลาสจะเริ่มในอีก 30 นาที (${startTime} น.) • กรุณาเตรียมตัวน้อง ${studentName} ให้พร้อมฝึกซ้อมครับ`, '⏰ Class starts in 30 mins');
+    }
+
+    // 4. แจ้งเตือน 15 นาทีก่อนเลิกคลาส (เด็กๆ เรียนใกล้เสร็จแล้ว ให้ผู้ปกครองเตรียมมารับ)
+    function notifyClassEndsIn15Mins(studentName = 'อิฐ', endTime = '18:30') {
+      sendSystemLockscreenNotification({
+        title: 'Class ends in 15 mins',
+        subtitle: 'from DBO Academy',
+        body: `เด็กๆ เรียนใกล้เสร็จแล้ว (เลิก ${endTime} น.) • ผู้ปกครองเตรียมมารับน้องได้ครับ`,
+        tag: 'class-15m-end'
+      });
+      triggerTelegramPush(`เด็กๆ ฝึกซ้อมใกล้เสร็จแล้ว (เหลือ 15 นาทีก่อนเลิกคลาส ${endTime} น.) • ผู้ปกครองสามารถเตรียมตัวมารับน้อง ${studentName} ได้เลยครับ`, '🚗 Class ends in 15 mins');
+    }
+
+    // Quick Test Handler wired to Parent Portal test buttons
+    function testLockscreenNotification(type) {
+      const currentName = loggedInStudent ? loggedInStudent.name : 'อิฐ';
+      const curRem = loggedInStudent ? (loggedInStudent.remaining !== undefined ? loggedInStudent.remaining : 4) : 4;
+
+      if (type === '15m_before') {
+        notifyClassStartsIn15Mins(currentName, '17:00');
+        showToast('ทดสอบแจ้งเตือนก่อนเริ่ม 15 นาที (Class starts in 15 mins)');
+      } else if (type === '30m_before') {
+        notifyClassStartsIn30Mins(currentName, '17:00');
+        showToast('ทดสอบแจ้งเตือนก่อนเริ่ม 30 นาที (Class starts in 30 mins)');
+      } else if (type === '15m_end') {
+        notifyClassEndsIn15Mins(currentName, '18:30');
+        showToast('ทดสอบแจ้งเตือน 15 นาทีก่อนเลิกคลาส (Class ends in 15 mins)');
+      } else if (type === 'checkin') {
+        const timeNow = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+        notifyAttendanceCheckIn(currentName, 'โค้ชโอ๊ต', timeNow, curRem);
+        showToast('ทดสอบแจ้งเตือนเมื่อโค้ชเช็คชื่อเข้าเรียน');
+      }
+    }
+
+    // Automated Scheduler: Runs every 30s to trigger scheduled notifications on class days
+    function runClassNotificationScheduler() {
+      const now = new Date();
+      const dayW = now.getDay();
+      // Class days: Mon(1), Tue(2), Thu(4), Sat(6)
+      if (dayW !== 1 && dayW !== 2 && dayW !== 4 && dayW !== 6) return;
+
+      const todayKey = getTodayDateKey();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      let startMinutes = (17 * 60); // 17:00 น.
+      let endMinutes = (18 * 60) + 30; // 18:30 น.
+      let startTimeStr = '17:00';
+      let endTimeStr = '18:30';
+
+      if (dayW === 6) {
+        startMinutes = (9 * 60); // 09:00 น.
+        endMinutes = (10 * 60) + 30; // 10:30 น.
+        startTimeStr = '09:00';
+        endTimeStr = '10:30';
+      }
+
+      const sName = loggedInStudent ? loggedInStudent.name : 'อิฐ';
+
+      // 30 mins before start
+      const diff30 = startMinutes - currentMinutes;
+      const flag30Key = `dbo_alert_30m_${todayKey}`;
+      if (diff30 >= 28 && diff30 <= 32 && !sessionStorage.getItem(flag30Key)) {
+        sessionStorage.setItem(flag30Key, 'true');
+        notifyClassStartsIn30Mins(sName, startTimeStr);
+      }
+
+      // 15 mins before start (exact screenshot match)
+      const diff15 = startMinutes - currentMinutes;
+      const flag15Key = `dbo_alert_15m_${todayKey}`;
+      if (diff15 >= 13 && diff15 <= 17 && !sessionStorage.getItem(flag15Key)) {
+        sessionStorage.setItem(flag15Key, 'true');
+        notifyClassStartsIn15Mins(sName, startTimeStr);
+      }
+
+      // 15 mins before end
+      const diffEnd15 = endMinutes - currentMinutes;
+      const flagEnd15Key = `dbo_alert_end15m_${todayKey}`;
+      if (diffEnd15 >= 13 && diffEnd15 <= 17 && !sessionStorage.getItem(flagEnd15Key)) {
+        sessionStorage.setItem(flagEnd15Key, 'true');
+        notifyClassEndsIn15Mins(sName, endTimeStr);
+      }
+    }
+
     // Export Data to CSV (One App for All Data)
     function exportDataToCSV() {
       let csv = "\uFEFFลำดับ,ชื่อนักเรียน,เบอร์โทรศัพท์,ประเภทคอร์ส,วันเริ่มเรียน,วันตัดรอบถัดไป,โควต้าปกติ,โควตาวันเสาร์,หมายเหตุ\n";
@@ -6416,6 +7379,7 @@
       try {
         students = JSON.parse(localStorage.getItem('dbo_students_v14')) || students;
         dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v14')) || dailyAttendance;
+        teachingRecords = JSON.parse(localStorage.getItem('dbo_teaching_records_v19')) || teachingRecords;
         parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrations_v14')) || parentRegistrations;
         pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v14')) || pendingSlips;
         refreshAllViews();
@@ -6606,6 +7570,22 @@
         }
       }
 
+      // 8. Merge Teaching Records (Techawit TWS Post-Teaching Records)
+      if (incomingData.teachingRecords && Array.isArray(incomingData.teachingRecords)) {
+        const recMap = new Map();
+        teachingRecords.forEach(r => { if (r && r.id) recMap.set(r.id, r); });
+        incomingData.teachingRecords.forEach(inc => {
+          if (!inc || !inc.id) return;
+          const cur = recMap.get(inc.id);
+          if (!cur || (inc.updatedAt || 0) >= (cur.updatedAt || 0)) {
+            recMap.set(inc.id, inc);
+            hasChanges = true;
+          }
+        });
+        teachingRecords = Array.from(recMap.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        localStorage.setItem('dbo_teaching_records_v19', JSON.stringify(teachingRecords));
+      }
+
       if (hasChanges) {
         if (loggedInStudent) {
           const fresh = students.find(s => s.id === loggedInStudent.id);
@@ -6633,6 +7613,7 @@
         renderCoachRosterTable();
         renderPendingSlips();
         renderParentRegistrations();
+        if (typeof renderTeachingRecordsList === 'function') renderTeachingRecordsList();
       }
       if (loggedInStudent) {
         ensureHistoricalDatesSeeded();
@@ -6810,7 +7791,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       // Clear legacy storage versions once to guarantee fresh roster & pure factual data
-      if (localStorage.getItem('dbo_app_version') !== 'v18.0') {
+      if (localStorage.getItem('dbo_app_version') !== 'v19.0') {
         localStorage.removeItem('dbo_students_v8');
         localStorage.removeItem('dbo_students_v9');
         localStorage.removeItem('dbo_students_v10');
@@ -6820,7 +7801,7 @@
         localStorage.removeItem('dbo_students_v14');
         localStorage.removeItem('dbo_roster_view_mode');
         localStorage.setItem('dbo_roster_view_mode_v2', 'cards');
-        localStorage.setItem('dbo_app_version', 'v18.0');
+        localStorage.setItem('dbo_app_version', 'v19.0');
       }
 
       // Dynamic live date & class schedule banner based on real calendar
@@ -6859,8 +7840,13 @@
       renderWeeklyScheduleView();
       renderPendingSlips();
       renderParentRegistrations();
+      renderTeachingRecordsList();
       renderDailyAttendanceBoard();
       lucide.createIcons();
+
+      // Automated Lock Screen Notification Scheduler
+      runClassNotificationScheduler();
+      setInterval(runClassNotificationScheduler, 30000);
 
       // Auto-restore active view based on authentication state
       if (isCoachAuth && currentStaff) {

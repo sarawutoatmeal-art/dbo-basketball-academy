@@ -43,6 +43,7 @@ function mergeStates(existing, incoming) {
     processedSlipIds: { ...(existing.processedSlipIds || {}), ...(incoming.processedSlipIds || {}) },
     students: [],
     dailyAttendance: {},
+    teachingRecords: [],
     parentRegistrations: [],
     pendingSlips: [],
     assistantCoaches: [],
@@ -148,6 +149,20 @@ function mergeStates(existing, incoming) {
     }
   });
   result.assistantCoaches = Array.from(asstMap.values());
+
+  // 7. Merge teachingRecords by id & updatedAt (Techawit Post-Teaching Records)
+  const recMap = new Map();
+  (existing.teachingRecords || []).forEach(r => {
+    if (r && r.id) recMap.set(r.id, r);
+  });
+  (incoming.teachingRecords || []).forEach(r => {
+    if (!r || !r.id) return;
+    const cur = recMap.get(r.id);
+    if (!cur || (r.updatedAt || 0) >= (cur.updatedAt || 0)) {
+      recMap.set(r.id, r);
+    }
+  });
+  result.teachingRecords = Array.from(recMap.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
   return result;
 }
