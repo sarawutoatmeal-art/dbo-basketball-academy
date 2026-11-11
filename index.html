@@ -250,11 +250,19 @@
           </button>
         </nav>
 
-        <!-- Right User / Staff Status Area -->
-        <div id="userHeaderArea" class="flex items-center gap-2 flex-shrink-0">
-          <div class="flex items-center gap-1.5 text-xs text-slate-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-            <span class="hidden sm:inline font-medium">Start from 0 to No. 1</span>
+        <!-- Right User / Staff Status Area & PWA Install Button -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button type="button" id="btnInstallAppHeader" onclick="handlePWAInstallClick()" class="btn-touch px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-2xs flex items-center gap-1.5 transition cursor-pointer">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span class="hidden sm:inline">ติดตั้งแอปลงมือถือ</span>
+            <span class="sm:hidden">ติดตั้งแอป</span>
+          </button>
+
+          <div id="userHeaderArea" class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 text-xs text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+              <span class="hidden sm:inline font-medium">Start from 0 to No. 1</span>
+            </div>
           </div>
         </div>
 
@@ -2713,6 +2721,61 @@
           <button onclick="closeTelegramPush()" class="text-xs font-medium text-slate-400 hover:text-white px-2 py-1">ปิด</button>
           <button onclick="switchTab('parent-portal'); closeTelegramPush();" class="text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1 rounded-md transition-colors">ดูข้อมูลน้อง</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- INSTALL APP MODAL (Step-by-step Guide for iPhone & Android)       -->
+  <!-- ================================================================= -->
+  <div id="iosInstallModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="card-clean max-w-md w-full p-5 sm:p-6 space-y-4 shadow-2xl bg-white rounded-2xl border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold flex-shrink-0">
+            <i data-lucide="smartphone" class="w-5 h-5 text-emerald-400"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">ติดตั้งแอปลงในโทรศัพท์</h3>
+            <p class="text-xs text-slate-500">ใช้งานแบบเต็มจอ เร็วขึ้น และรับการแจ้งเตือนบนหน้าจอล็อค</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeIOSInstallModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-700 leading-relaxed">
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+          <div class="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[11px] font-mono">1</span>
+            <span>สำหรับ iPhone / iPad (Safari):</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-1.5 text-slate-600 pl-1">
+            <li>แตะปุ่ม <strong>แชร์ (Share)</strong> สัญลักษณ์ <span class="px-1.5 py-0.5 rounded bg-white border border-slate-300 font-mono font-bold text-slate-800">[ ↑ ]</span> ที่แถบด้านล่างของ Safari</li>
+            <li>เลื่อนลงแล้วแตะเลือก <strong>"เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</strong></li>
+            <li>แตะ <strong>"เพิ่ม" (Add)</strong> ที่มุมบนขวา</li>
+          </ol>
+          <p class="text-[11px] text-emerald-700 font-medium pt-1">
+            ✓ จะได้ไอคอนแอป DBO Academy บนหน้าจอโฮม เปิดใช้งานแบบเต็มจอเหมือนแอปจริงจาก App Store ทันที
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+          <div class="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[11px] font-mono">2</span>
+            <span>สำหรับ Android (Chrome / Samsung Internet):</span>
+          </div>
+          <p class="text-slate-600">
+            แตะปุ่ม <strong>"ติดตั้งแอป"</strong> ด้านบน หรือแตะปุ่มจุด 3 จุด <span class="font-mono font-bold">⋮</span> ที่มุมขวาบนของเบราว์เซอร์ แล้วเลือก <strong>"ติดตั้งแอป" (Install App)</strong> ตัวแอปจะถูกดาวน์โหลดลงเครื่องและอยู่ในหน้ารวมแอปทันที
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button type="button" onclick="closeIOSInstallModal()" class="btn-touch w-full py-2.5 rounded-xl font-bold text-xs bg-slate-900 text-white hover:bg-slate-800 transition cursor-pointer">
+          เข้าใจแล้ว / ปิดหน้าต่าง
+        </button>
       </div>
     </div>
   </div>
@@ -7312,6 +7375,66 @@
       }
     }
 
+    // =========================================================================
+    // PWA APP INSTALLATION CONTROLLER (Android Native Install & iOS Web App)
+    // =========================================================================
+    let deferredPWAInstallPrompt = null;
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    function isRunningStandalone() {
+      return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+             (window.navigator.standalone === true) ||
+             document.referrer.includes('android-app://');
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPWAInstallPrompt = e;
+      updateInstallButtonVisibility();
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredPWAInstallPrompt = null;
+      updateInstallButtonVisibility();
+      showToast('🎉 ติดตั้งแอป DBO Academy เรียบร้อยแล้ว!');
+    });
+
+    function updateInstallButtonVisibility() {
+      const btn = document.getElementById('btnInstallAppHeader');
+      if (!btn) return;
+      if (isRunningStandalone()) {
+        btn.classList.add('hidden');
+      } else {
+        btn.classList.remove('hidden');
+      }
+    }
+
+    function handlePWAInstallClick() {
+      if (deferredPWAInstallPrompt) {
+        deferredPWAInstallPrompt.prompt();
+        deferredPWAInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            showToast('กำลังติดตั้งแอป DBO Academy ลงในเครื่องของคุณ...');
+          }
+          deferredPWAInstallPrompt = null;
+          updateInstallButtonVisibility();
+        });
+      } else {
+        openIOSInstallModal();
+      }
+    }
+
+    function openIOSInstallModal() {
+      const modal = document.getElementById('iosInstallModal');
+      if (modal) modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeIOSInstallModal() {
+      const modal = document.getElementById('iosInstallModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
     // Export Data to CSV (One App for All Data)
     function exportDataToCSV() {
       let csv = "\uFEFFลำดับ,ชื่อนักเรียน,เบอร์โทรศัพท์,ประเภทคอร์ส,วันเริ่มเรียน,วันตัดรอบถัดไป,โควต้าปกติ,โควตาวันเสาร์,หมายเหตุ\n";
@@ -7621,6 +7744,7 @@
         renderParentView();
       }
       renderDailyAttendanceBoard();
+      updateInstallButtonVisibility();
       lucide.createIcons();
     }
 
@@ -7842,6 +7966,7 @@
       renderParentRegistrations();
       renderTeachingRecordsList();
       renderDailyAttendanceBoard();
+      updateInstallButtonVisibility();
       lucide.createIcons();
 
       // Automated Lock Screen Notification Scheduler
