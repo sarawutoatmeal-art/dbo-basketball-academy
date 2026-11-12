@@ -911,6 +911,23 @@ async function saveTeachingRecordFromModal() {
         notifyAttendanceCheckIn(a.name, coachVal, nowTimeStr, remAfter);
       }, i * 200);
     });
+
+    // Real-time broadcast to Parent devices via MQTT
+    if (typeof publishToMqttBrokers === 'function') {
+      publishToMqttBrokers(REALTIME_SYNC_TOPIC, {
+        senderId: window.dboClientId,
+        type: 'COACH_CHECKIN_EVENT',
+        coachName: coachVal,
+        dateKey: dateVal,
+        attendingStudents: attending.map(a => {
+          const st = students.find(s => s.id === a.id);
+          const remAfter = st ? (targetField === 'saturday' ? st.saturdayRemaining : st.remaining) : 0;
+          return { id: a.id, name: a.name, remaining: remAfter };
+        }),
+        leaveStudents: leave.map(l => ({ id: l.id, name: l.name })),
+        timeStr: nowTimeStr
+      });
+    }
   }
 
   saveState(true, `บันทึกการสอน & เช็คชื่อ (${dateVal}): มาเรียน ${attending.length} คน`, true);
@@ -981,6 +998,22 @@ function resendTeachingRecordNotifications(recordId) {
       notifyAttendanceCheckIn(a.name, rec.coach || 'โค้ชโอ๊ต', '17:00 น.', rem);
     }, i * 250);
   });
+
+  // Real-time broadcast to Parent devices via MQTT
+  if (typeof publishToMqttBrokers === 'function') {
+    publishToMqttBrokers(REALTIME_SYNC_TOPIC, {
+      senderId: window.dboClientId,
+      type: 'COACH_CHECKIN_EVENT',
+      coachName: rec.coach || 'โค้ชโอ๊ต',
+      dateKey: rec.date,
+      attendingStudents: attendees.map(a => {
+        const st = students.find(s => s.id === a.id);
+        return { id: a.id, name: a.name, remaining: st ? st.remaining : 0 };
+      }),
+      leaveStudents: (rec.leaveStudents || []).map(l => ({ id: l.id, name: l.name })),
+      timeStr: '17:00 น.'
+    });
+  }
 
   showToast(`ส่งการแจ้งเตือนไปยังเครื่อง ผปค ของนักเรียนทั้ง ${attendees.length} คน เรียบร้อยแล้ว`);
 }

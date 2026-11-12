@@ -282,6 +282,19 @@ function coachCheckInAction(studentId, delta, target = 'regular') {
   const curRem = (target === 'saturday') ? student.saturdayRemaining : student.remaining;
   const msg = `น้อง ${student.name} เช็คชื่อเข้าฝึกซ้อม${courseName}เรียบร้อยแล้วครับ! (โควต้าคงเหลือ: ${curRem} ครั้ง)`;
   
+  // Real-time broadcast to Parent devices via MQTT
+  if (typeof publishToMqttBrokers === 'function') {
+    publishToMqttBrokers(REALTIME_SYNC_TOPIC, {
+      senderId: window.dboClientId,
+      type: 'COACH_CHECKIN_EVENT',
+      coachName: staffName,
+      dateKey: sessionDateKey,
+      attendingStudents: [{ id: student.id, name: student.name, remaining: curRemAfter }],
+      leaveStudents: [],
+      timeStr: timeStr
+    });
+  }
+
   if (isToday) {
     triggerTelegramPush(`🏀 ${msg}`, 'การเช็คชื่อเข้าฝึกซ้อม (Live Push)');
     sendSystemNotification('🏀 DBO Academy เช็คชื่อเข้าเรียน', {

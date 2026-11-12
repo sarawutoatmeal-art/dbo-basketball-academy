@@ -447,7 +447,79 @@ function handleIncomingMqttMessage(topic, message) {
       if (!payload) return;
       const isSelf = (payload.senderId === window.dboClientId);
 
-      if ((payload.type === 'REALTIME_STATE_UPDATE' || topic === CLOUD_STATE_TOPIC) && payload.data) {
+      // 1. Parent Attendance Update -> Notify Coach Devices
+      if (payload.type === 'PARENT_ATTENDANCE_EVENT' && !isSelf) {
+        const stName = payload.studentName || 'นักเรียน';
+        const isAttending = (payload.status === 'attending');
+        const nowT = payload.time || 'เมื่อสักครู่';
+        const reason = payload.leaveReason ? ` (${payload.leaveReason})` : '';
+
+        const title = isAttending 
+          ? '🏀 แจ้งเตือนโค้ช: มีนักเรียนแจ้งเข้าเรียน' 
+          : '⚠️ แจ้งเตือนโค้ช: มีนักเรียนแจ้งลาหยุด';
+        const bodyText = isAttending
+          ? `ผู้ปกครองน้อง ${stName} แจ้งยืนยันเข้าเรียนคลาสวันนี้ (${nowT})`
+          : `ผู้ปกครองน้อง ${stName} แจ้งลาหยุดคลาสวันนี้${reason} (${nowT})`;
+
+        // Notify if user is coach or staff
+        if (isCoachAuth || currentStaff) {
+          if (typeof playNotificationChime === 'function') playNotificationChime();
+          if (typeof sendSystemNotification === 'function') {
+            sendSystemNotification(title, {
+              body: bodyText,
+              tag: `coach-parent-att-${payload.studentId}-${Date.now()}`,
+              icon: 'assets/images/app-icon-192.png'
+            });
+          }
+          if (typeof triggerTelegramPush === 'function') {
+            triggerTelegramPush(bodyText, title);
+          }
+          if (typeof showToast === 'function') {
+            showToast(bodyText);
+          }
+          if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+          if (typeof renderCoachRosterTable === 'function') renderCoachRosterTable();
+          if (typeof updateSessionDateDisplay === 'function') updateSessionDateDisplay();
+        }
+      }
+
+      // 2. Coach Check-In Record -> Notify Parent Devices
+      else if (payload.type === 'COACH_CHECKIN_EVENT' && !isSelf) {
+        if (loggedInStudent) {
+          const siblingIds = (typeof getSiblingStudentIds === 'function') 
+            ? getSiblingStudentIds(loggedInStudent.id) 
+            : [loggedInStudent.id];
+
+          const attMatch = (payload.attendingStudents || []).find(a => 
+            a.id === loggedInStudent.id || siblingIds.includes(a.id) || a.name === loggedInStudent.name
+          );
+          const leaveMatch = (payload.leaveStudents || []).find(l => 
+            l.id === loggedInStudent.id || siblingIds.includes(l.id) || l.name === loggedInStudent.name
+          );
+
+          if (attMatch) {
+            const curRem = (attMatch.remaining !== undefined) ? attMatch.remaining : (loggedInStudent.remaining || 0);
+            if (typeof notifyAttendanceCheckIn === 'function') {
+              notifyAttendanceCheckIn(attMatch.name, payload.coachName || 'โค้ชโอ๊ต', payload.timeStr || '17:00 น.', curRem);
+            }
+          } else if (leaveMatch) {
+            if (typeof sendSystemLockscreenNotification === 'function') {
+              sendSystemLockscreenNotification({
+                title: 'บันทึกการลาเรียบร้อย',
+                subtitle: 'from DBO Academy',
+                body: `น้อง ${leaveMatch.name} • บันทึกการลาโดย ${payload.coachName || 'โค้ช'} ไม่ตัดโควต้า`,
+                tag: 'leave-' + leaveMatch.name
+              });
+            }
+            if (typeof triggerTelegramPush === 'function') {
+              triggerTelegramPush(`น้อง ${leaveMatch.name} บันทึกการลาโดย ${payload.coachName || 'ทีมโค้ช'} ในรอบ ${payload.dateKey}`, '⚠️ บันทึกการลาสำเร็จ');
+            }
+          }
+        }
+      }
+
+      // 3. Regular State Sync
+      else if ((payload.type === 'REALTIME_STATE_UPDATE' || topic === CLOUD_STATE_TOPIC) && payload.data) {
         applyIncomingState(payload.data, isSelf ? '' : (payload.actionDesc || ''));
       } else if (payload.type === 'REQUEST_SYNC' && !isSelf) {
         const hasNewerData = isCoachAuth || students.some(s => (s._updatedAt || 0) > 0);

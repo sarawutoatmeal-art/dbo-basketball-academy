@@ -464,6 +464,7 @@ function handleRsvpSubmit(e) {
   const date = document.getElementById('rsvpDateInput').value;
   const slot = document.getElementById('rsvpTimeSlot').value;
   closeRsvpModal();
+  setTodayAttendanceFromParent('attending');
   showToast(`แจ้งเข้าเรียนวันที่ ${date} (${slot}) ให้ทีมโค้ชทราบเรียบร้อยครับ`);
 }
 
@@ -477,8 +478,9 @@ function closeLeaveModal() { document.getElementById('leaveModal').classList.add
 function handleLeaveSubmit(e) {
   e.preventDefault();
   const date = document.getElementById('leaveDateInput').value;
-  const reason = document.getElementById('leaveReasonInput').value;
+  const reason = document.getElementById('leaveReasonInput').value || 'แจ้งลาเรียน';
   closeLeaveModal();
+  setTodayAttendanceFromParent('leave', reason);
   showToast(`บันทึกการลาวันที่ ${date} (${reason}) เรียบร้อย โดยไม่ตัดโควต้าครับ`);
 }
 
@@ -505,6 +507,21 @@ function setTodayAttendanceFromParent(status, leaveReason = '') {
   };
 
   saveState(true, `ผู้ปกครองแจ้ง${status === 'attending' ? 'มาเรียน' : 'ลา'}: น้อง ${loggedInStudent.name}`, true);
+
+  // Real-time broadcast to all coach devices via MQTT
+  if (typeof publishToMqttBrokers === 'function') {
+    publishToMqttBrokers(REALTIME_SYNC_TOPIC, {
+      senderId: window.dboClientId,
+      type: 'PARENT_ATTENDANCE_EVENT',
+      studentId: loggedInStudent.id,
+      studentName: loggedInStudent.name,
+      status: status,
+      leaveReason: leaveReason || (status === 'leave' ? 'แจ้งลาเรียน' : ''),
+      time: nowTime,
+      dateKey: todayKey
+    });
+  }
+
   updateParentTodayStatusUI();
   renderParentClassmatesList();
   if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
