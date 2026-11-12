@@ -30,7 +30,11 @@ function switchTab(tabName) {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (tabName === 'daily-attendance' && typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
-  if (tabName === 'coach-roster' && typeof renderParentRegistrations === 'function') renderParentRegistrations();
+  if (tabName === 'coach-roster') {
+    if (typeof renderCoachRosterTable === 'function') renderCoachRosterTable();
+    if (typeof renderParentRegistrations === 'function') renderParentRegistrations();
+    if (typeof renderPendingSlips === 'function') renderPendingSlips();
+  }
   lucide.createIcons();
 }
 
