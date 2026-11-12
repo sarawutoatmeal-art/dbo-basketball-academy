@@ -341,31 +341,49 @@ function renderParentView(matchedList) {
   const totalQuota = loggedInStudent.courseType === 'saturday' ? 4 : (loggedInStudent.courseType === 'monthly' ? 8 : 10);
 
   if (rem > 3) {
-    remNumEl.innerText = rem;
-    remNumEl.className = 'text-3xl sm:text-4xl font-semibold text-slate-900 font-mono tracking-tight';
-    badgeStatusEl.innerText = 'พร้อมเรียน';
-    badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+    if (remNumEl) {
+      remNumEl.innerText = rem;
+      remNumEl.className = 'text-3xl sm:text-4xl font-semibold text-slate-900 font-mono tracking-tight';
+    }
+    if (badgeStatusEl) {
+      badgeStatusEl.innerText = 'พร้อมเรียน';
+      badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+    }
     const pct = Math.min(100, Math.max(0, (rem / totalQuota) * 100));
-    progBarEl.style.width = pct + '%';
-    progBarEl.className = 'h-1.5 rounded-full bg-emerald-600';
-    renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง`;
+    if (progBarEl) {
+      progBarEl.style.width = pct + '%';
+      progBarEl.className = 'h-1.5 rounded-full bg-emerald-600';
+    }
+    if (renewNoticeEl) renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง`;
   } else if (rem >= 1 && rem <= 3) {
-    remNumEl.innerText = rem;
-    remNumEl.className = 'text-3xl sm:text-4xl font-semibold text-amber-700 font-mono tracking-tight';
-    badgeStatusEl.innerText = 'ใกล้หมด';
-    badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200';
+    if (remNumEl) {
+      remNumEl.innerText = rem;
+      remNumEl.className = 'text-3xl sm:text-4xl font-semibold text-amber-700 font-mono tracking-tight';
+    }
+    if (badgeStatusEl) {
+      badgeStatusEl.innerText = 'ใกล้หมด';
+      badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200';
+    }
     const pct = (rem / totalQuota) * 100;
-    progBarEl.style.width = pct + '%';
-    progBarEl.className = 'h-1.5 rounded-full bg-amber-500';
-    renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง แนะนำต่อคอร์สใหม่`;
+    if (progBarEl) {
+      progBarEl.style.width = pct + '%';
+      progBarEl.className = 'h-1.5 rounded-full bg-amber-500';
+    }
+    if (renewNoticeEl) renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง แนะนำต่อคอร์สใหม่`;
   } else {
-    remNumEl.innerText = rem;
-    remNumEl.className = 'text-3xl sm:text-4xl font-semibold text-rose-700 font-mono tracking-tight';
-    badgeStatusEl.innerText = rem === 0 ? 'หมดสิทธิ์' : `เกินสิทธิ์ (${Math.abs(rem)} ครั้ง)`;
-    badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200';
-    progBarEl.style.width = '0%';
-    progBarEl.className = 'h-1.5 rounded-full bg-rose-500';
-    renewNoticeEl.innerText = 'กรุณาต่อคอร์สใหม่เพื่อรักษาสิทธิ์';
+    if (remNumEl) {
+      remNumEl.innerText = rem;
+      remNumEl.className = 'text-3xl sm:text-4xl font-semibold text-rose-700 font-mono tracking-tight';
+    }
+    if (badgeStatusEl) {
+      badgeStatusEl.innerText = rem === 0 ? 'หมดสิทธิ์' : `เกินสิทธิ์ (${Math.abs(rem)} ครั้ง)`;
+      badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200';
+    }
+    if (progBarEl) {
+      progBarEl.style.width = '0%';
+      progBarEl.className = 'h-1.5 rounded-full bg-rose-500';
+    }
+    if (renewNoticeEl) renewNoticeEl.innerText = 'กรุณาต่อคอร์สใหม่เพื่อรักษาสิทธิ์';
   }
 
   // History Table

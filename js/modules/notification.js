@@ -43,7 +43,9 @@ function playNotificationChime() {
 
     // Mobile Vibration Haptic Feedback
     if ('vibrate' in navigator) {
-      navigator.vibrate([120, 60, 120]);
+      try {
+        navigator.vibrate([120, 60, 120]);
+      } catch (e) {}
     }
   } catch (err) {
     console.warn('Audio chime skipped:', err);
