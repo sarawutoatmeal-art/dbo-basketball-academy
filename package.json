@@ -1,0 +1,22 @@
+{
+  "name": "dbo-basketball-academy",
+  "version": "20.0.0",
+  "description": "DBO Basketball Academy — Portal ผู้ปกครอง, ระบบเช็คชื่อนักเรียน & Sports Science Metrics",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "basketball",
+    "academy",
+    "attendance",
+    "sports-science",
+    "portal"
+  ],
+  "author": "DBO Academy",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
