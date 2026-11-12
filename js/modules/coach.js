@@ -28,14 +28,22 @@ function setCoachRosterViewMode(mode) {
 
 function filterCoachCategory(cat) {
   currentCoachFilter = cat;
-  const cats = ['all', 'regular', 'monthly', 'saturday'];
+  const cats = ['all', 'regular', 'monthly', 'saturday', 'low'];
   cats.forEach(c => {
     const btn = document.getElementById(`btn-filter-${c}`);
     if (!btn) return;
     if (c === cat) {
-      btn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-white transition-colors';
+      if (c === 'low') {
+        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600 text-white border border-rose-600 shadow-2xs transition-colors flex items-center gap-1.5 flex-shrink-0 cursor-pointer';
+      } else {
+        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white shadow-2xs transition-colors flex-shrink-0 cursor-pointer';
+      }
     } else {
-      btn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors';
+      if (c === 'low') {
+        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors flex items-center gap-1.5 flex-shrink-0 cursor-pointer';
+      } else {
+        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex-shrink-0 cursor-pointer';
+      }
     }
   });
   renderCoachRosterTable();
@@ -85,25 +93,54 @@ function renderCoachRosterTable() {
   const cReg = students.filter(s => s.courseType === 'regular' || s.courseType === 'both' || !s.courseType).length;
   const cSat = students.filter(s => s.courseType === 'saturday' || s.courseType === 'both').length;
   const cMon = students.filter(s => s.courseType === 'monthly').length;
+  const cLow = students.filter(s => {
+    if (s.courseType === 'saturday') {
+      return (s.saturdayRemaining !== undefined ? s.saturdayRemaining : 0) <= 1;
+    }
+    if (s.courseType === 'both') {
+      return (s.remaining !== undefined ? s.remaining : 0) <= 1 || (s.saturdayRemaining !== undefined ? s.saturdayRemaining : 0) <= 1;
+    }
+    return (s.remaining !== undefined ? s.remaining : 0) <= 1;
+  }).length;
 
   const cntAll = document.getElementById('count-all');
   const cntReg = document.getElementById('count-regular');
   const cntMon = document.getElementById('count-monthly');
   const cntSat = document.getElementById('count-saturday');
+  const cntLow = document.getElementById('count-low');
   if (cntAll) cntAll.innerText = cAll;
   if (cntReg) cntReg.innerText = cReg;
   if (cntMon) cntMon.innerText = cMon;
   if (cntSat) cntSat.innerText = cSat;
+  if (cntLow) cntLow.innerText = cLow;
 
-  const filtered = students.filter(s => {
+  let filtered = students.filter(s => {
     const matchSearch = s.name.toLowerCase().includes(search) || (s.phone || '').includes(search) || String(s.id).includes(search);
     if (!matchSearch) return false;
     if (currentCoachFilter === 'all') return true;
     if (currentCoachFilter === 'regular') return s.courseType === 'regular' || s.courseType === 'both' || !s.courseType;
     if (currentCoachFilter === 'saturday') return s.courseType === 'saturday' || s.courseType === 'both';
     if (currentCoachFilter === 'monthly') return s.courseType === 'monthly';
+    if (currentCoachFilter === 'low') {
+      if (s.courseType === 'saturday') {
+        return (s.saturdayRemaining !== undefined ? s.saturdayRemaining : 0) <= 1;
+      }
+      if (s.courseType === 'both') {
+        return (s.remaining !== undefined ? s.remaining : 0) <= 1 || (s.saturdayRemaining !== undefined ? s.saturdayRemaining : 0) <= 1;
+      }
+      return (s.remaining !== undefined ? s.remaining : 0) <= 1;
+    }
     return true;
   });
+
+  if (currentCoachFilter === 'low') {
+    // Sort lowest/most overdue quota first so coach sees urgency immediately
+    filtered.sort((a, b) => {
+      const remA = a.courseType === 'saturday' ? (a.saturdayRemaining || 0) : (a.remaining || 0);
+      const remB = b.courseType === 'saturday' ? (b.saturdayRemaining || 0) : (b.remaining || 0);
+      return remA - remB;
+    });
+  }
 
   const isAsst = currentStaff && currentStaff.isAssistant;
 

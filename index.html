@@ -1460,10 +1460,14 @@
             
             <!-- Category Tabs Filter -->
             <div class="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
-              <button onclick="filterCoachCategory('all')" id="btn-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white transition-colors">ทั้งหมด (<span id="count-all">0</span>)</button>
-              <button onclick="filterCoachCategory('regular')" id="btn-filter-regular" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">10 ครั้ง (<span id="count-regular">0</span>)</button>
-              <button onclick="filterCoachCategory('monthly')" id="btn-filter-monthly" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">รายเดือน (<span id="count-monthly">0</span>)</button>
-              <button onclick="filterCoachCategory('saturday')" id="btn-filter-saturday" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">วันเสาร์ (<span id="count-saturday">0</span>)</button>
+              <button onclick="filterCoachCategory('all')" id="btn-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white transition-colors flex-shrink-0 cursor-pointer">ทั้งหมด (<span id="count-all">0</span>)</button>
+              <button onclick="filterCoachCategory('regular')" id="btn-filter-regular" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex-shrink-0 cursor-pointer">10 ครั้ง (<span id="count-regular">0</span>)</button>
+              <button onclick="filterCoachCategory('monthly')" id="btn-filter-monthly" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex-shrink-0 cursor-pointer">รายเดือน (<span id="count-monthly">0</span>)</button>
+              <button onclick="filterCoachCategory('saturday')" id="btn-filter-saturday" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex-shrink-0 cursor-pointer">วันเสาร์ (<span id="count-saturday">0</span>)</button>
+              <button onclick="filterCoachCategory('low')" id="btn-filter-low" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors flex items-center gap-1.5 flex-shrink-0 cursor-pointer" title="นักเรียนที่สิทธิ์เหลือ 1 ครั้ง หรือหมดแล้ว/เกินสิทธิ์">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                <span>ใกล้หมด/หมดแล้ว</span> (<span id="count-low">0</span>)
+              </button>
             </div>
 
             <!-- Controls: View Switcher & Search -->
