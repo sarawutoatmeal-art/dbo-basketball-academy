@@ -544,12 +544,16 @@ function handleSaveStudent(e) {
   const lJVal = parseInt(document.getElementById('modalStudentLongJump').value, 10) || 0;
 
   const staffName = currentStaff ? currentStaff.name : 'ทีมโค้ช';
+  let quotaDeducted = false;
 
   if (idVal) {
     const student = students.find(s => s.id === parseInt(idVal, 10));
     if (student) {
       const oldRem = student.remaining || 0;
       const oldSatRem = student.saturdayRemaining || 0;
+      if (remaining < oldRem || saturdayRemaining < oldSatRem) {
+        quotaDeducted = true;
+      }
 
       student.name = name;
       student.phone = phone;
@@ -641,6 +645,32 @@ function handleSaveStudent(e) {
   }
 
   saveState(true, `บันทึกการแก้ไขข้อมูลน้อง ${name}`);
+
+  if (quotaDeducted) {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+    const dateKey = (typeof getTodayDateKey === 'function') ? getTodayDateKey() : now.toISOString().split('T')[0];
+    const checkinPayload = {
+      senderId: window.dboClientId,
+      type: 'COACH_CHECKIN_EVENT',
+      coachName: staffName,
+      dateKey: dateKey,
+      timeStr: timeStr,
+      attendingStudents: [{
+        id: parseInt(idVal, 10),
+        name: name,
+        remaining: (courseType === 'saturday') ? saturdayRemaining : remaining
+      }],
+      leaveStudents: []
+    };
+    if (window.dboRealtimeBC) {
+      try { window.dboRealtimeBC.postMessage(checkinPayload); } catch (e) {}
+    }
+    if (typeof publishToMqttBrokers === 'function') {
+      publishToMqttBrokers(REALTIME_SYNC_TOPIC, checkinPayload);
+    }
+  }
+
   closeStudentModal();
   renderCoachRosterTable();
   if (loggedInStudent && loggedInStudent.id === parseInt(idVal, 10)) {

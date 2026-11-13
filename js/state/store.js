@@ -78,7 +78,12 @@ if (!localStorage.getItem('dbo_metrics_reset_v2')) {
   localStorage.setItem('dbo_metrics_reset_v2', 'true');
 }
 
-let loggedInStudent = JSON.parse(localStorage.getItem('dbo_parent_logged_v14')) || null;
+let loggedInStudent = null;
+try {
+  loggedInStudent = JSON.parse(sessionStorage.getItem('dbo_tab_parent_logged')) || JSON.parse(localStorage.getItem('dbo_parent_logged_v14')) || null;
+} catch (e) {
+  loggedInStudent = null;
+}
 if (loggedInStudent && !localStorage.getItem('dbo_parent_logged_metrics_reset_v2')) {
   loggedInStudent.remarkOat = '';
   loggedInStudent.remarkOak = '';

@@ -403,11 +403,38 @@ function applyIncomingState(incomingData, actionDesc = '') {
   }
 
   if (hasChanges) {
-    if (loggedInStudent) {
-      const fresh = students.find(s => s.id === loggedInStudent.id);
+    const activeStudent = loggedInStudent || (function() {
+      try {
+        return JSON.parse(sessionStorage.getItem('dbo_tab_parent_logged')) || JSON.parse(localStorage.getItem('dbo_parent_logged_v14'));
+      } catch(e) { return null; }
+    })();
+
+    if (activeStudent) {
+      const prevRem = activeStudent.remaining;
+      const prevSatRem = activeStudent.saturdayRemaining;
+      const fresh = students.find(s => s.id === activeStudent.id);
       if (fresh) {
         loggedInStudent = fresh;
         localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
+        sessionStorage.setItem('dbo_tab_parent_logged', JSON.stringify(loggedInStudent));
+
+        // Check if attendance check-in happened or quota was deducted
+        const todayKey = (typeof getTodayDateKey === 'function') ? getTodayDateKey() : new Date().toISOString().split('T')[0];
+        const todayRec = dailyAttendance[todayKey] && dailyAttendance[todayKey][fresh.id];
+        const isAttending = (todayRec && todayRec.status === 'attending');
+        const quotaReduced = (prevRem !== undefined && fresh.remaining < prevRem) || (prevSatRem !== undefined && fresh.saturdayRemaining < prevSatRem);
+
+        const alertDedupeKey = `dbo_checkin_notified_${fresh.id}_${todayKey}_${todayRec ? (todayRec.updatedAt || 'att') : (fresh._updatedAt || 'up')}`;
+        if ((isAttending || quotaReduced) && !sessionStorage.getItem(alertDedupeKey)) {
+          sessionStorage.setItem(alertDedupeKey, 'true');
+          const coachName = (todayRec && todayRec.coach) || (incomingData && incomingData.lastSubmittedBy) || 'โค้ช';
+          const timeStr = (todayRec && todayRec.time) || new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+          const curRem = (fresh.courseType === 'saturday' ? fresh.saturdayRemaining : fresh.remaining);
+          if (typeof notifyAttendanceCheckIn === 'function') {
+            notifyAttendanceCheckIn(fresh.name, coachName, timeStr, curRem);
+          }
+        }
+
         if (typeof ensureHistoricalDatesSeeded === 'function') ensureHistoricalDatesSeeded();
         if (typeof updateSessionDateDisplay === 'function') updateSessionDateDisplay();
         if (typeof renderParentView === 'function') renderParentView();
@@ -490,20 +517,26 @@ function handleIncomingMqttMessage(topic, message) {
 
       // 2. Coach Check-In Record -> Notify Parent Devices
       else if (payload.type === 'COACH_CHECKIN_EVENT') {
-        if (loggedInStudent) {
+        const activeStudent = loggedInStudent || (function() {
+          try {
+            return JSON.parse(sessionStorage.getItem('dbo_tab_parent_logged')) || JSON.parse(localStorage.getItem('dbo_parent_logged_v14'));
+          } catch(e) { return null; }
+        })();
+
+        if (activeStudent) {
           const siblingIds = (typeof getSiblingStudentIds === 'function') 
-            ? getSiblingStudentIds(loggedInStudent.id) 
-            : [loggedInStudent.id];
+            ? getSiblingStudentIds(activeStudent.id) 
+            : [activeStudent.id];
 
           const attMatch = (payload.attendingStudents || []).find(a => 
-            a.id === loggedInStudent.id || siblingIds.includes(a.id) || a.name === loggedInStudent.name
+            a.id === activeStudent.id || siblingIds.includes(a.id) || a.name === activeStudent.name
           );
           const leaveMatch = (payload.leaveStudents || []).find(l => 
-            l.id === loggedInStudent.id || siblingIds.includes(l.id) || l.name === loggedInStudent.name
+            l.id === activeStudent.id || siblingIds.includes(l.id) || l.name === activeStudent.name
           );
 
           if (attMatch) {
-            const curRem = (attMatch.remaining !== undefined) ? attMatch.remaining : (loggedInStudent.remaining || 0);
+            const curRem = (attMatch.remaining !== undefined) ? attMatch.remaining : (activeStudent.remaining || 0);
             if (typeof notifyAttendanceCheckIn === 'function') {
               notifyAttendanceCheckIn(attMatch.name, payload.coachName || 'โค้ชโอ๊ต', payload.timeStr || '17:00 น.', curRem);
             }

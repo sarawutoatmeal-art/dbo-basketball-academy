@@ -95,6 +95,7 @@ function handleParentPhoneLogin(e, forcedInput = null) {
 
     loggedInStudent = matched[0];
     localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
+    sessionStorage.setItem('dbo_tab_parent_logged', JSON.stringify(loggedInStudent));
     updateCoachStateUI();
     updateHeaderProfileUI();
     renderParentView(matched);
