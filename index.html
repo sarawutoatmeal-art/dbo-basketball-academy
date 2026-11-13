@@ -460,7 +460,7 @@
                   <span id="pushStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600 border border-slate-200">ตรวจสอบสถานะ...</span>
                 </h4>
                 <p class="text-[11px] text-slate-500 mt-0.5">
-                  เด้งเตือนเมื่อโค้ชเช็คชื่อ • ก่อนเริ่มคลาส 15-30 นาที • และ 15 นาทีก่อนเลิกคลาส
+                  เด้งเตือนเมื่อโค้ชเช็คชื่อ • แจ้งเตือนช่วงเช้า 10:00 น. ว่ามีคลาสหรืองดคลาส • ก่อนเริ่มคลาส 15-30 นาที • และ 15 นาทีก่อนเลิกคลาส
                 </p>
               </div>
             </div>
@@ -1846,6 +1846,15 @@
       </div>
 
       <div class="space-y-3 text-left">
+        <!-- Alert if class is canceled -->
+        <div id="calModalCancelAlert" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 space-y-1">
+          <div class="flex items-center gap-1.5 font-bold text-xs text-rose-700">
+            <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600"></i>
+            <span>วันนี้นัดงดคลาสการฝึกซ้อม</span>
+          </div>
+          <p id="calModalCancelReasonText" class="text-xs text-rose-700 font-medium pl-5 leading-relaxed">-</p>
+        </div>
+
         <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
           <div class="flex items-center justify-between text-xs">
             <span class="text-slate-500 font-medium">เวลาฝึกซ้อม:</span>
@@ -1868,7 +1877,41 @@
           </p>
         </div>
 
-        <div class="pt-2 flex gap-2">
+        <!-- Coach Management Panel (ปรับสถานะคลาสหรืองดคลาส) -->
+        <div id="calModalCoachPanel" class="hidden p-3.5 rounded-2xl bg-slate-900 text-white space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+              <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              <span>จัดการคลาสวันนี้ (สำหรับโค้ช)</span>
+            </span>
+            <span id="calModalCoachBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-800 text-emerald-400 border border-slate-700">
+              มีคลาสปกติ
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="btnCalSetNormal" onclick="setCalModalStatusChoice('normal')" class="btn-touch py-1.5 px-2 rounded-xl text-xs font-bold bg-emerald-600 text-white flex items-center justify-center gap-1 shadow-xs border border-emerald-500">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+              <span>มีคลาสปกติ</span>
+            </button>
+            <button type="button" id="btnCalSetCanceled" onclick="setCalModalStatusChoice('canceled')" class="btn-touch py-1.5 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-rose-300 flex items-center justify-center gap-1 border border-slate-700">
+              <i data-lucide="ban" class="w-3.5 h-3.5"></i>
+              <span>งดคลาส</span>
+            </button>
+          </div>
+
+          <div id="calModalReasonBox" class="hidden space-y-1 pt-1">
+            <label class="block text-[11px] text-slate-300">สาเหตุที่งดคลาส (จะแจ้งเตือน ผปค):</label>
+            <input type="text" id="calModalReasonInput" placeholder="เช่น ติดกิจกรรมโรงเรียน, ฝนตกหนัก, วันหยุดนักขัตฤกษ์" class="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-hidden focus:border-amber-400" />
+          </div>
+
+          <button type="button" onclick="saveCalModalClassOverride()" class="btn-touch w-full py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center justify-center gap-1.5 shadow-xs cursor-pointer">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            <span>บันทึก & แจ้งเตือนผู้ปกครอง</span>
+          </button>
+        </div>
+
+        <div id="calModalParentActionBox" class="pt-2 flex gap-2">
           <button onclick="closeCalendarDayModal(); openRsvpModal();" class="btn-touch flex-1 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs">
             แจ้งเข้าเรียนวันนี้
           </button>

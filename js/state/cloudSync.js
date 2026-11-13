@@ -17,7 +17,8 @@ function buildFullStateSnapshot() {
     dailyAttendance,
     teachingRecords,
     assistantCoaches,
-    weeklySchedule
+    weeklySchedule,
+    calendarDayOverrides
   };
 }
 
@@ -59,6 +60,7 @@ function saveState(broadcastRemote = true, actionDesc = '', isExplicitSubmit = f
   localStorage.setItem('dbo_teaching_records_v19', JSON.stringify(teachingRecords));
   localStorage.setItem('dbo_assistant_coaches_v14', JSON.stringify(assistantCoaches));
   localStorage.setItem('dbo_weekly_schedule_v16', JSON.stringify(weeklySchedule));
+  localStorage.setItem('dbo_calendar_overrides_v1', JSON.stringify(calendarDayOverrides));
   localStorage.setItem('dbo_deleted_students_v16', JSON.stringify(deletedStudentIds));
   localStorage.setItem('dbo_processed_slips_v16', JSON.stringify(processedSlipIds));
   localStorage.setItem('dbo_last_submitted_at_v16', String(lastSubmittedAt));
@@ -188,6 +190,36 @@ async function submitAndBroadcastAttendanceSession() {
   triggerTelegramPush(`ยืนยันการเช็คชื่อรอบ ${sessionDateKey} สำเร็จ: มาเรียน ${attendingCount} คน • ลา ${leaveCount} คน • อัปเดตโควต้าทุกเครื่องเรียบร้อย`, 'DBO Attendance Submitted');
   playNotificationChime();
   lucide.createIcons();
+}
+
+function broadcastCoachClassStatus(dateKey, status, reason = '', time = '') {
+  const staffName = (typeof currentStaff !== 'undefined' && currentStaff) ? currentStaff.name : 'ทีมโค้ช';
+  const payload = {
+    senderId: window.dboClientId || 'dbo_peer',
+    type: 'COACH_CLASS_STATUS_EVENT',
+    dateKey,
+    status,
+    reason,
+    time,
+    coachName: staffName,
+    updatedAt: Date.now()
+  };
+
+  if (window.dboRealtimeBC) {
+    try {
+      window.dboRealtimeBC.postMessage(payload);
+    } catch (e) { console.log('BC post error:', e); }
+  }
+
+  if (window.realtimeMqttClient && window.realtimeMqttClient.connected) {
+    try {
+      window.realtimeMqttClient.publish(REALTIME_SYNC_TOPIC, JSON.stringify(payload), { qos: 1 });
+    } catch (e) { console.log('MQTT broadcast class status error:', e); }
+  }
+}
+
+function updateLiveDateBanner() {
+  if (typeof renderParentView === 'function') renderParentView();
 }
 
 function applyIncomingState(incomingData, actionDesc = '') {
@@ -396,6 +428,21 @@ function applyIncomingState(incomingData, actionDesc = '') {
     localStorage.setItem('dbo_teaching_records_v19', JSON.stringify(teachingRecords));
   }
 
+  // 9. Merge Calendar Day Overrides (Class Canceled / Special Status)
+  if (incomingData.calendarDayOverrides && typeof incomingData.calendarDayOverrides === 'object') {
+    Object.keys(incomingData.calendarDayOverrides).forEach(dKey => {
+      const incOv = incomingData.calendarDayOverrides[dKey];
+      const curOv = calendarDayOverrides[dKey];
+      if (!curOv || (incOv && (incOv.updatedAt || 0) >= (curOv.updatedAt || 0))) {
+        calendarDayOverrides[dKey] = incOv;
+        hasChanges = true;
+      }
+    });
+    localStorage.setItem('dbo_calendar_overrides_v1', JSON.stringify(calendarDayOverrides));
+    if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
+    if (typeof updateLiveDateBanner === 'function') updateLiveDateBanner();
+  }
+
   if (hasChanges) {
     if (loggedInStudent) {
       const fresh = students.find(s => s.id === loggedInStudent.id);
@@ -518,6 +565,54 @@ function handleIncomingMqttMessage(topic, message) {
         }
       }
 
+      // 2.5 Coach Class Status Override (Canceled / Normal Class) -> Notify Parent Devices
+      else if (payload.type === 'COACH_CLASS_STATUS_EVENT' && !isSelf) {
+        if (!calendarDayOverrides) calendarDayOverrides = {};
+        calendarDayOverrides[payload.dateKey] = {
+          status: payload.status,
+          reason: payload.reason || '',
+          time: payload.time || '',
+          updatedBy: payload.coachName || 'โค้ช',
+          updatedAt: payload.updatedAt || Date.now()
+        };
+        localStorage.setItem('dbo_calendar_overrides_v1', JSON.stringify(calendarDayOverrides));
+
+        const isCanceled = (payload.status === 'canceled');
+        const reasonText = payload.reason ? ` (${payload.reason})` : '';
+        const sName = loggedInStudent ? `น้อง ${loggedInStudent.name}` : 'นักเรียน';
+
+        if (isCanceled) {
+          const title = '⚠️ แจ้งเตือนงดคลาส DBO Academy';
+          const bodyText = `แจ้งผู้ปกครอง${sName}: วันที่ ${payload.dateKey} ทางอคาเดมี่ของดการฝึกซ้อม${reasonText} ขออภัยในความไม่สะดวกครับ`;
+          if (typeof playNotificationChime === 'function') playNotificationChime();
+          if (typeof sendSystemNotification === 'function') {
+            sendSystemNotification(title, {
+              body: bodyText,
+              tag: `class-cancel-${payload.dateKey}-${Date.now()}`,
+              icon: 'assets/images/app-icon-192.png'
+            });
+          }
+          if (typeof triggerTelegramPush === 'function') triggerTelegramPush(bodyText, title);
+          if (typeof showToast === 'function') showToast(bodyText);
+        } else {
+          const title = '🏀 แจ้งเตือนคลาสเรียน DBO Academy';
+          const bodyText = `แจ้งผู้ปกครอง${sName}: ยืนยันมีคลาสตามปกติวันที่ ${payload.dateKey} ณ โรงยิมเตชะวิทย์`;
+          if (typeof sendSystemNotification === 'function') {
+            sendSystemNotification(title, {
+              body: bodyText,
+              tag: `class-normal-${payload.dateKey}-${Date.now()}`,
+              icon: 'assets/images/app-icon-192.png'
+            });
+          }
+          if (typeof triggerTelegramPush === 'function') triggerTelegramPush(bodyText, title);
+          if (typeof showToast === 'function') showToast(bodyText);
+        }
+
+        if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
+        if (typeof updateLiveDateBanner === 'function') updateLiveDateBanner();
+        if (typeof renderParentView === 'function') renderParentView();
+      }
+
       // 3. Regular State Sync
       else if ((payload.type === 'REALTIME_STATE_UPDATE' || topic === CLOUD_STATE_TOPIC) && payload.data) {
         applyIncomingState(payload.data, isSelf ? '' : (payload.actionDesc || ''));
@@ -545,6 +640,8 @@ function initRealtimeEngine() {
       window.dboRealtimeBC.onmessage = (event) => {
         if (event.data && event.data.type === 'STATE_CHANGED' && event.data.data) {
           applyIncomingState(event.data.data, event.data.actionDesc);
+        } else if (event.data && event.data.type === 'COACH_CLASS_STATUS_EVENT') {
+          handleIncomingMqttMessage(REALTIME_SYNC_TOPIC, JSON.stringify(event.data));
         }
       };
     }

@@ -351,31 +351,78 @@ function testLockscreenNotification(type) {
 function runClassNotificationScheduler() {
   const now = new Date();
   const dayW = now.getDay();
-  if (dayW !== 1 && dayW !== 2 && dayW !== 4 && dayW !== 6) return;
-
   const todayKey = getTodayDateKey();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-  let startMinutes = (17 * 60);
-  let endMinutes = (18 * 60) + 30;
-  let startTimeStr = '17:00';
-  let endTimeStr = '18:30';
+  // Check if today has calendar override (e.g. coach marked canceled or special)
+  const override = (typeof calendarDayOverrides !== 'undefined' && calendarDayOverrides[todayKey]) ? calendarDayOverrides[todayKey] : null;
+  const isCanceledToday = (override && override.status === 'canceled');
+
+  let isClassDay = (dayW === 1 || dayW === 2 || dayW === 4 || dayW === 6);
+  if (override && (override.status === 'normal' || override.status === 'special')) isClassDay = true;
+  if (isCanceledToday) isClassDay = false;
+
+  let startMinutes = (17 * 60) + 30; // 17:30
+  let endMinutes = (19 * 60) + 30;   // 19:30
+  let startTimeStr = '17:30';
+  let endTimeStr = '19:30';
 
   if (dayW === 6) {
-    startMinutes = (9 * 60);
-    endMinutes = (10 * 60) + 30;
-    startTimeStr = '09:00';
-    endTimeStr = '10:30';
+    startMinutes = (16 * 60);        // 16:00
+    endMinutes = (18 * 60);          // 18:00
+    startTimeStr = '16:00';
+    endTimeStr = '18:00';
   }
 
-  const sName = loggedInStudent ? loggedInStudent.name : 'อิฐ';
+  const sName = loggedInStudent ? loggedInStudent.name : '';
+
+  // ========================================================
+  // 1. MORNING 10:00 AM NOTIFICATION (แจ้งเตือนช่วงเช้า 10:00 น.)
+  // ========================================================
+  const morningAlertKey = `dbo_morning_alert_${todayKey}`;
+  // Trigger if time is 10:00 AM onwards (>= 600 mins) and hasn't alerted today
+  if (currentMinutes >= 600 && !localStorage.getItem(morningAlertKey)) {
+    if (isCanceledToday) {
+      localStorage.setItem(morningAlertKey, 'canceled');
+      const cancelReason = (override && override.reason) ? ` (${override.reason})` : '';
+      const cancelTitle = '⚠️ วันนี้งดคลาสเรียน DBO Academy';
+      const cancelBody = sName
+        ? `แจ้งเตือนผู้ปกครองน้อง ${sName}: วันนี้งดคลาสการฝึกซ้อมของอคาเดมี่${cancelReason} ขอบคุณครับ`
+        : `แจ้งเตือนผู้ปกครอง: วันนี้งดคลาสการฝึกซ้อมของอคาเดมี่${cancelReason} ขอบคุณครับ`;
+
+      sendSystemLockscreenNotification({
+        title: cancelTitle,
+        subtitle: 'from DBO Academy',
+        body: cancelBody,
+        tag: `morning-canceled-${todayKey}`
+      });
+      triggerTelegramPush(cancelBody, cancelTitle);
+    } else if (isClassDay) {
+      localStorage.setItem(morningAlertKey, 'class');
+      const classTitle = '🏀 วันนี้มีเรียนบาสเกตบอล DBO';
+      const classBody = sName
+        ? `วันนี้เป็นวันเรียนของอคาเดมี่ของ น้อง ${sName} เริ่มเรียนเวลา ${startTimeStr} ถึงเวลา ${endTimeStr} น. ณ ยิมเตชะวิทย์`
+        : `วันนี้เป็นวันเรียนของอคาเดมี่ DBO เริ่มเรียนเวลา ${startTimeStr} ถึงเวลา ${endTimeStr} น. ณ ยิมเตชะวิทย์`;
+
+      sendSystemLockscreenNotification({
+        title: classTitle,
+        subtitle: 'from DBO Academy',
+        body: classBody,
+        tag: `morning-class-${todayKey}`
+      });
+      triggerTelegramPush(classBody, classTitle);
+    }
+  }
+
+  // If today is canceled or not a class day, skip 30m / 15m countdowns
+  if (isCanceledToday || !isClassDay) return;
 
   // 30 mins before start
   const diff30 = startMinutes - currentMinutes;
   const flag30Key = `dbo_alert_30m_${todayKey}`;
   if (diff30 >= 28 && diff30 <= 32 && !sessionStorage.getItem(flag30Key)) {
     sessionStorage.setItem(flag30Key, 'true');
-    notifyClassStartsIn30Mins(sName, startTimeStr);
+    notifyClassStartsIn30Mins(sName || 'นักเรียน', startTimeStr);
   }
 
   // 15 mins before start
@@ -383,7 +430,7 @@ function runClassNotificationScheduler() {
   const flag15Key = `dbo_alert_15m_${todayKey}`;
   if (diff15 >= 13 && diff15 <= 17 && !sessionStorage.getItem(flag15Key)) {
     sessionStorage.setItem(flag15Key, 'true');
-    notifyClassStartsIn15Mins(sName, startTimeStr);
+    notifyClassStartsIn15Mins(sName || 'นักเรียน', startTimeStr);
   }
 
   // 15 mins before end
@@ -391,6 +438,6 @@ function runClassNotificationScheduler() {
   const flagEnd15Key = `dbo_alert_end15m_${todayKey}`;
   if (diffEnd15 >= 13 && diffEnd15 <= 17 && !sessionStorage.getItem(flagEnd15Key)) {
     sessionStorage.setItem(flagEnd15Key, 'true');
-    notifyClassEndsIn15Mins(sName, endTimeStr);
+    notifyClassEndsIn15Mins(sName || 'นักเรียน', endTimeStr);
   }
 }

@@ -142,6 +142,9 @@ function saveWeeklyScheduleData() {
   showToast('บันทึกตารางฝึกซ้อมและโค้ชประจำสัปดาห์สำเร็จ');
 }
 
+let currentCalModalDateKey = '';
+let currentCalModalChoice = 'normal';
+
 function renderMasterCalendarGrid() {
   const grid = document.getElementById('masterCalendarGrid');
   if (!grid) return;
@@ -153,77 +156,200 @@ function renderMasterCalendarGrid() {
     const dayOfWeek = (startDayOfWeek + (day - 1)) % 7; 
     const isNormalClass = (dayOfWeek === 1 || dayOfWeek === 2 || dayOfWeek === 4);
     const isSaturdayCoachOat = (dayOfWeek === 6);
+    const dateKey = `2026-11-${String(day).padStart(2, '0')}`;
+    const override = (typeof calendarDayOverrides !== 'undefined' && calendarDayOverrides[dateKey]) ? calendarDayOverrides[dateKey] : null;
+    const isCanceled = (override && override.status === 'canceled');
+    const isConfirmedNormal = (override && override.status === 'normal');
+
+    let cellClass = 'bg-white border-slate-100 text-slate-400';
+    let badge = '';
+    let dotHtml = '';
+
+    if (isCanceled) {
+      cellClass = 'bg-rose-50/90 border-rose-300 text-rose-950 hover:bg-rose-100 shadow-2xs';
+      badge = `<span class="text-[9px] font-bold text-rose-700 bg-rose-100 px-1 py-0.5 rounded text-center truncate border border-rose-200">🚫 งดคลาส</span>`;
+      dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>';
+    } else if (isSaturdayCoachOat) {
+      cellClass = 'bg-indigo-50/80 border-indigo-200 text-indigo-950 hover:bg-indigo-100/60';
+      badge = `<span class="text-[9px] font-bold text-indigo-700 bg-indigo-100/80 px-1 py-0.5 rounded text-center truncate">16:00</span>`;
+      dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>';
+    } else if (isNormalClass || isConfirmedNormal) {
+      cellClass = 'bg-amber-50/70 border-amber-200 text-amber-950 hover:bg-amber-100/60';
+      badge = `<span class="text-[9px] font-bold text-amber-800 bg-amber-100/80 px-1 py-0.5 rounded text-center truncate">17:30</span>`;
+      dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>';
+    }
 
     const cell = document.createElement('div');
-    cell.className = `p-1 sm:p-2 rounded-xl border min-h-[50px] sm:min-h-[64px] flex flex-col justify-between transition-all cursor-pointer ${
-      isSaturdayCoachOat 
-        ? 'bg-indigo-50/80 border-indigo-200 text-indigo-950 hover:bg-indigo-100/60' 
-        : (isNormalClass ? 'bg-amber-50/70 border-amber-200 text-amber-950 hover:bg-amber-100/60' : 'bg-white border-slate-100 text-slate-400')
-    }`;
-
-    let badge = '';
-    if (isSaturdayCoachOat) {
-      badge = `<span class="text-[9px] font-bold text-indigo-700 bg-indigo-100/80 px-1 py-0.5 rounded text-center truncate">16:00</span>`;
-    } else if (isNormalClass) {
-      badge = `<span class="text-[9px] font-bold text-amber-800 bg-amber-100/80 px-1 py-0.5 rounded text-center truncate">17:30</span>`;
-    }
+    cell.className = `p-1 sm:p-2 rounded-xl border min-h-[50px] sm:min-h-[64px] flex flex-col justify-between transition-all cursor-pointer ${cellClass}`;
 
     cell.innerHTML = `
       <div class="flex items-center justify-between">
-        <span class="text-xs font-bold font-mono ${isSaturdayCoachOat ? 'text-indigo-700' : (isNormalClass ? 'text-amber-900' : 'text-slate-400')}">${day}</span>
-        ${isSaturdayCoachOat ? '<span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>' : (isNormalClass ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>' : '')}
+        <span class="text-xs font-bold font-mono ${isCanceled ? 'text-rose-700 font-extrabold' : (isSaturdayCoachOat ? 'text-indigo-700' : (isNormalClass || isConfirmedNormal ? 'text-amber-900' : 'text-slate-400'))}">${day}</span>
+        ${dotHtml}
       </div>
       <div class="mt-1 flex justify-center">${badge}</div>
     `;
 
     cell.onclick = () => {
-      openCalendarDayModal(day, dayOfWeek, isSaturdayCoachOat, isNormalClass);
+      openCalendarDayModal(day, dayOfWeek, isSaturdayCoachOat, isNormalClass, dateKey);
     };
 
     grid.appendChild(cell);
   }
 }
 
-function openCalendarDayModal(day, dayOfWeek, isSat, isNormal) {
+function openCalendarDayModal(day, dayOfWeek, isSat, isNormal, dateKey) {
   const modal = document.getElementById('calendarDayModal');
   if (!modal) return;
+  const dKey = dateKey || `2026-11-${String(day).padStart(2, '0')}`;
+  currentCalModalDateKey = dKey;
+
   const dot = document.getElementById('calModalDayDot');
   const title = document.getElementById('calModalTitle');
   const time = document.getElementById('calModalTime');
   const coach = document.getElementById('calModalCoach');
   const topic = document.getElementById('calModalTopic');
+  const cancelAlert = document.getElementById('calModalCancelAlert');
+  const cancelReasonText = document.getElementById('calModalCancelReasonText');
+  const coachPanel = document.getElementById('calModalCoachPanel');
+  const parentActionBox = document.getElementById('calModalParentActionBox');
+  const reasonInput = document.getElementById('calModalReasonInput');
 
   const dayNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
   const dayName = dayNames[dayOfWeek] || '';
   title.innerText = `วัน${dayName}ที่ ${day} พ.ย. 2569`;
 
-  if (isSat) {
-    dot.className = 'w-3 h-3 rounded-full bg-indigo-600';
-    time.innerText = '16:00 - 18:00 น. (คลาสวันเสาร์)';
-    coach.innerText = 'โค้ชโอ๊ต (Head Coach)';
-    topic.innerHTML = '<strong>คลาส Basic Coach Oat:</strong> วิทยาศาสตร์การกีฬาสำหรับเด็ก การเคลื่อนไหว ความคล่องตัว (Agility Speed Ladder) การประสานงานร่างกาย และเสริมสร้างกล้ามเนื้อมัดเล็ก';
-  } else if (isNormal) {
-    dot.className = 'w-3 h-3 rounded-full bg-amber-500';
-    time.innerText = '17:30 - 19:30 น. (คลาสปกติ)';
-    if (dayOfWeek === 1) {
-      coach.innerText = 'โค้ชโอ๊ต & โค้ชโอ๊ค';
-      topic.innerHTML = '<strong>Fundamental Dribbling:</strong> ทักษะการทรงตัว บาสเกตบอลฟันดาเมนทัล สปีดเลี้ยงบอลสองมือ Footwork การเปลี่ยนทิศทาง และสมรรถภาพร่างกาย';
-    } else if (dayOfWeek === 2) {
-      coach.innerText = 'โค้ชโอ๊ค & โค้ชโอ๊ต';
-      topic.innerHTML = '<strong>Passing Vision & IQ:</strong> การอ่านจังหวะในสนาม Spacing การจ่ายบอลแบบ Drive & Kick ฟุตเวิร์กเกมรับ และการตัดสินใจ 2 on 1 / 3 on 2';
-    } else {
-      coach.innerText = 'โค้ชโอ๊ต & โค้ชโอ๊ค';
-      topic.innerHTML = '<strong>Shooting Mechanics & Game:</strong> ฟอร์มการยิงลูก Finishing under pressure การเลย์อัพใต้แป้น และสถานการณ์จำลอง 3 on 3';
+  const override = (typeof calendarDayOverrides !== 'undefined' && calendarDayOverrides[dKey]) ? calendarDayOverrides[dKey] : null;
+  const isCanceled = (override && override.status === 'canceled');
+
+  const safeEscape = (str) => {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+  };
+
+  if (isCanceled) {
+    if (dot) dot.className = 'w-3 h-3 rounded-full bg-rose-500';
+    if (cancelAlert) {
+      cancelAlert.classList.remove('hidden');
+      if (cancelReasonText) cancelReasonText.innerText = override.reason ? `เหตุผล: ${override.reason}` : 'ทางอคาเดมี่ของดการฝึกซ้อมในวันนี้ ขอบคุณครับ';
     }
+    if (time) time.innerText = 'งดการฝึกซ้อมประจำวัน';
+    if (coach) coach.innerText = `แจ้งโดย ${override.updatedBy || 'ทีมโค้ช'}`;
+    if (topic) topic.innerHTML = `<span class="text-rose-700 font-bold">⚠️ วันนี้งดคลาสการฝึกซ้อม:</span> ${safeEscape(override.reason || 'พักฟื้นร่างกายหรือติดภารกิจ')}`;
+    if (parentActionBox) parentActionBox.classList.add('hidden');
   } else {
-    dot.className = 'w-3 h-3 rounded-full bg-slate-300';
-    time.innerText = 'ไม่มีรอบฝึกซ้อมประจำวัน';
-    coach.innerText = 'พักการฝึกซ้อม หรือจอง Private Class';
-    topic.innerHTML = 'วันนี้ไม่มีคลาสเรียนรวม หากต้องการฝึกซ้อมเดี่ยวหรือกลุ่มพิเศษ สามารถจอง Private Class ในเมนูรับสมัครเรียนได้ครับ';
+    if (cancelAlert) cancelAlert.classList.add('hidden');
+    if (parentActionBox) parentActionBox.classList.remove('hidden');
+
+    if (isSat) {
+      if (dot) dot.className = 'w-3 h-3 rounded-full bg-indigo-600';
+      if (time) time.innerText = '16:00 - 18:00 น. (คลาสวันเสาร์)';
+      if (coach) coach.innerText = 'โค้ชโอ๊ต (Head Coach)';
+      if (topic) topic.innerHTML = '<strong>คลาส Basic Coach Oat:</strong> วิทยาศาสตร์การกีฬาสำหรับเด็ก การเคลื่อนไหว ความคล่องตัว (Agility Speed Ladder) การประสานงานร่างกาย และเสริมสร้างกล้ามเนื้อมัดเล็ก';
+    } else if (isNormal || (override && override.status === 'normal')) {
+      if (dot) dot.className = 'w-3 h-3 rounded-full bg-amber-500';
+      if (time) time.innerText = '17:30 - 19:30 น. (คลาสปกติ)';
+      if (dayOfWeek === 1) {
+        if (coach) coach.innerText = 'โค้ชโอ๊ต & โค้ชโอ๊ค';
+        if (topic) topic.innerHTML = '<strong>Fundamental Dribbling:</strong> ทักษะการทรงตัว บาสเกตบอลฟันดาเมนทัล สปีดเลี้ยงบอลสองมือ Footwork การเปลี่ยนทิศทาง และสมรรถภาพร่างกาย';
+      } else if (dayOfWeek === 2) {
+        if (coach) coach.innerText = 'โค้ชโอ๊ค & โค้ชโอ๊ต';
+        if (topic) topic.innerHTML = '<strong>Passing Vision & IQ:</strong> การอ่านจังหวะในสนาม Spacing การจ่ายบอลแบบ Drive & Kick ฟุตเวิร์กเกมรับ และการตัดสินใจ 2 on 1 / 3 on 2';
+      } else {
+        if (coach) coach.innerText = 'โค้ชโอ๊ต & โค้ชโอ๊ค';
+        if (topic) topic.innerHTML = '<strong>Shooting Mechanics & Game:</strong> ฟอร์มการยิงลูก Finishing under pressure การเลย์อัพใต้แป้น และสถานการณ์จำลอง 3 on 3';
+      }
+    } else {
+      if (dot) dot.className = 'w-3 h-3 rounded-full bg-slate-300';
+      if (time) time.innerText = 'ไม่มีรอบฝึกซ้อมประจำวัน';
+      if (coach) coach.innerText = 'พักการฝึกซ้อม หรือจอง Private Class';
+      if (topic) topic.innerHTML = 'วันนี้ไม่มีคลาสเรียนรวม หากต้องการฝึกซ้อมเดี่ยวหรือกลุ่มพิเศษ สามารถจอง Private Class ในเมนูรับสมัครเรียนได้ครับ';
+    }
+  }
+
+  // Coach Controls Setup
+  const isCoach = (typeof isCoachAuth !== 'undefined' && isCoachAuth) || (typeof currentStaff !== 'undefined' && currentStaff);
+  if (coachPanel) {
+    if (isCoach) {
+      coachPanel.classList.remove('hidden');
+      const initialChoice = isCanceled ? 'canceled' : 'normal';
+      if (reasonInput) reasonInput.value = (override && override.reason) || '';
+      setCalModalStatusChoice(initialChoice);
+    } else {
+      coachPanel.classList.add('hidden');
+    }
   }
 
   modal.classList.remove('hidden');
   lucide.createIcons();
+}
+
+function setCalModalStatusChoice(choice) {
+  currentCalModalChoice = choice;
+  const btnNormal = document.getElementById('btnCalSetNormal');
+  const btnCanceled = document.getElementById('btnCalSetCanceled');
+  const reasonBox = document.getElementById('calModalReasonBox');
+  const badge = document.getElementById('calModalCoachBadge');
+
+  if (choice === 'canceled') {
+    if (btnCanceled) {
+      btnCanceled.className = 'btn-touch py-1.5 px-2 rounded-xl text-xs font-bold bg-rose-600 text-white flex items-center justify-center gap-1 shadow-xs border border-rose-500';
+    }
+    if (btnNormal) {
+      btnNormal.className = 'btn-touch py-1.5 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-emerald-300 flex items-center justify-center gap-1 border border-slate-700';
+    }
+    if (reasonBox) reasonBox.classList.remove('hidden');
+    if (badge) {
+      badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-rose-950 text-rose-300 border border-rose-800';
+      badge.innerText = 'งดคลาสวันนี้';
+    }
+  } else {
+    if (btnNormal) {
+      btnNormal.className = 'btn-touch py-1.5 px-2 rounded-xl text-xs font-bold bg-emerald-600 text-white flex items-center justify-center gap-1 shadow-xs border border-emerald-500';
+    }
+    if (btnCanceled) {
+      btnCanceled.className = 'btn-touch py-1.5 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-rose-300 flex items-center justify-center gap-1 border border-slate-700';
+    }
+    if (reasonBox) reasonBox.classList.add('hidden');
+    if (badge) {
+      badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-800 text-emerald-400 border border-slate-700';
+      badge.innerText = 'มีคลาสปกติ';
+    }
+  }
+  lucide.createIcons();
+}
+
+function saveCalModalClassOverride() {
+  if (!currentCalModalDateKey) return;
+  const reasonInput = document.getElementById('calModalReasonInput');
+  const reason = reasonInput ? reasonInput.value.trim() : '';
+  const status = currentCalModalChoice || 'normal';
+  const staffName = (typeof currentStaff !== 'undefined' && currentStaff) ? currentStaff.name : 'ทีมโค้ช';
+
+  if (!calendarDayOverrides) calendarDayOverrides = {};
+  calendarDayOverrides[currentCalModalDateKey] = {
+    status,
+    reason: status === 'canceled' ? reason : '',
+    time: status === 'canceled' ? '' : 'ปกติ',
+    updatedBy: staffName,
+    updatedAt: Date.now()
+  };
+
+  localStorage.setItem('dbo_calendar_overrides_v1', JSON.stringify(calendarDayOverrides));
+
+  // Broadcast to Cloud API & MQTT & BC
+  const actionText = status === 'canceled' ? `โค้ช${staffName} สั่งงดคลาสวันที่ ${currentCalModalDateKey}` : `โค้ช${staffName} ยืนยันมีคลาสตามปกติวันที่ ${currentCalModalDateKey}`;
+  if (typeof saveState === 'function') {
+    saveState(true, actionText);
+  }
+  if (typeof broadcastCoachClassStatus === 'function') {
+    broadcastCoachClassStatus(currentCalModalDateKey, status, reason);
+  }
+
+  showToast(`บันทึกสถานะคลาสวันที่ ${currentCalModalDateKey} เรียบร้อย (${status === 'canceled' ? 'งดคลาส' : 'มีคลาสปกติ'})`);
+  renderMasterCalendarGrid();
+  if (typeof renderParentView === 'function') renderParentView();
+  closeCalendarDayModal();
 }
 
 function closeCalendarDayModal() {

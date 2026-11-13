@@ -48,13 +48,23 @@ function mergeStates(existing, incoming) {
     parentRegistrations: [],
     pendingSlips: [],
     assistantCoaches: [],
-    weeklySchedule: null
+    weeklySchedule: null,
+    calendarDayOverrides: {}
   };
 
   // 1. Merge weeklySchedule (latest timestamp wins)
   result.weeklySchedule = (incoming.weeklySchedule && (incoming.updatedAt || 0) >= (existing.updatedAt || 0))
     ? incoming.weeklySchedule
     : (existing.weeklySchedule || incoming.weeklySchedule || null);
+
+  // 1.1 Merge calendarDayOverrides
+  const calOverrides = { ...(existing.calendarDayOverrides || {}) };
+  for (const [k, v] of Object.entries(incoming.calendarDayOverrides || {})) {
+    if (!calOverrides[k] || (v && (v.updatedAt || 0) >= (calOverrides[k].updatedAt || 0))) {
+      calOverrides[k] = v;
+    }
+  }
+  result.calendarDayOverrides = calOverrides;
 
   // 1. Merge deletedStudentIds timestamps
   const delMap = {};

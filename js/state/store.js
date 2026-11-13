@@ -5,6 +5,7 @@
 // 1. Core State Variables
 let weeklySchedule = JSON.parse(localStorage.getItem('dbo_weekly_schedule_v16')) || defaultWeeklySchedule;
 let assistantCoaches = JSON.parse(localStorage.getItem('dbo_assistant_coaches_v14')) || defaultAssistantCoaches;
+let calendarDayOverrides = JSON.parse(localStorage.getItem('dbo_calendar_overrides_v1')) || {};
 let coachRosterViewMode = (window.innerWidth < 768) ? 'cards' : (localStorage.getItem('dbo_roster_view_mode_v2') || 'cards');
 
 let students = JSON.parse(localStorage.getItem('dbo_students_v14')) || null;
@@ -174,7 +175,8 @@ function exportDatabaseJSON() {
     pendingSlips,
     teachingRecords,
     weeklySchedule,
-    assistantCoaches
+    assistantCoaches,
+    calendarDayOverrides
   };
   const blob = new Blob([JSON.stringify(fullDb, null, 2)], { type: 'application/json' });
   const link = document.createElement("a");
@@ -216,6 +218,7 @@ function reloadStateFromStorage() {
     teachingRecords = JSON.parse(localStorage.getItem('dbo_teaching_records_v19')) || teachingRecords;
     parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrations_v14')) || parentRegistrations;
     pendingSlips = JSON.parse(localStorage.getItem('dbo_pending_slips_v14')) || pendingSlips;
+    calendarDayOverrides = JSON.parse(localStorage.getItem('dbo_calendar_overrides_v1')) || calendarDayOverrides;
     if (typeof refreshAllViews === 'function') refreshAllViews();
   } catch (e) {
     console.log('Reload storage error:', e);

@@ -195,8 +195,35 @@ function renderParentView(matchedList) {
     const normalActions = document.getElementById('hasNormalClassActions');
     const noClassBox = document.getElementById('noClassNoticeBox');
 
+    const todayKey = (typeof getTodayDateKey === 'function') ? getTodayDateKey() : '';
+    const todayOverride = (typeof calendarDayOverrides !== 'undefined' && calendarDayOverrides[todayKey]) ? calendarDayOverrides[todayKey] : null;
+
     let scheduleNote = '';
-    if (dayW === 1 || dayW === 2 || dayW === 4) {
+    if (todayOverride && todayOverride.status === 'canceled') {
+      const cancelReason = todayOverride.reason ? ` (${todayOverride.reason})` : '';
+      scheduleNote = `🚫 วันนี้งดคลาสการฝึกซ้อม${cancelReason}`;
+      if (headingEl) headingEl.innerText = '⚠️ วันนี้งดคลาสฝึกซ้อม (DBO Academy)';
+      if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+      if (normalActions) normalActions.classList.add('hidden');
+      if (noClassBox) {
+        noClassBox.classList.remove('hidden');
+        noClassBox.innerHTML = `
+          <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs space-y-1.5">
+            <span class="font-bold flex items-center gap-1.5 text-rose-700">
+              <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600"></i>
+              <span>วันนี้นัดงดคลาสการฝึกซ้อม</span>
+            </span>
+            <p class="leading-relaxed">${todayOverride.reason ? 'เหตุผล: ' + escapeHtml(todayOverride.reason) : 'ทางอคาเดมี่ของดการฝึกซ้อมในวันนี้ ผู้ปกครองไม่ต้องแจ้งลาครับ ขอบคุณครับ'}</p>
+          </div>
+        `;
+      }
+    } else if (todayOverride && todayOverride.status === 'normal') {
+      scheduleNote = 'คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์ (โค้ชยืนยันเปิดซ้อม)';
+      if (headingEl) headingEl.innerText = 'คลาสฝึกซ้อมประจำวัน (ยืนยันเปิดซ้อม)';
+      if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+      if (normalActions) normalActions.classList.remove('hidden');
+      if (noClassBox) noClassBox.classList.add('hidden');
+    } else if (dayW === 1 || dayW === 2 || dayW === 4) {
       scheduleNote = 'คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์';
       if (headingEl) headingEl.innerText = 'คลาสฝึกซ้อมประจำวัน (เปิดซ้อมปกติ)';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
