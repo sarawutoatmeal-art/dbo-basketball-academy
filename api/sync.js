@@ -75,9 +75,16 @@ function mergeStates(existing, incoming) {
   result.deletedStudentIds = delMap;
 
   // 2. Merge students by id & _updatedAt
+  const nowTs = Date.now();
   const studentMap = new Map();
   (existing.students || []).forEach(s => {
-    if (s && s.id != null) studentMap.set(String(s.id), s);
+    if (s && s.id != null) {
+      // Clamp any legacy future timestamps to past so fresh edits always win
+      if ((s._updatedAt || 0) > nowTs + 5000) {
+        s._updatedAt = nowTs - 10000;
+      }
+      studentMap.set(String(s.id), s);
+    }
   });
   (incoming.students || []).forEach(inc => {
     if (!inc || inc.id == null) return;
@@ -86,8 +93,9 @@ function mergeStates(existing, incoming) {
     if (!cur) {
       studentMap.set(key, inc);
     } else {
-      const incTime = inc._updatedAt || 0;
-      const curTime = cur._updatedAt || 0;
+      let incTime = inc._updatedAt || 0;
+      let curTime = cur._updatedAt || 0;
+      if (curTime > nowTs + 5000) curTime = nowTs - 10000;
       if (incTime >= curTime) {
         studentMap.set(key, inc);
       }
@@ -193,6 +201,7 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       ok: true,
       hasState: !!state,
+      state: state || null,
       data: state || null
     });
   }

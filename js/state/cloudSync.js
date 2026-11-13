@@ -244,8 +244,12 @@ function applyIncomingState(incomingData, actionDesc = '') {
         studentMap.set(sid, inc);
         hasChanges = true;
       } else {
-        const existingTs = existing._updatedAt || 0;
-        const incTs = inc._updatedAt || 0;
+        let existingTs = existing._updatedAt || 0;
+        let incTs = inc._updatedAt || 0;
+        const now = Date.now();
+        if (existingTs > now + 5000) existingTs = now - 10000;
+        if (incTs > now + 5000) incTs = now - 10000;
+
         if (incTs > existingTs) {
           studentMap.set(sid, {
             ...existing,
@@ -429,11 +433,10 @@ async function pullStateFromCloudApi() {
     if (res.ok) {
       const json = await res.json();
       if (json && json.ok) {
-        if (json.state && json.state.students && json.state.students.length > 0) {
-          applyIncomingState(json.state, '');
+        const cloudState = json.data || json.state;
+        if (cloudState && cloudState.students && cloudState.students.length > 0) {
+          applyIncomingState(cloudState, '');
           updateRealtimeIndicator(true);
-        } else {
-          pushStateToCloudApi(buildFullStateSnapshot());
         }
       }
     }
