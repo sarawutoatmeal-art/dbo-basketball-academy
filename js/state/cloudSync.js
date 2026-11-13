@@ -30,10 +30,7 @@ async function pushStateToCloudApi(snapshot) {
       body: JSON.stringify({ data: snapshot })
     });
     if (res.ok) {
-      const json = await res.json();
-      if (json && json.ok && json.data) {
-        applyIncomingState(json.data, '', true);
-      }
+      // Pushed successfully; keep current client state as definitive source of truth
     }
   } catch (e) {
     // Offline or local file mode fallback
@@ -108,40 +105,11 @@ function saveState(broadcastRemote = true, actionDesc = '', isExplicitSubmit = f
 }
 
 function markPendingCoachChange(desc = '') {
-  pendingSessionChanges++;
-  updateSubmitBarUI(desc);
+  // Direct save mode: All coach changes are saved and synced instantly, no submit bar needed.
 }
 
 function updateSubmitBarUI(lastChangeDesc = '') {
-  const stickyBar = document.getElementById('coachStickySubmitBar');
-  const stickyTitle = document.getElementById('stickySubmitTitle');
-  const stickySub = document.getElementById('stickySubmitSubtitle');
-  const statusText = document.getElementById('lastSubmitStatusText');
-
-  if (stickyBar) {
-    if (isCoachAuth && pendingSessionChanges > 0) {
-      stickyBar.classList.remove('hidden');
-      if (stickyTitle) stickyTitle.innerText = `มีรายการเช็คชื่อ/แก้ไขโควต้า ${pendingSessionChanges} รายการ รอกดยืนยัน Submit`;
-      if (stickySub) stickySub.innerText = lastChangeDesc ? `ล่าสุด: ${lastChangeDesc} • กดยืนยันเพื่ออัปเดตทุกเครื่อง` : 'กดปุ่มยืนยันเพื่อส่งข้อมูลอัปเดตไปยังทุกเครื่องที่ออนไลน์';
-    } else {
-      stickyBar.classList.add('hidden');
-    }
-  }
-
-  if (statusText) {
-    if (pendingSessionChanges > 0) {
-      statusText.className = 'text-[11px] text-amber-700 font-medium';
-      statusText.innerText = `มีการแก้ไข ${pendingSessionChanges} รายการ — กรุณากดปุ่ม "ยืนยัน Submit ข้อมูล" เพื่อส่งอัปเดตไปยังทุกเครื่อง`;
-    } else if (lastSubmittedAt > 0) {
-      const d = new Date(lastSubmittedAt);
-      const tStr = d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' น.';
-      statusText.className = 'text-[11px] text-emerald-700 font-medium';
-      statusText.innerText = `ยืนยัน Submit ข้อมูลขึ้นระบบทุกเครื่องล่าสุดเมื่อ ${tStr}${lastSubmittedBy ? ' โดย ' + lastSubmittedBy : ''}`;
-    } else {
-      statusText.className = 'text-[11px] text-slate-500';
-      statusText.innerText = 'เมื่อกดยืนยัน ระบบจะซิงค์จำนวนครั้งคงเหลือและรายชื่อเช็คชื่อไปยังเครื่องโค้ช สตาฟ และผู้ปกครองทุกคนทันที';
-    }
-  }
+  // Direct save mode: No floating sticky bar or bottom submit panel.
 }
 
 async function submitAndBroadcastAttendanceSession() {
@@ -285,22 +253,9 @@ function applyIncomingState(incomingData, actionDesc = '') {
             phone: inc.phone || existing.phone || ''
           });
           hasChanges = true;
-        } else if (incTs === existingTs) {
-          if (inc.phone && !existing.phone) {
-            existing.phone = inc.phone;
-            hasChanges = true;
-          }
-          if ((inc.checkInHistory || []).length > (existing.checkInHistory || []).length) {
-            existing.remaining = inc.remaining;
-            existing.saturdayRemaining = inc.saturdayRemaining;
-            existing.checkInHistory = inc.checkInHistory;
-            hasChanges = true;
-          }
-          if (inc.remaining !== existing.remaining && incTs > 0) {
-            existing.remaining = inc.remaining;
-            hasChanges = true;
-          }
         } else {
+          // If incTs <= existingTs, NEVER overwrite remaining or student details!
+          // Local changes are strictly authoritative.
           if (inc.phone && !existing.phone) {
             existing.phone = inc.phone;
             hasChanges = true;

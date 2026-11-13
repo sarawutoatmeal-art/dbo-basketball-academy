@@ -1559,55 +1559,7 @@
           </div>
         </div>
 
-        <!-- ======================================================== -->
-        <!-- BOTTOM CONFIRM & SUBMIT ATTENDANCE / QUOTA SYNC PANEL    -->
-        <!-- ======================================================== -->
-        <div id="coachBottomSubmitPanel" class="mt-4 p-4 sm:p-5 rounded-xl border border-slate-200 bg-slate-50/90 space-y-3.5 shadow-2xs">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <h4 class="text-sm sm:text-base font-semibold text-slate-900">
-                  ยืนยันการเช็คชื่อและอัปเดตสิทธิ์เรียนไปยังทุกเครื่อง (Submit ข้อมูล)
-                </h4>
-              </div>
-              <p id="bottomSubmitSummaryText" class="text-xs text-slate-600">
-                รอบวันนี้: มาเรียน <strong id="submitPanelAttendingCount" class="font-mono text-emerald-700">0</strong> คน • แจ้งลา <strong id="submitPanelLeaveCount" class="font-mono text-amber-700">0</strong> คน • ยังไม่เช็ค <strong id="submitPanelUncheckedCount" class="font-mono text-slate-700">54</strong> คน
-              </p>
-              <p id="lastSubmitStatusText" class="text-[11px] text-slate-500 font-mono">
-                เมื่อกดยืนยัน ระบบจะซิงค์จำนวนครั้งคงเหลือและรายชื่อเช็คชื่อไปยังเครื่องโค้ช สตาฟ และผู้ปกครองทุกคนทันที
-              </p>
-            </div>
 
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-shrink-0">
-              <button type="button" onclick="submitAndBroadcastAttendanceSession()" id="btnBottomSubmitSession" class="btn-touch px-6 py-3 rounded-xl font-semibold text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs flex items-center justify-center gap-2 transition-colors cursor-pointer">
-                <i data-lucide="check-circle" class="w-4 h-4"></i>
-                <span>ยืนยัน Submit ข้อมูล (อัปเดตทุกเครื่อง)</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sticky Floating Submit Bar (Appears when coach checks attendance or edits quotas) -->
-        <div id="coachStickySubmitBar" class="hidden fixed bottom-16 md:bottom-5 left-3 right-3 max-w-2xl mx-auto z-40">
-          <div class="bg-slate-900 text-white border border-slate-700 rounded-xl p-3 sm:px-4 sm:py-3 shadow-xl flex items-center justify-between gap-3">
-            <div class="min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                <p class="text-xs sm:text-sm font-semibold text-white truncate" id="stickySubmitTitle">
-                  มีรายการเช็คชื่อ/แก้ไขโควต้ารอ Submit ยืนยัน
-                </p>
-              </div>
-              <p class="text-[11px] text-slate-300 truncate mt-0.5" id="stickySubmitSubtitle">
-                กดปุ่มยืนยันเพื่อส่งข้อมูลอัปเดตไปยังทุกเครื่องที่ออนไลน์
-              </p>
-            </div>
-            <button type="button" onclick="submitAndBroadcastAttendanceSession()" id="btnStickySubmitSession" class="btn-touch px-4 py-2 rounded-lg font-semibold text-xs bg-emerald-500 hover:bg-emerald-600 text-slate-950 flex items-center gap-1.5 flex-shrink-0 transition-colors cursor-pointer">
-              <i data-lucide="send" class="w-3.5 h-3.5"></i>
-              <span>ยืนยัน Submit ข้อมูล</span>
-            </button>
-          </div>
-        </div>
 
       </div>
 

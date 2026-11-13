@@ -26,47 +26,17 @@ function syncSiblingState(stList) {
         }
       });
 
-      // If mode is shared, mirror the quota & history across shared siblings
-      if (def.mode === 'shared') {
-        let latestTs = 0;
-        let sourceMember = members[0];
-        members.forEach(m => {
-          const ts = m._updatedAt || 0;
-          if (ts >= latestTs) {
-            latestTs = ts;
-            sourceMember = m;
-          }
-        });
-
-        members.forEach(m => {
-          m.remaining = sourceMember.remaining;
-          m.saturdayRemaining = sourceMember.saturdayRemaining;
-          if (sourceMember.checkInHistory) {
-            m.checkInHistory = sourceMember.checkInHistory;
-          }
-        });
-      }
+      // NOTE: Contact information is linked for parent login, but remaining quotas are strictly independent!
+      // NEVER overwrite or mirror remaining or saturdayRemaining across siblings.
+      // Every student's quota is strictly maintained exactly as set by the coach directly.
     }
   });
 }
 
 function syncSharedSiblingQuota(sourceStudent, target = 'regular') {
-  if (!sourceStudent || !sourceStudent.siblingGroupId) return;
-  const def = SIBLING_DEFINITIONS.find(d => d.id === sourceStudent.siblingGroupId);
-  if (!def || def.mode !== 'shared') return;
-
-  const siblings = students.filter(s => s.siblingGroupId === sourceStudent.siblingGroupId && s.id !== sourceStudent.id);
-  siblings.forEach(sib => {
-    if (target === 'saturday') {
-      sib.saturdayRemaining = sourceStudent.saturdayRemaining;
-    } else {
-      sib.remaining = sourceStudent.remaining;
-    }
-    sib._updatedAt = Date.now();
-    if (sourceStudent.checkInHistory) {
-      sib.checkInHistory = JSON.parse(JSON.stringify(sourceStudent.checkInHistory));
-    }
-  });
+  // Disabled as per coach instruction: Each student quota is strictly independent and controlled by coach directly.
+  // Never automatically increase or decrease or mirror quota onto siblings.
+  return;
 }
 
 function switchSibling(studentIdStr) {

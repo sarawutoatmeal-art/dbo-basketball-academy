@@ -275,7 +275,6 @@ function coachCheckInAction(studentId, delta, target = 'regular') {
     student.remaining = (student.remaining || 0) + delta;
   }
   student._updatedAt = Date.now();
-  syncSharedSiblingQuota(student, target);
 
   if (!student.checkInHistory) student.checkInHistory = [];
   student.checkInHistory.unshift({
@@ -302,7 +301,6 @@ function coachCheckInAction(studentId, delta, target = 'regular') {
   };
 
   const curRemAfter = (target === 'saturday') ? student.saturdayRemaining : student.remaining;
-  markPendingCoachChange(`เช็คชื่อน้อง ${student.name} (เหลือ ${curRemAfter} ครั้ง)`);
   saveState(true, `เช็คชื่อน้อง ${student.name} (เหลือ ${curRemAfter} ครั้ง)`);
   if (typeof updateSessionDateDisplay === 'function') updateSessionDateDisplay();
   renderCoachRosterTable();
@@ -370,9 +368,7 @@ function coachAdjustQuota(studentId, delta, target = 'regular') {
   });
 
   student._updatedAt = Date.now();
-  syncSharedSiblingQuota(student, target);
   const newQuota = target === 'saturday' ? student.saturdayRemaining : student.remaining;
-  markPendingCoachChange(`ปรับโควตาน้อง ${student.name} เป็น ${newQuota} ครั้ง`);
   saveState(true, `ปรับโควตาน้อง ${student.name} (เหลือ ${newQuota} ครั้ง)`);
   renderCoachRosterTable();
   if (loggedInStudent && loggedInStudent.id === studentId) {
@@ -392,7 +388,6 @@ function coachDeleteStudent(studentId) {
 
   deletedStudentIds[String(studentId)] = Date.now();
   students = students.filter(s => s.id !== studentId);
-  markPendingCoachChange(`ลบชื่อน้อง ${student.name}`);
   saveState(true, `ลบข้อมูลน้อง ${student.name}`);
   renderCoachRosterTable();
 
@@ -431,7 +426,6 @@ function coachUndoCheckIn(studentId, target = 'regular') {
     }
   }
 
-  markPendingCoachChange(`คืนสิทธิ์น้อง ${student.name} (+1)`);
   saveState(true, `คืนสิทธิ์น้อง ${student.name} (+1 ครั้ง)`);
   if (typeof updateSessionDateDisplay === 'function') updateSessionDateDisplay();
   renderCoachRosterTable();
@@ -453,7 +447,6 @@ function coachClearAttendanceRecord(studentId) {
       status: 'unchecked',
       updatedAt: Date.now()
     };
-    markPendingCoachChange('ล้างสถานะการเช็คชื่อ');
     saveState(true, 'ล้างสถานะเช็คชื่อ');
     if (typeof updateSessionDateDisplay === 'function') updateSessionDateDisplay();
     renderCoachRosterTable();
@@ -619,11 +612,8 @@ function handleSaveStudent(e) {
         student.nextRenewal = `วันที่ ${parts[2]} ของเดือนถัดไป`;
       }
       student._updatedAt = Date.now();
-      syncSharedSiblingQuota(student, 'regular');
-      syncSharedSiblingQuota(student, 'saturday');
     }
-    markPendingCoachChange(`แก้ไขชื่อ/สิทธิ์น้อง ${name}`);
-    showToast(`บันทึกการแก้ไขชื่อและสิทธิ์น้อง ${name} เรียบร้อย`);
+    showToast(`บันทึกการแก้ไขข้อมูลน้อง ${name} เรียบร้อย`);
   } else {
     const maxId = students.reduce((m, s) => Math.max(m, Number(s.id) || 0), 0);
     const newStudent = {
@@ -647,7 +637,6 @@ function handleSaveStudent(e) {
       _updatedAt: Date.now()
     };
     students.unshift(newStudent);
-    markPendingCoachChange(`เพิ่มนักเรียนใหม่ น้อง ${name}`);
     showToast(`เพิ่มนักเรียนน้อง ${name} เข้าสู่ระบบสำเร็จ`);
   }
 
@@ -755,7 +744,6 @@ function approveSlip(slipId) {
 
   processedSlipIds[String(slipId)] = Date.now();
   pendingSlips.splice(itemIndex, 1);
-  markPendingCoachChange(`อนุมัติสลิปน้อง ${item.studentName}`);
   saveState(true, `อนุมัติสลิปและเพิ่มสิทธิ์น้อง ${item.studentName}`);
   renderPendingSlips();
   renderCoachRosterTable();
