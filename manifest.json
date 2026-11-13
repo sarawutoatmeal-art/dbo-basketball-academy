@@ -4,8 +4,8 @@
   "description": "ระบบเช็คชื่อ โควต้าเรียน และบริหารจัดการคอร์ส DBO Basketball Academy",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#070C1B",
-  "theme_color": "#070C1B",
+  "background_color": "#1A1137",
+  "theme_color": "#1A1137",
   "orientation": "portrait",
   "icons": [
     {

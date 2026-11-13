@@ -63,6 +63,51 @@
 <body class="min-h-screen flex flex-col pb-24 md:pb-12">
 
   <!-- ======================================================== -->
+  <!-- 0. NATIVE APP SPLASH / LAUNCH SCREEN                    -->
+  <!-- ======================================================== -->
+  <div id="appSplashScreen" role="dialog" aria-modal="true" aria-label="Loading DBO Basketball Academy">
+    <!-- Top Spacer for safe area -->
+    <div class="w-full flex-shrink-0"></div>
+
+    <!-- Center Hero: Academy Logo & Brand Slogan -->
+    <div class="flex flex-col items-center justify-center text-center my-auto px-4 max-w-sm w-full">
+      <!-- Glow Container around Logo -->
+      <div class="relative flex items-center justify-center mb-5">
+        <div class="absolute -inset-6 bg-gradient-to-tr from-amber-500/25 via-purple-600/35 to-indigo-600/25 rounded-full blur-2xl pointer-events-none"></div>
+        <img 
+          src="assets/images/dbo-logo.png?v=8.0" 
+          alt="DBO Basketball Academy" 
+          class="relative w-28 h-28 sm:w-36 sm:h-36 rounded-3xl object-cover ring-2 ring-amber-400/40 splash-logo-animated"
+        >
+      </div>
+
+      <!-- Academy Title -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-center gap-2">
+          <span class="text-xl sm:text-2xl font-black text-white tracking-tight drop-shadow-md">DBO Basketball</span>
+          <span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 uppercase tracking-wider">Academy</span>
+        </div>
+        <!-- User Requested Slogan -->
+        <p class="text-xs sm:text-sm font-semibold text-amber-200/90 tracking-widest uppercase flex items-center justify-center gap-2 pt-0.5 drop-shadow-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+          <span>Start from 0 to No. 1</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Bottom Loading Bar & Indicator -->
+    <div class="flex flex-col items-center justify-center gap-2.5 w-full flex-shrink-0">
+      <!-- Sleek Glowing Progress Bar -->
+      <div class="w-36 sm:w-44 h-1.5 bg-white/10 rounded-full overflow-hidden relative backdrop-blur-xs ring-1 ring-white/10">
+        <div class="h-full w-full bg-gradient-to-r from-transparent via-amber-400 to-transparent splash-progress-shimmer rounded-full"></div>
+      </div>
+      <p class="text-[11px] sm:text-xs font-medium text-purple-200/75 tracking-wider">กำลังเปิดระบบ...</p>
+      <span class="text-[9px] font-mono text-purple-300/40 tracking-widest uppercase">DBO ACADEMY · OFFICIAL APP</span>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
   <!-- 1. HEADER (Safe Area Fitted for Mobile Notch)            -->
   <!-- ======================================================== -->
   <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-dbo-border" style="padding-top: max(env(safe-area-inset-top, 0px), 14px);">

@@ -182,4 +182,25 @@ window.addEventListener('DOMContentLoaded', () => {
   if (typeof initRealtimeEngine === 'function') {
     initRealtimeEngine();
   }
+
+  // Dismiss Native Splash Screen smoothly
+  setTimeout(hideSplashScreen, 1000);
 });
+
+// Fallback triggers for Splash Screen dismissal
+window.addEventListener('load', () => {
+  setTimeout(hideSplashScreen, 900);
+});
+setTimeout(hideSplashScreen, 2200);
+
+// Native App Splash Screen Controller
+function hideSplashScreen() {
+  const splash = document.getElementById('appSplashScreen');
+  if (!splash || splash.classList.contains('splash-fade-out')) return;
+  splash.classList.add('splash-fade-out');
+  setTimeout(() => {
+    if (splash.parentNode) {
+      splash.parentNode.removeChild(splash);
+    }
+  }, 500);
+}

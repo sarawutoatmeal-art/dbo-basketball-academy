@@ -135,3 +135,61 @@ header {
 .mobile-bottom-nav {
   padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px) !important;
 }
+
+/* ======================================================== */
+/* Native App Splash / Launch Screen                        */
+/* ======================================================== */
+#appSplashScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  min-height: -webkit-fill-available;
+  background: radial-gradient(circle at 50% 38%, #2D1854 0%, #1A1137 55%, #0F0922 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: max(env(safe-area-inset-top, 0px), 28px);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 32px);
+  padding-left: 20px;
+  padding-right: 20px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s;
+}
+
+#appSplashScreen.splash-fade-out {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+@keyframes splashLogoBreath {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 10px 40px -10px rgba(197, 155, 39, 0.4), 0 0 60px rgba(120, 70, 220, 0.3);
+  }
+  50% {
+    transform: scale(1.035);
+    box-shadow: 0 16px 50px -6px rgba(197, 155, 39, 0.6), 0 0 85px rgba(150, 90, 250, 0.45);
+  }
+}
+
+.splash-logo-animated {
+  animation: splashLogoBreath 2.6s ease-in-out infinite;
+}
+
+@keyframes splashBarProgress {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(100%); }
+}
+
+.splash-progress-shimmer {
+  animation: splashBarProgress 1.4s ease-in-out infinite;
+}
