@@ -322,6 +322,37 @@ function setCalendarTabSubView(view) {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
+// Access Control: Only Coach / Admin see court expenses; Parents & kids see only the Calendar & Google Calendar
+function updateCourtCalendarRoleVisibility() {
+  const isCoach = (typeof isCoachAuth !== 'undefined' && isCoachAuth && typeof currentStaff !== 'undefined' && currentStaff);
+  const printBtn = document.getElementById('btnCourtPrintModal');
+  const navBar = document.getElementById('calendarSubViewNav');
+  const vStat = document.getElementById('subViewCourtStatement');
+  const vGCal = document.getElementById('subViewGCal');
+  const headerTitle = document.getElementById('calendarTabHeaderTitle');
+  const headerSub = document.getElementById('calendarTabHeaderSubtitle');
+
+  if (isCoach) {
+    if (printBtn) printBtn.classList.remove('hidden');
+    if (navBar) navBar.classList.remove('hidden');
+    if (headerTitle) headerTitle.innerText = 'ตารางซ้อม & สรุปค่าสนามรายเดือน (ส่งโรงเรียน)';
+    if (headerSub) headerSub.innerText = 'เชื่อมต่อ Google Calendar • สรุปยอดค่าเช่าสนามฝึกซ้อมรายเดือน (ชม. ละ 500 บ.)';
+    if (!vGCal || vGCal.classList.contains('hidden')) {
+      setCalendarTabSubView('statement');
+    }
+  } else {
+    // Parents, students, public visitors
+    if (printBtn) printBtn.classList.add('hidden');
+    if (navBar) navBar.classList.add('hidden');
+    if (vStat) vStat.classList.add('hidden');
+    if (vGCal) vGCal.classList.remove('hidden');
+    if (headerTitle) headerTitle.innerText = 'ตารางฝึกซ้อม & ปฏิทิน DBO Basketball Academy';
+    if (headerSub) headerSub.innerText = 'ตารางคลาสฝึกซ้อมประจำสัปดาห์ & ปฏิทิน Google Calendar';
+    if (typeof renderWeeklyScheduleView === 'function') renderWeeklyScheduleView();
+  }
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
 // ========================================================
 // DAY EDIT MODAL (Normal, Canceled 0 THB, Private +500/hr)
 // ========================================================
@@ -681,8 +712,8 @@ function fallbackCopyText(text) {
 // Auto-initialize when calendar tab is switched or page loads
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
-    if (typeof renderCourtExpenseStatement === 'function') {
-      renderCourtExpenseStatement();
+    if (typeof updateCourtCalendarRoleVisibility === 'function') {
+      updateCourtCalendarRoleVisibility();
     }
   }, 300);
 });

@@ -385,7 +385,7 @@ function notifyAttendanceCheckIn(studentName, coachName, timeStr, remainingCount
   triggerTelegramPush(`น้อง ${studentName} เข้าฝึกซ้อมเรียบร้อยแล้ว (${timeStr || '17:00 น.'}) โดย ${coachName || 'โค้ช'} • โควต้าคงเหลือ: ${remainingCount} ครั้ง`, '🏀 เช็คชื่อเข้าเรียนสำเร็จ');
 }
 
-function notifyClassStartsIn15Mins(studentName = 'อิฐ', startTime = '17:00') {
+function notifyClassStartsIn15Mins(studentName = 'อิฐ', startTime = '17:30') {
   sendSystemLockscreenNotification({
     title: 'Class starts in 15 mins',
     subtitle: 'from DBO Academy',
@@ -395,7 +395,7 @@ function notifyClassStartsIn15Mins(studentName = 'อิฐ', startTime = '17:00
   triggerTelegramPush(`คลาสกำลังจะเริ่มในอีก 15 นาที (${startTime} น.) • น้อง ${studentName} เตรียมตัวลงสนามได้เลยครับ`, '⏰ Class starts in 15 mins');
 }
 
-function notifyClassStartsIn30Mins(studentName = 'อิฐ', startTime = '17:00') {
+function notifyClassStartsIn30Mins(studentName = 'อิฐ', startTime = '17:30') {
   sendSystemLockscreenNotification({
     title: 'Class starts in 30 mins',
     subtitle: 'from DBO Academy',
@@ -405,7 +405,7 @@ function notifyClassStartsIn30Mins(studentName = 'อิฐ', startTime = '17:00
   triggerTelegramPush(`คลาสจะเริ่มในอีก 30 นาที (${startTime} น.) • กรุณาเตรียมตัวน้อง ${studentName} ให้พร้อมฝึกซ้อมครับ`, '⏰ Class starts in 30 mins');
 }
 
-function notifyClassEndsIn15Mins(studentName = 'อิฐ', endTime = '18:30') {
+function notifyClassEndsIn15Mins(studentName = 'อิฐ', endTime = '19:30') {
   sendSystemLockscreenNotification({
     title: 'Class ends in 15 mins',
     subtitle: 'from DBO Academy',
@@ -420,13 +420,13 @@ function testLockscreenNotification(type) {
   const curRem = loggedInStudent ? (loggedInStudent.remaining !== undefined ? loggedInStudent.remaining : 4) : 4;
 
   if (type === '15m_before') {
-    notifyClassStartsIn15Mins(currentName, '17:00');
+    notifyClassStartsIn15Mins(currentName, '17:30');
     showToast('ทดสอบแจ้งเตือนก่อนเริ่ม 15 นาที (Class starts in 15 mins)');
   } else if (type === '30m_before') {
-    notifyClassStartsIn30Mins(currentName, '17:00');
+    notifyClassStartsIn30Mins(currentName, '17:30');
     showToast('ทดสอบแจ้งเตือนก่อนเริ่ม 30 นาที (Class starts in 30 mins)');
   } else if (type === '15m_end') {
-    notifyClassEndsIn15Mins(currentName, '18:30');
+    notifyClassEndsIn15Mins(currentName, '19:30');
     showToast('ทดสอบแจ้งเตือน 15 นาทีก่อนเลิกคลาส (Class ends in 15 mins)');
   } else if (type === 'checkin') {
     const timeNow = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
@@ -456,9 +456,9 @@ function runClassNotificationScheduler() {
 
   if (dayW === 6) {
     startMinutes = (16 * 60);        // 16:00
-    endMinutes = (18 * 60);          // 18:00
+    endMinutes = (17 * 60) + 30;     // 17:30 (1.5 hrs)
     startTimeStr = '16:00';
-    endTimeStr = '18:00';
+    endTimeStr = '17:30';
   }
 
   const sName = loggedInStudent ? loggedInStudent.name : '';

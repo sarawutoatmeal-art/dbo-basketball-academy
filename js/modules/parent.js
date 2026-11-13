@@ -115,7 +115,7 @@ function renderParentView(matchedList) {
   if (heroNameEl) heroNameEl.innerText = `น้อง ${loggedInStudent.name}`;
   if (heroDescEl) {
     if (loggedInStudent.courseType === 'monthly') heroDescEl.innerText = 'แพ็กเกจรายเดือนสม่ำเสมอ (ซ้อม 2 วัน/สัปดาห์) • สนามเตชะวิทย์';
-    else if (loggedInStudent.courseType === 'saturday') heroDescEl.innerText = 'คอร์สวันเสาร์ 4 ครั้ง Coach Oat (16:00-18:00 น.) • สนามเตชะวิทย์';
+    else if (loggedInStudent.courseType === 'saturday') heroDescEl.innerText = 'คอร์สวันเสาร์ 4 ครั้ง Coach Oat (16:00-17:30 น.) • สนามเตชะวิทย์';
     else heroDescEl.innerText = 'คอร์สปกติ 10 ครั้ง (จ./อ./พฤ. 17:30-19:30 น.) • สนามเตชะวิทย์';
   }
 
@@ -230,14 +230,14 @@ function renderParentView(matchedList) {
       if (normalActions) normalActions.classList.remove('hidden');
       if (noClassBox) noClassBox.classList.add('hidden');
     } else if (dayW === 6) {
-      scheduleNote = 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 18:00 น. ณ ยิมเตชะวิทย์';
+      scheduleNote = 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 17:30 น. ณ ยิมเตชะวิทย์';
       if (headingEl) headingEl.innerText = 'คลาสวันเสาร์ Coach Oat (เปิดซ้อมปกติ)';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-indigo-600';
       if (normalActions) normalActions.classList.remove('hidden');
       if (noClassBox) noClassBox.classList.add('hidden');
     } else {
-      scheduleNote = 'วันนี้ไม่มีคลาสเรียนรวม (วันพักฟื้นร่างกาย / นัดซ้อม Private)';
-      if (headingEl) headingEl.innerText = 'วันนี้ไม่มีคลาสเรียนรวม';
+      scheduleNote = 'วันนี้ไม่มีคลาส';
+      if (headingEl) headingEl.innerText = 'วันนี้ไม่มีคลาส';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-slate-400';
       if (normalActions) normalActions.classList.add('hidden');
       if (noClassBox) noClassBox.classList.remove('hidden');
@@ -260,7 +260,7 @@ function renderParentView(matchedList) {
       if (nextTitleEl) nextTitleEl.innerText = 'พฤหัสบดีนี้ (17:30 - 19:30 น.)';
       if (nextTopicEl) nextTopicEl.innerText = 'Shooting Mechanics & Game Simulation (โค้ชโอ๊ต & โค้ชโอ๊ค)';
     } else if (dayW === 4 || dayW === 5) {
-      if (nextTitleEl) nextTitleEl.innerText = 'เสาร์นี้ (16:00 - 18:00 น.)';
+      if (nextTitleEl) nextTitleEl.innerText = 'เสาร์นี้ (16:00 - 17:30 น.)';
       if (nextTopicEl) nextTopicEl.innerText = 'Basic Coach Oat (Agility & Coordination)';
     } else {
       if (nextTitleEl) nextTitleEl.innerText = 'จันทร์หน้า (17:30 - 19:30 น.)';
@@ -346,7 +346,7 @@ function renderParentView(matchedList) {
     typeBadge.innerText = 'คอร์สวันเสาร์ 4 ครั้ง (Coach Oat)';
     typeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-300';
     maxQuotaEl.innerText = '/ 4 ครั้ง';
-    periodEl.innerText = 'เรียนเฉพาะวันเสาร์ 16:00-18:00 น.';
+    periodEl.innerText = 'เรียนเฉพาะวันเสาร์ 16:00-17:30 น.';
   } else {
     typeBadge.innerText = 'คอร์สปกติ 10 ครั้ง';
     typeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300';
@@ -358,14 +358,24 @@ function renderParentView(matchedList) {
   document.getElementById('renewingStudentPhone').innerText = loggedInStudent.phone;
   document.getElementById('slipStudentName').value = loggedInStudent.name;
 
-  // Remaining Quota
-  const rem = loggedInStudent.remaining;
+  // Remaining Quota & Dynamic Progress Percentage (Matches exact student quota)
+  const isSaturday = loggedInStudent.courseType === 'saturday';
+  const rem = isSaturday
+    ? (loggedInStudent.saturdayRemaining !== undefined ? loggedInStudent.saturdayRemaining : (loggedInStudent.remaining || 0))
+    : (loggedInStudent.remaining !== undefined ? loggedInStudent.remaining : 0);
+  const totalQuota = isSaturday ? 4 : (loggedInStudent.courseType === 'monthly' ? 8 : 10);
+
   const remNumEl = document.getElementById('dash-remaining-number');
   const badgeStatusEl = document.getElementById('dash-badge-status');
   const progBarEl = document.getElementById('dash-progress-bar');
+  const progPctEl = document.getElementById('dash-progress-pct');
   const renewNoticeEl = document.getElementById('dash-renew-notice');
 
-  const totalQuota = loggedInStudent.courseType === 'saturday' ? 4 : (loggedInStudent.courseType === 'monthly' ? 8 : 10);
+  const calcPct = Math.max(0, Math.min(100, Math.round((rem / totalQuota) * 100)));
+
+  if (progPctEl) {
+    progPctEl.innerText = `${calcPct}%`;
+  }
 
   if (rem > 3) {
     if (remNumEl) {
@@ -376,10 +386,9 @@ function renderParentView(matchedList) {
       badgeStatusEl.innerText = 'พร้อมเรียน';
       badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
     }
-    const pct = Math.min(100, Math.max(0, (rem / totalQuota) * 100));
     if (progBarEl) {
-      progBarEl.style.width = pct + '%';
-      progBarEl.className = 'h-1.5 rounded-full bg-emerald-600';
+      progBarEl.style.width = calcPct + '%';
+      progBarEl.className = 'h-2 rounded-full bg-emerald-600 transition-all duration-500';
     }
     if (renewNoticeEl) renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง`;
   } else if (rem >= 1 && rem <= 3) {
@@ -388,13 +397,12 @@ function renderParentView(matchedList) {
       remNumEl.className = 'text-3xl sm:text-4xl font-semibold text-amber-700 font-mono tracking-tight';
     }
     if (badgeStatusEl) {
-      badgeStatusEl.innerText = 'ใกล้หมด';
+      badgeStatusEl.innerText = rem === 1 ? 'เหลือ 1 ครั้ง' : 'ใกล้หมด';
       badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200';
     }
-    const pct = (rem / totalQuota) * 100;
     if (progBarEl) {
-      progBarEl.style.width = pct + '%';
-      progBarEl.className = 'h-1.5 rounded-full bg-amber-500';
+      progBarEl.style.width = calcPct + '%';
+      progBarEl.className = 'h-2 rounded-full bg-amber-500 transition-all duration-500';
     }
     if (renewNoticeEl) renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง แนะนำต่อคอร์สใหม่`;
   } else {
@@ -408,7 +416,10 @@ function renderParentView(matchedList) {
     }
     if (progBarEl) {
       progBarEl.style.width = '0%';
-      progBarEl.className = 'h-1.5 rounded-full bg-rose-500';
+      progBarEl.className = 'h-2 rounded-full bg-rose-500 transition-all duration-500';
+    }
+    if (progPctEl) {
+      progPctEl.innerText = '0%';
     }
     if (renewNoticeEl) renewNoticeEl.innerText = 'กรุณาต่อคอร์สใหม่เพื่อรักษาสิทธิ์';
   }

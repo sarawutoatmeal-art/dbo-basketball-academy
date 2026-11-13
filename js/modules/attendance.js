@@ -90,7 +90,7 @@ function updateSessionDateDisplay() {
     scheduleText = 'คลาสปกติ 17:30 - 19:30 น. (2 ชม.)';
     scheduleColor = 'bg-amber-100 text-amber-900 border-amber-300';
   } else if (dayW === 6) {
-    scheduleText = 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 18:00 น.';
+    scheduleText = 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 17:30 น. (1.5 ชม.)';
     scheduleColor = 'bg-indigo-100 text-indigo-900 border-indigo-300';
   }
   const scheduleBadge = document.getElementById('coachSessionScheduleBadge');
@@ -518,7 +518,7 @@ function renderTeachingRecordsList(filterMonth = null) {
       return match ? match.name : (st.name || 'นักเรียน');
     };
 
-    const cleanSlot = (!rec.slot || rec.slot.includes('?')) ? 'คลาสปกติ 17:00 - 18:30 น.' : rec.slot;
+    const cleanSlot = (!rec.slot || rec.slot.includes('?') || rec.slot.includes('17:00 - 18:30')) ? 'คลาสปกติ 17:30 - 19:30 น.' : rec.slot;
     const cleanCoach = (!rec.coach || rec.coach.includes('?')) ? 'โค้ชโอ๊ต (Head Coach)' : rec.coach;
 
     const attendingChips = attendingStudents.map(st => `

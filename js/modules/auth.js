@@ -214,6 +214,7 @@ function updateHeaderProfileUI() {
 }
 
 function updateCoachStateUI() {
+  if (typeof updateCourtCalendarRoleVisibility === 'function') updateCourtCalendarRoleVisibility();
   const coachTab = document.getElementById('nav-coach-roster');
   const coachMTab = document.getElementById('nav-m-coach-roster');
   const staffCard = document.getElementById('staffProfileCard');

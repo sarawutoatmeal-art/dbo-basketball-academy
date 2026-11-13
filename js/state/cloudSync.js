@@ -377,6 +377,9 @@ function applyIncomingState(incomingData, actionDesc = '') {
     teachingRecords.forEach(r => { if (r && r.id) recMap.set(r.id, r); });
     incomingData.teachingRecords.forEach(inc => {
       if (!inc || !inc.id) return;
+      if (inc.slot && inc.slot.includes('17:00 - 18:30')) {
+        inc.slot = 'คลาสปกติ 17:30 - 19:30 น.';
+      }
       const cur = recMap.get(inc.id);
       if (!cur || (inc.updatedAt || 0) >= (cur.updatedAt || 0)) {
         recMap.set(inc.id, inc);

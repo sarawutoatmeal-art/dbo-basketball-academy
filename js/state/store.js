@@ -109,12 +109,12 @@ let parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrati
 // Daily Attendance Registry
 let dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v14')) || {};
 
-// Teaching & Attendance Records (Techawit School TWS Style)
+// Teaching & Attendance Records (DBO Academy Style)
 let teachingRecords = JSON.parse(localStorage.getItem('dbo_teaching_records_v19')) || [
   {
     id: 'rec_20261105_1700',
     date: '2026-11-05',
-    slot: 'คลาสปกติ 17:00 - 18:30 น.',
+    slot: 'คลาสปกติ 17:30 - 19:30 น.',
     coach: 'โค้ชโอ๊ต (Head Coach)',
     topic: 'ฝึกซ้อม Shooting Form, Footwork & Fast Break 3v3',
     attendingCount: 14,
@@ -136,7 +136,7 @@ let teachingRecords = JSON.parse(localStorage.getItem('dbo_teaching_records_v19'
   {
     id: 'rec_20261103_1700',
     date: '2026-11-03',
-    slot: 'คลาสปกติ 17:00 - 18:30 น.',
+    slot: 'คลาสปกติ 17:30 - 19:30 น.',
     coach: 'โค้ชโอ๊ค',
     topic: 'การเลี้ยงบอล Hand Switching, Layup ทรงตัว และ Defense Shuffling',
     attendingCount: 16,

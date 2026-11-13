@@ -39,7 +39,7 @@ function renderWeeklyScheduleView() {
     { key: 'mon', dayName: 'วันจันทร์', time: '17:30 - 19:30 น.', color: 'amber', badge: 'คลาสปกติ 10 ครั้ง / รายเดือน' },
     { key: 'tue', dayName: 'วันอังคาร', time: '17:30 - 19:30 น.', color: 'amber', badge: 'คลาสปกติ 10 ครั้ง / รายเดือน' },
     { key: 'thu', dayName: 'วันพฤหัสบดี', time: '17:30 - 19:30 น.', color: 'amber', badge: 'คลาสปกติ 10 ครั้ง / รายเดือน' },
-    { key: 'sat', dayName: 'วันเสาร์', time: '16:00 - 18:00 น.', color: 'indigo', badge: 'Basic Coach Oat (4 ครั้ง)' }
+    { key: 'sat', dayName: 'วันเสาร์', time: '16:00 - 17:30 น.', color: 'indigo', badge: 'Basic Coach Oat (4 ครั้ง)' }
   ];
 
   container.innerHTML = days.map(d => {
@@ -243,7 +243,7 @@ function openCalendarDayModal(day, dayOfWeek, isSat, isNormal, dateKey) {
 
     if (isSat) {
       if (dot) dot.className = 'w-3 h-3 rounded-full bg-indigo-600';
-      if (time) time.innerText = '16:00 - 18:00 น. (คลาสวันเสาร์)';
+      if (time) time.innerText = '16:00 - 17:30 น. (คลาสวันเสาร์)';
       if (coach) coach.innerText = 'โค้ชโอ๊ต (Head Coach)';
       if (topic) topic.innerHTML = '<strong>คลาส Basic Coach Oat:</strong> วิทยาศาสตร์การกีฬาสำหรับเด็ก การเคลื่อนไหว ความคล่องตัว (Agility Speed Ladder) การประสานงานร่างกาย และเสริมสร้างกล้ามเนื้อมัดเล็ก';
     } else if (isNormal || (override && override.status === 'normal')) {
@@ -263,7 +263,7 @@ function openCalendarDayModal(day, dayOfWeek, isSat, isNormal, dateKey) {
       if (dot) dot.className = 'w-3 h-3 rounded-full bg-slate-300';
       if (time) time.innerText = 'ไม่มีรอบฝึกซ้อมประจำวัน';
       if (coach) coach.innerText = 'พักการฝึกซ้อม หรือจอง Private Class';
-      if (topic) topic.innerHTML = 'วันนี้ไม่มีคลาสเรียนรวม หากต้องการฝึกซ้อมเดี่ยวหรือกลุ่มพิเศษ สามารถจอง Private Class ในเมนูรับสมัครเรียนได้ครับ';
+      if (topic) topic.innerHTML = 'วันนี้ไม่มีคลาส';
     }
   }
 

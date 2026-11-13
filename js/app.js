@@ -31,6 +31,7 @@ function switchTab(tabName) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (tabName === 'daily-attendance' && typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
   if (tabName === 'calendar') {
+    if (typeof updateCourtCalendarRoleVisibility === 'function') updateCourtCalendarRoleVisibility();
     if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
     if (typeof renderMasterCalendar === 'function') renderMasterCalendar();
   }
@@ -65,6 +66,7 @@ function refreshAllViews() {
     if (typeof renderParentView === 'function') renderParentView();
   }
   if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+  if (typeof updateCourtCalendarRoleVisibility === 'function') updateCourtCalendarRoleVisibility();
   if (typeof updateInstallButtonVisibility === 'function') updateInstallButtonVisibility();
   lucide.createIcons();
 }
@@ -127,9 +129,9 @@ window.addEventListener('DOMContentLoaded', () => {
     if (dayW === 1 || dayW === 2 || dayW === 4) {
       scheduleNote = 'คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์';
     } else if (dayW === 6) {
-      scheduleNote = 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 18:00 น. ณ ยิมเตชะวิทย์';
+      scheduleNote = 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 17:30 น. ณ ยิมเตชะวิทย์';
     } else {
-      scheduleNote = 'วันนี้ไม่มีคลาสรวม (วันพักฟื้น / นัดหมาย Private Class)';
+      scheduleNote = 'วันนี้ไม่มีคลาส';
     }
 
     const pLabel = document.getElementById('parentTodayDateLabel');
@@ -154,6 +156,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (typeof renderParentRegistrations === 'function') renderParentRegistrations();
   if (typeof renderTeachingRecordsList === 'function') renderTeachingRecordsList();
   if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+  if (typeof updateCourtCalendarRoleVisibility === 'function') updateCourtCalendarRoleVisibility();
   if (typeof updateInstallButtonVisibility === 'function') updateInstallButtonVisibility();
   lucide.createIcons();
 
