@@ -912,21 +912,28 @@ async function saveTeachingRecordFromModal() {
       }, i * 200);
     });
 
-    // Real-time broadcast to Parent devices via MQTT
+    const checkinPayload = {
+      senderId: window.dboClientId,
+      type: 'COACH_CHECKIN_EVENT',
+      coachName: coachVal,
+      dateKey: dateVal,
+      attendingStudents: attending.map(a => {
+        const st = students.find(s => s.id === a.id);
+        const remAfter = st ? (targetField === 'saturday' ? st.saturdayRemaining : st.remaining) : 0;
+        return { id: a.id, name: a.name, remaining: remAfter };
+      }),
+      leaveStudents: leave.map(l => ({ id: l.id, name: l.name })),
+      timeStr: nowTimeStr
+    };
+
+    // 1. Cross-tab instant BroadcastChannel
+    if (window.dboRealtimeBC) {
+      try { window.dboRealtimeBC.postMessage(checkinPayload); } catch (e) {}
+    }
+
+    // 2. Real-time broadcast to Parent devices via MQTT
     if (typeof publishToMqttBrokers === 'function') {
-      publishToMqttBrokers(REALTIME_SYNC_TOPIC, {
-        senderId: window.dboClientId,
-        type: 'COACH_CHECKIN_EVENT',
-        coachName: coachVal,
-        dateKey: dateVal,
-        attendingStudents: attending.map(a => {
-          const st = students.find(s => s.id === a.id);
-          const remAfter = st ? (targetField === 'saturday' ? st.saturdayRemaining : st.remaining) : 0;
-          return { id: a.id, name: a.name, remaining: remAfter };
-        }),
-        leaveStudents: leave.map(l => ({ id: l.id, name: l.name })),
-        timeStr: nowTimeStr
-      });
+      publishToMqttBrokers(REALTIME_SYNC_TOPIC, checkinPayload);
     }
   }
 

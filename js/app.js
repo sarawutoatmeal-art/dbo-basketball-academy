@@ -67,11 +67,19 @@ function refreshAllViews() {
 
 // Service Worker Registration for PWA & System Notifications
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('DBO Service Worker active:', reg.scope))
+  const registerSW = () => {
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
+      .then(reg => {
+        console.log('DBO Service Worker active:', reg.scope);
+        reg.update();
+      })
       .catch(err => console.log('SW registration error:', err));
-  });
+  };
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    registerSW();
+  } else {
+    window.addEventListener('load', registerSW);
+  }
 }
 
 // Application Bootstrap

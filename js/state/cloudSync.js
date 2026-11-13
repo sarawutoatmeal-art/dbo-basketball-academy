@@ -531,7 +531,7 @@ function handleIncomingMqttMessage(topic, message) {
       }
 
       // 2. Coach Check-In Record -> Notify Parent Devices
-      else if (payload.type === 'COACH_CHECKIN_EVENT' && !isSelf) {
+      else if (payload.type === 'COACH_CHECKIN_EVENT') {
         if (loggedInStudent) {
           const siblingIds = (typeof getSiblingStudentIds === 'function') 
             ? getSiblingStudentIds(loggedInStudent.id) 
@@ -566,7 +566,7 @@ function handleIncomingMqttMessage(topic, message) {
       }
 
       // 2.5 Coach Class Status Override (Canceled / Normal Class) -> Notify Parent Devices
-      else if (payload.type === 'COACH_CLASS_STATUS_EVENT' && !isSelf) {
+      else if (payload.type === 'COACH_CLASS_STATUS_EVENT') {
         if (!calendarDayOverrides) calendarDayOverrides = {};
         calendarDayOverrides[payload.dateKey] = {
           status: payload.status,
@@ -640,7 +640,7 @@ function initRealtimeEngine() {
       window.dboRealtimeBC.onmessage = (event) => {
         if (event.data && event.data.type === 'STATE_CHANGED' && event.data.data) {
           applyIncomingState(event.data.data, event.data.actionDesc);
-        } else if (event.data && event.data.type === 'COACH_CLASS_STATUS_EVENT') {
+        } else if (event.data && (event.data.type === 'COACH_CLASS_STATUS_EVENT' || event.data.type === 'COACH_CHECKIN_EVENT')) {
           handleIncomingMqttMessage(REALTIME_SYNC_TOPIC, JSON.stringify(event.data));
         }
       };

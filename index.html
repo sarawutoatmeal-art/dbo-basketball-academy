@@ -123,34 +123,17 @@
           </button>
 
           <div id="userHeaderArea" class="flex items-center gap-2">
-            <div class="flex items-center gap-1.5 text-xs text-slate-400">
-              <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-              <span class="hidden sm:inline font-medium">Start from 0 to No. 1</span>
-            </div>
+            <span id="realtimeLiveIndicator" class="inline-flex items-center gap-1.5 text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span class="hidden sm:inline">ออนไลน์</span>
+            </span>
+            <span id="liveSyncBadge" class="hidden"></span>
           </div>
         </div>
 
       </div>
     </div>
   </header>
-
-  <!-- Standalone Live Database Notice Strip -->
-  <div class="bg-slate-50 border-b border-slate-200 py-1 px-4">
-    <div class="max-w-6xl mx-auto flex items-center justify-between text-xs text-dbo-textSecondary flex-wrap gap-2">
-      <div class="flex items-center gap-2">
-        <span id="liveSyncBadge" class="inline-flex items-center text-xs text-slate-600 gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span class="font-medium text-slate-800">ฐานข้อมูลหลัก DBO Academy</span>
-        </span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span id="realtimeLiveIndicator" class="inline-flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span>ออนไลน์ เรียลไทม์</span>
-        </span>
-      </div>
-    </div>
-  </div>
 
   <!-- Main Content Area -->
   <div id="app-viewport-scaler" class="flex-grow flex flex-col">
@@ -259,432 +242,347 @@
       </div>
 
       <!-- STATE B: PARENT DASHBOARD (WHEN LOGGED IN) -->
-      <div id="parent-dashboard" class="hidden space-y-5">
+      <div id="parent-dashboard" class="hidden space-y-3.5">
         
-        <!-- Top Welcome Banner & Sibling Switcher Bar -->
-        <div class="card-clean p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white border border-slate-200">
-          <div class="flex items-center gap-3.5 min-w-0">
-            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-dbo-navy text-white flex items-center justify-center text-lg sm:text-xl font-bold font-mono flex-shrink-0 shadow-sm">
+        <!-- 1. Minimal Profile Header -->
+        <div class="card-clean p-3.5 sm:p-4 flex items-center justify-between gap-3 bg-white border border-slate-200 rounded-2xl shadow-2xs">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-dbo-navy text-white flex items-center justify-center text-base sm:text-lg font-bold font-mono flex-shrink-0 shadow-xs">
               <span id="dash-avatar">#</span>
             </div>
             <div class="min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
-                <h2 id="dash-student-name" class="text-lg sm:text-xl font-bold text-dbo-navy truncate">น้อง...</h2>
-                <span id="dash-student-type" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">คอร์สปกติ 10 ครั้ง</span>
-                <span id="dash-student-id" class="px-2 py-0.5 rounded-md text-xs font-mono font-medium bg-slate-50 text-slate-500">ID: #0</span>
+                <h2 id="dash-student-name" class="text-base sm:text-lg font-bold text-dbo-navy truncate">น้อง...</h2>
+                <span id="dash-student-type" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">คอร์สปกติ 10 ครั้ง</span>
+                <span id="dash-student-id" class="text-[11px] font-mono text-slate-400">ID: #0</span>
               </div>
-              <p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5 flex-wrap">
-                <span>ผู้ปกครอง: <strong id="dash-parent-phone" class="font-mono text-slate-800">08x-xxx-xxxx</strong></span>
-                <span id="dash-sibling-badge" class="hidden px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200"></span>
+              <p class="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
+                <span>ผปค: <strong id="dash-parent-phone" class="font-mono text-slate-700">08x-xxx-xxxx</strong></span>
+                <span id="dash-sibling-badge" class="hidden px-1.5 py-0.2 rounded text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200"></span>
               </p>
             </div>
           </div>
 
-          <!-- Top Quick Actions for Parent & Sibling Selector -->
-          <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap sm:flex-nowrap">
-            <div id="siblingSelectorBox" class="hidden flex items-center gap-1.5 bg-purple-50/80 border border-purple-200 px-2.5 py-1.5 rounded-xl">
-              <span class="text-[11px] font-bold text-purple-900 flex items-center gap-1">
-                <i data-lucide="users" class="w-3.5 h-3.5 text-purple-700"></i>
-                <span class="hidden sm:inline">สลับดูพี่น้อง:</span>
-              </span>
-              <select id="siblingSelect" onchange="switchSibling(this.value)" class="bg-white border border-purple-300 rounded-lg px-2.5 py-1 text-xs text-dbo-navy font-bold focus:outline-none focus:ring-1 focus:ring-purple-500 cursor-pointer"></select>
+          <!-- Sibling Switcher & Logout -->
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <div id="siblingSelectorBox" class="hidden flex items-center gap-1 bg-purple-50 border border-purple-200 px-2 py-1 rounded-xl">
+              <i data-lucide="users" class="w-3.5 h-3.5 text-purple-700"></i>
+              <select id="siblingSelect" onchange="switchSibling(this.value)" class="bg-white border border-purple-300 rounded-lg px-1.5 py-0.5 text-xs text-dbo-navy font-bold focus:outline-hidden cursor-pointer"></select>
             </div>
-            
-            <button onclick="switchTab('renew-payment')" class="btn-touch px-3.5 py-2 rounded-lg text-xs font-medium bg-dbo-navy text-white hover:bg-slate-800 transition-colors flex items-center gap-1.5">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-              <span>ต่อคอร์สเรียน</span>
-            </button>
 
-            <button onclick="parentLogout()" class="btn-touch px-3 py-2 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1">
-              <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-              <span>ออกจากระบบ</span>
+            <button onclick="parentLogout()" title="ออกจากระบบ" class="btn-touch p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
 
-        <!-- Sibling Shared Quota Notice Banner (Shown for Shared Quota Siblings) -->
-        <div id="siblingSharedQuotaNotice" class="hidden p-3.5 rounded-2xl bg-gradient-to-r from-purple-50 via-indigo-50 to-white border border-purple-200 flex items-center justify-between gap-3 shadow-2xs">
-          <div class="flex items-center gap-2.5">
-            <span class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
-              <i data-lucide="heart-handshake" class="w-4 h-4"></i>
-            </span>
-            <div>
-              <h4 class="text-xs font-bold text-purple-950 flex items-center gap-1.5">
-                <span>ระบบคอร์สครอบครัวพี่น้อง (Shared Course)</span>
-                <span id="siblingSharedTag" class="px-2 py-0.2 rounded-full text-[10px] font-bold bg-purple-200 text-purple-900">นับครั้งร่วมกัน</span>
-              </h4>
-              <p id="siblingSharedDesc" class="text-[11px] text-purple-800 mt-0.5">
-                นักเรียนในบ้านนี้ใช้โควต้า 10 ครั้งร่วมกัน เมื่อน้องคนใดมาเรียนหรือโค้ชตัดโควต้า ยอดจะอัปเดตตรงกันทั้งสองคนอัตโนมัติ
-              </p>
-            </div>
+        <!-- Sibling Shared Quota Notice Banner (Compact) -->
+        <div id="siblingSharedQuotaNotice" class="hidden px-3.5 py-2.5 rounded-xl bg-purple-50/80 border border-purple-200 flex items-center justify-between gap-2 shadow-2xs">
+          <div class="flex items-center gap-2 text-xs text-purple-950 font-medium">
+            <i data-lucide="heart-handshake" class="w-4 h-4 text-purple-600 flex-shrink-0"></i>
+            <span id="siblingSharedTag" class="font-bold">คอร์สครอบครัวพี่น้อง</span>
+            <span id="siblingSharedDesc" class="text-[11px] text-purple-800"></span>
           </div>
-          <div id="siblingQuickPills" class="hidden sm:flex items-center gap-1.5 flex-shrink-0"></div>
+          <div id="siblingQuickPills" class="hidden sm:flex items-center gap-1 flex-shrink-0"></div>
         </div>
 
-        <!-- 1. MEGA HERO QUOTA WIDGET (ผปค. เห็นสิทธิ์ของลูกใหญ่ๆ ชัดเจนที่สุด) -->
-        <div class="card-clean p-5 sm:p-7 rounded-3xl bg-gradient-to-br from-white via-slate-50 to-emerald-50/40 border-2 border-emerald-500/30 shadow-sm relative overflow-hidden">
-          <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
-          
-          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-200/80">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">โควต้าสิทธิ์การเรียนปัจจุบัน</span>
-                <span id="hero-shared-pill" class="hidden px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200">โควต้ารวมพี่น้อง</span>
-              </div>
-              <h3 class="text-base sm:text-lg font-bold text-dbo-navy mt-1">
-                สิทธิ์คงเหลือของ <span id="hero-student-name" class="text-emerald-700 font-extrabold underline decoration-emerald-300 underline-offset-4">น้อง...</span>
-              </h3>
-              <p class="text-xs text-slate-500 mt-0.5" id="hero-course-desc">คอร์สปกติ 10 ครั้ง • DBO Basketball Academy</p>
+        <!-- 2. Clean Quota Card & Notifications -->
+        <div class="card-clean p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-emerald-50/30 border border-emerald-500/20 shadow-xs space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-xs font-bold text-emerald-800">โควต้าสิทธิ์คงเหลือ</span>
+              <span id="hero-shared-pill" class="hidden px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200">โควต้ารวมพี่น้อง</span>
+              <span id="hero-student-name" class="hidden"></span>
+              <span id="hero-course-desc" class="hidden"></span>
             </div>
-            
-            <div id="hero-badge-status" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-2 shadow-2xs">
-              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <div id="hero-badge-status" class="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
               <span id="hero-badge-text">พร้อมเข้าฝึกซ้อม</span>
             </div>
           </div>
 
-          <!-- Big Number Counter Display -->
-          <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center py-4 sm:py-5">
-            <div class="sm:col-span-6 flex items-baseline gap-3">
-              <span id="dash-remaining-number" class="text-5xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 font-mono tracking-tighter leading-none">
-                --
-              </span>
-              <div class="flex flex-col">
-                <span class="text-base sm:text-xl font-bold text-slate-800">ครั้ง</span>
-                <span id="dash-max-quota" class="text-xs text-slate-400 font-medium">จากทั้งหมด 10 ครั้ง</span>
-              </div>
+          <div class="flex items-baseline justify-between gap-4">
+            <div class="flex items-baseline gap-2">
+              <span id="dash-remaining-number" class="text-4xl sm:text-5xl font-extrabold text-slate-900 font-mono tracking-tight">--</span>
+              <span class="text-sm font-bold text-slate-700">ครั้ง</span>
+              <span id="dash-max-quota" class="text-xs text-slate-400 font-medium">/ 10 ครั้ง</span>
             </div>
-
-            <!-- Progress Meter & Remaining Context -->
-            <div class="sm:col-span-6 space-y-2">
-              <div class="flex justify-between items-center text-xs font-semibold text-slate-600">
-                <span>ความคืบหน้าการใช้คอร์ส:</span>
-                <span id="dash-renew-notice" class="font-mono text-emerald-700 font-bold">เหลือ -- ครั้ง</span>
-              </div>
-              <div class="w-full bg-slate-200/80 rounded-full h-3 overflow-hidden p-0.5 border border-slate-300/40">
-                <div id="dash-progress-bar" class="h-2 rounded-full bg-emerald-600 transition-all duration-500" style="width: 70%"></div>
-              </div>
-              <div class="flex justify-between text-[11px] text-slate-500 font-mono pt-0.5">
-                <span id="dash-course-period">คอร์สปกติ 10 ครั้ง</span>
-                <span id="dash-progress-pct" class="font-bold text-slate-700">70% คงเหลือ</span>
-              </div>
+            <div class="text-right">
+              <button onclick="switchTab('renew-payment')" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-dbo-navy hover:bg-slate-800 text-white flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span>ต่อคอร์ส</span>
+              </button>
             </div>
           </div>
 
-          <!-- Dual Course Saturday Info (if enrolled in both) -->
-          <div id="heroSaturdayRow" class="hidden pt-3 border-t border-slate-200/80 flex items-center justify-between text-xs bg-indigo-50/60 p-3 rounded-2xl border border-indigo-100">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
-              <span class="font-bold text-indigo-950">คอร์สวันเสาร์ Basic Coach Oat:</span>
-              <span class="text-indigo-800 font-medium">เหลืออีก</span>
+          <!-- Mini Progress Bar -->
+          <div class="space-y-1 pt-1">
+            <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+              <div id="dash-progress-bar" class="h-2 rounded-full bg-emerald-600 transition-all duration-500" style="width: 70%"></div>
             </div>
-            <div class="flex items-baseline gap-1.5">
-              <strong id="hero-saturday-remaining" class="text-xl font-extrabold font-mono text-indigo-700">0</strong>
-              <span class="text-xs text-indigo-900 font-semibold">/ 4 ครั้ง</span>
+            <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+              <span id="dash-course-period">คอร์สปกติ 10 ครั้ง</span>
+              <span id="dash-renew-notice" class="text-emerald-700 font-bold">เหลือ -- ครั้ง</span>
+              <span id="dash-progress-pct" class="font-bold text-slate-700">70%</span>
+            </div>
+          </div>
+
+          <!-- Dual Course Saturday Row -->
+          <div id="heroSaturdayRow" class="hidden pt-2 border-t border-slate-100 flex items-center justify-between text-xs bg-indigo-50/60 p-2.5 rounded-xl border border-indigo-100">
+            <span class="font-bold text-indigo-950 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+              <span>คอร์สวันเสาร์ Coach Oat:</span>
+            </span>
+            <div class="flex items-baseline gap-1">
+              <strong id="hero-saturday-remaining" class="text-base font-extrabold font-mono text-indigo-700">0</strong>
+              <span class="text-xs text-indigo-900 font-medium">/ 4 ครั้ง</span>
+            </div>
+          </div>
+
+          <!-- Compact Notification Row with Real Push Test -->
+          <div id="pushNotificationBanner" class="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="bell" class="w-4 h-4 text-slate-500"></i>
+              <span class="text-xs font-semibold text-slate-700">การแจ้งเตือนหน้าจอล็อก:</span>
+              <span id="pushStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600 border border-slate-200">ตรวจสอบสถานะ...</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button id="btnEnableNotifications" onclick="requestNotificationPermission()" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1 cursor-pointer shadow-2xs">
+                <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+                <span>เปิดแจ้งเตือน</span>
+              </button>
+              <button id="btnTestPushNotification" type="button" onclick="testRealPushNotification('checkin')" title="กดเพื่อทดสอบเด้งเตือนและเสียง" class="btn-touch px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1 cursor-pointer">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i>
+                <span>ทดสอบเด้งเตือน</span>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- 2. PRIMARY ACTION BAR: แจ้งเข้าเรียน VS งดคลาส (ใหญ่ ชัดเจน รองรับวันไม่มีคลาส) -->
-        <div id="parentActionCard" class="card-clean p-4 sm:p-5 rounded-2xl border border-slate-200 bg-white space-y-3.5 shadow-xs">
-          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-100">
-            <div>
-              <div class="flex items-center gap-2">
-                <span id="parentClassDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <h3 class="text-sm sm:text-base font-bold text-dbo-navy" id="parentClassStatusHeading">
-                  คลาสฝึกซ้อมประจำวัน (เน้นตามวันปฏิทิน)
-                </h3>
-              </div>
-              <p class="text-xs sm:text-sm font-semibold text-slate-700 mt-0.5" id="parentTodayDateLabel">
-                วันอังคารที่ 10 พ.ย. 2569 • คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์
-              </p>
+        <!-- 3. Primary Action Card: Today's Class Check-in / Leave -->
+        <div id="parentActionCard" class="card-clean p-4 rounded-2xl border border-slate-200 bg-white space-y-3 shadow-2xs">
+          <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2 min-w-0">
+              <span id="parentClassDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
+              <h3 class="text-xs sm:text-sm font-bold text-dbo-navy truncate" id="parentClassStatusHeading">
+                คลาสฝึกซ้อมประจำวัน
+              </h3>
             </div>
-            
-            <div id="parentTodayStatusBadge" class="px-3 py-1 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-              <span>ยังไม่ได้ระบุสถานะ</span>
+            <div id="parentTodayStatusBadge" class="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 flex-shrink-0">
+              ยังไม่ได้ระบุสถานะ
             </div>
           </div>
 
-          <!-- Dynamic Action Buttons: Changes when today has NO class -->
-          <div id="parentClassActionsContainer" class="pt-1">
-            <div id="hasNormalClassActions" class="flex flex-col sm:flex-row items-center gap-2.5">
-              <button type="button" onclick="setTodayAttendanceFromParent('attending')" class="btn-touch flex-1 w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer">
-                <i data-lucide="calendar-check" class="w-4 h-4 text-white"></i>
-                <span>✓ แจ้งเข้าเรียนวันนี้</span>
+          <p class="text-xs font-medium text-slate-600" id="parentTodayDateLabel">
+            วันอังคารที่ 10 พ.ย. 2569 • 17:30 - 19:30 น.
+          </p>
+
+          <div id="parentClassActionsContainer">
+            <div id="hasNormalClassActions" class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="setTodayAttendanceFromParent('attending')" class="btn-touch py-2.5 px-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-1.5 shadow-xs cursor-pointer">
+                <i data-lucide="check" class="w-4 h-4 text-white"></i>
+                <span>แจ้งเข้าเรียนวันนี้</span>
               </button>
 
-              <button type="button" onclick="openLeaveModal()" class="btn-touch flex-1 w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 transition-colors flex items-center justify-center gap-2 shadow-2xs cursor-pointer">
-                <i data-lucide="calendar-x" class="w-4 h-4 text-amber-600"></i>
-                <span>✕ แจ้งงดคลาส / ขอลาเรียน</span>
-              </button>
-
-              <button type="button" onclick="switchTab('daily-attendance')" class="btn-touch py-3 px-4 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 flex items-center justify-center gap-1.5 flex-shrink-0 w-full sm:w-auto transition-colors cursor-pointer">
-                <i data-lucide="users" class="w-4 h-4 text-slate-500"></i>
-                <span>ดูเพื่อนร่วมคลาส</span>
+              <button type="button" onclick="openLeaveModal()" class="btn-touch py-2.5 px-3 rounded-xl text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer">
+                <i data-lucide="x" class="w-4 h-4 text-amber-600"></i>
+                <span>แจ้งขอลาเรียน</span>
               </button>
             </div>
 
-            <!-- Shown when today has NO class according to master calendar -->
-            <div id="noClassNoticeBox" class="hidden p-4 rounded-2xl bg-slate-50 border border-dashed border-slate-300 text-center space-y-2">
-              <div class="inline-flex items-center gap-2 text-xs font-bold text-slate-600 bg-white px-3 py-1 rounded-full border border-slate-200">
+            <div id="noClassNoticeBox" class="hidden p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center space-y-1.5">
+              <span class="text-xs font-bold text-slate-700 flex items-center justify-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-slate-400"></span>
                 <span>วันนี้ไม่มีคลาสเรียนรวม</span>
-              </div>
-              <p class="text-xs text-slate-600 max-w-md mx-auto">
-                วันนี้ไม่มีรอบฝึกซ้อมประจำวัน (คลาสปกติมีทุกวัน <strong>จันทร์, อังคาร, พฤหัส 17:30-19:30 น.</strong> และวัน <strong>เสาร์ 16:00-18:00 น.</strong>)
-              </p>
-              <div class="flex items-center justify-center gap-2 pt-1">
-                <button type="button" onclick="switchTab('calendar')" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-bold bg-dbo-navy text-white hover:bg-slate-800 transition">
-                  <i data-lucide="calendar" class="w-3.5 h-3.5 inline mr-1"></i> เช็คปฏิทินวันถัดไป
-                </button>
-                <button type="button" onclick="switchTab('register-new')" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition">
-                  จอง Private Class
-                </button>
-              </div>
+              </span>
+              <p class="text-[11px] text-slate-500">คลาสปกติมีวัน จ., อ., พฤ. 17:30-19:30 น. และ เสาร์ 16:00-18:00 น.</p>
             </div>
           </div>
         </div>
 
-        <!-- Mobile Push Notification & Lock Screen Notification Center Card -->
-        <div id="pushNotificationBanner" class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-3">
-          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <span class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
-                <i data-lucide="bell-ring" class="w-5 h-5 text-emerald-400"></i>
-              </span>
-              <div>
-                <h4 class="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <span>แจ้งเตือนบนหน้าจอล็อก (Lock Screen)</span>
-                  <span id="pushStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600 border border-slate-200">ตรวจสอบสถานะ...</span>
-                </h4>
-                <p class="text-[11px] text-slate-500 mt-0.5">
-                  เด้งเตือนเมื่อโค้ชเช็คชื่อ • แจ้งเตือนช่วงเช้า 10:00 น. ว่ามีคลาสหรืองดคลาส • ก่อนเริ่มคลาส 15-30 นาที • และ 15 นาทีก่อนเลิกคลาส
-                </p>
-              </div>
-            </div>
-            <button id="btnEnableNotifications" onclick="requestNotificationPermission()" class="btn-touch px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors flex items-center gap-1.5 flex-shrink-0 w-full sm:w-auto justify-center shadow-xs cursor-pointer">
-              <i data-lucide="bell" class="w-4 h-4"></i>
-              <span>เปิดแจ้งเตือนบนมือถือ</span>
+        <!-- 4. Category Selector Navigation (จัดระเบียบให้เป็นหมวดหมู่ เรียบร้อย สะอาดตา) -->
+        <div class="pt-1">
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-200">
+            <button type="button" onclick="switchParentCategory('history')" id="pcat-btn-history" class="pcat-pill active flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white shadow-2xs transition-all cursor-pointer flex-shrink-0">
+              <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>ประวัติเข้าเรียน</span>
+            </button>
+            <button type="button" onclick="switchParentCategory('growth')" id="pcat-btn-growth" class="pcat-pill inactive flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex-shrink-0">
+              <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i>
+              <span>พัฒนาการ & สมรรถภาพ</span>
+            </button>
+            <button type="button" onclick="switchParentCategory('classmates')" id="pcat-btn-classmates" class="pcat-pill inactive flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex-shrink-0">
+              <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
+              <span>เพื่อนร่วมคลาส</span>
+            </button>
+            <button type="button" onclick="switchParentCategory('schedule')" id="pcat-btn-schedule" class="pcat-pill inactive flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex-shrink-0">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-sky-600"></i>
+              <span>ตารางซ้อม</span>
             </button>
           </div>
         </div>
 
-        <!-- 2 KPI Cards for Parent (Next Class Date & Schedule Highlights) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          <!-- Card 1: Next Class Date -->
-          <div class="card-clean p-4 sm:p-5 space-y-2 border border-slate-200 bg-white">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-slate-500">คลาสเรียนรอบถัดไป</span>
-              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <!-- ===================================================================== -->
+        <!-- CATEGORY PANEL 1: ประวัติเข้าเรียน (Attendance History)               -->
+        <!-- ===================================================================== -->
+        <div id="parentCatPanel-history" class="space-y-3">
+          <div class="card-clean overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xs">
+            <div class="p-3.5 border-b border-slate-100 bg-slate-50/60 flex items-center justify-between">
+              <h4 class="text-xs font-bold text-dbo-navy flex items-center gap-1.5">
+                <i data-lucide="clipboard-list" class="w-4 h-4 text-emerald-600"></i>
+                <span>บันทึกการเช็คชื่อเข้าฝึกซ้อม</span>
+              </h4>
+              <span class="text-[11px] text-slate-400 font-mono">เรียลไทม์</span>
             </div>
-            <div class="pt-0.5">
-              <span class="text-base font-bold text-dbo-navy block" id="dash-next-class-title">พฤหัสบดีนี้ (17:30 – 19:30 น.)</span>
-              <span class="text-xs text-slate-500" id="dash-next-class-topic">คลาส Game Situation & Team Tactics</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-xs text-slate-500 pt-0.5">
-              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i>
-              <span>โรงเรียนเตชะวิทย์</span>
-            </div>
-          </div>
 
-          <!-- Card 2: Master Class Schedule Summary -->
-          <div class="card-clean p-4 sm:p-5 space-y-2 border border-slate-200 bg-white">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-slate-500">เวลาคลาสตามปฏิทินจริง</span>
-              <button onclick="switchTab('calendar')" class="text-[11px] font-bold text-indigo-700 hover:text-indigo-900 flex items-center gap-1">
-                เปิดปฏิทินเต็ม <i data-lucide="chevron-right" class="w-3 h-3"></i>
-              </button>
-            </div>
-            <div class="space-y-1 pt-0.5 text-xs">
-              <div class="flex items-center justify-between py-0.5">
-                <span class="text-slate-600">• คลาสปกติ (จ., อ., พฤ.):</span>
-                <strong class="font-mono text-slate-900">17:30 - 19:30 น. (2 ชม.)</strong>
-              </div>
-              <div class="flex items-center justify-between py-0.5">
-                <span class="text-indigo-800 font-semibold">• วันเสาร์ Basic Coach Oat:</span>
-                <strong class="font-mono text-indigo-700">16:00 - 18:00 น. (2 ชม.)</strong>
-              </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                  <tr>
+                    <th class="py-2 px-3 font-semibold">วันที่ฝึกซ้อม</th>
+                    <th class="py-2 px-3 font-semibold">คลาส</th>
+                    <th class="py-2 px-3 font-semibold text-center">สถานะ</th>
+                    <th class="py-2 px-3 font-semibold text-center">ตัดโควต้า</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-history-tbody" class="divide-y divide-slate-100"></tbody>
+              </table>
             </div>
           </div>
         </div>
 
-        <!-- Coach Developmental Remarks (Coach Oat & Coach Oak) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          <!-- Card 3: Coach Oat Feedback -->
-          <div class="card-clean p-4 sm:p-5 space-y-2 border border-slate-200 bg-white">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <span class="w-6 h-6 rounded-md bg-amber-100 text-amber-900 font-bold text-xs flex items-center justify-center">โอ๊ต</span>
-                <span class="text-xs font-bold text-dbo-navy">บันทึกพัฒนาการ (โค้ชโอ๊ต)</span>
-              </div>
-              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">Head Coach</span>
-            </div>
-            <p id="dash-coach-oat-remark" class="text-xs text-slate-400 italic leading-relaxed line-clamp-3 pt-0.5">
-              อยู่ระหว่างการประเมินพัฒนาการโดยโค้ชโอ๊ต
-            </p>
-            <span class="text-[10px] text-slate-400 block pt-0.5 font-medium">ทักษะบาสเกตบอล & Game IQ</span>
-          </div>
-
-          <!-- Card 4: Coach Oak Feedback -->
-          <div class="card-clean p-4 sm:p-5 space-y-2 border border-slate-200 bg-white">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-1.5">
-                <span class="w-6 h-6 rounded-md bg-sky-100 text-sky-900 font-bold text-xs flex items-center justify-center">โอ๊ค</span>
-                <span class="text-xs font-bold text-dbo-navy">บันทึกพัฒนาการ (โค้ชโอ๊ค)</span>
-              </div>
-              <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-sky-50 text-sky-800 border border-sky-200">Head Coach</span>
-            </div>
-            <p id="dash-coach-oak-remark" class="text-xs text-slate-400 italic leading-relaxed line-clamp-3 pt-0.5">
-              อยู่ระหว่างการประเมินพัฒนาการโดยโค้ชโอ๊ค
-            </p>
-            <span class="text-[10px] text-slate-400 block pt-0.5 font-medium">สมรรถภาพ & ทัศนคติการเล่น</span>
-          </div>
-        </div>
-
-        <!-- Sports Science & Physical Performance Tracker (สมรรถภาพร่างกายเชิงลึก) -->
-        <div class="card-clean p-4 sm:p-6 space-y-4 border border-slate-200 bg-white">
-          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 border-b border-slate-100">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-lg bg-dbo-navy text-white flex items-center justify-center shadow-xs">
-                <i data-lucide="activity" class="w-4 h-4"></i>
-              </div>
-              <div>
-                <h3 class="text-xs sm:text-sm font-semibold text-dbo-navy">การทดสอบสมรรถภาพทางกาย (Sports Science)</h3>
-                <p class="text-[11px] text-slate-500">ติดตามความแข็งแรงและการพัฒนาการเชิงลึกของน้องอย่างเป็นระบบ</p>
-              </div>
-            </div>
-            <span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-600">วิทยาศาสตร์การกีฬา DBO</span>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Metric 1: Vertical Jump -->
-            <div class="p-3.5 rounded-xl bg-slate-50/50 border border-slate-200 space-y-2">
+        <!-- ===================================================================== -->
+        <!-- CATEGORY PANEL 2: พัฒนาการ & สมรรถภาพ (Coach Notes & Physical)       -->
+        <!-- ===================================================================== -->
+        <div id="parentCatPanel-growth" class="hidden space-y-3">
+          <!-- Coach Remarks -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="card-clean p-3.5 rounded-xl border border-slate-200 bg-white space-y-1.5 shadow-2xs">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-1.5">
-                  <i data-lucide="arrow-up-circle" class="w-4 h-4 text-slate-600"></i>
-                  <span class="text-xs font-medium text-slate-700">Vertical Jump (กระโดดสูงแนวดิ่ง)</span>
+                  <span class="w-5 h-5 rounded-md bg-amber-100 text-amber-900 font-bold text-[11px] flex items-center justify-center">โอ๊ต</span>
+                  <span class="text-xs font-bold text-dbo-navy">โค้ชโอ๊ต (Head Coach)</span>
                 </div>
-                <span id="dash-vjump-diff" class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-500 border border-slate-200">รอทดสอบ</span>
+                <span class="text-[10px] text-slate-400">บาสเกตบอล & Game IQ</span>
               </div>
-              <div class="flex items-baseline gap-2">
-                <span id="dash-vjump-val" class="text-3xl font-semibold text-slate-900 font-mono tracking-tight">-</span>
-                <span class="text-xs text-slate-500">เซนติเมตร (cm)</span>
-              </div>
-              <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                <div id="dash-vjump-bar" class="h-1.5 rounded-full bg-emerald-600" style="width: 0%"></div>
-              </div>
-              <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-                <span class="font-medium text-slate-600">ประวัติการทดสอบ:</span>
-                <span id="dash-vjump-history" class="font-mono text-slate-400 font-medium">รอการทดสอบสมรรถภาพ</span>
-              </div>
+              <p id="dash-coach-oat-remark" class="text-xs text-slate-600 leading-relaxed pt-1">
+                อยู่ระหว่างการประเมินพัฒนาการโดยโค้ชโอ๊ต
+              </p>
             </div>
 
-            <!-- Metric 2: Standing Long Jump -->
-            <div class="p-3.5 rounded-xl bg-slate-50/50 border border-slate-200 space-y-2">
+            <div class="card-clean p-3.5 rounded-xl border border-slate-200 bg-white space-y-1.5 shadow-2xs">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-1.5">
-                  <i data-lucide="move-right" class="w-4 h-4 text-slate-600"></i>
-                  <span class="text-xs font-medium text-slate-700">Standing Long Jump (กระโดดไกลอยู่กับที่)</span>
+                  <span class="w-5 h-5 rounded-md bg-sky-100 text-sky-900 font-bold text-[11px] flex items-center justify-center">โอ๊ค</span>
+                  <span class="text-xs font-bold text-dbo-navy">โค้ชโอ๊ค (Head Coach)</span>
                 </div>
-                <span id="dash-longjump-diff" class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-500 border border-slate-200">รอทดสอบ</span>
+                <span class="text-[10px] text-slate-400">สมรรถภาพ & Footwork</span>
               </div>
-              <div class="flex items-baseline gap-2">
-                <span id="dash-longjump-val" class="text-3xl font-semibold text-slate-900 font-mono tracking-tight">-</span>
-                <span class="text-xs text-slate-500">เซนติเมตร (cm)</span>
+              <p id="dash-coach-oak-remark" class="text-xs text-slate-600 leading-relaxed pt-1">
+                อยู่ระหว่างการประเมินพัฒนาการโดยโค้ชโอ๊ค
+              </p>
+            </div>
+          </div>
+
+          <!-- Sports Science Metrics -->
+          <div class="card-clean p-4 rounded-xl border border-slate-200 bg-white space-y-3 shadow-2xs">
+            <h4 class="text-xs font-bold text-dbo-navy flex items-center gap-1.5">
+              <i data-lucide="activity" class="w-4 h-4 text-emerald-600"></i>
+              <span>การทดสอบสมรรถภาพทางกาย (Sports Science)</span>
+            </h4>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-600 font-medium">Vertical Jump (กระโดดสูง)</span>
+                  <span id="dash-vjump-diff" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 font-mono">รอทดสอบ</span>
+                </div>
+                <div class="flex items-baseline gap-1.5">
+                  <span id="dash-vjump-val" class="text-2xl font-bold text-slate-900 font-mono">-</span>
+                  <span class="text-xs text-slate-400">ซม.</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                  <div id="dash-vjump-bar" class="h-1.5 rounded-full bg-emerald-600" style="width: 0%"></div>
+                </div>
+                <span id="dash-vjump-history" class="text-[10px] text-slate-400 block pt-0.5">รอการทดสอบสมรรถภาพ</span>
               </div>
-              <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                <div id="dash-longjump-bar" class="h-1.5 rounded-full bg-dbo-navy" style="width: 0%"></div>
-              </div>
-              <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-                <span class="font-medium text-slate-600">ประวัติการทดสอบ:</span>
-                <span id="dash-longjump-history" class="font-mono text-slate-400 font-medium">รอการทดสอบสมรรถภาพ</span>
+
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-600 font-medium">Long Jump (กระโดดไกล)</span>
+                  <span id="dash-longjump-diff" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 font-mono">รอทดสอบ</span>
+                </div>
+                <div class="flex items-baseline gap-1.5">
+                  <span id="dash-longjump-val" class="text-2xl font-bold text-slate-900 font-mono">-</span>
+                  <span class="text-xs text-slate-400">ซม.</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                  <div id="dash-longjump-bar" class="h-1.5 rounded-full bg-dbo-navy" style="width: 0%"></div>
+                </div>
+                <span id="dash-longjump-history" class="text-[10px] text-slate-400 block pt-0.5">รอการทดสอบสมรรถภาพ</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Classmates Attendance Today: Grouped Attending & Leave -->
-        <div class="card-clean p-4 sm:p-5 space-y-3 border border-slate-200 bg-white">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-            <div class="flex items-center gap-2">
-              <i data-lucide="users" class="w-4 h-4 text-slate-600"></i>
-              <h3 class="text-xs sm:text-sm font-semibold text-dbo-navy">สถานะเพื่อนร่วมฝึกซ้อมวันนี้ (คลาส 17:30 - 19:30 น.)</h3>
-            </div>
-            <span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-600">สนามเตชะวิทย์</span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-            <!-- Group 1: Attending -->
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
+        <!-- ===================================================================== -->
+        <!-- CATEGORY PANEL 3: เพื่อนร่วมคลาส (Classmates Attending / Leave)      -->
+        <!-- ===================================================================== -->
+        <div id="parentCatPanel-classmates" class="hidden space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="card-clean p-3.5 rounded-xl bg-white border border-slate-200 space-y-2 shadow-2xs">
+              <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                   <span>แจ้งมาเรียนวันนี้</span>
                 </span>
-                <span id="parentAttendingCount" class="font-mono font-medium text-xs bg-white text-emerald-800 border border-slate-200 px-2 py-0.5 rounded-md">0 คน</span>
+                <span id="parentAttendingCount" class="font-mono text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">0 คน</span>
               </div>
-              <div id="parentAttendingList" class="flex flex-wrap gap-1.5 pt-0.5 min-h-[30px] items-center">
+              <div id="parentAttendingList" class="flex flex-wrap gap-1.5 pt-1 min-h-[30px] items-center">
                 <span class="text-[11px] text-slate-400">ยังไม่มีเพื่อนลงทะเบียนรอบนี้</span>
               </div>
             </div>
 
-            <!-- Group 2: Leave -->
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
+            <div class="card-clean p-3.5 rounded-xl bg-white border border-slate-200 space-y-2 shadow-2xs">
+              <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                   <span>แจ้งลาเรียนวันนี้</span>
                 </span>
-                <span id="parentLeaveCount" class="font-mono font-medium text-xs bg-white text-amber-800 border border-slate-200 px-2 py-0.5 rounded-md">0 คน</span>
+                <span id="parentLeaveCount" class="font-mono text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">0 คน</span>
               </div>
-              <div id="parentLeaveList" class="flex flex-wrap gap-1.5 pt-0.5 min-h-[30px] items-center">
+              <div id="parentLeaveList" class="flex flex-wrap gap-1.5 pt-1 min-h-[30px] items-center">
                 <span class="text-[11px] text-slate-400">ไม่มีเพื่อนแจ้งลาในรอบนี้</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Attendance History Table -->
-        <div class="card-clean overflow-hidden">
-          <div class="p-4 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i data-lucide="clipboard-check" class="w-4 h-4 text-dbo-gold"></i>
-              <h3 class="text-xs sm:text-sm font-bold text-dbo-navy">ประวัติการเช็คชื่อเข้าฝึกซ้อมของน้อง</h3>
+        <!-- ===================================================================== -->
+        <!-- CATEGORY PANEL 4: ตารางซ้อม (Schedule & Next Class)                  -->
+        <!-- ===================================================================== -->
+        <div id="parentCatPanel-schedule" class="hidden space-y-3">
+          <div class="card-clean p-4 rounded-xl border border-slate-200 bg-white space-y-3 shadow-2xs">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <span class="text-xs font-bold text-dbo-navy flex items-center gap-1.5">
+                <i data-lucide="calendar" class="w-4 h-4 text-indigo-600"></i>
+                <span>คลาสเรียนรอบถัดไป</span>
+              </span>
+              <button onclick="switchTab('calendar')" class="text-xs font-bold text-indigo-700 hover:text-indigo-900 flex items-center gap-1 cursor-pointer">
+                <span>เปิดปฏิทินเต็มเดือน</span>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </button>
             </div>
-            <span class="text-[11px] text-slate-500 font-mono">บันทึกเรียลไทม์</span>
+            <div>
+              <span class="text-base font-bold text-dbo-navy block" id="dash-next-class-title">พฤหัสบดีนี้ (17:30 – 19:30 น.)</span>
+              <span class="text-xs text-slate-500" id="dash-next-class-topic">คลาส Game Situation & Team Tactics</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs text-slate-500">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i>
+              <span>โรงยิม โรงเรียนเตชะวิทย์</span>
+            </div>
           </div>
-
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs sm:text-sm border-collapse min-w-[500px]">
-              <thead class="bg-slate-100/70 text-slate-500 uppercase border-b border-slate-200">
-                <tr>
-                  <th scope="col" class="py-2.5 px-3.5 font-semibold">วันที่ฝึกซ้อม</th>
-                  <th scope="col" class="py-2.5 px-3.5 font-semibold">ประเภทคลาส</th>
-                  <th scope="col" class="py-2.5 px-3.5 font-semibold text-center">ผลการเช็คชื่อ</th>
-                  <th scope="col" class="py-2.5 px-3.5 font-semibold text-center">การตัดโควต้า</th>
-                </tr>
-              </thead>
-              <tbody id="dash-history-tbody" class="divide-y divide-slate-100">
-                <!-- Dynamically injected -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Action Banner to Renew Course -->
-        <div class="card-clean p-5 bg-gradient-to-r from-dbo-goldLight via-amber-50 to-white border border-dbo-gold/30 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div class="space-y-1 text-center sm:text-left">
-            <h4 class="text-sm sm:text-base font-bold text-dbo-navy">ต้องการต่อคอร์สใหม่เพื่อความต่อเนื่องของน้อง?</h4>
-            <p class="text-xs text-slate-600">
-              ราคาพิเศษสำหรับนักเรียนเก่าที่ต่อคอร์ส 10 ครั้ง เพียง <strong>3,990 บาท</strong> (จากราคาแรกเข้า 4,290.-)
-            </p>
-          </div>
-          <button onclick="switchTab('renew-payment')" class="btn-touch px-5 py-2.5 rounded-xl font-bold text-xs bg-dbo-navy text-white hover:bg-dbo-navySoft shadow-xs flex items-center gap-2 flex-shrink-0">
-            <i data-lucide="qr-code" class="w-4 h-4 text-dbo-gold"></i>
-            <span>กดสแกน QR ต่อคอร์สทันที</span>
-          </button>
         </div>
 
       </div>

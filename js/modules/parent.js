@@ -472,6 +472,34 @@ function renderParentView(matchedList) {
   historyTbody.innerHTML = rowsHtml;
   updateParentTodayStatusUI();
   renderLivePeers();
+  switchParentCategory(activeParentCategory);
+  lucide.createIcons();
+}
+
+let activeParentCategory = 'history';
+
+function switchParentCategory(category) {
+  activeParentCategory = category || 'history';
+  const categories = ['history', 'growth', 'classmates', 'schedule'];
+  categories.forEach(cat => {
+    const btn = document.getElementById(`pcat-btn-${cat}`);
+    const panel = document.getElementById(`parentCatPanel-${cat}`);
+    if (cat === activeParentCategory) {
+      if (btn) {
+        btn.className = 'pcat-pill active flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white shadow-2xs transition-all cursor-pointer flex-shrink-0';
+      }
+      if (panel) panel.classList.remove('hidden');
+    } else {
+      if (btn) {
+        btn.className = 'pcat-pill inactive flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex-shrink-0';
+      }
+      if (panel) panel.classList.add('hidden');
+    }
+  });
+
+  if (activeParentCategory === 'classmates' && typeof renderParentClassmatesList === 'function') {
+    renderParentClassmatesList();
+  }
   lucide.createIcons();
 }
 

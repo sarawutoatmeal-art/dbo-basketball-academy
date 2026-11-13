@@ -61,11 +61,14 @@ function updateNotificationPermissionUI() {
 
   if (!('Notification' in window)) {
     if (badge) {
-      badge.innerText = 'อุปกรณ์ไม่รองรับ';
-      badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600 border border-slate-300';
+      badge.innerText = 'ระบบในแอปพร้อมใช้งาน';
+      badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-700 border border-slate-300';
     }
-    if (btn) btn.classList.add('hidden');
-    if (coachBtn) coachBtn.classList.add('hidden');
+    if (btn) {
+      btn.innerHTML = '<i data-lucide="bell" class="w-3.5 h-3.5 text-slate-500"></i><span>ทดสอบเสียง & แจ้งเตือน</span>';
+      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer shadow-2xs';
+      btn.onclick = () => testRealPushNotification('checkin');
+    }
     return;
   }
 
@@ -75,8 +78,8 @@ function updateNotificationPermissionUI() {
       badge.className = 'text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1';
     }
     if (btn) {
-      btn.innerHTML = '<i data-lucide="bell-ring" class="w-3.5 h-3.5 text-emerald-600"></i><span class="text-emerald-700 font-semibold">เปิดรับการแจ้งเตือนแล้ว</span>';
-      btn.className = 'btn-touch px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1.5 flex-shrink-0 w-full sm:w-auto justify-center cursor-default pointer-events-none shadow-2xs';
+      btn.innerHTML = '<i data-lucide="bell-ring" class="w-3.5 h-3.5 text-emerald-600"></i><span>เปิดรับการแจ้งเตือนแล้ว</span>';
+      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1.5 flex-shrink-0 cursor-default shadow-2xs';
       btn.onclick = null;
     }
     if (coachBtn && coachTxt) {
@@ -91,7 +94,7 @@ function updateNotificationPermissionUI() {
     }
     if (btn) {
       btn.innerHTML = '<i data-lucide="settings" class="w-3.5 h-3.5"></i><span>ตั้งค่าอนุญาตแจ้งเตือน</span>';
-      btn.className = 'btn-touch px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5 flex-shrink-0 w-full sm:w-auto justify-center cursor-pointer';
+      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer';
       btn.onclick = () => {
         showToast('กรุณาเปิดสิทธิ์การแจ้งเตือนในการตั้งค่าเบราว์เซอร์ของคุณ');
       };
@@ -108,7 +111,7 @@ function updateNotificationPermissionUI() {
     }
     if (btn) {
       btn.innerHTML = '<i data-lucide="bell" class="w-3.5 h-3.5"></i><span>เปิดแจ้งเตือนบนมือถือ</span>';
-      btn.className = 'btn-touch px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors flex items-center gap-1.5 flex-shrink-0 w-full sm:w-auto justify-center shadow-xs cursor-pointer';
+      btn.className = 'btn-touch px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors flex items-center gap-1.5 flex-shrink-0 shadow-xs cursor-pointer';
       btn.onclick = requestNotificationPermission;
     }
     if (coachBtn && coachTxt) {
@@ -123,8 +126,10 @@ function updateNotificationPermissionUI() {
 // Request Notification Permission
 async function requestNotificationPermission() {
   if (!('Notification' in window)) {
-    showToast('เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือน Web Notification');
-    return false;
+    // For iOS Safari or unsupported, show in-app simulation test directly
+    testRealPushNotification('checkin');
+    showToast('เปิดระบบแจ้งเตือนแบบ In-App เรียบร้อย');
+    return true;
   }
   try {
     const permission = await Notification.requestPermission();
@@ -141,13 +146,14 @@ async function requestNotificationPermission() {
       if (isCoach) {
         welcomeBody = 'เปิดรับการแจ้งเตือนโค้ชเรียบร้อยแล้ว: ระบบจะเด้งข้อความแจ้งเตือนทันทีเมื่อมีผู้ปกครองแจ้งเข้าเรียนหรือขอลาหยุด';
       } else if (childName) {
-        welcomeBody = `เปิดการแจ้งเตือนเรียบร้อยแล้ว: ระบบจะแจ้งเตือนเมื่อโค้ชเช็คชื่อน้อง ${childName} และแจ้งเตือนก่อนเริ่ม-เลิกคลาสแบบเรียลไทม์`;
+        welcomeBody = `เปิดการแจ้งเตือนเรียบร้อยแล้ว: ระบบจะแจ้งเตือนเมื่อโค้ชเช็คชื่อน้อง ${childName} และแจ้งเตือนคลาสเรียนแบบเรียลไทม์`;
       } else {
         welcomeBody = 'เปิดการแจ้งเตือนเรียบร้อยแล้ว: ระบบจะส่งข้อความแจ้งเตือนเมื่อโค้ชเช็คชื่อและแจ้งเตือนคลาสเรียนแบบเรียลไทม์';
       }
 
       sendSystemNotification(welcomeTitle, {
         body: welcomeBody,
+        subtitle: 'from DBO Academy',
         icon: 'assets/images/app-icon-192.png',
         tag: 'dbo-welcome-' + Date.now()
       });
@@ -159,6 +165,7 @@ async function requestNotificationPermission() {
     }
   } catch (e) {
     console.error(e);
+    testRealPushNotification('checkin');
     return false;
   }
 }
@@ -176,9 +183,15 @@ function sendSystemNotification(title, options = {}) {
     ...options
   };
 
+  // Always show Lockscreen Simulation Banner so all mobile/desktop devices display it visually
+  showLockScreenBannerSim(title, options.subtitle || 'from DBO Academy', options.body || '');
+
   if (!('Notification' in window)) return;
 
   if (Notification.permission === 'granted') {
+    let handledBySW = false;
+
+    // 1. Post to active Service Worker controller
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
       try {
         navigator.serviceWorker.controller.postMessage({
@@ -186,22 +199,27 @@ function sendSystemNotification(title, options = {}) {
           title: title,
           options: defaultOptions
         });
+        handledBySW = true;
       } catch (e) {
         console.log('SW postMessage error:', e);
       }
     }
 
+    // 2. Direct Service Worker Registration showNotification (Primary on Android Chrome & PWA)
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(reg => {
-        if (reg && reg.showNotification) {
-          reg.showNotification(title, defaultOptions);
-        } else {
+      navigator.serviceWorker.getRegistration().then(reg => {
+        if (reg && typeof reg.showNotification === 'function') {
+          reg.showNotification(title, defaultOptions).catch(() => {});
+          handledBySW = true;
+        } else if (!handledBySW) {
           try { new Notification(title, defaultOptions); } catch (e) {}
         }
       }).catch(() => {
-        try { new Notification(title, defaultOptions); } catch (e) {}
+        if (!handledBySW) {
+          try { new Notification(title, defaultOptions); } catch (e) {}
+        }
       });
-    } else {
+    } else if (!handledBySW) {
       try {
         new Notification(title, defaultOptions);
       } catch (e) {
@@ -209,6 +227,75 @@ function sendSystemNotification(title, options = {}) {
       }
     }
   }
+}
+
+function showLockScreenBannerSim(title, subtitle, body) {
+  const titleEl = document.getElementById('lockScreenTitle');
+  const subEl = document.getElementById('lockScreenSubtitle');
+  const bodyEl = document.getElementById('lockScreenBody');
+  const banner = document.getElementById('lockScreenNotificationBanner');
+
+  if (titleEl) titleEl.innerText = title || 'Class starts in 15 mins';
+  if (subEl) subEl.innerText = subtitle || 'from DBO Academy';
+  if (bodyEl) bodyEl.innerText = body || '';
+
+  if (banner) {
+    banner.classList.remove('hidden');
+    void banner.offsetWidth; // Force reflow
+    banner.classList.remove('-translate-y-4', 'opacity-0');
+    banner.classList.add('translate-y-0', 'opacity-100');
+
+    clearTimeout(lockScreenDismissTimer);
+    lockScreenDismissTimer = setTimeout(() => {
+      dismissLockScreenBanner();
+    }, 8000);
+  }
+}
+
+// Lockscreen Notification Banner Simulation
+function sendSystemLockscreenNotification({ title, subtitle, body, tag, icon }) {
+  sendSystemNotification(title, {
+    subtitle: subtitle || 'from DBO Academy',
+    body: body || '',
+    tag: tag || ('dbo-lockscreen-' + Date.now()),
+    icon: icon || 'assets/images/app-icon-192.png'
+  });
+}
+
+// Direct Instant Real Push Test Action
+async function testRealPushNotification(scenario = 'checkin') {
+  playNotificationChime();
+
+  if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+    try {
+      await Notification.requestPermission();
+      updateNotificationPermissionUI();
+    } catch (e) {}
+  }
+
+  const sName = (loggedInStudent && loggedInStudent.name) ? loggedInStudent.name : 'อิฐ';
+  const rem = (loggedInStudent && loggedInStudent.remaining !== undefined) ? loggedInStudent.remaining : 8;
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+
+  let title = 'เช็คชื่อเข้าฝึกซ้อมแล้ว';
+  let subtitle = 'from DBO Academy';
+  let body = `น้อง ${sName} • IN ${timeStr} • สิทธิ์คงเหลือ: ${rem} ครั้ง`;
+
+  if (scenario === 'morning') {
+    title = '🏀 วันนี้มีเรียนบาสเกตบอล DBO';
+    body = `วันนี้เป็นวันเรียนของอคาเดมี่ของ น้อง ${sName} เริ่มเรียนเวลา 17:30 ถึง 19:30 น. ณ ยิมเตชะวิทย์`;
+  } else if (scenario === 'canceled') {
+    title = '⚠️ วันนี้งดคลาสเรียน DBO Academy';
+    body = `แจ้งเตือนผู้ปกครองน้อง ${sName}: วันนี้งดคลาสการฝึกซ้อมของอคาเดมี่ (ติดกิจกรรมโรงเรียน) ขอบคุณครับ`;
+  } else if (scenario === '15m') {
+    title = 'Class starts in 15 mins';
+    body = `น้อง ${sName} • IN 17:30 น. เตรียมตัวลงสนามได้เลยครับ`;
+  }
+
+  sendSystemLockscreenNotification({ title, subtitle, body, tag: 'real-test-' + Date.now() });
+  triggerTelegramPush(body, title);
+  showToast('🔔 เด้งการแจ้งเตือนจริงแล้ว (เสียงเตือน + ล็อกสกรีน + ระบบ Push)');
 }
 
 // Telegram / Line Style In-App Floating Push Notification
