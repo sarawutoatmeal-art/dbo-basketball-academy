@@ -175,6 +175,25 @@ function renderCoachRosterTable() {
     else if (s.courseType === 'saturday') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">วันเสาร์ (4 ครั้ง)</span>`;
     else typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">ปกติ 10 ครั้ง</span>`;
 
+    // Alert badge for students with remaining <= 1 session or depleted
+    let urgentStatusBadge = '';
+    const checkRem = (s.courseType === 'saturday') ? (s.saturdayRemaining || 0) : (s.remaining || 0);
+    if (s.courseType === 'both') {
+      const reg = s.remaining || 0;
+      const sat = s.saturdayRemaining || 0;
+      if (reg <= 0 || sat <= 0) {
+        urgentStatusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300 inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>🚨 หมดแล้ว (${reg <= 0 ? 'ปกติ ' + reg : 'เสาร์ ' + sat})</span>`;
+      } else if (reg === 1 || sat === 1) {
+        urgentStatusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 inline-flex items-center gap-1">⚠️ เหลืออีก 1 ครั้ง</span>`;
+      }
+    } else {
+      if (checkRem <= 0) {
+        urgentStatusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300 inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>🚨 หมดแล้ว (${checkRem})</span>`;
+      } else if (checkRem === 1) {
+        urgentStatusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 inline-flex items-center gap-1">⚠️ เหลืออีก 1 ครั้ง</span>`;
+      }
+    }
+
     // 1. Desktop Table
     if (tbody) {
       const tr = document.createElement('tr');
@@ -194,7 +213,10 @@ function renderCoachRosterTable() {
           <span class="text-xs text-slate-600 block">${s.startDate || '-'}</span>
           ${s.nextRenewal ? `<span class="text-[10px] text-emerald-700 font-medium">รอบต่อ: ${s.nextRenewal}</span>` : ''}
         </td>
-        <td class="py-2.5 px-3 text-center whitespace-nowrap">${remBadge}</td>
+        <td class="py-2.5 px-3 text-center whitespace-nowrap">
+          ${remBadge}
+          ${urgentStatusBadge ? `<div class="mt-1">${urgentStatusBadge}</div>` : ''}
+        </td>
         <td class="py-2.5 px-3 text-center">
           <div class="inline-flex items-center gap-1">
             <button type="button" onclick="openEditStudentModal(${s.id})" title="แก้ไขชื่อ / สิทธิ์ / ข้อมูล" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 transition-colors cursor-pointer">
@@ -236,6 +258,7 @@ function renderCoachRosterTable() {
           <div class="flex items-center gap-2 flex-shrink-0">
             <div class="text-right">
               ${remBadge}
+              ${urgentStatusBadge ? `<div class="mt-0.5 text-right">${urgentStatusBadge}</div>` : ''}
             </div>
             <button type="button" onclick="openEditStudentModal(${s.id})" class="btn-touch px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 transition-colors cursor-pointer" title="แก้ไขข้อมูล & ปรับสิทธิ์">
               <i data-lucide="edit-3" class="w-3.5 h-3.5 text-slate-500"></i>

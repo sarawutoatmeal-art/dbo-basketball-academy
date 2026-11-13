@@ -30,6 +30,10 @@ function switchTab(tabName) {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
   if (tabName === 'daily-attendance' && typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+  if (tabName === 'calendar') {
+    if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
+    if (typeof renderMasterCalendar === 'function') renderMasterCalendar();
+  }
   if (tabName === 'coach-roster') {
     if (typeof renderCoachRosterTable === 'function') renderCoachRosterTable();
     if (typeof renderParentRegistrations === 'function') renderParentRegistrations();
@@ -144,6 +148,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (typeof updateHeaderProfileUI === 'function') updateHeaderProfileUI();
   if (typeof updateNotificationPermissionUI === 'function') updateNotificationPermissionUI();
   if (typeof renderMasterCalendar === 'function') renderMasterCalendar();
+  if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
   if (typeof renderWeeklyScheduleView === 'function') renderWeeklyScheduleView();
   if (typeof renderPendingSlips === 'function') renderPendingSlips();
   if (typeof renderParentRegistrations === 'function') renderParentRegistrations();

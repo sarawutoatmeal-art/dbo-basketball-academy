@@ -1,6 +1,6 @@
 // ========================================================
 // DBO Basketball Academy - Attendance & Teaching Records
-// (Roll Call Sessions, History Modal, Daily Attendance Board, Techawit TWS Records)
+// (Roll Call Sessions, History Modal, Daily Attendance Board, DBO Academy Records)
 // ========================================================
 
 function getTodayDateKey() {
@@ -460,7 +460,7 @@ function toggleUnconfirmedList() {
   }
 }
 
-// Techawit School (TWS) Post-Teaching Attendance Records
+// DBO Basketball Academy - Post-Training & Attendance Records
 function renderTeachingRecordsList(filterMonth = null) {
   const container = document.getElementById('teachingRecordsList');
   const countEl = document.getElementById('totalTeachingRecordsCount');
@@ -478,7 +478,7 @@ function renderTeachingRecordsList(filterMonth = null) {
       <div class="p-8 text-center text-slate-400 space-y-3 bg-white rounded-2xl border border-slate-200">
         <i data-lucide="clipboard-list" class="w-12 h-12 mx-auto text-slate-300"></i>
         <div>
-          <p class="font-bold text-slate-700 text-sm">ยังไม่มีรายการบันทึกการสอน (No Teaching Records)</p>
+          <p class="font-bold text-slate-700 text-sm">ยังไม่มีรายการบันทึกการสอน (No Training Records)</p>
           <p class="text-xs text-slate-500 mt-1">กดปุ่ม "+ บันทึกเช็คชื่อใหม่ (New Record)" ด้านบน เพื่อบันทึกการฝึกซ้อมและเช็คชื่อนักเรียน</p>
         </div>
         <button type="button" onclick="openNewTeachingRecordModal()" class="btn-touch px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs inline-flex items-center gap-1.5 cursor-pointer">
@@ -510,17 +510,28 @@ function renderTeachingRecordsList(filterMonth = null) {
     const attendingStudents = rec.attendingStudents || [];
     const leaveStudents = rec.leaveStudents || [];
 
+    const getCleanStudentName = (st) => {
+      if (!st) return 'นักเรียน';
+      const match = students.find(s => s && Number(s.id) === Number(st.id));
+      if (match && match.name && !match.name.includes('?')) return match.name;
+      if (st.name && !st.name.includes('?')) return st.name;
+      return match ? match.name : (st.name || 'นักเรียน');
+    };
+
+    const cleanSlot = (!rec.slot || rec.slot.includes('?')) ? 'คลาสปกติ 17:00 - 18:30 น.' : rec.slot;
+    const cleanCoach = (!rec.coach || rec.coach.includes('?')) ? 'โค้ชโอ๊ต (Head Coach)' : rec.coach;
+
     const attendingChips = attendingStudents.map(st => `
       <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-900 border border-emerald-200">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-        <span>น้อง ${st.name}</span>
+        <span>น้อง ${getCleanStudentName(st)}</span>
       </span>
     `).join('') || '<span class="text-xs text-slate-400 italic">ไม่มีนักเรียนมาเรียน</span>';
 
     const leaveChips = leaveStudents.map(st => `
       <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200">
         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-        <span>น้อง ${st.name} (ลา)</span>
+        <span>น้อง ${getCleanStudentName(st)} (ลา)</span>
       </span>
     `).join('');
 
@@ -533,11 +544,11 @@ function renderTeachingRecordsList(filterMonth = null) {
           <div>
             <div class="flex items-center gap-2 flex-wrap">
               <strong class="text-sm sm:text-base font-bold text-slate-900">${dateStr}</strong>
-              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">${rec.slot || 'คลาสปกติ'}</span>
-              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">โค้ช: ${rec.coach || 'โค้ชโอ๊ต'}</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">${cleanSlot}</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">โค้ช: ${cleanCoach}</span>
             </div>
             <p class="text-xs text-slate-500 mt-0.5">
-              ${rec.topic ? `หัวข้อฝึกซ้อม: <strong class="text-slate-800 font-semibold">${rec.topic}</strong>` : 'บันทึกการฝึกซ้อมและเช็คชื่อประจำวัน'}
+              ${rec.topic ? `หัวข้อฝึกซ้อม: <strong class="text-slate-800 font-semibold">${rec.topic}</strong>` : 'บันทึกการฝึกซ้อมและเช็คชื่อประจำวัน DBO Academy'}
             </p>
           </div>
         </div>

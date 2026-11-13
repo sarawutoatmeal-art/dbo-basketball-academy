@@ -210,6 +210,13 @@ module.exports = async (req, res) => {
     try {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const incoming = body && body.data ? body.data : body;
+      if (body && body.overwrite) {
+        saveStoredState(incoming);
+        return res.status(200).json({
+          ok: true,
+          data: incoming
+        });
+      }
       const existing = loadStoredState();
       const merged = mergeStates(existing, incoming);
       saveStoredState(merged);
