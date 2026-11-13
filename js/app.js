@@ -183,15 +183,12 @@ window.addEventListener('DOMContentLoaded', () => {
     initRealtimeEngine();
   }
 
-  // Dismiss Native Splash Screen smoothly
-  setTimeout(hideSplashScreen, 1000);
+  // Dismiss Native Splash Screen after 3 seconds as requested
+  setTimeout(hideSplashScreen, 3000);
 });
 
-// Fallback triggers for Splash Screen dismissal
-window.addEventListener('load', () => {
-  setTimeout(hideSplashScreen, 900);
-});
-setTimeout(hideSplashScreen, 2200);
+// Fallback safety trigger for Splash Screen dismissal (4 seconds maximum)
+setTimeout(hideSplashScreen, 4000);
 
 // Native App Splash Screen Controller
 function hideSplashScreen() {
@@ -202,5 +199,5 @@ function hideSplashScreen() {
     if (splash.parentNode) {
       splash.parentNode.removeChild(splash);
     }
-  }, 500);
+  }, 550);
 }
