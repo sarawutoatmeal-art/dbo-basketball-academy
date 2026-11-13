@@ -495,7 +495,7 @@ function handleIncomingMqttMessage(topic, message) {
       const isSelf = (payload.senderId === window.dboClientId);
 
       // 1. Parent Attendance Update -> Notify Coach Devices
-      if (payload.type === 'PARENT_ATTENDANCE_EVENT' && !isSelf) {
+      if (payload.type === 'PARENT_ATTENDANCE_EVENT') {
         const stName = payload.studentName || 'นักเรียน';
         const isAttending = (payload.status === 'attending');
         const nowT = payload.time || 'เมื่อสักครู่';
@@ -640,7 +640,7 @@ function initRealtimeEngine() {
       window.dboRealtimeBC.onmessage = (event) => {
         if (event.data && event.data.type === 'STATE_CHANGED' && event.data.data) {
           applyIncomingState(event.data.data, event.data.actionDesc);
-        } else if (event.data && (event.data.type === 'COACH_CLASS_STATUS_EVENT' || event.data.type === 'COACH_CHECKIN_EVENT')) {
+        } else if (event.data && (event.data.type === 'COACH_CLASS_STATUS_EVENT' || event.data.type === 'COACH_CHECKIN_EVENT' || event.data.type === 'PARENT_ATTENDANCE_EVENT')) {
           handleIncomingMqttMessage(REALTIME_SYNC_TOPIC, JSON.stringify(event.data));
         }
       };

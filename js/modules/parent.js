@@ -581,18 +581,25 @@ function setTodayAttendanceFromParent(status, leaveReason = '') {
 
   saveState(true, `ผู้ปกครองแจ้ง${status === 'attending' ? 'มาเรียน' : 'ลา'}: น้อง ${loggedInStudent.name}`, true);
 
-  // Real-time broadcast to all coach devices via MQTT
+  // Real-time broadcast to all coach devices via MQTT & BroadcastChannel
+  const parentAttPayload = {
+    senderId: window.dboClientId,
+    type: 'PARENT_ATTENDANCE_EVENT',
+    studentId: loggedInStudent.id,
+    studentName: loggedInStudent.name,
+    status: status,
+    leaveReason: leaveReason || (status === 'leave' ? 'แจ้งลาเรียน' : ''),
+    time: nowTime,
+    dateKey: todayKey
+  };
+
   if (typeof publishToMqttBrokers === 'function') {
-    publishToMqttBrokers(REALTIME_SYNC_TOPIC, {
-      senderId: window.dboClientId,
-      type: 'PARENT_ATTENDANCE_EVENT',
-      studentId: loggedInStudent.id,
-      studentName: loggedInStudent.name,
-      status: status,
-      leaveReason: leaveReason || (status === 'leave' ? 'แจ้งลาเรียน' : ''),
-      time: nowTime,
-      dateKey: todayKey
-    });
+    publishToMqttBrokers(REALTIME_SYNC_TOPIC, parentAttPayload);
+  }
+  if (window.dboRealtimeBC) {
+    try {
+      window.dboRealtimeBC.postMessage(parentAttPayload);
+    } catch (e) {}
   }
 
   updateParentTodayStatusUI();

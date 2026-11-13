@@ -65,9 +65,9 @@ function updateNotificationPermissionUI() {
       badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-700 border border-slate-300';
     }
     if (btn) {
-      btn.innerHTML = '<i data-lucide="bell" class="w-3.5 h-3.5 text-slate-500"></i><span>ทดสอบเสียง & แจ้งเตือน</span>';
-      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer shadow-2xs';
-      btn.onclick = () => testRealPushNotification('checkin');
+      btn.innerHTML = '<i data-lucide="bell-ring" class="w-3.5 h-3.5 text-emerald-600"></i><span>เปิดรับแจ้งเตือนในแอปแล้ว</span>';
+      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1.5 flex-shrink-0 cursor-default shadow-2xs';
+      btn.onclick = null;
     }
     return;
   }
