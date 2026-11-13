@@ -49,6 +49,48 @@ if (!students) {
   localStorage.setItem('dbo_students_v14', JSON.stringify(students));
 }
 
+// Authoritative sync with Coach-Verified Roster (Permanently locks coach manual quota edits & adds Mateo #55)
+const COACH_VERIFIED_LOCK_VERSION = 'dbo_coach_quota_locked_v2';
+if (!localStorage.getItem(COACH_VERIFIED_LOCK_VERSION)) {
+  const verifiedMap = new Map();
+  initialRawData.forEach(r => verifiedMap.set(r.id, r));
+
+  students.forEach(st => {
+    const raw = verifiedMap.get(st.id);
+    if (raw) {
+      st.remaining = raw.remaining;
+      st.saturdayRemaining = raw.saturdayRemaining;
+      st.courseType = raw.courseType;
+      st.name = raw.name;
+      if (raw.phone && !st.phone) st.phone = raw.phone;
+      if (raw.remark) st.remark = raw.remark;
+      st._updatedAt = 1794560000000;
+    }
+  });
+
+  initialRawData.forEach(raw => {
+    if (!students.some(s => s.id === raw.id)) {
+      students.push({
+        ...raw,
+        parentName: '',
+        parentRelation: '',
+        remarkOat: '',
+        remarkOak: '',
+        vJump: null,
+        vJumpHistory: [],
+        longJump: null,
+        longJumpHistory: [],
+        checkInHistory: [],
+        _updatedAt: 1794560000000
+      });
+    }
+  });
+
+  students.sort((a, b) => Number(a.id) - Number(b.id));
+  localStorage.setItem('dbo_students_v14', JSON.stringify(students));
+  localStorage.setItem(COACH_VERIFIED_LOCK_VERSION, 'true');
+}
+
 // Automatic Reset of Mock Metrics & Boilerplate Remarks across all students
 if (!localStorage.getItem('dbo_metrics_reset_v2')) {
   students.forEach(s => {
