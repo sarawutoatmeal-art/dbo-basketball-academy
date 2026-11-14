@@ -44,6 +44,9 @@ function handleParentPhoneLogin(e, forcedInput = null) {
     updateHeaderProfileUI();
     switchTab('coach-roster');
     showToast(`ยินดีต้อนรับ ${staff.fullName} เข้าสู่ระบบแอดมิน DBO`);
+    if (typeof registerWebPushSubscription === 'function' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      registerWebPushSubscription(false);
+    }
     return;
   }
 
@@ -71,6 +74,9 @@ function handleParentPhoneLogin(e, forcedInput = null) {
     updateHeaderProfileUI();
     switchTab('coach-roster');
     showToast(`ยินดีต้อนรับ ${matchedAsst.name} เข้าสู่ระบบผู้ช่วยโค้ช DBO`);
+    if (typeof registerWebPushSubscription === 'function' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      registerWebPushSubscription(false);
+    }
     return;
   }
 

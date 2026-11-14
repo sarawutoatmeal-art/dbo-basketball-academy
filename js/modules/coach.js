@@ -684,6 +684,7 @@ function handleSaveStudent(e) {
     const now = new Date();
     const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
     const dateKey = (typeof getTodayDateKey === 'function') ? getTodayDateKey() : now.toISOString().split('T')[0];
+    const remAfter = (courseType === 'saturday') ? saturdayRemaining : remaining;
     const checkinPayload = {
       senderId: window.dboClientId,
       type: 'COACH_CHECKIN_EVENT',
@@ -693,7 +694,7 @@ function handleSaveStudent(e) {
       attendingStudents: [{
         id: parseInt(idVal, 10),
         name: name,
-        remaining: (courseType === 'saturday') ? saturdayRemaining : remaining
+        remaining: remAfter
       }],
       leaveStudents: []
     };
@@ -702,6 +703,17 @@ function handleSaveStudent(e) {
     }
     if (typeof publishToMqttBrokers === 'function') {
       publishToMqttBrokers(REALTIME_SYNC_TOPIC, checkinPayload);
+    }
+
+    // Trigger Real Cloud Web Push to Parent's locked phone outside app
+    if (typeof sendCloudWebPush === 'function') {
+      sendCloudWebPush({
+        targetStudentId: parseInt(idVal, 10),
+        targetStudentName: name,
+        title: `🏀 น้อง ${name} เช็คชื่อเข้าเรียนแล้ว`,
+        body: `น้อง ${name} เข้าฝึกซ้อมเรียบร้อยแล้ว (${timeStr}) โดย ${staffName} • โควต้าคงเหลือ: ${remAfter} ครั้ง`,
+        tag: `dbo-checkin-${idVal}-${Date.now()}`
+      });
     }
   }
 

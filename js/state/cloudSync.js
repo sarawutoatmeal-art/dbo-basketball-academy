@@ -476,11 +476,26 @@ async function pullStateFromCloudApi() {
 }
 
 function handleIncomingMqttMessage(topic, message) {
-  if (topic === CLOUD_STATE_TOPIC || topic === REALTIME_SYNC_TOPIC || topic === CLOUD_EVENT_TOPIC) {
+  if (topic === CLOUD_STATE_TOPIC || topic === REALTIME_SYNC_TOPIC || topic === CLOUD_EVENT_TOPIC || topic === 'dbo_academy/push_subs') {
     try {
       const payload = JSON.parse(message.toString());
       if (!payload) return;
       const isSelf = (payload.senderId === window.dboClientId);
+
+      // Handle push subscription broadcasts from other devices
+      if (payload.type === 'PUSH_SUBSCRIPTION_UPDATE' && payload.subscription) {
+        const newSub = payload.subscription;
+        if (newSub && newSub.endpoint) {
+          try {
+            const raw = localStorage.getItem('dbo_known_push_subs');
+            const known = raw ? JSON.parse(raw) : [];
+            const idx = known.findIndex(k => k && k.endpoint === newSub.endpoint);
+            if (idx >= 0) known[idx] = newSub; else known.push(newSub);
+            localStorage.setItem('dbo_known_push_subs', JSON.stringify(known));
+          } catch (e) {}
+        }
+        return;
+      }
 
       // 1. Parent Attendance Update -> Notify Coach Devices
       if (payload.type === 'PARENT_ATTENDANCE_EVENT') {
@@ -673,7 +688,7 @@ function initRealtimeEngine() {
       window.realtimeMqttClient.on('connect', () => {
         console.log('⚡ DBO Real-Time Cloud Engine Connected:', window.dboClientId);
         updateRealtimeIndicator(true);
-        window.realtimeMqttClient.subscribe([CLOUD_STATE_TOPIC, REALTIME_SYNC_TOPIC, CLOUD_EVENT_TOPIC], { qos: 1 });
+        window.realtimeMqttClient.subscribe([CLOUD_STATE_TOPIC, REALTIME_SYNC_TOPIC, CLOUD_EVENT_TOPIC, 'dbo_academy/push_subs'], { qos: 1 });
 
         setTimeout(() => {
           if (window.realtimeMqttClient && window.realtimeMqttClient.connected) {
@@ -711,7 +726,7 @@ function initRealtimeEngine() {
 
       window.backupMqttClient.on('connect', () => {
         updateRealtimeIndicator(true);
-        window.backupMqttClient.subscribe([CLOUD_STATE_TOPIC, REALTIME_SYNC_TOPIC, CLOUD_EVENT_TOPIC], { qos: 1 });
+        window.backupMqttClient.subscribe([CLOUD_STATE_TOPIC, REALTIME_SYNC_TOPIC, CLOUD_EVENT_TOPIC, 'dbo_academy/push_subs'], { qos: 1 });
       });
       window.backupMqttClient.on('message', handleIncomingMqttMessage);
       window.backupMqttClient.on('error', () => {});

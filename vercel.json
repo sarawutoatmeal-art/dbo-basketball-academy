@@ -4,6 +4,14 @@
     {
       "path": "/api/push?action=cron_morning",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/push?action=cron_reminder_30m",
+      "schedule": "0 10 * * 1,2,4"
+    },
+    {
+      "path": "/api/push?action=cron_reminder_30m",
+      "schedule": "30 8 * * 6"
     }
   ],
   "headers": [

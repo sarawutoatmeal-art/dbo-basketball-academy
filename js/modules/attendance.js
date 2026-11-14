@@ -919,8 +919,16 @@ async function saveTeachingRecordFromModal() {
       const st = students.find(s => s.id === a.id);
       const remAfter = st ? (targetField === 'saturday' ? st.saturdayRemaining : st.remaining) : 0;
       setTimeout(() => {
-        notifyAttendanceCheckIn(a.name, coachVal, nowTimeStr, remAfter);
+        notifyAttendanceCheckIn(a.name, coachVal, nowTimeStr, remAfter, a.id);
       }, i * 200);
+    });
+
+    leave.forEach((l, i) => {
+      setTimeout(() => {
+        if (typeof notifyAttendanceLeave === 'function') {
+          notifyAttendanceLeave(l.name, coachVal, nowTimeStr, l.id);
+        }
+      }, (attending.length + i) * 200);
     });
 
     const checkinPayload = {
@@ -1013,7 +1021,7 @@ function resendTeachingRecordNotifications(recordId) {
     const st = students.find(s => s.id === a.id);
     const rem = st ? st.remaining : 0;
     setTimeout(() => {
-      notifyAttendanceCheckIn(a.name, rec.coach || 'โค้ชโอ๊ต', '17:00 น.', rem);
+      notifyAttendanceCheckIn(a.name, rec.coach || 'โค้ชโอ๊ต', '17:00 น.', rem, a.id);
     }, i * 250);
   });
 

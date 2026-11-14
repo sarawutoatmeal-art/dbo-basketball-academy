@@ -24,6 +24,43 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
+// Get all locally cached push subscriptions for pass-through redundancy
+function getStoredPushSubscriptions() {
+  const list = [];
+  try {
+    const raw = localStorage.getItem('dbo_known_push_subs');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) list.push(...parsed);
+    }
+  } catch (e) {}
+
+  if (window.__dboPushSub) {
+    const mySubJSON = window.__dboPushSub.toJSON ? window.__dboPushSub.toJSON() : JSON.parse(JSON.stringify(window.__dboPushSub));
+    if (mySubJSON && mySubJSON.endpoint) {
+      const childId = (loggedInStudent && loggedInStudent.id != null) ? loggedInStudent.id : null;
+      const childName = (loggedInStudent && loggedInStudent.name) ? loggedInStudent.name : '';
+      const phone = (loggedInStudent && loggedInStudent.phone) ? loggedInStudent.phone : '';
+      const isCoach = (isCoachAuth && currentStaff);
+      list.push({
+        ...mySubJSON,
+        studentId: childId,
+        studentName: childName,
+        phone: phone,
+        role: isCoach ? 'coach' : 'parent',
+        updatedAt: Date.now()
+      });
+    }
+  }
+
+  // De-duplicate by endpoint
+  const map = new Map();
+  list.forEach(item => {
+    if (item && item.endpoint && item.keys) map.set(item.endpoint, item);
+  });
+  return Array.from(map.values());
+}
+
 // Register or refresh Web Push Subscription on Server
 async function registerWebPushSubscription(forceResubscribe = false) {
   if (isRegisteringPush) return window.__dboPushSub;
@@ -60,6 +97,35 @@ async function registerWebPushSubscription(forceResubscribe = false) {
     const childName = (loggedInStudent && loggedInStudent.name) ? loggedInStudent.name : '';
     const phone = (loggedInStudent && loggedInStudent.phone) ? loggedInStudent.phone : '';
     const isCoach = (isCoachAuth && currentStaff);
+
+    const mySubRecord = {
+      endpoint: sub.endpoint,
+      keys: subJSON.keys,
+      studentId: childId,
+      studentName: childName,
+      phone: phone,
+      role: isCoach ? 'coach' : 'parent',
+      updatedAt: Date.now()
+    };
+
+    // Cache locally in localStorage
+    try {
+      localStorage.setItem('dbo_my_push_sub', JSON.stringify(mySubRecord));
+      const known = getStoredPushSubscriptions();
+      const idx = known.findIndex(k => k.endpoint === sub.endpoint);
+      if (idx >= 0) known[idx] = mySubRecord; else known.push(mySubRecord);
+      localStorage.setItem('dbo_known_push_subs', JSON.stringify(known));
+    } catch (e) {}
+
+    // Broadcast subscription via MQTT so coach and peer devices learn it immediately
+    if (typeof publishToMqttBrokers === 'function') {
+      try {
+        publishToMqttBrokers('dbo_academy/push_subs', {
+          type: 'PUSH_SUBSCRIPTION_UPDATE',
+          subscription: mySubRecord
+        }, { qos: 1, retain: true });
+      } catch (e) {}
+    }
 
     await fetch('/api/push', {
       method: 'POST',
@@ -100,7 +166,8 @@ async function sendCloudWebPush(options = {}) {
       targetRole: options.targetRole || null,
       targetEndpoint: options.targetEndpoint || null,
       delayMs: options.delayMs || 0,
-      includeCoach: !!options.includeCoach
+      clientSubscriptions: getStoredPushSubscriptions(),
+      includeCoach: options.includeCoach !== false
     };
 
     const res = await fetch('/api/push', {
@@ -228,14 +295,14 @@ function updateNotificationPermissionUI() {
       badge.className = 'text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1';
     }
     if (btn) {
-      btn.innerHTML = '<i data-lucide="smartphone" class="w-3.5 h-3.5 text-indigo-600"></i><span>ทดสอบปิดจอ (5 วิ)</span>';
-      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 border border-indigo-300 text-indigo-800 flex items-center gap-1.5 flex-shrink-0 cursor-pointer shadow-2xs transition';
-      btn.onclick = () => testLockScreenPushNotification(5);
+      btn.innerHTML = '<i data-lucide="bell-ring" class="w-3.5 h-3.5 text-emerald-600"></i><span>เปิดรับการแจ้งเตือนแล้ว</span>';
+      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1.5 flex-shrink-0 cursor-default shadow-2xs';
+      btn.onclick = null;
     }
     if (coachBtn && coachTxt) {
-      coachBtn.className = 'px-2.5 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1.5 cursor-pointer hover:bg-emerald-500/30 transition';
-      coachBtn.innerHTML = '<i data-lucide="smartphone" class="w-3 h-3 text-emerald-400"></i><span>รับแจ้งเตือนแล้ว (ทดสอบปิดจอ 5 วิ)</span>';
-      coachBtn.onclick = () => testLockScreenPushNotification(5);
+      coachBtn.className = 'px-2.5 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1.5 cursor-default';
+      coachBtn.innerHTML = '<i data-lucide="bell-ring" class="w-3 h-3 text-emerald-400"></i><span>เปิดรับแจ้งเตือนโค้ชแล้ว</span>';
+      coachBtn.onclick = null;
     }
   } else if (Notification.permission === 'denied') {
     if (badge) {
@@ -544,6 +611,26 @@ function notifyAttendanceCheckIn(studentName, coachName, timeStr, remainingCount
       title: `🏀 น้อง ${studentName} เช็คชื่อเข้าเรียนแล้ว`,
       body: `น้อง ${studentName} เข้าฝึกซ้อมเรียบร้อยแล้ว (${timeStr || '17:00 น.'}) โดย ${coachName || 'โค้ช'} • โควต้าคงเหลือ: ${remainingCount} ครั้ง`,
       tag: `dbo-checkin-${studentId || studentName}-${Date.now()}`
+    });
+  }
+}
+
+function notifyAttendanceLeave(studentName, coachName, timeStr, studentId = null) {
+  sendSystemLockscreenNotification({
+    title: '📝 แจ้งลาเรียน',
+    subtitle: 'from DBO Academy',
+    body: `น้อง ${studentName} • แจ้งลาเรียน (${timeStr || '17:00 น.'}) บันทึกโดย ${coachName || 'โค้ช'}`,
+    tag: 'leave-' + studentName
+  });
+  triggerTelegramPush(`น้อง ${studentName} แจ้งลาเรียน (${timeStr || '17:00 น.'}) บันทึกโดย ${coachName || 'โค้ช'}`, '📝 แจ้งลาเรียนสำเร็จ');
+
+  if (typeof sendCloudWebPush === 'function') {
+    sendCloudWebPush({
+      targetStudentId: studentId,
+      targetStudentName: studentName,
+      title: `📝 แจ้งลาเรียน: น้อง ${studentName}`,
+      body: `บันทึกการลาเรียนของน้อง ${studentName} เรียบร้อยแล้ว (${timeStr || '17:00 น.'}) โดย ${coachName || 'โค้ช'}`,
+      tag: `dbo-leave-${studentId || studentName}-${Date.now()}`
     });
   }
 }

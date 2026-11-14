@@ -613,6 +613,18 @@ function setTodayAttendanceFromParent(status, leaveReason = '') {
     } catch (e) {}
   }
 
+  // Real Native Push to Coach Devices outside app
+  if (typeof sendCloudWebPush === 'function') {
+    sendCloudWebPush({
+      targetRole: 'coach',
+      title: status === 'attending' ? `🏀 น้อง ${loggedInStudent.name} แจ้งเข้าเรียน` : `📝 น้อง ${loggedInStudent.name} ขอลาเรียน`,
+      body: status === 'attending' 
+        ? `ผู้ปกครองแจ้งเข้าเรียนคลาสวันนี้ (${nowTime}) • น้อง ${loggedInStudent.name}` 
+        : `ผู้ปกครองแจ้งขอลาเรียน: ${leaveReason || 'ลาเรียน'} (${nowTime}) • น้อง ${loggedInStudent.name}`,
+      tag: `parent-status-${loggedInStudent.id}-${Date.now()}`
+    });
+  }
+
   updateParentTodayStatusUI();
   renderParentClassmatesList();
   if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();

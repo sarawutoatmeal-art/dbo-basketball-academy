@@ -10,6 +10,7 @@ try {
 }
 
 const TMP_FILE = path.join(os.tmpdir(), 'dbo_cloud_state_v17.json');
+const CLOUD_OBJECT_URL = 'https://api.restful-api.dev/objects/ff808181a09d98f701a1d86cdcf2265e';
 
 // VAPID keys for DBO Academy Web Push
 const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || 'BMWzRqf8Egbp6_qBttNc-KkXVst2VHSOUWIOYuvooCQtgquDSXDvka5oiImnUVT2oSpmr3bD5hLc-Mqx6k4-Kmo';
@@ -24,7 +25,7 @@ if (webpush) {
   }
 }
 
-function loadStoredState() {
+function loadLocalTmpState() {
   if (global.__dboCloudState) return global.__dboCloudState;
   try {
     if (fs.existsSync(TMP_FILE)) {
@@ -39,12 +40,69 @@ function loadStoredState() {
   return { pushSubscriptions: [], students: [], calendarDayOverrides: {} };
 }
 
-function saveStoredState(state) {
+function saveLocalTmpState(state) {
   global.__dboCloudState = state;
   try {
     fs.writeFileSync(TMP_FILE, JSON.stringify(state), 'utf8');
   } catch (e) {
     console.error('Write tmp state error:', e);
+  }
+}
+
+// Durable Cloud Storage Fetch
+async function fetchCloudSubscriptions() {
+  const local = loadLocalTmpState();
+  let subs = Array.isArray(local.pushSubscriptions) ? local.pushSubscriptions : [];
+
+  try {
+    const res = await fetch(CLOUD_OBJECT_URL, {
+      headers: { 'Accept': 'application/json' },
+      signal: AbortSignal.timeout(3000)
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json && json.data && Array.isArray(json.data.subscriptions)) {
+        const subMap = new Map();
+        json.data.subscriptions.forEach(s => {
+          if (s && s.endpoint) subMap.set(s.endpoint, s);
+        });
+        subs.forEach(s => {
+          if (s && s.endpoint) {
+            const existing = subMap.get(s.endpoint);
+            if (!existing || (s.updatedAt || 0) >= (existing.updatedAt || 0)) {
+              subMap.set(s.endpoint, s);
+            }
+          }
+        });
+        subs = Array.from(subMap.values());
+        local.pushSubscriptions = subs;
+        saveLocalTmpState(local);
+      }
+    }
+  } catch (e) {
+    console.warn('Fetch cloud subs fallback to local:', e.message);
+  }
+  return subs;
+}
+
+// Durable Cloud Storage Persist
+async function persistCloudSubscriptions(subs) {
+  const local = loadLocalTmpState();
+  local.pushSubscriptions = subs;
+  saveLocalTmpState(local);
+
+  try {
+    await fetch(CLOUD_OBJECT_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'dbo_push_subs',
+        data: { subscriptions: subs, updatedAt: Date.now() }
+      }),
+      signal: AbortSignal.timeout(3500)
+    });
+  } catch (e) {
+    console.warn('Persist cloud subs note:', e.message);
   }
 }
 
@@ -61,7 +119,9 @@ module.exports = async (req, res) => {
   const query = req.query || {};
   const action = query.action;
 
+  // ==========================================
   // GET Actions
+  // ==========================================
   if (req.method === 'GET') {
     if (action === 'vapid_key') {
       return res.status(200).json({
@@ -71,8 +131,7 @@ module.exports = async (req, res) => {
     }
 
     if (action === 'status') {
-      const state = loadStoredState();
-      const subs = state.pushSubscriptions || [];
+      const subs = await fetchCloudSubscriptions();
       return res.status(200).json({
         ok: true,
         activeSubscriptionsCount: subs.length,
@@ -89,11 +148,10 @@ module.exports = async (req, res) => {
 
     // Cron Trigger: Morning 10:00 AM class alert
     if (action === 'cron_morning') {
-      const state = loadStoredState();
-      const subs = state.pushSubscriptions || [];
-      const overrides = state.calendarDayOverrides || {};
+      const subs = await fetchCloudSubscriptions();
+      const local = loadLocalTmpState();
+      const overrides = local.calendarDayOverrides || {};
 
-      // Calculate Bangkok Time (UTC+7)
       const nowBkk = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }));
       const dayW = nowBkk.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
       const y = nowBkk.getFullYear();
@@ -138,6 +196,7 @@ module.exports = async (req, res) => {
           icon: 'assets/images/app-icon-192.png',
           badge: 'assets/images/favicon.png',
           tag: `dbo-morning-${todayKey}`,
+          vibrate: [300, 100, 300, 100, 300],
           data: { url: 'https://dbobasketball.vercel.app/' }
         });
 
@@ -157,10 +216,9 @@ module.exports = async (req, res) => {
         }
       }
 
-      // Cleanup expired endpoints
       if (deadEndpoints.size > 0) {
-        state.pushSubscriptions = subs.filter(s => !deadEndpoints.has(s.endpoint));
-        saveStoredState(state);
+        const cleaned = subs.filter(s => !deadEndpoints.has(s.endpoint));
+        await persistCloudSubscriptions(cleaned);
       }
 
       return res.status(200).json({
@@ -173,14 +231,65 @@ module.exports = async (req, res) => {
       });
     }
 
+    // Cron Trigger: Class Reminder 30 mins before start
+    if (action === 'cron_reminder_30m') {
+      const subs = await fetchCloudSubscriptions();
+      const local = loadLocalTmpState();
+      const overrides = local.calendarDayOverrides || {};
+
+      const nowBkk = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }));
+      const dayW = nowBkk.getDay();
+      const y = nowBkk.getFullYear();
+      const m = String(nowBkk.getMonth() + 1).padStart(2, '0');
+      const d = String(nowBkk.getDate()).padStart(2, '0');
+      const todayKey = `${y}-${m}-${d}`;
+
+      const override = overrides[todayKey];
+      if (override && override.status === 'canceled') {
+        return res.status(200).json({ ok: true, message: 'Class canceled today, no reminder sent.' });
+      }
+
+      const isSaturday = (dayW === 6);
+      const startTime = isSaturday ? '16:00 น.' : '17:30 น.';
+      const title = '⏰ Class starts in 30 mins';
+      
+      let sentCount = 0;
+      for (const sub of subs) {
+        if (!sub || !sub.endpoint || !sub.keys) continue;
+        const sName = sub.studentName ? `น้อง ${sub.studentName}` : 'นักเรียน';
+        const body = `คลาสกำลังจะเริ่มในอีก 30 นาที (${startTime}) • กรุณาเตรียมตัว${sName}ให้พร้อมฝึกซ้อม ณ ยิมเตชะวิทย์ครับ`;
+
+        const payload = JSON.stringify({
+          title,
+          body,
+          icon: 'assets/images/app-icon-192.png',
+          badge: 'assets/images/favicon.png',
+          tag: `dbo-rem30-${todayKey}`,
+          vibrate: [300, 100, 300, 100, 300],
+          data: { url: 'https://dbobasketball.vercel.app/' }
+        });
+
+        if (webpush) {
+          try {
+            await webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, payload);
+            sentCount++;
+          } catch (e) {}
+        }
+      }
+
+      return res.status(200).json({ ok: true, message: 'Reminder 30m executed', sent: sentCount });
+    }
+
     return res.status(200).json({
       ok: true,
-      service: 'DBO Academy Web Push API',
+      service: 'DBO Academy Web Push API v2 (Durable Cloud Store)',
       hasWebPushModule: !!webpush
     });
   }
 
+  // ==========================================
   // POST Actions
+  // ==========================================
   if (req.method === 'POST') {
     try {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
@@ -193,30 +302,34 @@ module.exports = async (req, res) => {
           return res.status(400).json({ ok: false, error: 'Invalid subscription object' });
         }
 
-        const state = loadStoredState();
-        if (!state.pushSubscriptions) state.pushSubscriptions = [];
-
+        const subs = await fetchCloudSubscriptions();
         const newSub = {
           endpoint: subData.endpoint,
           keys: subData.keys,
           studentId: body.studentId != null ? Number(body.studentId) : null,
-          studentName: body.studentName || '',
+          studentName: (body.studentName || '').trim(),
           phone: body.phone || '',
           role: body.role || 'parent',
           updatedAt: Date.now()
         };
 
-        // Upsert by endpoint
-        const idx = state.pushSubscriptions.findIndex(s => s && s.endpoint === subData.endpoint);
+        const idx = subs.findIndex(s => s && s.endpoint === subData.endpoint);
         if (idx >= 0) {
-          state.pushSubscriptions[idx] = newSub;
+          subs[idx] = {
+            ...subs[idx],
+            ...newSub,
+            studentId: newSub.studentId != null ? newSub.studentId : subs[idx].studentId,
+            studentName: newSub.studentName || subs[idx].studentName,
+            phone: newSub.phone || subs[idx].phone,
+            role: newSub.role || subs[idx].role
+          };
         } else {
-          state.pushSubscriptions.push(newSub);
+          subs.push(newSub);
         }
 
-        saveStoredState(state);
+        await persistCloudSubscriptions(subs);
 
-        // Optionally send confirmation welcome push immediately
+        // Confirmation push upon registration
         if (webpush && body.sendWelcome !== false) {
           try {
             const welcomePayload = JSON.stringify({
@@ -227,6 +340,7 @@ module.exports = async (req, res) => {
               icon: 'assets/images/app-icon-192.png',
               badge: 'assets/images/favicon.png',
               tag: 'dbo-welcome',
+              vibrate: [200, 100, 200],
               data: { url: 'https://dbobasketball.vercel.app/' }
             });
             await webpush.sendNotification({
@@ -240,45 +354,67 @@ module.exports = async (req, res) => {
 
         return res.status(200).json({
           ok: true,
-          message: 'Push subscription saved successfully',
-          totalActiveSubscriptions: state.pushSubscriptions.length
+          message: 'Push subscription saved to durable cloud store successfully',
+          totalActiveSubscriptions: subs.length
         });
       }
 
-      // 2. Send Push Notification (e.g. When coach takes attendance or announces class)
+      // 2. Send Real Cloud Push Notification (Attendance Check-in, Leave, Class Alerts)
       if (postAction === 'send') {
-        const state = loadStoredState();
-        const subs = state.pushSubscriptions || [];
+        let subs = await fetchCloudSubscriptions();
+
+        // Merge client passed subscriptions for maximum redundancy
+        if (Array.isArray(body.clientSubscriptions) && body.clientSubscriptions.length > 0) {
+          const map = new Map();
+          subs.forEach(s => { if (s && s.endpoint) map.set(s.endpoint, s); });
+          body.clientSubscriptions.forEach(s => {
+            if (s && s.endpoint && s.keys) {
+              const existing = map.get(s.endpoint);
+              if (!existing) {
+                map.set(s.endpoint, s);
+              } else {
+                map.set(s.endpoint, {
+                  ...existing,
+                  ...s,
+                  studentId: s.studentId != null ? s.studentId : existing.studentId,
+                  studentName: s.studentName || existing.studentName
+                });
+              }
+            }
+          });
+          subs = Array.from(map.values());
+        }
 
         const targetStudentId = body.targetStudentId != null ? Number(body.targetStudentId) : null;
-        const targetStudentName = (body.targetStudentName || '').trim();
+        const targetStudentName = (body.targetStudentName || '').trim().toLowerCase();
         const targetRole = body.targetRole || null;
         const targetEndpoint = body.targetEndpoint || null;
 
-        // Support test delay (e.g. 5 seconds to lock screen)
+        // Support test countdown delay
         if (body.delayMs && Number(body.delayMs) > 0) {
           const delay = Math.min(Number(body.delayMs), 7000);
           await new Promise(r => setTimeout(r, delay));
         }
 
-        // Filter subscriptions
+        // Multi-level subscription targeting
         let targets = subs.filter(s => {
           if (!s || !s.endpoint || !s.keys) return false;
           if (targetEndpoint) {
             return s.endpoint === targetEndpoint;
           }
-          if (targetStudentId != null) {
-            if (s.studentId === targetStudentId) return true;
-            if (body.includeCoach && s.role === 'coach') return true;
-            return false;
-          }
-          if (targetStudentName) {
-            if (s.studentName && s.studentName.toLowerCase() === targetStudentName.toLowerCase()) return true;
-            if (body.includeCoach && s.role === 'coach') return true;
+          if (targetStudentId != null || targetStudentName) {
+            // 1. Target exact student ID
+            if (targetStudentId != null && s.studentId === targetStudentId) return true;
+            // 2. Target student name substring match
+            if (targetStudentName && s.studentName && s.studentName.toLowerCase().includes(targetStudentName)) return true;
+            // 3. ALWAYS include coaches so coaching devices hear the alert
+            if (s.role === 'coach') return true;
+            // 4. In testing mode or small subscriber pool, include unassigned devices
+            if (!s.studentId && subs.length <= 5) return true;
             return false;
           }
           if (targetRole) {
-            return s.role === targetRole;
+            return s.role === targetRole || s.role === 'coach';
           }
           return true;
         });
@@ -288,7 +424,9 @@ module.exports = async (req, res) => {
             ok: true,
             message: 'No matching subscriptions found for this target',
             sent: 0,
-            targetStudentId
+            totalSubscribersInStore: subs.length,
+            targetStudentId,
+            targetStudentName
           });
         }
 
@@ -322,10 +460,10 @@ module.exports = async (req, res) => {
             }
           }));
 
-          // Prune dead endpoints
+          // Prune dead endpoints from durable cloud store
           if (deadEndpoints.size > 0) {
-            state.pushSubscriptions = subs.filter(s => !deadEndpoints.has(s.endpoint));
-            saveStoredState(state);
+            const alive = subs.filter(s => !deadEndpoints.has(s.endpoint));
+            persistCloudSubscriptions(alive);
           }
         }
 
