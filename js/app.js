@@ -160,6 +160,11 @@ window.addEventListener('DOMContentLoaded', () => {
   if (typeof updateInstallButtonVisibility === 'function') updateInstallButtonVisibility();
   lucide.createIcons();
 
+  // Background sync for Web Push Subscription if permission already granted
+  if (typeof registerWebPushSubscription === 'function' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+    registerWebPushSubscription(false);
+  }
+
   // Automated Lock Screen Notification Scheduler
   if (typeof runClassNotificationScheduler === 'function') {
     runClassNotificationScheduler();

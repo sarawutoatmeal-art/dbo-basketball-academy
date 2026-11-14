@@ -49,7 +49,8 @@ function mergeStates(existing, incoming) {
     pendingSlips: [],
     assistantCoaches: [],
     weeklySchedule: null,
-    calendarDayOverrides: {}
+    calendarDayOverrides: {},
+    pushSubscriptions: []
   };
 
   // 1. Merge weeklySchedule (latest timestamp wins)
@@ -182,6 +183,16 @@ function mergeStates(existing, incoming) {
     }
   });
   result.teachingRecords = Array.from(recMap.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+  // 8. Merge pushSubscriptions by endpoint
+  const subMap = new Map();
+  (existing.pushSubscriptions || []).forEach(s => {
+    if (s && s.endpoint) subMap.set(s.endpoint, s);
+  });
+  (incoming.pushSubscriptions || []).forEach(s => {
+    if (s && s.endpoint) subMap.set(s.endpoint, s);
+  });
+  result.pushSubscriptions = Array.from(subMap.values());
 
   return result;
 }

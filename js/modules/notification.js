@@ -1,10 +1,155 @@
 // ========================================================
 // DBO Basketball Academy - Notification Engine
-// (Audio Chime, Lockscreen Banners, Native Web Notifications, Class Timers)
+// (Audio Chime, Lockscreen Banners, Native Web Push VAPID Engine, Class Timers)
 // ========================================================
+
+const DBO_VAPID_PUBLIC_KEY = 'BMWzRqf8Egbp6_qBttNc-KkXVst2VHSOUWIOYuvooCQtgquDSXDvka5oiImnUVT2oSpmr3bD5hLc-Mqx6k4-Kmo';
 
 let telegramToastTimer = null;
 let lockScreenDismissTimer = null;
+window.__dboPushSub = null;
+let isRegisteringPush = false;
+
+// Convert VAPID base64 string to Uint8Array for PushManager
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+// Register or refresh Web Push Subscription on Server
+async function registerWebPushSubscription(forceResubscribe = false) {
+  if (isRegisteringPush) return window.__dboPushSub;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    console.log('Web Push not supported in this browser environment');
+    return null;
+  }
+  if (!('Notification' in window) || Notification.permission !== 'granted') {
+    return null;
+  }
+
+  isRegisteringPush = true;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+
+    if (!sub || forceResubscribe) {
+      if (sub && forceResubscribe) {
+        try { await sub.unsubscribe(); } catch (e) {}
+      }
+      const appServerKey = urlBase64ToUint8Array(DBO_VAPID_PUBLIC_KEY);
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: appServerKey
+      });
+      console.log('New Web Push subscription created:', sub.endpoint);
+    }
+
+    window.__dboPushSub = sub;
+
+    // Link subscription to current student / coach on backend
+    const subJSON = sub.toJSON ? sub.toJSON() : JSON.parse(JSON.stringify(sub));
+    const childId = (loggedInStudent && loggedInStudent.id != null) ? loggedInStudent.id : null;
+    const childName = (loggedInStudent && loggedInStudent.name) ? loggedInStudent.name : '';
+    const phone = (loggedInStudent && loggedInStudent.phone) ? loggedInStudent.phone : '';
+    const isCoach = (isCoachAuth && currentStaff);
+
+    await fetch('/api/push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'subscribe',
+        subscription: subJSON,
+        studentId: childId,
+        studentName: childName,
+        phone: phone,
+        role: isCoach ? 'coach' : 'parent',
+        sendWelcome: false
+      })
+    });
+
+    console.log('Web Push subscription registered on server for:', childName || (isCoach ? 'Coach' : 'Guest'));
+    return sub;
+  } catch (err) {
+    console.warn('registerWebPushSubscription note:', err);
+    return null;
+  } finally {
+    isRegisteringPush = false;
+  }
+}
+
+// Send Real Cloud Push via Serverless Engine (Works Outside the App / When Phone is Locked)
+async function sendCloudWebPush(options = {}) {
+  try {
+    const payload = {
+      action: 'send',
+      title: options.title || '🏀 DBO Basketball Academy',
+      body: options.body || '',
+      icon: options.icon || 'assets/images/app-icon-192.png',
+      badge: options.badge || 'assets/images/favicon.png',
+      tag: options.tag || ('dbo-alert-' + Date.now()),
+      targetStudentId: options.targetStudentId != null ? options.targetStudentId : null,
+      targetStudentName: options.targetStudentName || '',
+      targetRole: options.targetRole || null,
+      targetEndpoint: options.targetEndpoint || null,
+      delayMs: options.delayMs || 0,
+      includeCoach: !!options.includeCoach
+    };
+
+    const res = await fetch('/api/push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await res.json();
+    return result;
+  } catch (err) {
+    console.warn('sendCloudWebPush error:', err);
+    return null;
+  }
+}
+
+// Lock-Screen Real Push Test (5-Second Countdown for User to Lock Phone)
+async function testLockScreenPushNotification(delaySec = 5) {
+  playNotificationChime();
+
+  if (!('Notification' in window)) {
+    showToast('เบราว์เซอร์นี้ไม่รองรับระบบ Notification');
+    return;
+  }
+
+  if (Notification.permission !== 'granted') {
+    const granted = await requestNotificationPermission();
+    if (!granted) return;
+  }
+
+  let sub = window.__dboPushSub;
+  if (!sub) {
+    showToast('กำลังเชื่อมต่อระบบ Web Push...');
+    sub = await registerWebPushSubscription(false);
+  }
+
+  const endpoint = sub ? sub.endpoint : null;
+  const childName = (loggedInStudent && loggedInStudent.name) ? loggedInStudent.name : 'นักเรียน';
+
+  showToast(`🔔 กำลังส่ง Push Notification ใน ${delaySec} วินาที! กรุณากดปุ่มล็อกหน้าจอทันทีเพื่อทดสอบ`);
+
+  // Fire cloud push with delayMs so server triggers it while phone is locked
+  sendCloudWebPush({
+    targetEndpoint: endpoint,
+    delayMs: delaySec * 1000,
+    title: '🏀 DBO Basketball Academy (แจ้งเตือนตอนปิดจอ)',
+    body: `ทดสอบสำเร็จ! น้อง ${childName} ได้รับแจ้งเตือนนอกแอปแบบเรียลไทม์ พร้อมเสียงเตือนและระบบสั่น`,
+    tag: 'test-lockscreen-' + Date.now()
+  });
+}
 
 // Crisp Audio Chime using Web Audio API (Zero external MP3 dependencies)
 function playNotificationChime() {
@@ -73,19 +218,24 @@ function updateNotificationPermissionUI() {
   }
 
   if (Notification.permission === 'granted') {
+    // Quietly ensure device subscription is active and synced to cloud
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      registerWebPushSubscription(false);
+    }
+
     if (badge) {
       badge.innerText = 'เปิดใช้งานแล้ว';
       badge.className = 'text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1';
     }
     if (btn) {
-      btn.innerHTML = '<i data-lucide="bell-ring" class="w-3.5 h-3.5 text-emerald-600"></i><span>เปิดรับการแจ้งเตือนแล้ว</span>';
-      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1.5 flex-shrink-0 cursor-default shadow-2xs';
-      btn.onclick = null;
+      btn.innerHTML = '<i data-lucide="smartphone" class="w-3.5 h-3.5 text-indigo-600"></i><span>ทดสอบปิดจอ (5 วิ)</span>';
+      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 border border-indigo-300 text-indigo-800 flex items-center gap-1.5 flex-shrink-0 cursor-pointer shadow-2xs transition';
+      btn.onclick = () => testLockScreenPushNotification(5);
     }
     if (coachBtn && coachTxt) {
-      coachBtn.className = 'px-2.5 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1.5 cursor-default';
-      coachBtn.innerHTML = '<i data-lucide="bell-ring" class="w-3 h-3 text-emerald-400"></i><span>รับแจ้งเตือนเมื่อ ผปค. แจ้งเข้าเรียน/ลา (เปิดแล้ว)</span>';
-      coachBtn.onclick = null;
+      coachBtn.className = 'px-2.5 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1.5 cursor-pointer hover:bg-emerald-500/30 transition';
+      coachBtn.innerHTML = '<i data-lucide="smartphone" class="w-3 h-3 text-emerald-400"></i><span>รับแจ้งเตือนแล้ว (ทดสอบปิดจอ 5 วิ)</span>';
+      coachBtn.onclick = () => testLockScreenPushNotification(5);
     }
   } else if (Notification.permission === 'denied') {
     if (badge) {
@@ -126,7 +276,6 @@ function updateNotificationPermissionUI() {
 // Request Notification Permission
 async function requestNotificationPermission() {
   if (!('Notification' in window)) {
-    // For iOS Safari or unsupported, show in-app simulation test directly
     testRealPushNotification('checkin');
     showToast('เปิดระบบแจ้งเตือนแบบ In-App เรียบร้อย');
     return true;
@@ -137,6 +286,9 @@ async function requestNotificationPermission() {
     if (permission === 'granted') {
       playNotificationChime();
       showToast('🔔 เปิดการแจ้งเตือนบนอุปกรณ์เรียบร้อยแล้ว');
+
+      // Subscribe device to Web Push immediately
+      await registerWebPushSubscription(true);
 
       const childName = (loggedInStudent && loggedInStudent.name) ? loggedInStudent.name : '';
       const isCoach = (isCoachAuth && currentStaff);
@@ -375,7 +527,7 @@ function dismissLockScreenBanner() {
 }
 
 // Specific Alert Helpers
-function notifyAttendanceCheckIn(studentName, coachName, timeStr, remainingCount) {
+function notifyAttendanceCheckIn(studentName, coachName, timeStr, remainingCount, studentId = null) {
   sendSystemLockscreenNotification({
     title: 'เช็คชื่อเข้าฝึกซ้อมแล้ว',
     subtitle: 'from DBO Academy',
@@ -383,6 +535,17 @@ function notifyAttendanceCheckIn(studentName, coachName, timeStr, remainingCount
     tag: 'checkin-' + studentName
   });
   triggerTelegramPush(`น้อง ${studentName} เข้าฝึกซ้อมเรียบร้อยแล้ว (${timeStr || '17:00 น.'}) โดย ${coachName || 'โค้ช'} • โควต้าคงเหลือ: ${remainingCount} ครั้ง`, '🏀 เช็คชื่อเข้าเรียนสำเร็จ');
+
+  // Trigger Real Native Web Push to Parent's Device Outside App
+  if (typeof sendCloudWebPush === 'function') {
+    sendCloudWebPush({
+      targetStudentId: studentId,
+      targetStudentName: studentName,
+      title: `🏀 น้อง ${studentName} เช็คชื่อเข้าเรียนแล้ว`,
+      body: `น้อง ${studentName} เข้าฝึกซ้อมเรียบร้อยแล้ว (${timeStr || '17:00 น.'}) โดย ${coachName || 'โค้ช'} • โควต้าคงเหลือ: ${remainingCount} ครั้ง`,
+      tag: `dbo-checkin-${studentId || studentName}-${Date.now()}`
+    });
+  }
 }
 
 function notifyClassStartsIn15Mins(studentName = 'อิฐ', startTime = '17:30') {

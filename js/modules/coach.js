@@ -353,6 +353,17 @@ function coachCheckInAction(studentId, delta, target = 'regular') {
     });
   }
 
+  // Real Native Web Push to Parent device outside app (Lock screen / App closed)
+  if (typeof sendCloudWebPush === 'function') {
+    sendCloudWebPush({
+      targetStudentId: student.id,
+      targetStudentName: student.name,
+      title: `🏀 น้อง ${student.name} เช็คชื่อเข้าเรียนแล้ว`,
+      body: `น้อง ${student.name} เข้าฝึกซ้อมเรียบร้อยแล้ว (${timeStr}) โดย ${staffName} • โควต้าคงเหลือ: ${curRemAfter} ครั้ง`,
+      tag: `dbo-checkin-${student.id}-${Date.now()}`
+    });
+  }
+
   if (isToday) {
     triggerTelegramPush(`🏀 ${msg}`, 'การเช็คชื่อเข้าฝึกซ้อม (Live Push)');
     sendSystemNotification('🏀 DBO Academy เช็คชื่อเข้าเรียน', {

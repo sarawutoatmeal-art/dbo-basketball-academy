@@ -102,6 +102,11 @@ function handleParentPhoneLogin(e, forcedInput = null) {
     switchTab('parent-portal');
     showToast(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name}`);
     triggerTelegramPush(`🏀 ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name} เข้าสู่ระบบ DBO`, 'DBO Basketball Academy');
+
+    // Sync Web Push subscription for this student in background
+    if (typeof registerWebPushSubscription === 'function' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      registerWebPushSubscription(false);
+    }
     return;
   }
 
