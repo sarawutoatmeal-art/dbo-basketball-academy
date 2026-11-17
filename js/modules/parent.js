@@ -380,25 +380,25 @@ function renderParentView(matchedList) {
   if (rem > 3) {
     if (remNumEl) {
       remNumEl.innerText = rem;
-      remNumEl.className = 'text-3xl sm:text-4xl font-semibold text-slate-900 font-mono tracking-tight';
+      remNumEl.className = 'text-4xl sm:text-5xl font-black text-nike-ink font-mono tracking-tight';
     }
     if (badgeStatusEl) {
       badgeStatusEl.innerText = 'พร้อมเรียน';
-      badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+      badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-[#007D48]/10 text-[#007D48] border border-[#007D48]/20';
     }
     if (progBarEl) {
       progBarEl.style.width = calcPct + '%';
-      progBarEl.className = 'h-2 rounded-full bg-emerald-600 transition-all duration-500';
+      progBarEl.className = 'h-2 rounded-full bg-[#007D48] transition-all duration-500';
     }
     if (renewNoticeEl) renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง`;
   } else if (rem >= 1 && rem <= 3) {
     if (remNumEl) {
       remNumEl.innerText = rem;
-      remNumEl.className = 'text-3xl sm:text-4xl font-semibold text-amber-700 font-mono tracking-tight';
+      remNumEl.className = 'text-4xl sm:text-5xl font-black text-amber-700 font-mono tracking-tight';
     }
     if (badgeStatusEl) {
       badgeStatusEl.innerText = rem === 1 ? 'เหลือ 1 ครั้ง' : 'ใกล้หมด';
-      badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200';
+      badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300';
     }
     if (progBarEl) {
       progBarEl.style.width = calcPct + '%';
@@ -408,15 +408,15 @@ function renderParentView(matchedList) {
   } else {
     if (remNumEl) {
       remNumEl.innerText = rem;
-      remNumEl.className = 'text-3xl sm:text-4xl font-semibold text-rose-700 font-mono tracking-tight';
+      remNumEl.className = 'text-4xl sm:text-5xl font-black text-[#D30005] font-mono tracking-tight';
     }
     if (badgeStatusEl) {
       badgeStatusEl.innerText = rem === 0 ? 'หมดสิทธิ์' : `เกินสิทธิ์ (${Math.abs(rem)} ครั้ง)`;
-      badgeStatusEl.className = 'px-2 py-0.5 rounded-md text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200';
+      badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-[#D30005]/10 text-[#D30005] border border-[#D30005]/20';
     }
     if (progBarEl) {
       progBarEl.style.width = '0%';
-      progBarEl.className = 'h-2 rounded-full bg-rose-500 transition-all duration-500';
+      progBarEl.className = 'h-2 rounded-full bg-[#D30005] transition-all duration-500';
     }
     if (progPctEl) {
       progPctEl.innerText = '0%';
@@ -497,12 +497,12 @@ function switchParentCategory(category) {
     const panel = document.getElementById(`parentCatPanel-${cat}`);
     if (cat === activeParentCategory) {
       if (btn) {
-        btn.className = 'pcat-pill active flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white shadow-2xs transition-all cursor-pointer flex-shrink-0';
+        btn.className = 'pcat-pill active flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-nike-ink text-white transition-all cursor-pointer flex-shrink-0 active:scale-95 shadow-none';
       }
       if (panel) panel.classList.remove('hidden');
     } else {
       if (btn) {
-        btn.className = 'pcat-pill inactive flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex-shrink-0';
+        btn.className = 'pcat-pill inactive flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft transition-all cursor-pointer flex-shrink-0 active:scale-95';
       }
       if (panel) panel.classList.add('hidden');
     }

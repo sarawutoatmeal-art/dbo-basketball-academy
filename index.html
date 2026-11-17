@@ -19,10 +19,10 @@
   <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png?v=5.0">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon-180.png?v=5.0">
 
-  <!-- Typography: Prompt & Inter -->
+  <!-- Typography: Bebas Neue (Nike Campaign Display) + Inter + Prompt -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -35,22 +35,39 @@
       theme: {
         extend: {
           colors: {
+            nike: {
+              ink: '#111111',
+              canvas: '#FFFFFF',
+              cloud: '#F5F5F5',
+              charcoal: '#39393B',
+              ash: '#4B4B4D',
+              mute: '#707072',
+              stone: '#9E9EA0',
+              hairline: '#CACACB',
+              hairlineSoft: '#E5E5E5',
+              sale: '#D30005',
+              saleDeep: '#780700',
+              success: '#007D48',
+              successBright: '#1EAA52',
+              info: '#1151FF'
+            },
             dbo: {
-              navy: '#0A1128',
-              navySoft: '#131F42',
+              navy: '#111111',
+              navySoft: '#222222',
               gold: '#C59B27',
               goldHover: '#B0881E',
               goldLight: '#FEF9E7',
-              slateBg: '#F8FAFC',
+              slateBg: '#FFFFFF',
               cardBg: '#FFFFFF',
-              border: '#E2E8F0',
-              textPrimary: '#0F172A',
-              textSecondary: '#475569',
-              textMuted: '#94A3B8'
+              border: '#E5E5E5',
+              textPrimary: '#111111',
+              textSecondary: '#707072',
+              textMuted: '#9E9EA0'
             }
           },
           fontFamily: {
-            sans: ['Prompt', 'Inter', 'system-ui', 'sans-serif']
+            sans: ['Inter', 'Prompt', 'system-ui', 'sans-serif'],
+            campaign: ['Bebas Neue', 'Inter', 'sans-serif']
           }
         }
       }
@@ -108,68 +125,84 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 1. HEADER (Safe Area Fitted for Mobile Notch)            -->
+  <!-- 1. HEADER (Nike Single Sticky Nav + In-App Refresh Pill)  -->
   <!-- ======================================================== -->
-  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-dbo-border" style="padding-top: max(env(safe-area-inset-top, 0px), 14px);">
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-nike-hairlineSoft transition-all" style="padding-top: max(env(safe-area-inset-top, 0px), 12px);">
     <div class="max-w-6xl mx-auto px-3 sm:px-6">
       <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
         
-        <!-- Logo & Name -->
-        <a href="javascript:void(0)" onclick="switchTab('parent-portal')" class="flex items-center gap-2 sm:gap-3 min-w-0 flex-shrink">
-          <img src="assets/images/dbo-logo.png?v=6.0" alt="DBO Basketball Logo" class="h-9 sm:h-11 w-9 sm:w-11 rounded-xl shadow-xs object-cover flex-shrink-0">
+        <!-- Logo & Brand Identity (Nike Kinetic Lockup) -->
+        <a href="javascript:void(0)" onclick="switchTab('parent-portal')" class="flex items-center gap-2.5 min-w-0 flex-shrink active:scale-95 transition-transform">
+          <img src="assets/images/dbo-logo.png?v=8.0" alt="DBO Basketball Logo" class="h-9 sm:h-10 w-9 sm:w-10 rounded-full object-cover flex-shrink-0 ring-1 ring-black/10">
           <div class="min-w-0">
-            <div class="flex items-center gap-1">
-              <span class="text-sm sm:text-base font-bold text-dbo-navy tracking-tight truncate">DBO Basketball</span>
-              <span class="text-[9px] sm:text-[10px] font-semibold bg-dbo-goldLight text-dbo-gold px-1.5 py-0.2 rounded-full border border-dbo-gold/30">Academy</span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-sm sm:text-base font-extrabold text-nike-ink tracking-tight truncate uppercase">DBO Basketball</span>
+              <span class="text-[9px] font-bold bg-nike-cloud text-nike-ink px-2 py-0.5 rounded-full border border-nike-hairlineSoft uppercase tracking-wider">ACADEMY</span>
             </div>
-            <p class="text-[10px] sm:text-[11px] text-dbo-textSecondary block">Start from 0 to No. 1</p>
+            <p class="text-[10px] text-nike-mute font-medium tracking-wide uppercase truncate">Start from 0 to No. 1</p>
           </div>
         </a>
 
-        <!-- Desktop Navigation Tabs -->
-        <nav class="hidden md:flex items-center bg-slate-100/80 p-1 rounded-xl border border-slate-200 gap-1">
+        <!-- Desktop Navigation Tabs (Nike Pill Geometry) -->
+        <nav class="hidden md:flex items-center bg-nike-cloud p-1 rounded-full border border-nike-hairlineSoft gap-1">
           <button onclick="switchTab('parent-portal')" id="nav-parent-portal" class="pill-tab active">
             <i data-lucide="user" class="w-4 h-4"></i>
             <span>หน้าหลัก</span>
           </button>
           
           <button onclick="switchTab('calendar')" id="nav-calendar" class="pill-tab inactive">
-            <i data-lucide="calendar" class="w-4 h-4 text-indigo-600"></i>
+            <i data-lucide="calendar" class="w-4 h-4 text-nike-ink"></i>
             <span>ปฏิทิน & สรุปค่าสนาม</span>
           </button>
 
-          <button onclick="switchTab('daily-attendance')" id="nav-daily-attendance" class="pill-tab inactive text-dbo-navy font-semibold">
+          <button onclick="switchTab('daily-attendance')" id="nav-daily-attendance" class="pill-tab inactive">
             <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i>
             <span>คลาสวันนี้</span>
           </button>
 
-          <button onclick="switchTab('renew-payment')" id="nav-renew-payment" class="pill-tab inactive hidden text-dbo-gold font-semibold">
-            <i data-lucide="refresh-cw" class="w-4 h-4 text-dbo-gold"></i>
+          <button onclick="switchTab('renew-payment')" id="nav-renew-payment" class="pill-tab inactive hidden">
+            <i data-lucide="refresh-cw" class="w-4 h-4 text-amber-600"></i>
             <span>ต่อคอร์ส</span>
           </button>
 
           <button onclick="switchTab('register-new')" id="nav-register-new" class="pill-tab inactive">
-            <i data-lucide="user-plus" class="w-4 h-4 text-emerald-600"></i>
+            <i data-lucide="user-plus" class="w-4 h-4 text-nike-ink"></i>
             <span>สมัครเรียน</span>
           </button>
 
-          <button onclick="switchTab('coach-roster')" id="nav-coach-roster" class="pill-tab inactive hidden text-indigo-700 bg-indigo-50">
-            <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
+          <button onclick="switchTab('coach-roster')" id="nav-coach-roster" class="pill-tab inactive hidden">
+            <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
             <span>แผงโค้ช</span>
           </button>
         </nav>
 
-        <!-- Right User / Staff Status Area & PWA Install Button -->
-        <div class="flex items-center gap-2 flex-shrink-0">
-          <button type="button" id="btnInstallAppHeader" onclick="handlePWAInstallClick()" class="btn-touch px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white shadow-2xs flex items-center gap-1.5 transition cursor-pointer">
-            <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
-            <span class="hidden sm:inline">ติดตั้งแอปลงมือถือ</span>
-            <span class="sm:hidden">ติดตั้งแอป</span>
+        <!-- Right Action Hub: In-App Refresh Button, Install App Pill & Online Indicator -->
+        <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          
+          <!-- Small In-App Refresh Button (Non-reloading Instant Sync) -->
+          <button 
+            type="button" 
+            id="btnHeaderManualRefresh" 
+            onclick="handleManualInAppRefresh(event)" 
+            title="รีเฟรชข้อมูล (In-App Refresh โดยไม่ต้องโหลดหน้าใหม่)" 
+            class="w-9 h-9 rounded-full bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft flex items-center justify-center transition-all active:scale-90 cursor-pointer shadow-none"
+            aria-label="รีเฟรชข้อมูลล่าสุด"
+          >
+            <span id="spinHeaderWrapper" class="inline-flex items-center justify-center pointer-events-none transition-transform">
+              <i id="iconHeaderManualRefresh" data-lucide="rotate-cw" class="w-4 h-4 text-nike-ink"></i>
+            </span>
           </button>
 
-          <div id="userHeaderArea" class="flex items-center gap-2">
-            <span id="realtimeLiveIndicator" class="inline-flex items-center gap-1.5 text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <!-- Install PWA App Button (Nike Black Pill) -->
+          <button type="button" id="btnInstallAppHeader" onclick="handlePWAInstallClick()" class="h-9 px-3 sm:px-3.5 rounded-full text-xs font-semibold bg-nike-ink hover:bg-black text-white flex items-center gap-1.5 active:scale-95 transition-transform cursor-pointer shadow-none">
+            <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span class="hidden sm:inline">ติดตั้งแอป</span>
+          </button>
+
+          <!-- Online Indicator Pill -->
+          <div id="userHeaderArea" class="flex items-center gap-1.5">
+            <span id="realtimeLiveIndicator" class="inline-flex items-center gap-1.5 text-[11px] font-medium text-nike-ink bg-nike-cloud px-2.5 py-1 rounded-full border border-nike-hairlineSoft">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#007D48]"></span>
               <span class="hidden sm:inline">ออนไลน์</span>
             </span>
             <span id="liveSyncBadge" class="hidden"></span>
@@ -189,28 +222,77 @@
     <!-- ======================================================== -->
     <section id="tab-parent-portal" class="space-y-6">
 
+      <!-- ======================================================== -->
+      <!-- NIKE CAMPAIGN HERO LOCKUP (5.A: Towering Bebas Display)  -->
+      <!-- ======================================================== -->
+      <div class="relative w-full rounded-2xl overflow-hidden bg-nike-ink text-white p-6 sm:p-10 flex flex-col justify-between min-h-[240px] sm:min-h-[300px] border border-black/10">
+        <!-- Deep Athletic Ambient Grid & Vignette Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/40 z-10"></div>
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px]"></div>
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-purple-900/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Top Editorial Pill -->
+        <div class="relative z-20 flex items-center justify-between">
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold tracking-widest uppercase bg-white/10 backdrop-blur-md text-white border border-white/15">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#007D48]"></span>
+            DBO BASKETBALL ACADEMY
+          </span>
+          <span class="text-[11px] tracking-widest text-white/60 uppercase font-mono hidden sm:inline">OFFICIAL ATHLETE PORTAL</span>
+        </div>
+
+        <!-- Towering Uppercase Headline Burned In (Bebas Neue Display) -->
+        <div class="relative z-20 my-4 sm:my-6 space-y-2">
+          <h1 class="font-campaign text-5xl sm:text-7xl md:text-8xl font-medium tracking-tight text-white uppercase leading-[0.9] drop-shadow-sm">
+            START FROM 0 TO NO. 1
+          </h1>
+          <p class="text-xs sm:text-sm text-neutral-300 max-w-xl font-normal">
+            ระบบตรวจสอบสิทธิ์คงเหลือ เช็คชื่อรายวัน และบันทึกสมรรถภาพนักกีฬาบาสเกตบอล DBO
+          </p>
+        </div>
+
+        <!-- Bottom Pill CTA on Image (button-outline-on-image) -->
+        <div class="relative z-20 flex items-center gap-3 flex-wrap">
+          <button 
+            type="button" 
+            onclick="scrollToPortalAction()" 
+            class="btn-nike-outline-on-image shadow-sm"
+          >
+            <i data-lucide="arrow-down" class="w-4 h-4 text-nike-ink"></i>
+            <span>เช็คสิทธิ์ & คลาสเรียน</span>
+          </button>
+          <button 
+            type="button" 
+            onclick="switchTab('daily-attendance')" 
+            class="h-11 px-6 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 active:scale-95 transition-transform border border-white/20 cursor-pointer"
+          >
+            <i data-lucide="calendar" class="w-4 h-4 text-white"></i>
+            <span>ตารางคลาสวันนี้</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Ambient Glow Behind Login Card -->
       <div class="py-2 sm:py-4">
         <!-- STATE A: PHONE LOGIN GATE (FOR UNLOGGED PARENTS & COACHES) -->
-        <div id="parent-login-box" class="card-clean p-6 sm:p-8 max-w-md mx-auto text-center space-y-5 bg-white border border-slate-200 shadow-xs rounded-2xl relative">
+        <div id="parent-login-box" class="card-clean p-6 sm:p-8 max-w-md mx-auto text-center space-y-5 bg-white border border-nike-hairlineSoft rounded-2xl relative">
 
           <!-- DBO Official Academy Logo Emblem -->
           <div class="relative mx-auto w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
-            <div class="w-full h-full rounded-full bg-white p-2 flex items-center justify-center overflow-hidden border border-slate-200 shadow-xs">
-              <img src="assets/images/dbo-logo.png?v=7.0" alt="DBO Basketball Academy Logo" class="w-full h-full object-contain">
+            <div class="w-full h-full rounded-full bg-white p-2 flex items-center justify-center overflow-hidden border border-nike-hairlineSoft">
+              <img src="assets/images/dbo-logo.png?v=8.0" alt="DBO Basketball Academy Logo" class="w-full h-full object-contain">
             </div>
-            <div class="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-dbo-navy border-2 border-white flex items-center justify-center text-amber-400 shadow-xs">
+            <div class="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-nike-ink border-2 border-white flex items-center justify-center text-white">
               <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
             </div>
           </div>
 
           <!-- Academy Title & Subtitle -->
           <div class="space-y-1">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-700">
+            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft">
               DBO Basketball Academy
             </span>
-            <h1 class="text-2xl font-bold text-dbo-navy tracking-tight">เข้าสู่ระบบ</h1>
-            <p class="text-xs sm:text-sm text-slate-500 max-w-xs mx-auto">
+            <h2 class="text-2xl font-bold text-nike-ink tracking-tight">เข้าสู่ระบบ</h2>
+            <p class="text-xs sm:text-sm text-nike-mute max-w-xs mx-auto">
               ระบุเบอร์โทรศัพท์เพื่อตรวจสอบสิทธิ์คงเหลือ
             </p>
           </div>
@@ -218,9 +300,9 @@
           <!-- Phone / Staff Login Form -->
           <form id="phoneLoginForm" onsubmit="handleParentPhoneLogin(event)" class="space-y-3.5 text-left">
             <div class="space-y-1.5">
-              <label class="block text-xs font-semibold text-slate-700">เบอร์โทรศัพท์มือถือ</label>
+              <label class="block text-xs font-semibold text-nike-ink">เบอร์โทรศัพท์มือถือ</label>
               <div class="relative">
-                <i data-lucide="phone" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <i data-lucide="phone" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-nike-mute"></i>
                 <input 
                   type="tel" 
                   id="parentPhoneInput" 
@@ -228,27 +310,27 @@
                   maxlength="20"
                   required
                   autocomplete="tel"
-                  class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-dbo-navy placeholder-slate-400 focus:outline-none focus:border-dbo-navy focus:ring-1 focus:ring-dbo-navy text-sm font-mono tracking-wider transition-colors"
+                  class="w-full pl-11 pr-4 py-3 bg-nike-cloud border border-nike-hairlineSoft rounded-full text-nike-ink placeholder-nike-mute focus:outline-none focus:border-nike-ink focus:bg-white text-sm font-mono tracking-wider transition-all"
                 >
               </div>
-              <div id="loginFeedback" class="hidden text-xs py-2 px-3 rounded-lg transition-all"></div>
+              <div id="loginFeedback" class="hidden text-xs py-2 px-3 rounded-full transition-all"></div>
             </div>
 
-            <button type="submit" id="btnLoginSubmit" class="btn-touch w-full h-11 rounded-xl font-bold text-sm bg-dbo-navy text-white hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs">
-              <i data-lucide="log-in" class="w-4 h-4 text-slate-300"></i>
+            <button type="submit" id="btnLoginSubmit" class="btn-nike-primary w-full h-12 rounded-full font-bold text-sm bg-nike-ink text-white hover:bg-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-none">
+              <i data-lucide="log-in" class="w-4 h-4 text-white"></i>
               <span>เข้าสู่ระบบ</span>
             </button>
           </form>
 
           <!-- Clean Action Links -->
-          <div class="pt-2 border-t border-slate-100 flex flex-col gap-2">
-            <button type="button" onclick="openParentLinkModal()" class="btn-touch w-full py-2 px-3 rounded-xl text-xs font-semibold bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200 flex items-center justify-center gap-2 transition-colors cursor-pointer">
-              <i data-lucide="link" class="w-3.5 h-3.5 text-indigo-600"></i>
+          <div class="pt-3 border-t border-nike-hairlineSoft flex flex-col gap-2">
+            <button type="button" onclick="openParentLinkModal()" class="btn-touch w-full py-2.5 px-4 rounded-full text-xs font-semibold bg-nike-cloud text-nike-ink hover:bg-neutral-200 border border-nike-hairlineSoft flex items-center justify-center gap-2 transition-colors cursor-pointer">
+              <i data-lucide="link" class="w-3.5 h-3.5 text-nike-ink"></i>
               <span>ผูกเบอร์โทรศัพท์กับชื่อนักเรียน</span>
             </button>
-            <div class="text-xs text-slate-500 text-center pt-0.5">
+            <div class="text-xs text-nike-mute text-center pt-0.5">
               <span>ยังไม่เคยเป็นนักเรียน? </span>
-              <button type="button" onclick="switchTab('register-new')" class="text-dbo-navy font-semibold hover:underline cursor-pointer">สมัครเรียนใหม่</button>
+              <button type="button" onclick="switchTab('register-new')" class="text-nike-ink font-bold hover:underline cursor-pointer">สมัครเรียนใหม่</button>
             </div>
           </div>
         </div>
@@ -289,173 +371,173 @@
       <!-- STATE B: PARENT DASHBOARD (WHEN LOGGED IN) -->
       <div id="parent-dashboard" class="hidden space-y-3.5">
         
-        <!-- 1. Minimal Profile Header -->
-        <div class="card-clean p-3.5 sm:p-4 flex items-center justify-between gap-3 bg-white border border-slate-200 rounded-2xl shadow-2xs">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-dbo-navy text-white flex items-center justify-center text-base sm:text-lg font-bold font-mono flex-shrink-0 shadow-xs">
+        <!-- 1. Nike Member Profile Header -->
+        <div class="card-clean p-4 sm:p-5 flex items-center justify-between gap-3 bg-white border border-nike-hairlineSoft rounded-[14px]">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-nike-ink text-white flex items-center justify-center text-base sm:text-lg font-bold font-mono flex-shrink-0">
               <span id="dash-avatar">#</span>
             </div>
             <div class="min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
-                <h2 id="dash-student-name" class="text-base sm:text-lg font-bold text-dbo-navy truncate">น้อง...</h2>
-                <span id="dash-student-type" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">คอร์สปกติ 10 ครั้ง</span>
-                <span id="dash-student-id" class="text-[11px] font-mono text-slate-400">ID: #0</span>
+                <h2 id="dash-student-name" class="text-base sm:text-lg font-bold text-nike-ink truncate">น้อง...</h2>
+                <span id="dash-student-type" class="px-3 py-0.5 rounded-full text-[11px] font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft">คอร์สปกติ 10 ครั้ง</span>
+                <span id="dash-student-id" class="text-[11px] font-mono text-nike-mute">ID: #0</span>
               </div>
-              <p class="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
-                <span>ผปค: <strong id="dash-parent-phone" class="font-mono text-slate-700">08x-xxx-xxxx</strong></span>
-                <span id="dash-sibling-badge" class="hidden px-1.5 py-0.2 rounded text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200"></span>
+              <p class="text-[11px] text-nike-mute flex items-center gap-2 mt-0.5">
+                <span>ผปค: <strong id="dash-parent-phone" class="font-mono text-nike-ink">08x-xxx-xxxx</strong></span>
+                <span id="dash-sibling-badge" class="hidden px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200"></span>
               </p>
             </div>
           </div>
 
           <!-- Sibling Switcher & Logout -->
-          <div class="flex items-center gap-1.5 flex-shrink-0">
-            <div id="siblingSelectorBox" class="hidden flex items-center gap-1 bg-purple-50 border border-purple-200 px-2 py-1 rounded-xl">
-              <i data-lucide="users" class="w-3.5 h-3.5 text-purple-700"></i>
-              <select id="siblingSelect" onchange="switchSibling(this.value)" class="bg-white border border-purple-300 rounded-lg px-1.5 py-0.5 text-xs text-dbo-navy font-bold focus:outline-hidden cursor-pointer"></select>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <div id="siblingSelectorBox" class="hidden flex items-center gap-1 bg-nike-cloud border border-nike-hairlineSoft px-2.5 py-1 rounded-full">
+              <i data-lucide="users" class="w-3.5 h-3.5 text-nike-ink"></i>
+              <select id="siblingSelect" onchange="switchSibling(this.value)" class="bg-white border border-nike-hairlineSoft rounded-full px-2 py-0.5 text-xs text-nike-ink font-bold focus:outline-hidden cursor-pointer"></select>
             </div>
 
-            <button onclick="parentLogout()" title="ออกจากระบบ" class="btn-touch p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+            <button onclick="parentLogout()" title="ออกจากระบบ" class="w-9 h-9 rounded-full bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft flex items-center justify-center transition-all active:scale-90 cursor-pointer">
               <i data-lucide="log-out" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
 
-        <!-- Sibling Shared Quota Notice Banner (Compact) -->
-        <div id="siblingSharedQuotaNotice" class="hidden px-3.5 py-2.5 rounded-xl bg-purple-50/80 border border-purple-200 flex items-center justify-between gap-2 shadow-2xs">
-          <div class="flex items-center gap-2 text-xs text-purple-950 font-medium">
-            <i data-lucide="heart-handshake" class="w-4 h-4 text-purple-600 flex-shrink-0"></i>
+        <!-- Sibling Shared Quota Notice Banner (Nike Soft Surface) -->
+        <div id="siblingSharedQuotaNotice" class="hidden px-4 py-3 rounded-[14px] bg-nike-cloud border border-nike-hairlineSoft flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5 text-xs text-nike-ink font-medium">
+            <i data-lucide="heart-handshake" class="w-4 h-4 text-nike-ink flex-shrink-0"></i>
             <span id="siblingSharedTag" class="font-bold">คอร์สครอบครัวพี่น้อง</span>
-            <span id="siblingSharedDesc" class="text-[11px] text-purple-800"></span>
+            <span id="siblingSharedDesc" class="text-[11px] text-nike-mute"></span>
           </div>
-          <div id="siblingQuickPills" class="hidden sm:flex items-center gap-1 flex-shrink-0"></div>
+          <div id="siblingQuickPills" class="hidden sm:flex items-center gap-1.5 flex-shrink-0"></div>
         </div>
 
-        <!-- 2. Clean Quota Card & Notifications -->
-        <div class="card-clean p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-emerald-50/30 border border-emerald-500/20 shadow-xs space-y-3">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <!-- 2. Nike Member Benefit Quota Card -->
+        <div class="card-clean p-5 sm:p-6 rounded-[14px] bg-white border border-nike-hairlineSoft space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-nike-hairlineSoft">
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span class="text-xs font-bold text-emerald-800">โควต้าสิทธิ์คงเหลือ</span>
-              <span id="hero-shared-pill" class="hidden px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200">โควต้ารวมพี่น้อง</span>
+              <span class="w-2 h-2 rounded-full bg-[#007D48]"></span>
+              <span class="text-xs font-bold tracking-wider uppercase text-nike-ink">MEMBER BENEFIT · โควต้าสิทธิ์คงเหลือ</span>
+              <span id="hero-shared-pill" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">โควต้ารวมพี่น้อง</span>
               <span id="hero-student-name" class="hidden"></span>
               <span id="hero-course-desc" class="hidden"></span>
             </div>
-            <div id="hero-badge-status" class="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <div id="hero-badge-status" class="px-3 py-1 rounded-full text-xs font-bold bg-[#007D48]/10 text-[#007D48] border border-[#007D48]/20 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#007D48]"></span>
               <span id="hero-badge-text">พร้อมเข้าฝึกซ้อม</span>
             </div>
           </div>
 
           <div class="flex items-baseline justify-between gap-4">
             <div class="flex items-baseline gap-2">
-              <span id="dash-remaining-number" class="text-4xl sm:text-5xl font-extrabold text-slate-900 font-mono tracking-tight">--</span>
-              <span class="text-sm font-bold text-slate-700">ครั้ง</span>
-              <span id="dash-max-quota" class="text-xs text-slate-400 font-medium">/ 10 ครั้ง</span>
+              <span id="dash-remaining-number" class="text-5xl sm:text-6xl font-black text-nike-ink font-mono tracking-tight">--</span>
+              <span class="text-sm font-bold text-nike-mute">ครั้ง</span>
+              <span id="dash-max-quota" class="text-xs text-nike-mute font-medium">/ 10 ครั้ง</span>
             </div>
             <div class="text-right">
-              <button onclick="switchTab('renew-payment')" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-dbo-navy hover:bg-slate-800 text-white flex items-center gap-1.5 shadow-2xs cursor-pointer">
+              <button onclick="switchTab('renew-payment')" class="btn-touch px-4 py-2 rounded-full text-xs font-semibold bg-nike-ink hover:bg-black text-white flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-none">
                 <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                 <span>ต่อคอร์ส</span>
               </button>
             </div>
           </div>
 
-          <!-- Mini Progress Bar -->
-          <div class="space-y-1 pt-1">
-            <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-              <div id="dash-progress-bar" class="h-2 rounded-full bg-emerald-600 transition-all duration-500" style="width: 0%"></div>
+          <!-- Clean Nike Meter Bar -->
+          <div class="space-y-1.5 pt-1">
+            <div class="w-full bg-nike-cloud rounded-full h-2 overflow-hidden">
+              <div id="dash-progress-bar" class="h-2 rounded-full bg-[#007D48] transition-all duration-500" style="width: 0%"></div>
             </div>
-            <div class="flex justify-between text-[11px] text-slate-500 font-mono">
+            <div class="flex justify-between text-[11px] text-nike-mute font-mono">
               <span id="dash-course-period">คอร์สปกติ 10 ครั้ง</span>
-              <span id="dash-renew-notice" class="text-emerald-700 font-bold">เหลือ -- ครั้ง</span>
-              <span id="dash-progress-pct" class="font-bold text-slate-700">--%</span>
+              <span id="dash-renew-notice" class="text-[#007D48] font-bold">เหลือ -- ครั้ง</span>
+              <span id="dash-progress-pct" class="font-bold text-nike-ink">--%</span>
             </div>
           </div>
 
           <!-- Dual Course Saturday Row -->
-          <div id="heroSaturdayRow" class="hidden pt-2 border-t border-slate-100 flex items-center justify-between text-xs bg-indigo-50/60 p-2.5 rounded-xl border border-indigo-100">
-            <span class="font-bold text-indigo-950 flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+          <div id="heroSaturdayRow" class="hidden pt-3 border-t border-nike-hairlineSoft flex items-center justify-between text-xs bg-nike-cloud p-3 rounded-full border border-nike-hairlineSoft">
+            <span class="font-bold text-nike-ink flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-nike-ink"></span>
               <span>คอร์สวันเสาร์ Coach Oat:</span>
             </span>
             <div class="flex items-baseline gap-1">
-              <strong id="hero-saturday-remaining" class="text-base font-extrabold font-mono text-indigo-700">0</strong>
-              <span class="text-xs text-indigo-900 font-medium">/ 4 ครั้ง</span>
+              <strong id="hero-saturday-remaining" class="text-base font-extrabold font-mono text-nike-ink">0</strong>
+              <span class="text-xs text-nike-mute font-medium">/ 4 ครั้ง</span>
             </div>
           </div>
 
-          <!-- Compact Notification Row (No Test Buttons - Real Alerts Only) -->
-          <div id="pushNotificationBanner" class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+          <!-- Notification Row (Nike Minimal Pill) -->
+          <div id="pushNotificationBanner" class="pt-3 border-t border-nike-hairlineSoft flex items-center justify-between gap-2">
             <div class="flex items-center gap-2 min-w-0">
-              <i data-lucide="bell" class="w-4 h-4 text-slate-500 flex-shrink-0"></i>
-              <span class="text-xs font-semibold text-slate-700 truncate">การแจ้งเตือนบนมือถือ:</span>
-              <span id="pushStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600 border border-slate-200 flex-shrink-0">ตรวจสอบสถานะ...</span>
+              <i data-lucide="bell" class="w-4 h-4 text-nike-mute flex-shrink-0"></i>
+              <span class="text-xs font-semibold text-nike-ink truncate">การแจ้งเตือนบนมือถือ:</span>
+              <span id="pushStatusBadge" class="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-nike-cloud text-nike-mute border border-nike-hairlineSoft flex-shrink-0">ตรวจสอบสถานะ...</span>
             </div>
-            <button id="btnEnableNotifications" onclick="requestNotificationPermission()" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1 flex-shrink-0 cursor-pointer shadow-2xs">
+            <button id="btnEnableNotifications" onclick="requestNotificationPermission()" class="btn-touch px-3.5 py-1.5 rounded-full text-xs font-semibold bg-nike-ink hover:bg-black text-white flex items-center gap-1 flex-shrink-0 cursor-pointer active:scale-95 shadow-none">
               <i data-lucide="bell" class="w-3.5 h-3.5"></i>
               <span>เปิดแจ้งเตือนบนมือถือ</span>
             </button>
           </div>
         </div>
 
-        <!-- 3. Primary Action Card: Today's Class Check-in / Leave -->
-        <div id="parentActionCard" class="card-clean p-4 rounded-2xl border border-slate-200 bg-white space-y-3 shadow-2xs">
-          <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-100">
+        <!-- 3. Primary Action Card: Today's Class Check-in / Leave (Nike Pill CTAs) -->
+        <div id="parentActionCard" class="card-clean p-4 sm:p-5 rounded-[14px] border border-nike-hairlineSoft bg-white space-y-3.5">
+          <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-nike-hairlineSoft">
             <div class="flex items-center gap-2 min-w-0">
-              <span id="parentClassDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
-              <h3 class="text-xs sm:text-sm font-bold text-dbo-navy truncate" id="parentClassStatusHeading">
+              <span id="parentClassDot" class="w-2.5 h-2.5 rounded-full bg-[#007D48] flex-shrink-0"></span>
+              <h3 class="text-xs sm:text-sm font-bold text-nike-ink truncate" id="parentClassStatusHeading">
                 คลาสฝึกซ้อมประจำวัน
               </h3>
             </div>
-            <div id="parentTodayStatusBadge" class="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 flex-shrink-0">
+            <div id="parentTodayStatusBadge" class="px-3 py-0.5 rounded-full text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft flex-shrink-0">
               ยังไม่ได้ระบุสถานะ
             </div>
           </div>
 
-          <p class="text-xs font-medium text-slate-600" id="parentTodayDateLabel">
+          <p class="text-xs font-medium text-nike-mute" id="parentTodayDateLabel">
             วันอังคารที่ 10 พ.ย. 2569 • 17:30 - 19:30 น.
           </p>
 
           <div id="parentClassActionsContainer">
-            <div id="hasNormalClassActions" class="grid grid-cols-2 gap-2">
-              <button type="button" onclick="setTodayAttendanceFromParent('attending')" class="btn-touch py-2.5 px-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-1.5 shadow-xs cursor-pointer">
+            <div id="hasNormalClassActions" class="grid grid-cols-2 gap-2.5">
+              <button type="button" onclick="setTodayAttendanceFromParent('attending')" class="btn-touch py-3 px-4 rounded-full text-xs sm:text-sm font-semibold bg-nike-ink hover:bg-black text-white flex items-center justify-center gap-2 cursor-pointer active:scale-95 shadow-none">
                 <i data-lucide="check" class="w-4 h-4 text-white"></i>
                 <span>แจ้งเข้าเรียนวันนี้</span>
               </button>
 
-              <button type="button" onclick="openLeaveModal()" class="btn-touch py-2.5 px-3 rounded-xl text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer">
-                <i data-lucide="x" class="w-4 h-4 text-amber-600"></i>
+              <button type="button" onclick="openLeaveModal()" class="btn-touch py-3 px-4 rounded-full text-xs sm:text-sm font-semibold bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                <i data-lucide="x" class="w-4 h-4 text-nike-ink"></i>
                 <span>แจ้งขอลาเรียน</span>
               </button>
             </div>
 
-            <div id="noClassNoticeBox" class="hidden p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
-              <span class="text-xs font-bold text-slate-700 flex items-center justify-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+            <div id="noClassNoticeBox" class="hidden p-3.5 rounded-[14px] bg-nike-cloud border border-nike-hairlineSoft text-center">
+              <span class="text-xs font-bold text-nike-ink flex items-center justify-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-neutral-400"></span>
                 <span>วันนี้ไม่มีคลาส</span>
               </span>
             </div>
           </div>
         </div>
 
-        <!-- 4. Category Selector Navigation (จัดระเบียบให้เป็นหมวดหมู่ เรียบร้อย สะอาดตา) -->
+        <!-- 4. Category Selector Navigation (Nike Pill Tab System) -->
         <div class="pt-1">
-          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-200">
-            <button type="button" onclick="switchParentCategory('history')" id="pcat-btn-history" class="pcat-pill active flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white shadow-2xs transition-all cursor-pointer flex-shrink-0">
-              <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 border-b border-nike-hairlineSoft">
+            <button type="button" onclick="switchParentCategory('history')" id="pcat-btn-history" class="pcat-pill active flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-nike-ink text-white transition-all cursor-pointer flex-shrink-0 active:scale-95 shadow-none">
+              <i data-lucide="clipboard-check" class="w-3.5 h-3.5 text-white"></i>
               <span>ประวัติเข้าเรียน</span>
             </button>
-            <button type="button" onclick="switchParentCategory('growth')" id="pcat-btn-growth" class="pcat-pill inactive flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex-shrink-0">
-              <i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i>
+            <button type="button" onclick="switchParentCategory('growth')" id="pcat-btn-growth" class="pcat-pill inactive flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft transition-all cursor-pointer flex-shrink-0 active:scale-95">
+              <i data-lucide="award" class="w-3.5 h-3.5 text-nike-ink"></i>
               <span>พัฒนาการ & สมรรถภาพ</span>
             </button>
-            <button type="button" onclick="switchParentCategory('classmates')" id="pcat-btn-classmates" class="pcat-pill inactive flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex-shrink-0">
-              <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
+            <button type="button" onclick="switchParentCategory('classmates')" id="pcat-btn-classmates" class="pcat-pill inactive flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft transition-all cursor-pointer flex-shrink-0 active:scale-95">
+              <i data-lucide="users" class="w-3.5 h-3.5 text-nike-ink"></i>
               <span>เพื่อนร่วมคลาส</span>
             </button>
-            <button type="button" onclick="switchParentCategory('schedule')" id="pcat-btn-schedule" class="pcat-pill inactive flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all cursor-pointer flex-shrink-0">
-              <i data-lucide="calendar" class="w-3.5 h-3.5 text-sky-600"></i>
+            <button type="button" onclick="switchParentCategory('schedule')" id="pcat-btn-schedule" class="pcat-pill inactive flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft transition-all cursor-pointer flex-shrink-0 active:scale-95">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-nike-ink"></i>
               <span>ตารางซ้อม</span>
             </button>
           </div>
@@ -822,32 +904,32 @@
     <!-- ======================================================== -->
     <section id="tab-daily-attendance" class="hidden space-y-5">
       
-      <!-- Top Banner -->
-      <div class="card-clean p-5 sm:p-6 bg-dbo-navy text-white rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-slate-800">
-        <div class="space-y-1">
+      <!-- Top Banner (Nike Black Headline Banner) -->
+      <div class="card-clean p-5 sm:p-6 bg-nike-ink text-white rounded-[14px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-black/10">
+        <div class="space-y-1.5">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700">กระดานคลาสเรียน</span>
-            <span class="text-xs text-slate-400">โรงยิม โรงเรียนเตชะวิทย์ • Start from 0 to No. 1</span>
+            <span class="px-3 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-white/10 text-white border border-white/15">กระดานคลาสเรียน</span>
+            <span class="text-xs text-neutral-400">โรงยิม โรงเรียนเตชะวิทย์ • Start from 0 to No. 1</span>
           </div>
-          <h2 class="text-lg sm:text-xl font-semibold text-white flex items-center gap-2">
+          <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
             <span>กระดานเช็คชื่อ & เพื่อนร่วมคลาสวันนี้</span>
           </h2>
-          <p class="text-xs text-slate-400" id="dailyBoardDateLabel">
+          <p class="text-xs text-neutral-300" id="dailyBoardDateLabel">
             วันจันทร์ที่ 9 พฤศจิกายน 2569 • คลาสปกติ 17:30 - 19:30 น.
           </p>
         </div>
 
         <div id="dailyBoardActionBox" class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
-          <button onclick="openAttendanceHistoryModal()" class="btn-touch px-3 py-2 rounded-lg text-xs font-medium bg-white text-dbo-navy hover:bg-slate-100 transition-colors flex items-center gap-1.5">
-            <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
+          <button onclick="openAttendanceHistoryModal()" class="btn-touch px-4 py-2 rounded-full text-xs font-semibold bg-white text-nike-ink hover:bg-neutral-100 transition active:scale-95 shadow-none cursor-pointer">
+            <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-nike-ink"></i>
             <span>ประวัติยอดคนรายวัน</span>
           </button>
-          <button onclick="openLeaveModal()" class="btn-touch px-3.5 py-2 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 flex items-center gap-1.5 transition-colors">
-            <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-amber-300"></i>
+          <button onclick="openLeaveModal()" class="btn-touch px-4 py-2 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 flex items-center gap-1.5 transition active:scale-95 cursor-pointer">
+            <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-white"></i>
             <span>แจ้งขอลา</span>
           </button>
-          <button onclick="setTodayAttendanceFromParent('attending')" class="btn-touch px-4 py-2 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 transition-colors">
-            <i data-lucide="check" class="w-4 h-4"></i>
+          <button onclick="setTodayAttendanceFromParent('attending')" class="btn-touch px-4 py-2 rounded-full text-xs font-semibold bg-white text-nike-ink hover:bg-neutral-100 flex items-center gap-1.5 transition active:scale-95 cursor-pointer shadow-none">
+            <i data-lucide="check" class="w-4 h-4 text-[#007D48]"></i>
             <span>ยืนยันเข้าเรียนวันนี้</span>
           </button>
         </div>
@@ -1173,28 +1255,28 @@
           
           <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
             <!-- Google Calendar Direct External Link -->
-            <a href="https://calendar.google.com/calendar/u/0/r/week" target="_blank" rel="noopener noreferrer" class="btn-touch px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5 transition shadow-2xs">
+            <a href="https://calendar.google.com/calendar/u/0/r/week" target="_blank" rel="noopener noreferrer" class="btn-touch px-4 py-2 rounded-full text-xs font-semibold bg-nike-ink hover:bg-black text-white flex items-center gap-1.5 transition active:scale-95 shadow-none">
               <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
               <span>เปิด Google Calendar</span>
-              <i data-lucide="external-link" class="w-3 h-3 text-indigo-200"></i>
+              <i data-lucide="external-link" class="w-3 h-3 text-neutral-400"></i>
             </a>
 
             <!-- Print Statement Button (Staff Only) -->
-            <button type="button" id="btnCourtPrintModal" onclick="openPrintCourtStatementModal()" class="hidden btn-touch px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 transition shadow-2xs cursor-pointer">
-              <i data-lucide="printer" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <button type="button" id="btnCourtPrintModal" onclick="openPrintCourtStatementModal()" class="hidden btn-touch px-4 py-2 rounded-full text-xs font-semibold bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft flex items-center gap-1.5 transition active:scale-95 cursor-pointer">
+              <i data-lucide="printer" class="w-3.5 h-3.5 text-nike-ink"></i>
               <span>พิมพ์ใบสรุปค่าสนาม (A4)</span>
             </button>
           </div>
         </div>
 
         <!-- Mode Switch: 1. Monthly Statement (Staff Only) | 2. Google Calendar Integration -->
-        <div id="calendarSubViewNav" class="hidden flex items-center gap-2 border-b border-slate-200 pb-2">
-          <button type="button" onclick="setCalendarTabSubView('statement')" id="btnSubViewStatement" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white flex items-center gap-2 transition shadow-xs cursor-pointer">
-            <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
+        <div id="calendarSubViewNav" class="hidden flex items-center gap-2 border-b border-nike-hairlineSoft pb-2">
+          <button type="button" onclick="setCalendarTabSubView('statement')" id="btnSubViewStatement" class="px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-nike-ink text-white flex items-center gap-2 transition active:scale-95 cursor-pointer shadow-none">
+            <i data-lucide="file-text" class="w-4 h-4 text-white"></i>
             <span>สรุปค่าเช่าสนามประจำเดือน (แนบส่งโรงเรียน)</span>
           </button>
-          <button type="button" onclick="setCalendarTabSubView('gcal')" id="btnSubViewGCal" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center gap-2 transition cursor-pointer">
-            <i data-lucide="calendar" class="w-4 h-4 text-indigo-600"></i>
+          <button type="button" onclick="setCalendarTabSubView('gcal')" id="btnSubViewGCal" class="px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-neutral-200 flex items-center gap-2 transition active:scale-95 cursor-pointer">
+            <i data-lucide="calendar" class="w-4 h-4 text-nike-ink"></i>
             <span>Google Calendar & ลิงก์ตาราง</span>
           </button>
         </div>
@@ -1203,28 +1285,28 @@
         <div id="subViewCourtStatement" class="hidden space-y-4">
           
           <!-- Month Selector & Action Controls -->
-          <div class="p-3 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-2xs">
+          <div class="p-3.5 sm:p-4 rounded-[14px] bg-nike-cloud border border-nike-hairlineSoft flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-none">
             <div class="flex items-center gap-2 flex-wrap">
-              <button type="button" onclick="stepCourtMonth(-1)" class="w-8 h-8 rounded-xl bg-white hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center justify-center transition cursor-pointer shadow-2xs">
+              <button type="button" onclick="stepCourtMonth(-1)" class="w-9 h-9 rounded-full bg-white hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft flex items-center justify-center transition active:scale-95 cursor-pointer shadow-none">
                 <i data-lucide="chevron-left" class="w-4 h-4"></i>
               </button>
-              <select id="courtMonthSelect" onchange="changeCourtMonth(this.value)" class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs sm:text-sm font-bold text-dbo-navy focus:outline-none focus:border-indigo-500 cursor-pointer shadow-2xs">
+              <select id="courtMonthSelect" onchange="changeCourtMonth(this.value)" class="bg-white border border-nike-hairlineSoft rounded-full px-3.5 py-2 text-xs sm:text-sm font-semibold text-nike-ink focus:outline-none focus:border-nike-ink cursor-pointer">
                 <!-- Dynamically populated -->
               </select>
-              <button type="button" onclick="stepCourtMonth(1)" class="w-8 h-8 rounded-xl bg-white hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center justify-center transition cursor-pointer shadow-2xs">
+              <button type="button" onclick="stepCourtMonth(1)" class="w-9 h-9 rounded-full bg-white hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft flex items-center justify-center transition active:scale-95 cursor-pointer shadow-none">
                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
               </button>
-              <button type="button" onclick="jumpToCurrentCourtMonth()" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white text-slate-700 hover:bg-slate-100 border border-slate-300 transition cursor-pointer shadow-2xs">
+              <button type="button" onclick="jumpToCurrentCourtMonth()" class="px-3.5 py-2 rounded-full text-xs font-semibold bg-white text-nike-ink hover:bg-neutral-200 border border-nike-hairlineSoft transition active:scale-95 cursor-pointer">
                 เดือนปัจจุบัน
               </button>
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
-              <button type="button" onclick="openAddSpecialCourtDayModal()" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 flex items-center gap-1.5 transition shadow-2xs cursor-pointer">
+              <button type="button" onclick="openAddSpecialCourtDayModal()" class="btn-touch px-4 py-2 rounded-full text-xs font-semibold bg-nike-ink hover:bg-black text-white flex items-center gap-1.5 transition active:scale-95 cursor-pointer shadow-none">
                 <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
                 <span>+ เพิ่มวันพิเศษ / ไพรเวท</span>
               </button>
-              <button type="button" onclick="copyCourtSummaryText()" class="btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 flex items-center gap-1.5 transition shadow-2xs cursor-pointer">
+              <button type="button" onclick="copyCourtSummaryText()" class="btn-touch px-4 py-2 rounded-full text-xs font-semibold bg-white hover:bg-neutral-100 text-nike-ink border border-nike-hairlineSoft flex items-center gap-1.5 transition active:scale-95 cursor-pointer shadow-none">
                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                 <span>คัดลอกข้อความสรุป</span>
               </button>
@@ -1502,16 +1584,16 @@
         <!-- ===================================================================== -->
         <!-- COACH PORTAL SUB-NAV: 1. STUDENT ROSTER & QUOTA | 2. POST-TEACHING RECORDS (DBO) -->
         <!-- ===================================================================== -->
-        <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold">
-          <button type="button" id="coachSubTabRoster" onclick="switchCoachSubTab('roster')" class="flex-1 py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition bg-white text-slate-900 shadow-2xs cursor-pointer">
-            <i data-lucide="users" class="w-4 h-4 text-slate-700"></i>
+        <div class="flex items-center gap-1.5 p-1 bg-nike-cloud rounded-full border border-nike-hairlineSoft text-xs sm:text-sm font-semibold">
+          <button type="button" id="coachSubTabRoster" onclick="switchCoachSubTab('roster')" class="flex-1 py-2 px-3 rounded-full flex items-center justify-center gap-2 transition active:scale-95 bg-nike-ink text-white cursor-pointer shadow-none">
+            <i data-lucide="users" class="w-4 h-4 text-white"></i>
             <span>สิทธิ์ & รายชื่อนักเรียน</span>
-            <span id="subTabRosterCountBadge" class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-100 text-slate-700">54</span>
+            <span id="subTabRosterCountBadge" class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/20 text-white">54</span>
           </button>
-          <button type="button" id="coachSubTabRecords" onclick="switchCoachSubTab('records')" class="flex-1 py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition text-slate-600 hover:text-slate-900 cursor-pointer">
-            <i data-lucide="clipboard-check" class="w-4 h-4 text-emerald-600"></i>
+          <button type="button" id="coachSubTabRecords" onclick="switchCoachSubTab('records')" class="flex-1 py-2 px-3 rounded-full flex items-center justify-center gap-2 transition active:scale-95 text-nike-mute hover:text-nike-ink cursor-pointer">
+            <i data-lucide="clipboard-check" class="w-4 h-4 text-nike-ink"></i>
             <span>บันทึกการสอน & เช็คชื่อ DBO</span>
-            <span id="subTabRecordsCountBadge" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-600 text-white">0</span>
+            <span id="subTabRecordsCountBadge" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#007D48] text-white">0</span>
           </button>
         </div>
 
@@ -1523,41 +1605,41 @@
           <!-- Course Category Filters, Search & View Switcher -->
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             
-            <!-- Category Tabs Filter -->
-            <div class="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
-              <button onclick="filterCoachCategory('all')" id="btn-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white transition-colors flex-shrink-0 cursor-pointer">ทั้งหมด (<span id="count-all">0</span>)</button>
-              <button onclick="filterCoachCategory('regular')" id="btn-filter-regular" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex-shrink-0 cursor-pointer">10 ครั้ง (<span id="count-regular">0</span>)</button>
-              <button onclick="filterCoachCategory('monthly')" id="btn-filter-monthly" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex-shrink-0 cursor-pointer">รายเดือน (<span id="count-monthly">0</span>)</button>
-              <button onclick="filterCoachCategory('saturday')" id="btn-filter-saturday" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex-shrink-0 cursor-pointer">วันเสาร์ (<span id="count-saturday">0</span>)</button>
-              <button onclick="filterCoachCategory('low')" id="btn-filter-low" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors flex items-center gap-1.5 flex-shrink-0 cursor-pointer" title="นักเรียนที่สิทธิ์เหลืออีก 1 ครั้ง หรือหมดแล้ว">
-                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+            <!-- Category Tabs Filter (Nike Filter Chips) -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+              <button onclick="filterCoachCategory('all')" id="btn-filter-all" class="filter-chip active text-xs font-semibold flex-shrink-0 cursor-pointer">ทั้งหมด (<span id="count-all">0</span>)</button>
+              <button onclick="filterCoachCategory('regular')" id="btn-filter-regular" class="filter-chip text-xs font-medium flex-shrink-0 cursor-pointer">10 ครั้ง (<span id="count-regular">0</span>)</button>
+              <button onclick="filterCoachCategory('monthly')" id="btn-filter-monthly" class="filter-chip text-xs font-medium flex-shrink-0 cursor-pointer">รายเดือน (<span id="count-monthly">0</span>)</button>
+              <button onclick="filterCoachCategory('saturday')" id="btn-filter-saturday" class="filter-chip text-xs font-medium flex-shrink-0 cursor-pointer">วันเสาร์ (<span id="count-saturday">0</span>)</button>
+              <button onclick="filterCoachCategory('low')" id="btn-filter-low" class="filter-chip text-xs font-medium text-[#D30005] hover:bg-red-50 flex items-center gap-1.5 flex-shrink-0 cursor-pointer" title="นักเรียนที่สิทธิ์เหลืออีก 1 ครั้ง หรือหมดแล้ว">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#D30005] animate-pulse"></span>
                 <span>ใกล้หมด / หมดแล้ว (เหลือ ≤ 1)</span> (<span id="count-low">0</span>)
               </button>
             </div>
 
-            <!-- Controls: View Switcher & Search -->
+            <!-- Controls: View Switcher & Search (Nike Search Pill Geometry) -->
             <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
               <!-- View Mode Switcher -->
-              <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs">
-                <button type="button" id="btnViewCards" onclick="setCoachRosterViewMode('cards')" class="px-2.5 py-1 rounded-md font-medium transition flex items-center gap-1 bg-white text-slate-900 shadow-2xs">
+              <div class="inline-flex rounded-full p-0.5 bg-nike-cloud border border-nike-hairlineSoft text-xs">
+                <button type="button" id="btnViewCards" onclick="setCoachRosterViewMode('cards')" class="px-3 py-1 rounded-full font-medium transition flex items-center gap-1 bg-white text-nike-ink shadow-none">
                   <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
                   <span>การ์ด</span>
                 </button>
-                <button type="button" id="btnViewTable" onclick="setCoachRosterViewMode('table')" class="px-2.5 py-1 rounded-md font-medium transition flex items-center gap-1 text-slate-600 hover:text-slate-900">
+                <button type="button" id="btnViewTable" onclick="setCoachRosterViewMode('table')" class="px-3 py-1 rounded-full font-medium transition flex items-center gap-1 text-nike-mute hover:text-nike-ink">
                   <i data-lucide="table" class="w-3.5 h-3.5"></i>
                   <span>ตาราง</span>
                 </button>
               </div>
 
-              <!-- Search Input -->
-              <div class="relative flex-1 sm:w-56">
-                <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <!-- Search Pill Input -->
+              <div class="relative flex-1 sm:w-60">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-nike-mute"></i>
                 <input 
                   type="text" 
                   id="coachSearchInput" 
                   placeholder="ค้นหาชื่อน้อง, เบอร์โทร..." 
                   oninput="renderCoachRosterTable()"
-                  class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-dbo-navy focus:outline-none focus:border-dbo-navy"
+                  class="w-full pl-9 pr-4 py-2 bg-nike-cloud border border-nike-hairlineSoft rounded-full text-xs text-nike-ink placeholder-nike-mute focus:outline-none focus:border-nike-ink focus:bg-white transition-all"
                 >
               </div>
             </div>
@@ -1742,7 +1824,7 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- MOBILE BOTTOM NAVIGATION BAR                             -->
+  <!-- MOBILE BOTTOM NAVIGATION BAR (Nike Pure Monochrome Chrome)-->
   <!-- ======================================================== -->
   <nav class="md:hidden mobile-bottom-nav">
     <div id="mobileBottomNavContainer" class="flex items-center justify-around text-center px-1">
@@ -1751,32 +1833,32 @@
         <span>หน้าหลัก</span>
       </button>
 
-      <!-- Calendar Tab: Front priority before daily -->
+      <!-- Calendar Tab -->
       <button onclick="switchTab('calendar')" id="nav-m-calendar" class="mobile-tab-btn flex-1">
-        <i data-lucide="calendar" class="w-5 h-5 text-indigo-600"></i>
+        <i data-lucide="calendar" class="w-5 h-5"></i>
         <span>ปฏิทิน & ค่าสนาม</span>
       </button>
 
-      <!-- Daily Attendance Tab: Visible to All -->
+      <!-- Daily Attendance Tab -->
       <button onclick="switchTab('daily-attendance')" id="nav-m-daily-attendance" class="mobile-tab-btn flex-1">
-        <i data-lucide="users" class="w-5 h-5 text-emerald-600"></i>
+        <i data-lucide="users" class="w-5 h-5"></i>
         <span>คลาสวันนี้</span>
       </button>
 
       <!-- Renew Tab: Only visible if logged in -->
       <button onclick="switchTab('renew-payment')" id="nav-m-renew-payment" class="mobile-tab-btn hidden flex-1">
-        <i data-lucide="refresh-cw" class="w-5 h-5 text-dbo-gold"></i>
-        <span class="text-dbo-gold font-bold">ต่อคอร์ส</span>
+        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+        <span>ต่อคอร์ส</span>
       </button>
 
       <!-- Register Tab: Visible if NOT logged in -->
       <button onclick="switchTab('register-new')" id="nav-m-register-new" class="mobile-tab-btn flex-1">
-        <i data-lucide="user-plus" class="w-5 h-5 text-emerald-600"></i>
+        <i data-lucide="user-plus" class="w-5 h-5"></i>
         <span>สมัครเรียน</span>
       </button>
 
       <!-- Coach Tab in mobile (If Coach Mode) -->
-      <button onclick="switchTab('coach-roster')" id="nav-m-coach-roster" class="mobile-tab-btn hidden flex-1 text-indigo-600">
+      <button onclick="switchTab('coach-roster')" id="nav-m-coach-roster" class="mobile-tab-btn hidden flex-1">
         <i data-lucide="shield-check" class="w-5 h-5"></i>
         <span>แผงโค้ช</span>
       </button>
@@ -2908,9 +2990,9 @@
     </div>
   </div>
 
-  <!-- Global Toast Notification -->
-  <div id="globalToast" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs px-3.5 py-2 rounded-lg shadow-lg border border-slate-700/80 z-50 flex items-center gap-2 font-medium tracking-normal">
-    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+  <!-- Global Toast Notification (Nike Pill Toast) -->
+  <div id="globalToast" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 bg-nike-ink text-white text-xs px-5 py-2.5 rounded-full shadow-lg border border-neutral-800 z-50 flex items-center gap-2 font-medium tracking-normal transition-all animate-bounce">
+    <span class="w-2 h-2 rounded-full bg-[#007D48]"></span>
     <span id="globalToastText">บันทึกเรียบร้อย</span>
   </div>
 

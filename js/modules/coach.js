@@ -34,15 +34,15 @@ function filterCoachCategory(cat) {
     if (!btn) return;
     if (c === cat) {
       if (c === 'low') {
-        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600 text-white border border-rose-600 shadow-2xs transition-colors flex items-center gap-1.5 flex-shrink-0 cursor-pointer';
+        btn.className = 'filter-chip active text-xs font-semibold bg-[#D30005] border-[#D30005] text-white flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95';
       } else {
-        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white shadow-2xs transition-colors flex-shrink-0 cursor-pointer';
+        btn.className = 'filter-chip active text-xs font-semibold bg-nike-ink border-nike-ink text-white flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95';
       }
     } else {
       if (c === 'low') {
-        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors flex items-center gap-1.5 flex-shrink-0 cursor-pointer';
+        btn.className = 'filter-chip text-xs font-medium text-[#D30005] hover:bg-red-50 flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95';
       } else {
-        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex-shrink-0 cursor-pointer';
+        btn.className = 'filter-chip text-xs font-medium bg-nike-canvas text-nike-ink hover:bg-nike-cloud transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95';
       }
     }
   });
@@ -233,24 +233,24 @@ function renderCoachRosterTable() {
       tbody.appendChild(tr);
     }
 
-    // 2. Mobile Cards
+    // 2. Mobile Cards (Nike Modern Container)
     if (cardsContainer) {
       const card = document.createElement('div');
-      card.className = "card-clean p-3 sm:p-3.5 rounded-xl border border-slate-200 bg-white hover:border-indigo-200 transition-all shadow-2xs";
+      card.className = "card-clean p-3 sm:p-3.5 rounded-[14px] border border-nike-hairlineSoft bg-white hover:border-black/30 transition-all";
 
       card.innerHTML = `
         <div class="flex items-center justify-between gap-2.5">
           <div class="flex items-center gap-2.5 min-w-0">
-            <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 font-mono font-bold text-xs flex items-center justify-center flex-shrink-0">
+            <span class="w-8 h-8 rounded-full bg-nike-cloud text-nike-ink font-mono font-bold text-xs flex items-center justify-center flex-shrink-0 border border-nike-hairlineSoft">
               #${s.id}
             </span>
             <div class="min-w-0">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <h4 onclick="openEditStudentModal(${s.id})" class="font-bold text-dbo-navy hover:text-indigo-600 text-sm leading-tight truncate cursor-pointer">น้อง ${s.name}</h4>
+                <h4 onclick="openEditStudentModal(${s.id})" class="font-bold text-nike-ink hover:underline text-sm leading-tight truncate cursor-pointer">น้อง ${s.name}</h4>
                 ${typeBadge}
               </div>
-              <div class="flex items-center gap-2 pt-0.5 text-xs text-slate-500">
-                ${s.phone ? `<span class="font-mono text-slate-500 flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3 text-slate-400"></i> ${maskPhone(s.phone)}</span>` : `<span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
+              <div class="flex items-center gap-2 pt-0.5 text-xs text-nike-mute">
+                ${s.phone ? `<span class="font-mono text-nike-mute flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3 text-nike-mute"></i> ${maskPhone(s.phone)}</span>` : `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
               </div>
             </div>
           </div>
@@ -260,12 +260,12 @@ function renderCoachRosterTable() {
               ${remBadge}
               ${urgentStatusBadge ? `<div class="mt-0.5 text-right">${urgentStatusBadge}</div>` : ''}
             </div>
-            <button type="button" onclick="openEditStudentModal(${s.id})" class="btn-touch px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 transition-colors cursor-pointer" title="แก้ไขข้อมูล & ปรับสิทธิ์">
-              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-slate-500"></i>
+            <button type="button" onclick="openEditStudentModal(${s.id})" class="btn-touch px-3 py-1.5 rounded-full text-xs font-semibold bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft inline-flex items-center gap-1 transition-all active:scale-95 cursor-pointer" title="แก้ไขข้อมูล & ปรับสิทธิ์">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-nike-ink"></i>
               <span>แก้ไข</span>
             </button>
             ${!isAsst ? `
-            <button type="button" onclick="coachDeleteStudent(${s.id})" title="ลบชื่อ" class="btn-touch p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer">
+            <button type="button" onclick="coachDeleteStudent(${s.id})" title="ลบชื่อ" class="w-8 h-8 rounded-full text-neutral-400 hover:text-[#D30005] hover:bg-red-50 flex items-center justify-center transition-all active:scale-90 cursor-pointer">
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             </button>` : ''}
           </div>

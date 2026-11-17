@@ -71,6 +71,48 @@ function refreshAllViews() {
   lucide.createIcons();
 }
 
+// In-App Manual Refresh (Syncs latest cloud state in-place without page reload)
+async function handleManualInAppRefresh(e) {
+  if (e) {
+    if (typeof e.preventDefault === 'function') e.preventDefault();
+    if (typeof e.stopPropagation === 'function') e.stopPropagation();
+  }
+  const spinner = document.getElementById('spinHeaderWrapper') || document.getElementById('iconHeaderManualRefresh');
+  const btn = document.getElementById('btnHeaderManualRefresh');
+  if (btn) btn.disabled = true;
+  if (spinner) spinner.classList.add('animate-spin');
+
+  try {
+    if (typeof pullStateFromCloudApi === 'function') {
+      await pullStateFromCloudApi();
+    }
+  } catch (err) {
+    console.error('In-app refresh error:', err);
+  } finally {
+    refreshAllViews();
+    if (typeof showToast === 'function') {
+      showToast('🔄 อัปเดตข้อมูลล่าสุดเรียบร้อย');
+    }
+    setTimeout(() => {
+      const activeSpinner = document.getElementById('spinHeaderWrapper') || document.getElementById('iconHeaderManualRefresh');
+      if (activeSpinner) activeSpinner.classList.remove('animate-spin');
+      if (btn) btn.disabled = false;
+    }, 700);
+  }
+}
+
+// Smooth scroll to portal action for Campaign Hero CTA
+function scrollToPortalAction() {
+  const target = loggedInStudent ? document.getElementById('parent-dashboard') : document.getElementById('parent-login-box');
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const input = document.getElementById('parentPhoneInput');
+    if (!loggedInStudent && input) {
+      setTimeout(() => input.focus(), 350);
+    }
+  }
+}
+
 // Service Worker Registration for PWA & System Notifications
 if ('serviceWorker' in navigator) {
   const registerSW = () => {
