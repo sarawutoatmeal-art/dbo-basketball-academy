@@ -292,32 +292,37 @@ function jumpToCurrentCourtMonth() {
   renderCourtExpenseStatement();
 }
 
+let currentCalendarSubView = 'gcal';
+
 // Switch between Statement view and Google Calendar view
 function setCalendarTabSubView(view) {
+  currentCalendarSubView = view || 'gcal';
   const vStat = document.getElementById('subViewCourtStatement');
   const vGCal = document.getElementById('subViewGCal');
   const bStat = document.getElementById('btnSubViewStatement');
   const bGCal = document.getElementById('btnSubViewGCal');
 
-  if (view === 'gcal') {
-    if (vStat) vStat.classList.add('hidden');
-    if (vGCal) vGCal.classList.remove('hidden');
-    if (bGCal) {
-      bGCal.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white flex items-center gap-2 transition shadow-xs cursor-pointer';
-    }
-    if (bStat) {
-      bStat.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center gap-2 transition cursor-pointer';
-    }
-  } else {
+  if (currentCalendarSubView === 'statement') {
     if (vGCal) vGCal.classList.add('hidden');
     if (vStat) vStat.classList.remove('hidden');
     if (bStat) {
-      bStat.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white flex items-center gap-2 transition shadow-xs cursor-pointer';
+      bStat.className = 'px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-nike-ink text-white flex items-center gap-2 transition active:scale-95 cursor-pointer shadow-none';
     }
     if (bGCal) {
-      bGCal.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-600 hover:text-slate-900 flex items-center gap-2 transition cursor-pointer';
+      bGCal.className = 'px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-neutral-200 flex items-center gap-2 transition active:scale-95 cursor-pointer';
     }
     renderCourtExpenseStatement();
+  } else {
+    if (vStat) vStat.classList.add('hidden');
+    if (vGCal) vGCal.classList.remove('hidden');
+    if (bGCal) {
+      bGCal.className = 'px-4 py-2 rounded-full text-xs sm:text-sm font-semibold bg-nike-ink text-white flex items-center gap-2 transition active:scale-95 cursor-pointer shadow-none';
+    }
+    if (bStat) {
+      bStat.className = 'px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-neutral-200 flex items-center gap-2 transition active:scale-95 cursor-pointer';
+    }
+    if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
+    if (typeof renderWeeklyScheduleView === 'function') renderWeeklyScheduleView();
   }
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
@@ -337,9 +342,7 @@ function updateCourtCalendarRoleVisibility() {
     if (navBar) navBar.classList.remove('hidden');
     if (headerTitle) headerTitle.innerText = 'ตารางซ้อม & สรุปค่าสนามรายเดือน (ส่งโรงเรียน)';
     if (headerSub) headerSub.innerText = 'เชื่อมต่อ Google Calendar • สรุปยอดค่าเช่าสนามฝึกซ้อมรายเดือน (ชม. ละ 500 บ.)';
-    if (!vGCal || vGCal.classList.contains('hidden')) {
-      setCalendarTabSubView('statement');
-    }
+    setCalendarTabSubView(currentCalendarSubView);
   } else {
     // Parents, students, public visitors
     if (printBtn) printBtn.classList.add('hidden');
@@ -348,6 +351,7 @@ function updateCourtCalendarRoleVisibility() {
     if (vGCal) vGCal.classList.remove('hidden');
     if (headerTitle) headerTitle.innerText = 'ตารางฝึกซ้อม & ปฏิทิน DBO Basketball Academy';
     if (headerSub) headerSub.innerText = 'ตารางคลาสฝึกซ้อมประจำสัปดาห์ & ปฏิทิน Google Calendar';
+    if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
     if (typeof renderWeeklyScheduleView === 'function') renderWeeklyScheduleView();
   }
   if (typeof lucide !== 'undefined') lucide.createIcons();

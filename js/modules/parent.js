@@ -42,8 +42,8 @@ function renderParentView(matchedList) {
       if (nameEl) nameEl.innerText = `${currentStaff.fullName} (${currentStaff.role})`;
     }
 
-    if (mPortalLabel) mPortalLabel.innerText = 'แผงโค้ช';
-    if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'shield-check');
+    if (mPortalLabel) mPortalLabel.innerText = 'หน้าหลัก';
+    if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'home');
 
     if (renewNav) renewNav.classList.add('hidden');
     if (renewMNav) renewMNav.classList.add('hidden');

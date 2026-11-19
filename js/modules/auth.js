@@ -272,6 +272,11 @@ function updateCoachStateUI() {
       if (asstDutyCard) asstDutyCard.classList.add('hidden');
     }
 
+    const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
+    const mPortalIcon = document.querySelector('#nav-m-parent-portal i');
+    if (mPortalLabel) mPortalLabel.innerText = 'หน้าหลัก';
+    if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'home');
+
     if (window.innerWidth < 768) {
       coachRosterViewMode = 'cards';
     }
@@ -279,10 +284,12 @@ function updateCoachStateUI() {
     if (typeof renderCoachRosterTable === 'function') renderCoachRosterTable();
     if (typeof renderPendingSlips === 'function') renderPendingSlips();
     if (typeof renderParentRegistrations === 'function') renderParentRegistrations();
+    if (typeof renderParentView === 'function') renderParentView();
   } else {
     if (coachTab) coachTab.classList.add('hidden');
     if (coachMTab) coachMTab.classList.add('hidden');
     if (staffCard) staffCard.classList.add('hidden');
+    if (typeof renderParentView === 'function') renderParentView();
   }
   lucide.createIcons();
 }

@@ -148,25 +148,34 @@ function renderCoachRosterTable() {
     const isSaturdayFilter = (currentCoachFilter === 'saturday');
     const rem = isSaturdayFilter ? (s.saturdayRemaining || 0) : (s.remaining || 0);
     
+    // Clean, non-redundant quota status pill (Expresses count + urgency in a single clear pill)
     let remBadge = '';
     if (isSaturdayFilter || s.courseType === 'saturday') {
       const satRem = s.saturdayRemaining || 0;
-      const colorCls = satRem > 1 ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : (satRem === 1 ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200 font-bold');
-      remBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold border ${colorCls} inline-block">${satRem} / 4 ครั้ง (เสาร์)</span>`;
+      const colorCls = satRem > 1 
+        ? 'bg-indigo-50 text-indigo-700 border-indigo-200' 
+        : (satRem === 1 ? 'bg-amber-50 text-amber-800 border-amber-300 font-bold' : 'bg-rose-50 text-rose-700 border-rose-300 font-bold');
+      const labelText = satRem <= 0 ? 'หมดสิทธิ์ (0/4 เสาร์)' : (satRem === 1 ? 'เหลือ 1 ครั้ง (เสาร์)' : `${satRem} / 4 ครั้ง (เสาร์)`);
+      remBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold border ${colorCls} inline-flex items-center gap-1">${labelText}</span>`;
     } else if (s.courseType === 'both') {
       const regRem = s.remaining || 0;
       const satRem = s.saturdayRemaining || 0;
-      const regColor = regRem > 1 ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : (regRem === 1 ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200 font-bold');
-      const satColor = satRem > 1 ? 'bg-indigo-50 text-indigo-800 border-indigo-200' : (satRem === 1 ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200 font-bold');
+      const regColor = regRem > 1 ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : (regRem === 1 ? 'bg-amber-50 text-amber-800 border-amber-300 font-bold' : 'bg-rose-50 text-rose-700 border-rose-300 font-bold');
+      const satColor = satRem > 1 ? 'bg-indigo-50 text-indigo-800 border-indigo-200' : (satRem === 1 ? 'bg-amber-50 text-amber-800 border-amber-300 font-bold' : 'bg-rose-50 text-rose-700 border-rose-300 font-bold');
+      const regText = regRem <= 0 ? 'ปกติ: หมด (0)' : (regRem === 1 ? 'ปกติ: เหลือ 1' : `ปกติ: ${regRem} ครั้ง`);
+      const satText = satRem <= 0 ? 'เสาร์: หมด (0)' : (satRem === 1 ? 'เสาร์: เหลือ 1' : `เสาร์: ${satRem} ครั้ง`);
       remBadge = `
-        <div class="flex flex-col gap-0.5 items-end">
-          <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold border ${regColor}">ปกติ: ${regRem} ครั้ง</span>
-          <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold border ${satColor}">เสาร์: ${satRem} ครั้ง</span>
+        <div class="flex items-center gap-1.5 flex-wrap justify-end">
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${regColor}">${regText}</span>
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border ${satColor}">${satText}</span>
         </div>
       `;
     } else {
-      const colorCls = rem > 3 ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : (rem >= 1 ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200 font-bold');
-      remBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold border ${colorCls} inline-block">${rem} ครั้ง</span>`;
+      const colorCls = rem > 3 
+        ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
+        : (rem >= 1 ? 'bg-amber-50 text-amber-800 border-amber-300 font-bold' : 'bg-rose-50 text-rose-700 border-rose-300 font-bold');
+      const labelText = rem <= 0 ? (rem === 0 ? 'หมดสิทธิ์ (0 ครั้ง)' : `เกินสิทธิ์ (${rem} ครั้ง)`) : (rem === 1 ? 'เหลือ 1 ครั้ง' : `${rem} ครั้ง`);
+      remBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold border ${colorCls} inline-flex items-center gap-1">${labelText}</span>`;
     }
 
     let typeBadge = '';
@@ -174,25 +183,6 @@ function renderCoachRosterTable() {
     else if (s.courseType === 'monthly') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">รายเดือน</span>`;
     else if (s.courseType === 'saturday') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">วันเสาร์ (4 ครั้ง)</span>`;
     else typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">ปกติ 10 ครั้ง</span>`;
-
-    // Alert badge for students with remaining <= 1 session or depleted
-    let urgentStatusBadge = '';
-    const checkRem = (s.courseType === 'saturday') ? (s.saturdayRemaining || 0) : (s.remaining || 0);
-    if (s.courseType === 'both') {
-      const reg = s.remaining || 0;
-      const sat = s.saturdayRemaining || 0;
-      if (reg <= 0 || sat <= 0) {
-        urgentStatusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300 inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>🚨 หมดแล้ว (${reg <= 0 ? 'ปกติ ' + reg : 'เสาร์ ' + sat})</span>`;
-      } else if (reg === 1 || sat === 1) {
-        urgentStatusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 inline-flex items-center gap-1">⚠️ เหลืออีก 1 ครั้ง</span>`;
-      }
-    } else {
-      if (checkRem <= 0) {
-        urgentStatusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300 inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>🚨 หมดแล้ว (${checkRem})</span>`;
-      } else if (checkRem === 1) {
-        urgentStatusBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 inline-flex items-center gap-1">⚠️ เหลืออีก 1 ครั้ง</span>`;
-      }
-    }
 
     // 1. Desktop Table
     if (tbody) {
@@ -215,7 +205,6 @@ function renderCoachRosterTable() {
         </td>
         <td class="py-2.5 px-3 text-center whitespace-nowrap">
           ${remBadge}
-          ${urgentStatusBadge ? `<div class="mt-1">${urgentStatusBadge}</div>` : ''}
         </td>
         <td class="py-2.5 px-3 text-center">
           <div class="inline-flex items-center gap-1">
@@ -233,41 +222,43 @@ function renderCoachRosterTable() {
       tbody.appendChild(tr);
     }
 
-    // 2. Mobile Cards (Nike Modern Container)
+    // 2. Mobile Cards (Clean, Spacious, Never Truncated, No Duplicate Notifications)
     if (cardsContainer) {
       const card = document.createElement('div');
-      card.className = "card-clean p-3 sm:p-3.5 rounded-[14px] border border-nike-hairlineSoft bg-white hover:border-black/30 transition-all";
+      card.className = "card-clean p-3.5 rounded-[14px] border border-nike-hairlineSoft bg-white hover:border-black/30 transition-all space-y-2.5";
 
       card.innerHTML = `
-        <div class="flex items-center justify-between gap-2.5">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <span class="w-8 h-8 rounded-full bg-nike-cloud text-nike-ink font-mono font-bold text-xs flex items-center justify-center flex-shrink-0 border border-nike-hairlineSoft">
+        <!-- Row 1: Student ID + Full Legible Name + Course Badge + Action Buttons -->
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-2 min-w-0 flex-wrap">
+            <span class="w-7 h-7 rounded-full bg-nike-cloud text-nike-ink font-mono font-bold text-xs flex items-center justify-center flex-shrink-0 border border-nike-hairlineSoft">
               #${s.id}
             </span>
-            <div class="min-w-0">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <h4 onclick="openEditStudentModal(${s.id})" class="font-bold text-nike-ink hover:underline text-sm leading-tight truncate cursor-pointer">น้อง ${s.name}</h4>
-                ${typeBadge}
-              </div>
-              <div class="flex items-center gap-2 pt-0.5 text-xs text-nike-mute">
-                ${s.phone ? `<span class="font-mono text-nike-mute flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3 text-nike-mute"></i> ${maskPhone(s.phone)}</span>` : `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
-              </div>
-            </div>
+            <h4 onclick="openEditStudentModal(${s.id})" class="font-bold text-nike-ink text-sm sm:text-base leading-snug cursor-pointer hover:underline">
+              น้อง ${s.name}
+            </h4>
+            ${typeBadge}
           </div>
 
-          <div class="flex items-center gap-2 flex-shrink-0">
-            <div class="text-right">
-              ${remBadge}
-              ${urgentStatusBadge ? `<div class="mt-0.5 text-right">${urgentStatusBadge}</div>` : ''}
-            </div>
-            <button type="button" onclick="openEditStudentModal(${s.id})" class="btn-touch px-3 py-1.5 rounded-full text-xs font-semibold bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft inline-flex items-center gap-1 transition-all active:scale-95 cursor-pointer" title="แก้ไขข้อมูล & ปรับสิทธิ์">
+          <div class="flex items-center gap-1.5 flex-shrink-0 pt-0.5">
+            <button type="button" onclick="openEditStudentModal(${s.id})" class="btn-touch px-2.5 py-1 rounded-full text-xs font-semibold bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft inline-flex items-center gap-1 transition-all active:scale-95 cursor-pointer" title="แก้ไขข้อมูล & ปรับสิทธิ์">
               <i data-lucide="edit-3" class="w-3.5 h-3.5 text-nike-ink"></i>
               <span>แก้ไข</span>
             </button>
             ${!isAsst ? `
-            <button type="button" onclick="coachDeleteStudent(${s.id})" title="ลบชื่อ" class="w-8 h-8 rounded-full text-neutral-400 hover:text-[#D30005] hover:bg-red-50 flex items-center justify-center transition-all active:scale-90 cursor-pointer">
+            <button type="button" onclick="coachDeleteStudent(${s.id})" title="ลบชื่อ" class="w-7 h-7 rounded-full text-neutral-400 hover:text-[#D30005] hover:bg-red-50 flex items-center justify-center transition-all active:scale-90 cursor-pointer">
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             </button>` : ''}
+          </div>
+        </div>
+
+        <!-- Row 2: Phone & Single Clear Quota Badge (Never Repetitive) -->
+        <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+          <div class="flex items-center gap-2 text-xs text-nike-mute min-w-0">
+            ${s.phone ? `<span class="font-mono text-nike-mute flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3 text-nike-mute"></i> ${maskPhone(s.phone)}</span>` : `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
+          </div>
+          <div class="flex-shrink-0">
+            ${remBadge}
           </div>
         </div>
       `;

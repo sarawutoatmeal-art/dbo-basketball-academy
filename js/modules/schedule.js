@@ -144,50 +144,134 @@ function saveWeeklyScheduleData() {
 
 let currentCalModalDateKey = '';
 let currentCalModalChoice = 'normal';
+let currentMasterCalYear = 2026;
+let currentMasterCalMonth = 11; // 1-12
+
+function stepMasterCalendarMonth(step) {
+  currentMasterCalMonth += step;
+  if (currentMasterCalMonth > 12) {
+    currentMasterCalMonth = 1;
+    currentMasterCalYear += 1;
+  } else if (currentMasterCalMonth < 1) {
+    currentMasterCalMonth = 12;
+    currentMasterCalYear -= 1;
+  }
+  renderMasterCalendarGrid();
+}
+
+function jumpToCurrentMasterCalendarMonth() {
+  const now = new Date();
+  currentMasterCalYear = now.getFullYear();
+  currentMasterCalMonth = now.getMonth() + 1;
+  renderMasterCalendarGrid();
+}
+
+async function syncGoogleCalendarData() {
+  const icon = document.getElementById('iconSyncGCal');
+  const btn = document.getElementById('btnSyncGCal');
+  if (btn) btn.disabled = true;
+  if (icon) icon.classList.add('animate-spin');
+
+  try {
+    if (typeof pullStateFromCloudApi === 'function') {
+      await pullStateFromCloudApi();
+    }
+  } catch (err) {
+    console.error('Error syncing Google Calendar state:', err);
+  } finally {
+    renderMasterCalendarGrid();
+    if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
+    if (typeof showToast === 'function') showToast('🔄 ซิงค์ข้อมูลกับ Google Calendar เรียบร้อย');
+    setTimeout(() => {
+      const activeIcon = document.getElementById('iconSyncGCal');
+      if (activeIcon) activeIcon.classList.remove('animate-spin');
+      if (btn) btn.disabled = false;
+    }, 600);
+  }
+}
 
 function renderMasterCalendarGrid() {
   const grid = document.getElementById('masterCalendarGrid');
   if (!grid) return;
   grid.innerHTML = '';
-  const totalDays = 30;
-  const startDayOfWeek = 0; // Sun
 
+  const labelEl = document.getElementById('calCurrentMonthLabel');
+  const monthNames = (typeof THAI_MONTHS_NAMES !== 'undefined') ? THAI_MONTHS_NAMES : [
+    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+  ];
+  if (labelEl) {
+    labelEl.innerText = `${monthNames[currentMasterCalMonth - 1]} ${currentMasterCalYear + 543}`;
+  }
+
+  const totalDays = new Date(currentMasterCalYear, currentMasterCalMonth, 0).getDate();
+  const firstDayDateObj = new Date(currentMasterCalYear, currentMasterCalMonth - 1, 1);
+  const startDayOfWeek = firstDayDateObj.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+
+  // Check today's date
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  // 1. Render empty filler cells for days before the 1st
+  for (let i = 0; i < startDayOfWeek; i++) {
+    const filler = document.createElement('div');
+    filler.className = 'p-1 sm:p-2 rounded-xl bg-nike-cloud/30 border border-transparent min-h-[58px] sm:min-h-[72px] opacity-40 select-none';
+    grid.appendChild(filler);
+  }
+
+  // 2. Render each day of the month
   for (let day = 1; day <= totalDays; day++) {
-    const dayOfWeek = (startDayOfWeek + (day - 1)) % 7; 
-    const isNormalClass = (dayOfWeek === 1 || dayOfWeek === 2 || dayOfWeek === 4);
-    const isSaturdayCoachOat = (dayOfWeek === 6);
-    const dateKey = `2026-11-${String(day).padStart(2, '0')}`;
+    const dayOfWeek = (startDayOfWeek + (day - 1)) % 7;
+    const isNormalClass = (dayOfWeek === 1 || dayOfWeek === 2 || dayOfWeek === 4); // Mon, Tue, Thu
+    const isSaturdayCoachOat = (dayOfWeek === 6); // Sat
+    const dateKey = `${currentMasterCalYear}-${String(currentMasterCalMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const isToday = (dateKey === todayKey);
+
     const override = (typeof calendarDayOverrides !== 'undefined' && calendarDayOverrides[dateKey]) ? calendarDayOverrides[dateKey] : null;
     const isCanceled = (override && override.status === 'canceled');
     const isConfirmedNormal = (override && override.status === 'normal');
+    const isCustomSpecial = (override && override.isCustom);
 
-    let cellClass = 'bg-white border-slate-100 text-slate-400';
+    let cellClass = 'bg-white border-nike-hairlineSoft text-nike-mute hover:border-black/30';
     let badge = '';
     let dotHtml = '';
 
     if (isCanceled) {
-      cellClass = 'bg-rose-50/90 border-rose-300 text-rose-950 hover:bg-rose-100 shadow-2xs';
-      badge = `<span class="text-[9px] font-bold text-rose-700 bg-rose-100 px-1 py-0.5 rounded text-center truncate border border-rose-200">🚫 งดคลาส</span>`;
+      cellClass = 'bg-rose-50/80 border-rose-300 text-rose-950 hover:bg-rose-100 shadow-2xs';
+      badge = `<span class="text-[8px] sm:text-[10px] font-bold text-rose-700 bg-rose-100/90 px-1 py-0.5 rounded-full text-center whitespace-nowrap border border-rose-200 block"><span class="hidden sm:inline">🚫 งดคลาส</span><span class="sm:hidden">🚫 งด</span></span>`;
       dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>';
+    } else if (isCustomSpecial) {
+      cellClass = 'bg-purple-50/80 border-purple-200 text-purple-950 hover:bg-purple-100/60';
+      badge = `<span class="text-[8px] sm:text-[10px] font-bold text-purple-700 bg-purple-100/80 px-1 py-0.5 rounded-full text-center whitespace-nowrap block"><span class="hidden sm:inline">⭐ ${override.topic || 'ไพรเวท'}</span><span class="sm:hidden">⭐ พิเศษ</span></span>`;
+      dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-purple-600"></span>';
     } else if (isSaturdayCoachOat) {
       cellClass = 'bg-indigo-50/80 border-indigo-200 text-indigo-950 hover:bg-indigo-100/60';
-      badge = `<span class="text-[9px] font-bold text-indigo-700 bg-indigo-100/80 px-1 py-0.5 rounded text-center truncate">16:00</span>`;
+      badge = `<span class="text-[8px] sm:text-[10px] font-bold text-indigo-700 bg-indigo-100/80 px-1 py-0.5 rounded-full text-center whitespace-nowrap block"><span class="hidden sm:inline">16:00 เสาร์</span><span class="sm:hidden">16:00</span></span>`;
       dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>';
     } else if (isNormalClass || isConfirmedNormal) {
       cellClass = 'bg-amber-50/70 border-amber-200 text-amber-950 hover:bg-amber-100/60';
-      badge = `<span class="text-[9px] font-bold text-amber-800 bg-amber-100/80 px-1 py-0.5 rounded text-center truncate">17:30</span>`;
+      badge = `<span class="text-[8px] sm:text-[10px] font-bold text-amber-800 bg-amber-100/80 px-1 py-0.5 rounded-full text-center whitespace-nowrap block"><span class="hidden sm:inline">17:30 ปกติ</span><span class="sm:hidden">17:30</span></span>`;
       dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>';
+    } else {
+      cellClass = 'bg-white border-nike-hairlineSoft text-neutral-400 hover:bg-neutral-50';
+    }
+
+    if (isToday) {
+      cellClass += ' ring-2 ring-black font-extrabold';
     }
 
     const cell = document.createElement('div');
-    cell.className = `p-1 sm:p-2 rounded-xl border min-h-[50px] sm:min-h-[64px] flex flex-col justify-between transition-all cursor-pointer ${cellClass}`;
+    cell.className = `p-1 sm:p-2 rounded-xl border min-h-[58px] sm:min-h-[72px] flex flex-col justify-between transition-all cursor-pointer select-none active:scale-95 ${cellClass}`;
 
     cell.innerHTML = `
       <div class="flex items-center justify-between">
-        <span class="text-xs font-bold font-mono ${isCanceled ? 'text-rose-700 font-extrabold' : (isSaturdayCoachOat ? 'text-indigo-700' : (isNormalClass || isConfirmedNormal ? 'text-amber-900' : 'text-slate-400'))}">${day}</span>
-        ${dotHtml}
+        <span class="text-xs sm:text-sm font-mono font-bold ${isToday ? 'text-black font-black underline' : (isCanceled ? 'text-rose-700' : (isSaturdayCoachOat ? 'text-indigo-700' : (isNormalClass ? 'text-amber-900' : 'text-neutral-500')))}">${day}</span>
+        <div class="flex items-center gap-1">
+          ${isToday ? '<span class="hidden sm:inline text-[9px] font-bold bg-black text-white px-1 py-0.5 rounded-sm">วันนี้</span><span class="sm:hidden w-1.5 h-1.5 rounded-full bg-black flex-shrink-0" title="วันนี้"></span>' : ''}
+          ${dotHtml}
+        </div>
       </div>
-      <div class="mt-1 flex justify-center">${badge}</div>
+      <div class="mt-1 flex justify-center w-full">${badge}</div>
     `;
 
     cell.onclick = () => {
@@ -196,12 +280,13 @@ function renderMasterCalendarGrid() {
 
     grid.appendChild(cell);
   }
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function openCalendarDayModal(day, dayOfWeek, isSat, isNormal, dateKey) {
   const modal = document.getElementById('calendarDayModal');
   if (!modal) return;
-  const dKey = dateKey || `2026-11-${String(day).padStart(2, '0')}`;
+  const dKey = dateKey || `${currentMasterCalYear}-${String(currentMasterCalMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   currentCalModalDateKey = dKey;
 
   const dot = document.getElementById('calModalDayDot');
@@ -217,7 +302,15 @@ function openCalendarDayModal(day, dayOfWeek, isSat, isNormal, dateKey) {
 
   const dayNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
   const dayName = dayNames[dayOfWeek] || '';
-  title.innerText = `วัน${dayName}ที่ ${day} พ.ย. 2569`;
+  const monthNames = (typeof THAI_MONTHS_NAMES !== 'undefined') ? THAI_MONTHS_NAMES : [
+    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+  ];
+  const parts = dKey.split('-');
+  const y = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10);
+  const d = parseInt(parts[2], 10);
+  title.innerText = `วัน${dayName}ที่ ${d} ${monthNames[m - 1]} ${y + 543}`;
 
   const override = (typeof calendarDayOverrides !== 'undefined' && calendarDayOverrides[dKey]) ? calendarDayOverrides[dKey] : null;
   const isCanceled = (override && override.status === 'canceled');
@@ -348,7 +441,9 @@ function saveCalModalClassOverride() {
 
   showToast(`บันทึกสถานะคลาสวันที่ ${currentCalModalDateKey} เรียบร้อย (${status === 'canceled' ? 'งดคลาส' : 'มีคลาสปกติ'})`);
   renderMasterCalendarGrid();
+  if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
   if (typeof renderParentView === 'function') renderParentView();
+  if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
   closeCalendarDayModal();
 }
 

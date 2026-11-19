@@ -44,11 +44,7 @@ function switchTab(tabName) {
 }
 
 function handlePortalTabClick() {
-  if (isCoachAuth && currentStaff) {
-    switchTab('coach-roster');
-  } else {
-    switchTab('parent-portal');
-  }
+  switchTab('parent-portal');
 }
 
 // Global View Refresh Helper
@@ -67,6 +63,8 @@ function refreshAllViews() {
   }
   if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
   if (typeof updateCourtCalendarRoleVisibility === 'function') updateCourtCalendarRoleVisibility();
+  if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
+  if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
   if (typeof updateInstallButtonVisibility === 'function') updateInstallButtonVisibility();
   lucide.createIcons();
 }
@@ -199,6 +197,8 @@ window.addEventListener('DOMContentLoaded', () => {
   if (typeof renderTeachingRecordsList === 'function') renderTeachingRecordsList();
   if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
   if (typeof updateCourtCalendarRoleVisibility === 'function') updateCourtCalendarRoleVisibility();
+  if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
+  if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
   if (typeof updateInstallButtonVisibility === 'function') updateInstallButtonVisibility();
   lucide.createIcons();
 
