@@ -289,6 +289,8 @@ function coachCheckInAction(studentId, delta, target = 'regular') {
     student.remaining = (student.remaining || 0) + delta;
   }
   student._updatedAt = Date.now();
+  student._lastCoachActionAt = Date.now();
+  student._isCoachAuthoritative = true;
 
   if (!student.checkInHistory) student.checkInHistory = [];
   student.checkInHistory.unshift({
@@ -393,6 +395,8 @@ function coachAdjustQuota(studentId, delta, target = 'regular') {
   });
 
   student._updatedAt = Date.now();
+  student._lastCoachActionAt = Date.now();
+  student._isCoachAuthoritative = true;
   const newQuota = target === 'saturday' ? student.saturdayRemaining : student.remaining;
   saveState(true, `ปรับโควตาน้อง ${student.name} (เหลือ ${newQuota} ครั้ง)`);
   renderCoachRosterTable();
@@ -641,6 +645,8 @@ function handleSaveStudent(e) {
         student.nextRenewal = `วันที่ ${parts[2]} ของเดือนถัดไป`;
       }
       student._updatedAt = Date.now();
+  student._lastCoachActionAt = Date.now();
+  student._isCoachAuthoritative = true;
     }
     showToast(`บันทึกการแก้ไขข้อมูลน้อง ${name} เรียบร้อย`);
   } else {

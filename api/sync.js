@@ -94,11 +94,20 @@ function mergeStates(existing, incoming) {
     if (!cur) {
       studentMap.set(key, inc);
     } else {
+      let curAction = cur._lastCoachActionAt || 0;
+      let incAction = inc._lastCoachActionAt || 0;
       let incTime = inc._updatedAt || 0;
       let curTime = cur._updatedAt || 0;
       if (curTime > nowTs + 5000) curTime = nowTs - 10000;
-      if (incTime >= curTime) {
+
+      if (curAction > 0 && incAction < curAction) {
+        // Existing coach action is authoritative! Do not overwrite quota
+        if (inc.phone && !cur.phone) cur.phone = inc.phone;
+        studentMap.set(key, cur);
+      } else if (incAction > curAction || (curAction === 0 && incTime >= curTime)) {
         studentMap.set(key, inc);
+      } else {
+        if (inc.phone && !cur.phone) cur.phone = inc.phone;
       }
     }
   });

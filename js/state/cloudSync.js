@@ -244,13 +244,22 @@ function applyIncomingState(incomingData, actionDesc = '') {
         studentMap.set(sid, inc);
         hasChanges = true;
       } else {
+        let existingActionTs = existing._lastCoachActionAt || 0;
+        let incActionTs = inc._lastCoachActionAt || 0;
         let existingTs = existing._updatedAt || 0;
         let incTs = inc._updatedAt || 0;
         const now = Date.now();
         if (existingTs > now + 5000) existingTs = now - 10000;
         if (incTs > now + 5000) incTs = now - 10000;
 
-        if (incTs > existingTs) {
+        // If local student has coach action and incoming does NOT or has older action:
+        // KEEP LOCAL REMAINING QUOTA SAFE!
+        if (existingActionTs > 0 && incActionTs < existingActionTs) {
+          if (inc.phone && !existing.phone) {
+            existing.phone = inc.phone;
+            hasChanges = true;
+          }
+        } else if (incActionTs > existingActionTs || (existingActionTs === 0 && incTs > existingTs)) {
           studentMap.set(sid, {
             ...existing,
             ...inc,

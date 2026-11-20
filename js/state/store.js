@@ -49,6 +49,56 @@ if (!students) {
   localStorage.setItem('dbo_students_v14', JSON.stringify(students));
 }
 
+// Authoritative Quota Reconciliation (Nov 20, 2026):
+// Ensure the coach's latest adjusted quotas for #8, #9, #10, #11, #14 and Mateo #55 are authoritative
+// and protect all student remaining counts from ever being reverted.
+const QUOTA_RECONCILIATION_KEY = 'dbo_quota_verified_nov20_v1';
+if (!localStorage.getItem(QUOTA_RECONCILIATION_KEY)) {
+  const verifiedMap = new Map();
+  initialRawData.forEach(r => verifiedMap.set(r.id, r));
+
+  students.forEach(st => {
+    const raw = verifiedMap.get(st.id);
+    if (raw) {
+      // Reconcile students whose remaining was stuck on the old baseline seed
+      if (st.id === 8 && (st.remaining === 7 || st.remaining === 8)) st.remaining = 6;
+      if (st.id === 9 && st.remaining === 1) st.remaining = 0;
+      if (st.id === 10 && st.remaining === 5) st.remaining = 3;
+      if (st.id === 11 && st.remaining === 8) st.remaining = 7;
+      if (st.id === 14 && (st.remaining === 0 || st.remaining === 2)) st.remaining = -1;
+
+      // Make sure courseType and name match
+      st.name = raw.name;
+      st.courseType = raw.courseType;
+      if (raw.phone && !st.phone) st.phone = raw.phone;
+    }
+  });
+
+  // Ensure Mateo #55 exists
+  if (!students.some(s => s.id === 55)) {
+    const raw55 = initialRawData.find(r => r.id === 55);
+    if (raw55) {
+      students.push({
+        ...raw55,
+        parentName: '',
+        parentRelation: '',
+        remarkOat: '',
+        remarkOak: '',
+        vJump: null,
+        vJumpHistory: [],
+        longJump: null,
+        longJumpHistory: [],
+        checkInHistory: [],
+        _updatedAt: Date.now()
+      });
+    }
+  }
+
+  students.sort((a, b) => Number(a.id) - Number(b.id));
+  localStorage.setItem('dbo_students_v14', JSON.stringify(students));
+  localStorage.setItem(QUOTA_RECONCILIATION_KEY, 'true');
+}
+
 // Ensure student timestamps are normalized to real time so new coach edits are strictly authoritative
 const nowBaseline = Date.now();
 let hasTsAdjusted = false;
@@ -72,7 +122,6 @@ if (!localStorage.getItem('dbo_metrics_reset_v2')) {
     s.longJump = null;
     s.longJumpHistory = [];
     s.isRealSportsMetrics = false;
-    s._updatedAt = Date.now();
   });
   localStorage.setItem('dbo_students_v14', JSON.stringify(students));
   localStorage.setItem('dbo_metrics_reset_v2', 'true');

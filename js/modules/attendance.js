@@ -835,6 +835,8 @@ async function saveTeachingRecordFromModal() {
           if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) + 1;
           else st.remaining = (st.remaining || 0) + 1;
           st._updatedAt = nowTs;
+          st._lastCoachActionAt = nowTs;
+          st._isCoachAuthoritative = true;
           syncSharedSiblingQuota(st, targetField);
         }
       }
@@ -847,6 +849,8 @@ async function saveTeachingRecordFromModal() {
           if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) - 1;
           else st.remaining = (st.remaining || 0) - 1;
           st._updatedAt = nowTs;
+          st._lastCoachActionAt = nowTs;
+          st._isCoachAuthoritative = true;
           syncSharedSiblingQuota(st, targetField);
         }
       }
@@ -868,6 +872,8 @@ async function saveTeachingRecordFromModal() {
         if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) - 1;
         else st.remaining = (st.remaining || 0) - 1;
         st._updatedAt = nowTs;
+        st._lastCoachActionAt = nowTs;
+        st._isCoachAuthoritative = true;
         syncSharedSiblingQuota(st, targetField);
       }
     });
