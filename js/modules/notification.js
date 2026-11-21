@@ -751,6 +751,27 @@ function runClassNotificationScheduler() {
     }
   }
 
+  // ========================================================
+  // 1.5 MONTHLY COURSE CUTOFF RENEWAL ALERT (แจ้งเตือนเมื่อถึงวันตัดรอบรายเดือน)
+  // ========================================================
+  if (loggedInStudent && loggedInStudent.courseType === 'monthly' && typeof getMonthlyCycleStatus === 'function') {
+    const mStatus = getMonthlyCycleStatus(loggedInStudent, todayKey);
+    if (mStatus.isDue) {
+      const monthlyAlertKey = `dbo_monthly_cutoff_alert_${loggedInStudent.id}_${mStatus.cutoffDateStr}`;
+      if (!localStorage.getItem(monthlyAlertKey)) {
+        localStorage.setItem(monthlyAlertKey, 'true');
+        const mTitle = '🔔 ครบกำหนดวันตัดรอบคอร์สรายเดือน DBO';
+        const mBody = `แจ้งเตือนผู้ปกครองน้อง ${loggedInStudent.name}: ครบกำหนดตัดรอบรายเดือนวันที่ ${mStatus.cutoffThaiFull} แล้ว กรุณาสมัคร/ต่อคอร์สรายเดือนรอบใหม่ครับ`;
+        sendSystemLockscreenNotification({
+          title: mTitle,
+          subtitle: 'from DBO Academy',
+          body: mBody,
+          tag: `monthly-cutoff-${loggedInStudent.id}-${mStatus.cutoffDateStr}`
+        });
+      }
+    }
+  }
+
   // If today is canceled or not a class day, skip 30m / 15m countdowns
   if (isCanceledToday || !isClassDay) return;
 

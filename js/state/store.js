@@ -8,95 +8,107 @@ let assistantCoaches = JSON.parse(localStorage.getItem('dbo_assistant_coaches_v1
 let calendarDayOverrides = JSON.parse(localStorage.getItem('dbo_calendar_overrides_v1')) || {};
 let coachRosterViewMode = (window.innerWidth < 768) ? 'cards' : (localStorage.getItem('dbo_roster_view_mode_v2') || 'cards');
 
+// Cross-Device Cloud Sync Metadata & Submit Tracking
+let deletedStudentIds = JSON.parse(localStorage.getItem('dbo_deleted_students_v16')) || {};
+if (typeof defaultDeletedStudentIds !== 'undefined' && defaultDeletedStudentIds) {
+  Object.keys(defaultDeletedStudentIds).forEach(k => {
+    if (!deletedStudentIds[k]) deletedStudentIds[k] = defaultDeletedStudentIds[k];
+  });
+  localStorage.setItem('dbo_deleted_students_v16', JSON.stringify(deletedStudentIds));
+}
+let processedSlipIds = JSON.parse(localStorage.getItem('dbo_processed_slips_v16')) || {};
+let lastSubmittedAt = parseInt(localStorage.getItem('dbo_last_submitted_at_v16') || '0', 10);
+let lastSubmittedBy = localStorage.getItem('dbo_last_submitted_by_v16') || '';
+let pendingSessionChanges = 0;
+
 let students = JSON.parse(localStorage.getItem('dbo_students_v14')) || null;
 if (!students) {
   students = initialRawData.map(s => ({
     ...s,
-    phone: s.id === 1 ? '081-234-5678' : '',
-    parentName: s.id === 1 ? 'ผู้ปกครองน้องอิฐ (บัญชีทดสอบ)' : '',
-    parentRelation: s.id === 1 ? 'บิดา/มารดา' : '',
+    phone: s.phone || '',
+    parentName: '',
+    parentRelation: '',
+    nextRenewal: s.courseType === 'monthly' ? calculateMonthlyNextRenewal(s.startDate) : '-',
     remarkOat: '',
     remarkOak: '',
     vJump: null,
     vJumpHistory: [],
     longJump: null,
-    longJumpHistory: []
+    longJumpHistory: [],
+    checkInHistory: s.checkInHistory || []
   }));
-  syncSiblingState(students);
-  localStorage.setItem('dbo_students_v14', JSON.stringify(students));
-} else {
-  // Fix student names in local state to match factual updates (อินธัช & ธาวิน)
-  const st44 = students.find(s => s.id === 44);
-  if (st44) st44.name = 'อินธัช';
-  const st45 = students.find(s => s.id === 45);
-  if (st45 && (st45.name === 'นาวิน' || st45.name === 'ธาวิน')) st45.name = 'ธาวิน';
-  const st10 = students.find(s => s.id === 10);
-  if (st10) st10.name = 'ไวล์แฟรงค์';
-  const st15 = students.find(s => s.id === 15);
-  if (st15 && (st15.name === 'ฮาร์เด้น' || st15.name === 'ฮาเด้น')) st15.name = 'ฮาเด้น';
-
-  students.forEach(s => {
-    if (s.id === 1 && !s.phone) {
-      s.phone = '081-234-5678';
-      s.parentName = 'ผู้ปกครองน้องอิฐ (บัญชีทดสอบ)';
-    } else if (s.phone && s.id !== 1 && (s.phone.startsWith('08000000') || s.phone === '0898765432')) {
-      s.phone = '';
-    }
-    if (s.remaining === undefined) s.remaining = 0;
-    if (s.saturdayRemaining === undefined) s.saturdayRemaining = 0;
-  });
   syncSiblingState(students);
   localStorage.setItem('dbo_students_v14', JSON.stringify(students));
 }
 
-// Authoritative Quota Reconciliation (Nov 20, 2026):
-// Ensure the coach's latest adjusted quotas for #8, #9, #10, #11, #14 and Mateo #55 are authoritative
-// and protect all student remaining counts from ever being reverted.
-const QUOTA_RECONCILIATION_KEY = 'dbo_quota_verified_nov20_v1';
-if (!localStorage.getItem(QUOTA_RECONCILIATION_KEY)) {
+// One-time Authoritative Collision Recovery (Nov 20, 2026 v2):
+// Restores exact quotas reconciled across all 7 teaching records (Nov 3, 5, 12, 13, 16, 17, 19) & Nov 20 renewals,
+// clears cutoff dates (nextRenewal: '-') for all non-monthly courses, and removes the 13 deleted students.
+const COLLISION_RECOVERY_KEY = 'dbo_collision_reconciled_nov20_v2';
+if (!localStorage.getItem(COLLISION_RECOVERY_KEY)) {
   const verifiedMap = new Map();
-  initialRawData.forEach(r => verifiedMap.set(r.id, r));
+  initialRawData.forEach(r => verifiedMap.set(Number(r.id), r));
+
+  // Filter out deleted student IDs
+  students = students.filter(st => st && !deletedStudentIds[String(st.id)]);
 
   students.forEach(st => {
-    const raw = verifiedMap.get(st.id);
+    const raw = verifiedMap.get(Number(st.id));
     if (raw) {
-      // Reconcile students whose remaining was stuck on the old baseline seed
-      if (st.id === 8 && (st.remaining === 7 || st.remaining === 8)) st.remaining = 6;
-      if (st.id === 9 && st.remaining === 1) st.remaining = 0;
-      if (st.id === 10 && st.remaining === 5) st.remaining = 3;
-      if (st.id === 11 && st.remaining === 8) st.remaining = 7;
-      if (st.id === 14 && (st.remaining === 0 || st.remaining === 2)) st.remaining = -1;
-
-      // Make sure courseType and name match
       st.name = raw.name;
-      st.courseType = raw.courseType;
+      st.remaining = raw.remaining;
+      st.saturdayRemaining = raw.saturdayRemaining;
       if (raw.phone && !st.phone) st.phone = raw.phone;
+      if (!st.checkInHistory || st.checkInHistory.length === 0) {
+        st.checkInHistory = raw.checkInHistory || [];
+      }
+      // Enforce rule: only monthly courses have a cutoff date; per-session/saturday have NO cutoff date ('-')
+      if (st.courseType === 'monthly') {
+        st.nextRenewal = (st.nextRenewal && /^\d{4}-\d{2}-\d{2}$/.test(st.nextRenewal))
+          ? st.nextRenewal
+          : calculateMonthlyNextRenewal(st.startDate);
+      } else {
+        st.nextRenewal = '-';
+      }
     }
   });
 
-  // Ensure Mateo #55 exists
-  if (!students.some(s => s.id === 55)) {
-    const raw55 = initialRawData.find(r => r.id === 55);
-    if (raw55) {
+  // Ensure all 44 active students (including #55 มาเตโอ, #56 น้องจามิน, #57 นี๊บ) exist
+  initialRawData.forEach(raw => {
+    if (!deletedStudentIds[String(raw.id)] && !students.some(s => Number(s.id) === Number(raw.id))) {
       students.push({
-        ...raw55,
+        ...raw,
         parentName: '',
         parentRelation: '',
+        nextRenewal: raw.courseType === 'monthly' ? calculateMonthlyNextRenewal(raw.startDate) : '-',
         remarkOat: '',
         remarkOak: '',
         vJump: null,
         vJumpHistory: [],
         longJump: null,
         longJumpHistory: [],
-        checkInHistory: [],
+        checkInHistory: raw.checkInHistory || [],
         _updatedAt: Date.now()
       });
     }
-  }
+  });
 
   students.sort((a, b) => Number(a.id) - Number(b.id));
+  syncSiblingState(students);
   localStorage.setItem('dbo_students_v14', JSON.stringify(students));
-  localStorage.setItem(QUOTA_RECONCILIATION_KEY, 'true');
+  localStorage.setItem(COLLISION_RECOVERY_KEY, 'true');
+} else {
+  // Always ensure non-monthly students have nextRenewal: '-' and deleted students are filtered out
+  students = students.filter(st => st && !deletedStudentIds[String(st.id)]);
+  students.forEach(st => {
+    if (st.courseType === 'monthly') {
+      if (!st.nextRenewal || !/^\d{4}-\d{2}-\d{2}$/.test(st.nextRenewal)) {
+        st.nextRenewal = calculateMonthlyNextRenewal(st.startDate);
+      }
+    } else {
+      st.nextRenewal = '-';
+    }
+  });
 }
 
 // Ensure student timestamps are normalized to real time so new coach edits are strictly authoritative
@@ -157,60 +169,32 @@ let parentRegistrations = JSON.parse(localStorage.getItem('dbo_parent_registrati
 
 // Daily Attendance Registry
 let dailyAttendance = JSON.parse(localStorage.getItem('dbo_daily_attendance_v14')) || {};
+if (typeof defaultSeededDailyAttendance !== 'undefined' && defaultSeededDailyAttendance) {
+  Object.keys(defaultSeededDailyAttendance).forEach(dk => {
+    if (!dailyAttendance[dk]) {
+      dailyAttendance[dk] = defaultSeededDailyAttendance[dk];
+    }
+  });
+  localStorage.setItem('dbo_daily_attendance_v14', JSON.stringify(dailyAttendance));
+}
 
-// Teaching & Attendance Records (DBO Academy Style)
-let teachingRecords = JSON.parse(localStorage.getItem('dbo_teaching_records_v19')) || [
-  {
-    id: 'rec_20261105_1700',
-    date: '2026-11-05',
-    slot: 'คลาสปกติ 17:30 - 19:30 น.',
-    coach: 'โค้ชโอ๊ต (Head Coach)',
-    topic: 'ฝึกซ้อม Shooting Form, Footwork & Fast Break 3v3',
-    attendingCount: 14,
-    leaveCount: 22,
-    attendingStudents: [
-      { id: 6, name: 'ไทม์' }, { id: 7, name: 'พัช' }, { id: 8, name: 'แอร์บัส' },
-      { id: 10, name: 'ไวล์แฟรงค์' }, { id: 17, name: 'ชาลี' }, { id: 18, name: 'พีต้า' },
-      { id: 24, name: 'แอร์เมส' }, { id: 27, name: 'มาตังค์' }, { id: 39, name: 'Nada' },
-      { id: 40, name: 'August' }, { id: 44, name: 'อินธัช' }, { id: 46, name: 'ธีร์' },
-      { id: 47, name: 'มังกร' }, { id: 50, name: 'ณฌา' }
-    ],
-    leaveStudents: [
-      { id: 1, name: 'อิฐ' }, { id: 2, name: 'ซับ' }, { id: 3, name: 'ขุนศึก' },
-      { id: 4, name: 'ต้นบุญ' }, { id: 5, name: 'ต้นพุด' }, { id: 9, name: 'วินแฟลค' }
-    ],
-    createdAt: 1793876400000,
-    updatedAt: 1793876400000
-  },
-  {
-    id: 'rec_20261103_1700',
-    date: '2026-11-03',
-    slot: 'คลาสปกติ 17:30 - 19:30 น.',
-    coach: 'โค้ชโอ๊ค',
-    topic: 'การเลี้ยงบอล Hand Switching, Layup ทรงตัว และ Defense Shuffling',
-    attendingCount: 16,
-    leaveCount: 20,
-    attendingStudents: [
-      { id: 2, name: 'ซับ' }, { id: 8, name: 'แอร์บัส' }, { id: 10, name: 'ไวล์แฟรงค์' },
-      { id: 17, name: 'ชาลี' }, { id: 20, name: 'แอนฟิลด์' }, { id: 24, name: 'แอร์เมส' },
-      { id: 27, name: 'มาตังค์' }, { id: 37, name: 'Phupa' }, { id: 42, name: 'L J' },
-      { id: 47, name: 'มังกร' }, { id: 48, name: 'T J' }
-    ],
-    leaveStudents: [
-      { id: 1, name: 'อิฐ' }, { id: 3, name: 'ขุนศึก' }, { id: 4, name: 'ต้นบุญ' },
-      { id: 5, name: 'ต้นพุด' }, { id: 6, name: 'ไทม์' }, { id: 7, name: 'พัช' }
-    ],
-    createdAt: 1793703600000,
-    updatedAt: 1793703600000
-  }
-];
-
-// Cross-Device Cloud Sync Metadata & Submit Tracking
-let deletedStudentIds = JSON.parse(localStorage.getItem('dbo_deleted_students_v16')) || {};
-let processedSlipIds = JSON.parse(localStorage.getItem('dbo_processed_slips_v16')) || {};
-let lastSubmittedAt = parseInt(localStorage.getItem('dbo_last_submitted_at_v16') || '0', 10);
-let lastSubmittedBy = localStorage.getItem('dbo_last_submitted_by_v16') || '';
-let pendingSessionChanges = 0;
+// Teaching & Attendance Records (DBO Academy Style - All 7 Reconciled Records)
+let teachingRecords = JSON.parse(localStorage.getItem('dbo_teaching_records_v19')) || [];
+if (typeof defaultSeededTeachingRecords !== 'undefined' && Array.isArray(defaultSeededTeachingRecords)) {
+  const existingRecMap = new Map();
+  teachingRecords.forEach(r => { if (r && r.id) existingRecMap.set(r.id, r); });
+  defaultSeededTeachingRecords.forEach(seedRec => {
+    if (seedRec && seedRec.id) {
+      // Repair any mojibake or missing records
+      const ex = existingRecMap.get(seedRec.id);
+      if (!ex || (ex.coach && ex.coach.includes('?')) || !ex.slot) {
+        existingRecMap.set(seedRec.id, seedRec);
+      }
+    }
+  });
+  teachingRecords = Array.from(existingRecMap.values()).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  localStorage.setItem('dbo_teaching_records_v19', JSON.stringify(teachingRecords));
+}
 
 // Export Data to CSV
 function exportDataToCSV() {

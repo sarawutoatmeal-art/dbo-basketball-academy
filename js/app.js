@@ -130,29 +130,16 @@ if ('serviceWorker' in navigator) {
 
 // Application Bootstrap
 window.addEventListener('DOMContentLoaded', () => {
-  // Clear legacy storage versions to reset mock metrics and guarantee pure factual data
-  if (localStorage.getItem('dbo_app_version') !== APP_VERSION) {
-    localStorage.removeItem('dbo_students_v8');
-    localStorage.removeItem('dbo_students_v9');
-    localStorage.removeItem('dbo_students_v10');
-    localStorage.removeItem('dbo_students_v11');
-    localStorage.removeItem('dbo_students_v12');
-    localStorage.removeItem('dbo_students_v13');
-    localStorage.removeItem('dbo_students_v14');
-    localStorage.removeItem('dbo_parent_logged_v14');
-    localStorage.removeItem('dbo_roster_view_mode');
-    localStorage.setItem('dbo_roster_view_mode_v2', 'cards');
-    localStorage.setItem('dbo_app_version', APP_VERSION);
-  }
+  // Never delete dbo_students_v14 or auto-broadcast saveState on passive page load!
+  localStorage.setItem('dbo_app_version', APP_VERSION);
 
-  // Sync clean state to cloud
-  if (!localStorage.getItem('dbo_synced_clean_metrics_v20')) {
-    localStorage.setItem('dbo_synced_clean_metrics_v20', 'true');
-    setTimeout(() => {
-      if (typeof saveState === 'function') {
-        saveState(true, 'รีเซ็ตข้อมูลสมรรถภาพทางกายและคอมเมนต์โค้ชทุกคนเป็นค่าว่าง');
-      }
-    }, 600);
+  // Show Test Demo Mode Banner when running in local test/demo environment
+  if (typeof IS_TEST_DEMO_ENV !== 'undefined' && IS_TEST_DEMO_ENV) {
+    const demoBanner = document.createElement('div');
+    demoBanner.id = 'testDemoModeBanner';
+    demoBanner.className = 'bg-amber-500 text-neutral-950 text-center py-1.5 px-3 text-[11px] sm:text-xs font-bold tracking-wide border-b border-amber-600 sticky top-0 z-50 flex items-center justify-center gap-2 flex-wrap';
+    demoBanner.innerHTML = '<span>🧪 TEST DEMO MODE (โหมดทดสอบก่อน Deploy)</span><span class="font-normal text-neutral-900">• ข้อมูลแยกอิสระ 100% ไม่กระทบและไม่ทับซ้อนข้อมูลจริงบน Production</span>';
+    document.body.insertBefore(demoBanner, document.body.firstChild);
   }
 
   // Dynamic live date & class schedule banner based on real calendar

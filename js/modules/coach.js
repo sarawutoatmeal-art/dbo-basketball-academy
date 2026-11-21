@@ -94,6 +94,10 @@ function renderCoachRosterTable() {
   const cSat = students.filter(s => s.courseType === 'saturday' || s.courseType === 'both').length;
   const cMon = students.filter(s => s.courseType === 'monthly').length;
   const cLow = students.filter(s => {
+    if (s.courseType === 'monthly') {
+      // Monthly course: only alerts when reaching the next month's cutoff date!
+      return getMonthlyCycleStatus(s).isDue;
+    }
     if (s.courseType === 'saturday') {
       return (s.saturdayRemaining !== undefined ? s.saturdayRemaining : 0) <= 1;
     }
@@ -108,7 +112,11 @@ function renderCoachRosterTable() {
   const cntMon = document.getElementById('count-monthly');
   const cntSat = document.getElementById('count-saturday');
   const cntLow = document.getElementById('count-low');
+  const subTabRosterBadge = document.getElementById('subTabRosterCountBadge');
+  const subTabRecordsBadge = document.getElementById('subTabRecordsCountBadge');
   if (cntAll) cntAll.innerText = cAll;
+  if (subTabRosterBadge) subTabRosterBadge.innerText = cAll;
+  if (subTabRecordsBadge && typeof teachingRecords !== 'undefined') subTabRecordsBadge.innerText = teachingRecords.length;
   if (cntReg) cntReg.innerText = cReg;
   if (cntMon) cntMon.innerText = cMon;
   if (cntSat) cntSat.innerText = cSat;
@@ -122,6 +130,9 @@ function renderCoachRosterTable() {
     if (currentCoachFilter === 'saturday') return s.courseType === 'saturday' || s.courseType === 'both';
     if (currentCoachFilter === 'monthly') return s.courseType === 'monthly';
     if (currentCoachFilter === 'low') {
+      if (s.courseType === 'monthly') {
+        return getMonthlyCycleStatus(s).isDue;
+      }
       if (s.courseType === 'saturday') {
         return (s.saturdayRemaining !== undefined ? s.saturdayRemaining : 0) <= 1;
       }
@@ -136,8 +147,8 @@ function renderCoachRosterTable() {
   if (currentCoachFilter === 'low') {
     // Sort lowest/most overdue quota first so coach sees urgency immediately
     filtered.sort((a, b) => {
-      const remA = a.courseType === 'saturday' ? (a.saturdayRemaining || 0) : (a.remaining || 0);
-      const remB = b.courseType === 'saturday' ? (b.saturdayRemaining || 0) : (b.remaining || 0);
+      const remA = a.courseType === 'monthly' ? (getMonthlyCycleStatus(a).daysLeft) : (a.courseType === 'saturday' ? (a.saturdayRemaining || 0) : (a.remaining || 0));
+      const remB = b.courseType === 'monthly' ? (getMonthlyCycleStatus(b).daysLeft) : (b.courseType === 'saturday' ? (b.saturdayRemaining || 0) : (b.remaining || 0));
       return remA - remB;
     });
   }
@@ -150,7 +161,14 @@ function renderCoachRosterTable() {
     
     // Clean, non-redundant quota status pill (Expresses count + urgency in a single clear pill)
     let remBadge = '';
-    if (isSaturdayFilter || s.courseType === 'saturday') {
+    if (s.courseType === 'monthly') {
+      const mStatus = getMonthlyCycleStatus(s);
+      if (mStatus.isDue) {
+        remBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold border bg-rose-50 text-rose-700 border-rose-300 inline-flex items-center gap-1">ครบรอบตัดยอด ${mStatus.cutoffThaiShort} (เตือนสมัครใหม่)</span>`;
+      } else {
+        remBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold border bg-emerald-50 text-emerald-800 border-emerald-200 inline-flex items-center gap-1">ตัดรอบ ${mStatus.cutoffThaiShort} (อีก ${mStatus.daysLeft} วัน)</span>`;
+      }
+    } else if (isSaturdayFilter || s.courseType === 'saturday') {
       const satRem = s.saturdayRemaining || 0;
       const colorCls = satRem > 1 
         ? 'bg-indigo-50 text-indigo-700 border-indigo-200' 
@@ -184,6 +202,13 @@ function renderCoachRosterTable() {
     else if (s.courseType === 'saturday') typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">วันเสาร์ (4 ครั้ง)</span>`;
     else typeBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">ปกติ 10 ครั้ง</span>`;
 
+    const dateCycleColHtml = s.courseType === 'monthly'
+      ? (() => {
+          const mSt = getMonthlyCycleStatus(s);
+          return `<span class="text-xs text-slate-600 block">เริ่ม: ${mSt.startThaiShort}</span><span class="text-[10px] ${mSt.isDue ? 'text-rose-600 font-bold' : 'text-emerald-700 font-semibold'}">ตัดรอบ: ${mSt.cutoffThaiShort}</span>`;
+        })()
+      : `<span class="text-[11px] text-slate-400">ไม่มีวันตัดรอบ (นับตามครั้ง)</span>`;
+
     // 1. Desktop Table
     if (tbody) {
       const tr = document.createElement('tr');
@@ -200,8 +225,7 @@ function renderCoachRosterTable() {
         </td>
         <td class="py-2.5 px-3 hidden sm:table-cell">${typeBadge}</td>
         <td class="py-2.5 px-3 hidden md:table-cell">
-          <span class="text-xs text-slate-600 block">${s.startDate || '-'}</span>
-          ${s.nextRenewal ? `<span class="text-[10px] text-emerald-700 font-medium">รอบต่อ: ${s.nextRenewal}</span>` : ''}
+          ${dateCycleColHtml}
         </td>
         <td class="py-2.5 px-3 text-center whitespace-nowrap">
           ${remBadge}
@@ -498,13 +522,69 @@ function setModalQuotaExact(inputId, val) {
   el.value = parseInt(val, 10) || 0;
 }
 
+function handleModalCourseTypeChange() {
+  const courseTypeEl = document.getElementById('modalStudentCourseType');
+  const startDateEl = document.getElementById('modalStudentStartDate');
+  const noticeBox = document.getElementById('modalCourseCycleNoticeBox');
+  const startContainer = document.getElementById('modalStartDateContainer');
+  if (!courseTypeEl || !noticeBox) return;
+
+  const courseType = courseTypeEl.value;
+  if (courseType === 'monthly') {
+    if (startContainer) startContainer.classList.remove('opacity-60');
+    if (startDateEl && !startDateEl.value) {
+      const now = new Date();
+      startDateEl.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+    const startVal = startDateEl ? startDateEl.value : '';
+    const cutoffStr = calculateMonthlyNextRenewal(startVal);
+    const startThai = formatThaiDateFull(startVal);
+    const cutoffThai = formatThaiDateFull(cutoffStr);
+
+    noticeBox.className = 'p-3 rounded-xl border border-emerald-300 bg-emerald-50/90 text-xs text-emerald-950 space-y-1.5';
+    noticeBox.innerHTML = `
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <span class="font-bold text-emerald-900">📅 ระบบตัดรอบรายเดือน (เดือนถัดไป)</span>
+        <button type="button" onclick="setModalMonthlyStartToday()" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-700 text-white hover:bg-emerald-800 transition cursor-pointer">
+          ตั้งเริ่มรอบวันนี้
+        </button>
+      </div>
+      <div class="text-[11px] text-emerald-800">
+        เริ่มรอบ: <strong>${startThai}</strong> ➔ วันตัดรอบถัดไป: <strong class="underline text-emerald-950">${cutoffThai}</strong>
+      </div>
+      <div class="text-[10px] text-emerald-700">
+        * ระบบจะแจ้งเตือนให้สมัครใหม่เมื่อถึงวันตัดรอบ (${cutoffThai}) เท่านั้น
+      </div>
+    `;
+  } else {
+    noticeBox.className = 'p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-600 flex items-center justify-between gap-2';
+    noticeBox.innerHTML = `
+      <span>✅ <strong>คอร์สรายครั้ง / วันเสาร์ ไม่มีวันตัดรอบ</strong> — เรียนให้ครบตามจำนวนครั้งคงเหลือให้หมดไปก็พอ</span>
+    `;
+  }
+}
+
+function handleModalStartDateChange() {
+  handleModalCourseTypeChange();
+}
+
+function setModalMonthlyStartToday() {
+  const startDateEl = document.getElementById('modalStudentStartDate');
+  if (startDateEl) {
+    const now = new Date();
+    startDateEl.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }
+  handleModalCourseTypeChange();
+}
+
 function openAddNewStudentModal() {
   document.getElementById('studentFormModalTitle').innerText = 'เพิ่มนักเรียนใหม่เข้าสู่ระบบ';
   document.getElementById('modalStudentId').value = '';
   document.getElementById('modalStudentName').value = '';
   document.getElementById('modalStudentPhone').value = '';
   document.getElementById('modalStudentCourseType').value = 'regular';
-  document.getElementById('modalStudentStartDate').value = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  document.getElementById('modalStudentStartDate').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   document.getElementById('modalStudentRemaining').value = 10;
   const satRemEl = document.getElementById('modalStudentSaturdayRemaining');
   if (satRemEl) satRemEl.value = 0;
@@ -517,6 +597,7 @@ function openAddNewStudentModal() {
   if (rOak) rOak.value = '';
   if (vJ) vJ.value = '';
   if (lJ) lJ.value = '';
+  handleModalCourseTypeChange();
   document.getElementById('studentFormModal').classList.remove('hidden');
   lucide.createIcons();
 }
@@ -547,6 +628,7 @@ function openEditStudentModal(studentId) {
   if (vJ) vJ.value = student.vJump || '';
   if (lJ) lJ.value = student.longJump || '';
 
+  handleModalCourseTypeChange();
   document.getElementById('studentFormModal').classList.remove('hidden');
   lucide.createIcons();
 }
@@ -640,24 +722,28 @@ function handleSaveStudent(e) {
         student.longJumpHistory = [];
       }
 
-      if (courseType === 'monthly' && startDate) {
-        const parts = startDate.split('-');
-        student.nextRenewal = `วันที่ ${parts[2]} ของเดือนถัดไป`;
+      if (courseType === 'monthly') {
+        const effStart = startDate || getTodayDateKey();
+        student.startDate = effStart;
+        student.nextRenewal = calculateMonthlyNextRenewal(effStart);
+      } else {
+        student.nextRenewal = '-';
       }
       student._updatedAt = Date.now();
-  student._lastCoachActionAt = Date.now();
-  student._isCoachAuthoritative = true;
+      student._lastCoachActionAt = Date.now();
+      student._isCoachAuthoritative = true;
     }
     showToast(`บันทึกการแก้ไขข้อมูลน้อง ${name} เรียบร้อย`);
   } else {
     const maxId = students.reduce((m, s) => Math.max(m, Number(s.id) || 0), 0);
+    const effStart = startDate || getTodayDateKey();
     const newStudent = {
       id: maxId + 1,
       name: name,
       phone: phone,
       courseType: courseType,
-      startDate: startDate,
-      nextRenewal: courseType === 'monthly' && startDate ? `วันที่ ${startDate.split('-')[2]} ของเดือนถัดไป` : '-',
+      startDate: effStart,
+      nextRenewal: courseType === 'monthly' ? calculateMonthlyNextRenewal(effStart) : '-',
       remaining: remaining,
       saturdayRemaining: saturdayRemaining,
       records: {},
@@ -669,7 +755,9 @@ function handleSaveStudent(e) {
       longJump: lJVal > 0 ? lJVal : null,
       longJumpHistory: lJVal > 0 ? [{ date: 'แรกเข้า', val: lJVal }] : [],
       isRealSportsMetrics: !!(rOat || rOak || vJVal > 0 || lJVal > 0),
-      _updatedAt: Date.now()
+      _updatedAt: Date.now(),
+      _lastCoachActionAt: Date.now(),
+      _isCoachAuthoritative: true
     };
     students.unshift(newStudent);
     showToast(`เพิ่มนักเรียนน้อง ${name} เข้าสู่ระบบสำเร็จ`);
@@ -790,14 +878,18 @@ function approveSlip(slipId) {
     existing.remaining = (existing.remaining || 0) + quotaAdd;
     existing.courseType = item.courseType;
     existing._updatedAt = Date.now();
+    existing._lastCoachActionAt = Date.now();
+    existing._isCoachAuthoritative = true;
     if (item.courseType === 'monthly') {
-      existing.startDate = new Date().toISOString().split('T')[0];
-      const d = new Date();
-      d.setMonth(d.getMonth() + 1);
-      existing.nextRenewal = d.toISOString().split('T')[0];
+      const effStart = item.startDate || getTodayDateKey();
+      existing.startDate = effStart;
+      existing.nextRenewal = calculateMonthlyNextRenewal(effStart);
+    } else {
+      existing.nextRenewal = '-';
     }
   } else {
     const maxId = students.reduce((m, s) => Math.max(m, Number(s.id) || 0), 0);
+    const effStart = item.startDate || getTodayDateKey();
     const newStudent = {
       id: maxId + 1,
       name: item.studentName,
@@ -805,12 +897,14 @@ function approveSlip(slipId) {
       phone: item.phone,
       school: item.school || 'โรงเรียนทั่วไป',
       courseType: item.courseType,
-      startDate: item.startDate || new Date().toISOString().split('T')[0],
-      nextRenewal: item.courseType === 'monthly' ? new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0] : '-',
+      startDate: effStart,
+      nextRenewal: item.courseType === 'monthly' ? calculateMonthlyNextRenewal(effStart) : '-',
       remaining: quotaAdd,
       records: {},
       remark: `อนุมัติผ่านสลิป ${item.amount} บาท เข้าสู่ระบบอย่างเป็นทางการ`,
-      _updatedAt: Date.now()
+      _updatedAt: Date.now(),
+      _lastCoachActionAt: Date.now(),
+      _isCoachAuthoritative: true
     };
     students.unshift(newStudent);
   }

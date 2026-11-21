@@ -23,6 +23,10 @@ function buildFullStateSnapshot() {
 }
 
 async function pushStateToCloudApi(snapshot) {
+  if (typeof IS_TEST_DEMO_ENV !== 'undefined' && IS_TEST_DEMO_ENV) {
+    // Test Demo Environment: strictly isolated from production Cloud API
+    return;
+  }
   try {
     const res = await fetch('/api/sync', {
       method: 'POST',
@@ -50,6 +54,9 @@ function publishToMqttBrokers(topic, payloadObj, options = { qos: 1, retain: fal
 }
 
 function saveState(broadcastRemote = true, actionDesc = '', isExplicitSubmit = false) {
+  if (typeof isCoachAuth !== 'undefined' && isCoachAuth) {
+    window.hasLocalCoachActionInSession = true;
+  }
   localStorage.setItem('dbo_students_v14', JSON.stringify(students));
   localStorage.setItem('dbo_pending_slips_v14', JSON.stringify(pendingSlips));
   localStorage.setItem('dbo_parent_registrations_v14', JSON.stringify(parentRegistrations));
@@ -463,6 +470,10 @@ function applyIncomingState(incomingData, actionDesc = '') {
 }
 
 async function pullStateFromCloudApi() {
+  if (typeof IS_TEST_DEMO_ENV !== 'undefined' && IS_TEST_DEMO_ENV) {
+    updateRealtimeIndicator(true);
+    return;
+  }
   try {
     const res = await fetch('/api/sync?t=' + Date.now(), {
       method: 'GET',
@@ -635,8 +646,9 @@ function handleIncomingMqttMessage(topic, message) {
       else if ((payload.type === 'REALTIME_STATE_UPDATE' || topic === CLOUD_STATE_TOPIC) && payload.data) {
         applyIncomingState(payload.data, isSelf ? '' : (payload.actionDesc || ''));
       } else if (payload.type === 'REQUEST_SYNC' && !isSelf) {
-        const hasNewerData = isCoachAuth || students.some(s => (s._updatedAt || 0) > 0);
-        if (hasNewerData) {
+        // Only respond to REQUEST_SYNC if this tab is an authenticated coach session that made explicit edits.
+        // Never let passive/stale tabs broadcast their cached state on REQUEST_SYNC.
+        if (isCoachAuth && window.hasLocalCoachActionInSession) {
           publishToMqttBrokers(REALTIME_SYNC_TOPIC, {
             senderId: window.dboClientId,
             type: 'REALTIME_STATE_UPDATE',
@@ -747,6 +759,13 @@ function initRealtimeEngine() {
 
 function updateRealtimeIndicator(isOnline) {
   const ind = document.getElementById('realtimeLiveIndicator');
+  if (typeof IS_TEST_DEMO_ENV !== 'undefined' && IS_TEST_DEMO_ENV) {
+    if (ind) {
+      ind.className = 'inline-flex items-center gap-1.5 text-xs text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-300 font-semibold';
+      ind.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> <span>TEST DEMO (ข้อมูลแยกจากระบบจริง)</span>';
+    }
+    return;
+  }
   if (!ind) return;
   if (isOnline) {
     ind.className = 'inline-flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200';

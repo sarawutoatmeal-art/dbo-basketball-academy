@@ -338,32 +338,38 @@ function renderParentView(matchedList) {
   const periodEl = document.getElementById('dash-course-period');
 
   if (loggedInStudent.courseType === 'monthly') {
+    const mStatus = getMonthlyCycleStatus(loggedInStudent);
     typeBadge.innerText = 'แพ็กเกจรายเดือน (2 วัน/สัปดาห์)';
     typeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
-    maxQuotaEl.innerText = '/ เดือนนี้';
-    periodEl.innerText = `ตัดรอบทุกวันที่ ${loggedInStudent.startDate ? loggedInStudent.startDate.split('-')[2] : '1'} ของเดือน`;
+    maxQuotaEl.innerText = `วัน (ตัดรอบ ${mStatus.cutoffThaiShort})`;
+    periodEl.innerText = `เริ่มรอบ ${mStatus.startThaiShort} • ตัดรอบถัดไป ${mStatus.cutoffThaiFull}`;
   } else if (loggedInStudent.courseType === 'saturday') {
     typeBadge.innerText = 'คอร์สวันเสาร์ 4 ครั้ง (Coach Oat)';
     typeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-300';
     maxQuotaEl.innerText = '/ 4 ครั้ง';
-    periodEl.innerText = 'เรียนเฉพาะวันเสาร์ 16:00-17:30 น.';
+    periodEl.innerText = 'ไม่มีวันตัดรอบ • เรียนให้ครบจำนวนครั้ง (เสาร์ 16:00-17:30 น.)';
+  } else if (loggedInStudent.courseType === 'both') {
+    typeBadge.innerText = 'คอร์สปกติ 10 ครั้ง + วันเสาร์';
+    typeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-purple-100 text-purple-800 border border-purple-300';
+    maxQuotaEl.innerText = '/ 10 ครั้ง';
+    periodEl.innerText = 'ไม่มีวันตัดรอบ • เรียนให้ครบตามจำนวนครั้ง';
   } else {
     typeBadge.innerText = 'คอร์สปกติ 10 ครั้ง';
     typeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300';
     maxQuotaEl.innerText = '/ 10 ครั้ง';
-    periodEl.innerText = 'คอร์ส 10 ครั้ง (จ./อ./พฤ.)';
+    periodEl.innerText = 'ไม่มีวันตัดรอบ • เรียนให้ครบจำนวนครั้ง (จ./อ./พฤ.)';
   }
 
   document.getElementById('renewingStudentName').innerText = `น้อง ${loggedInStudent.name}`;
   document.getElementById('renewingStudentPhone').innerText = loggedInStudent.phone;
   document.getElementById('slipStudentName').value = loggedInStudent.name;
 
-  // Remaining Quota & Dynamic Progress Percentage (Matches exact student quota)
+  // Remaining Quota & Dynamic Progress Percentage (Matches exact student quota or monthly cutoff)
   const isSaturday = loggedInStudent.courseType === 'saturday';
   const rem = isSaturday
     ? (loggedInStudent.saturdayRemaining !== undefined ? loggedInStudent.saturdayRemaining : (loggedInStudent.remaining || 0))
     : (loggedInStudent.remaining !== undefined ? loggedInStudent.remaining : 0);
-  const totalQuota = isSaturday ? 4 : (loggedInStudent.courseType === 'monthly' ? 8 : 10);
+  const totalQuota = isSaturday ? 4 : 10;
 
   const remNumEl = document.getElementById('dash-remaining-number');
   const badgeStatusEl = document.getElementById('dash-badge-status');
@@ -371,57 +377,98 @@ function renderParentView(matchedList) {
   const progPctEl = document.getElementById('dash-progress-pct');
   const renewNoticeEl = document.getElementById('dash-renew-notice');
 
-  const calcPct = Math.max(0, Math.min(100, Math.round((rem / totalQuota) * 100)));
+  if (loggedInStudent.courseType === 'monthly') {
+    const mStatus = getMonthlyCycleStatus(loggedInStudent);
+    const daysDisplay = Math.max(0, mStatus.daysLeft);
+    const monthPct = mStatus.isDue ? 0 : Math.max(5, Math.min(100, Math.round((daysDisplay / 30) * 100)));
 
-  if (progPctEl) {
-    progPctEl.innerText = `${calcPct}%`;
-  }
-
-  if (rem > 3) {
-    if (remNumEl) {
-      remNumEl.innerText = rem;
-      remNumEl.className = 'text-4xl sm:text-5xl font-black text-nike-ink font-mono tracking-tight';
+    if (progPctEl) progPctEl.innerText = `${monthPct}%`;
+    if (!mStatus.isDue) {
+      if (remNumEl) {
+        remNumEl.innerText = daysDisplay;
+        remNumEl.className = 'text-4xl sm:text-5xl font-black text-nike-ink font-mono tracking-tight';
+      }
+      if (badgeStatusEl) {
+        badgeStatusEl.innerText = 'อยู่ในรอบรายเดือน';
+        badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-[#007D48]/10 text-[#007D48] border border-[#007D48]/20';
+      }
+      if (progBarEl) {
+        progBarEl.style.width = monthPct + '%';
+        progBarEl.className = 'h-2 rounded-full bg-[#007D48] transition-all duration-500';
+      }
+      if (renewNoticeEl) {
+        renewNoticeEl.innerText = `ตัดรอบวันที่ ${mStatus.cutoffThaiFull} (จะแจ้งเตือนเมื่อถึงวันตัดรอบ)`;
+      }
+    } else {
+      if (remNumEl) {
+        remNumEl.innerText = 0;
+        remNumEl.className = 'text-4xl sm:text-5xl font-black text-[#D30005] font-mono tracking-tight';
+      }
+      if (badgeStatusEl) {
+        badgeStatusEl.innerText = 'ครบกำหนดตัดรอบ';
+        badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-[#D30005]/10 text-[#D30005] border border-[#D30005]/20';
+      }
+      if (progBarEl) {
+        progBarEl.style.width = '0%';
+        progBarEl.className = 'h-2 rounded-full bg-[#D30005] transition-all duration-500';
+      }
+      if (renewNoticeEl) {
+        renewNoticeEl.innerText = `ครบรอบตัดยอดวันที่ ${mStatus.cutoffThaiFull} แล้ว กรุณาสมัครต่อรอบใหม่`;
+      }
     }
-    if (badgeStatusEl) {
-      badgeStatusEl.innerText = 'พร้อมเรียน';
-      badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-[#007D48]/10 text-[#007D48] border border-[#007D48]/20';
-    }
-    if (progBarEl) {
-      progBarEl.style.width = calcPct + '%';
-      progBarEl.className = 'h-2 rounded-full bg-[#007D48] transition-all duration-500';
-    }
-    if (renewNoticeEl) renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง`;
-  } else if (rem >= 1 && rem <= 3) {
-    if (remNumEl) {
-      remNumEl.innerText = rem;
-      remNumEl.className = 'text-4xl sm:text-5xl font-black text-amber-700 font-mono tracking-tight';
-    }
-    if (badgeStatusEl) {
-      badgeStatusEl.innerText = rem === 1 ? 'เหลือ 1 ครั้ง' : 'ใกล้หมด';
-      badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300';
-    }
-    if (progBarEl) {
-      progBarEl.style.width = calcPct + '%';
-      progBarEl.className = 'h-2 rounded-full bg-amber-500 transition-all duration-500';
-    }
-    if (renewNoticeEl) renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง แนะนำต่อคอร์สใหม่`;
   } else {
-    if (remNumEl) {
-      remNumEl.innerText = rem;
-      remNumEl.className = 'text-4xl sm:text-5xl font-black text-[#D30005] font-mono tracking-tight';
-    }
-    if (badgeStatusEl) {
-      badgeStatusEl.innerText = rem === 0 ? 'หมดสิทธิ์' : `เกินสิทธิ์ (${Math.abs(rem)} ครั้ง)`;
-      badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-[#D30005]/10 text-[#D30005] border border-[#D30005]/20';
-    }
-    if (progBarEl) {
-      progBarEl.style.width = '0%';
-      progBarEl.className = 'h-2 rounded-full bg-[#D30005] transition-all duration-500';
-    }
+    const calcPct = Math.max(0, Math.min(100, Math.round((rem / totalQuota) * 100)));
+
     if (progPctEl) {
-      progPctEl.innerText = '0%';
+      progPctEl.innerText = `${calcPct}%`;
     }
-    if (renewNoticeEl) renewNoticeEl.innerText = 'กรุณาต่อคอร์สใหม่เพื่อรักษาสิทธิ์';
+
+    if (rem > 3) {
+      if (remNumEl) {
+        remNumEl.innerText = rem;
+        remNumEl.className = 'text-4xl sm:text-5xl font-black text-nike-ink font-mono tracking-tight';
+      }
+      if (badgeStatusEl) {
+        badgeStatusEl.innerText = 'พร้อมเรียน';
+        badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-[#007D48]/10 text-[#007D48] border border-[#007D48]/20';
+      }
+      if (progBarEl) {
+        progBarEl.style.width = calcPct + '%';
+        progBarEl.className = 'h-2 rounded-full bg-[#007D48] transition-all duration-500';
+      }
+      if (renewNoticeEl) renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง (ไม่มีวันตัดรอบ)`;
+    } else if (rem >= 1 && rem <= 3) {
+      if (remNumEl) {
+        remNumEl.innerText = rem;
+        remNumEl.className = 'text-4xl sm:text-5xl font-black text-amber-700 font-mono tracking-tight';
+      }
+      if (badgeStatusEl) {
+        badgeStatusEl.innerText = rem === 1 ? 'เหลือ 1 ครั้ง' : 'ใกล้หมด';
+        badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300';
+      }
+      if (progBarEl) {
+        progBarEl.style.width = calcPct + '%';
+        progBarEl.className = 'h-2 rounded-full bg-amber-500 transition-all duration-500';
+      }
+      if (renewNoticeEl) renewNoticeEl.innerText = `เหลือ ${rem} ครั้ง แนะนำต่อคอร์สใหม่เมื่อเรียนครบ`;
+    } else {
+      if (remNumEl) {
+        remNumEl.innerText = rem;
+        remNumEl.className = 'text-4xl sm:text-5xl font-black text-[#D30005] font-mono tracking-tight';
+      }
+      if (badgeStatusEl) {
+        badgeStatusEl.innerText = rem === 0 ? 'หมดสิทธิ์' : `เกินสิทธิ์ (${Math.abs(rem)} ครั้ง)`;
+        badgeStatusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-[#D30005]/10 text-[#D30005] border border-[#D30005]/20';
+      }
+      if (progBarEl) {
+        progBarEl.style.width = '0%';
+        progBarEl.className = 'h-2 rounded-full bg-[#D30005] transition-all duration-500';
+      }
+      if (progPctEl) {
+        progPctEl.innerText = '0%';
+      }
+      if (renewNoticeEl) renewNoticeEl.innerText = 'เรียนครบจำนวนครั้งแล้ว กรุณาต่อคอร์สใหม่';
+    }
   }
 
   // History Table
@@ -917,7 +964,7 @@ function approveParentRegistration(regId) {
       parentRelation: reg.relation,
       courseType: 'regular',
       startDate: new Date().toISOString().split('T')[0],
-      nextRenewal: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
+      nextRenewal: '-',
       records: {},
       remaining: 10,
       saturdayRemaining: 0,
@@ -957,6 +1004,14 @@ function rejectParentRegistration(regId) {
 function handleCourseTypeChange(val) {
   const privateGroup = document.getElementById('privateClassGroup');
   const hint = document.getElementById('monthlyRenewalHint');
+  const startInput = document.getElementById('regStartDate');
+  if (startInput && !startInput.dataset.boundMonthlyChange) {
+    startInput.dataset.boundMonthlyChange = '1';
+    startInput.addEventListener('change', () => {
+      const ct = document.getElementById('regCourseType');
+      if (ct) handleCourseTypeChange(ct.value);
+    });
+  }
   
   if (val === 'private') {
     if (privateGroup) privateGroup.classList.remove('hidden');
@@ -965,9 +1020,14 @@ function handleCourseTypeChange(val) {
     if (privateGroup) privateGroup.classList.add('hidden');
     if (hint) {
       if (val === 'monthly') {
-        hint.innerText = '* แพ็กเกจรายเดือนจะเริ่มนับวันแรกที่เรียน และตัดรอบในวันเดิมของเดือนถัดไป';
+        const startVal = (startInput && startInput.value) ? startInput.value : '';
+        const cutoffStr = calculateMonthlyNextRenewal(startVal);
+        const cutoffThai = formatThaiDateFull(cutoffStr);
+        hint.className = 'text-[11px] font-semibold text-emerald-700';
+        hint.innerText = `* แพ็กเกจรายเดือน: จะตัดรอบในวันเดียวกันของเดือนถัดไป (${cutoffThai}) และแจ้งเตือนให้สมัครใหม่เมื่อถึงวันตัดรอบ`;
       } else {
-        hint.innerText = '* ระบบจะบันทึกวันเริ่มเรียนเพื่อใช้นับรอบคอร์สอย่างเป็นระบบ';
+        hint.className = 'text-[11px] text-slate-500';
+        hint.innerText = '* คอร์สรายครั้ง / วันเสาร์ ไม่มีวันตัดรอบ — เรียนให้ครบตามจำนวนครั้งให้หมดไปก็พอ';
       }
     }
   }

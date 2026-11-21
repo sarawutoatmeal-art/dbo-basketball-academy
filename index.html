@@ -1633,12 +1633,12 @@
           <button type="button" id="coachSubTabRoster" onclick="switchCoachSubTab('roster')" class="flex-1 py-2 px-3 rounded-full flex items-center justify-center gap-2 transition active:scale-95 bg-nike-ink text-white cursor-pointer shadow-none">
             <i data-lucide="users" class="w-4 h-4 text-white"></i>
             <span>สิทธิ์ & รายชื่อนักเรียน</span>
-            <span id="subTabRosterCountBadge" class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/20 text-white">54</span>
+            <span id="subTabRosterCountBadge" class="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/20 text-white">44</span>
           </button>
           <button type="button" id="coachSubTabRecords" onclick="switchCoachSubTab('records')" class="flex-1 py-2 px-3 rounded-full flex items-center justify-center gap-2 transition active:scale-95 text-nike-mute hover:text-nike-ink cursor-pointer">
             <i data-lucide="clipboard-check" class="w-4 h-4 text-nike-ink"></i>
             <span>บันทึกการสอน & เช็คชื่อ DBO</span>
-            <span id="subTabRecordsCountBadge" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#007D48] text-white">0</span>
+            <span id="subTabRecordsCountBadge" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#007D48] text-white">7</span>
           </button>
         </div>
 
@@ -2359,18 +2359,23 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">ประเภทคอร์สเรียน *</label>
-            <select id="modalStudentCourseType" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-dbo-navy">
-              <option value="regular">คอร์สปกติ 10 ครั้ง (จ./อ./พฤ.)</option>
+            <select id="modalStudentCourseType" onchange="handleModalCourseTypeChange()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-dbo-navy">
+              <option value="regular">คอร์สปกติ 10 ครั้ง (ไม่มีวันตัดรอบ)</option>
               <option value="both">เรียนควบ 2 คอร์ส (ปกติ 10 ครั้ง + วันเสาร์ 4 ครั้ง)</option>
-              <option value="saturday">คอร์สวันเสาร์ Basic Coach Oat (4 ครั้ง)</option>
-              <option value="monthly">แพ็กเกจรายเดือน (2 วัน/สัปดาห์)</option>
+              <option value="saturday">คอร์สวันเสาร์ Basic Coach Oat (4 ครั้ง - ไม่มีวันตัดรอบ)</option>
+              <option value="monthly">แพ็กเกจรายเดือน (ตัดรอบวันเดียวกันของเดือนถัดไป)</option>
               <option value="single">รายครั้ง (Walk-in)</option>
             </select>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">วันเริ่มเรียน / รอบตัดยอด</label>
-            <input type="date" id="modalStudentStartDate" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-dbo-navy">
+          <div id="modalStartDateContainer">
+            <label id="modalStartDateLabel" class="block text-xs font-semibold text-slate-700 mb-1">วันเริ่มรอบรายเดือน (ใช้คำนวณวันตัดรอบ)</label>
+            <input type="date" id="modalStudentStartDate" onchange="handleModalStartDateChange()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-dbo-navy">
           </div>
+        </div>
+
+        <!-- Dynamic Monthly Cutoff vs Per-Session Notice Box -->
+        <div id="modalCourseCycleNoticeBox" class="p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-700">
+          ไม่มีวันตัดรอบ — เรียนให้ครบตามจำนวนครั้งคงเหลือ
         </div>
 
         <!-- Direct Quota Adjustment Panel inside Modal -->
