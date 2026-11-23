@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "ignoreCommand": "bash scripts/vercel-deploy-guard.sh",
   "crons": [
     {
       "path": "/api/push?action=cron_morning",

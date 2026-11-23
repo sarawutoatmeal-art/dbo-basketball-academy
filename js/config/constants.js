@@ -4,12 +4,13 @@
 
 const APP_VERSION = 'v21.0';
 
-// Detect Test / Demo Environment (localhost / 127.0.0.1 / ?demo=1)
-// Strictly isolates Demo MQTT & Storage so testing never collides with Production data
+// Detect Test / Demo Environment:
+// Any hostname other than the official production domain (dbobasketball.vercel.app)
+// — including localhost, 127.0.0.1, and Vercel git branch preview URLs (dbobasketball-git-dev-*.vercel.app) —
+// runs in isolated Test Demo Mode so edits by collaborators never collide with Production data.
+const PRODUCTION_HOSTNAME = 'dbobasketball.vercel.app';
 const IS_TEST_DEMO_ENV = (typeof window !== 'undefined' && (
-  window.location.hostname === 'localhost' ||
-  window.location.hostname === '127.0.0.1' ||
-  window.location.hostname.includes('demo') ||
+  window.location.hostname !== PRODUCTION_HOSTNAME ||
   window.location.search.includes('demo=1')
 ));
 
