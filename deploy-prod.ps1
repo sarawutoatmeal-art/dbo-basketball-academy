@@ -6,12 +6,18 @@ $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
 $ownerEmail = "sarawut.oatmeal@gmail.com"
-$currentEmail = (git config user.email).Trim()
+$coEditorEmail = "wissava.ard@gmail.com"
+$currentEmail = (git config user.email).Trim().ToLower()
 
 if ($currentEmail -ne $ownerEmail) {
-    Write-Host "🚫 ปฏิเสธสิทธิ์การ Deploy: บัญชีของคุณ ($currentEmail) ไม่มีสิทธิ์ Deploy ขึ้นเว็บจริง!" -ForegroundColor Red
-    Write-Host "   เฉพาะเจ้าของระบบ ($ownerEmail / sarawutoatmeal-art) เท่านั้นที่สามารถสั่ง Deploy ได้" -ForegroundColor Yellow
-    Write-Host "   กรุณาใช้คำสั่ง .\save-edit.ps1 เพื่อบันทึกงานขึ้นสาขา 'dev' (Test Demo) แทนครับ" -ForegroundColor Cyan
+    Write-Host "🚫 ปฏิเสธสิทธิ์การ Deploy ขึ้นเว็บจริง!" -ForegroundColor Red
+    if ($currentEmail -eq $coEditorEmail) {
+        Write-Host "   บัญชีของคุณ ($coEditorEmail) ได้รับสิทธิ์เป็น 'ผู้แก้ไขร่วม (Co-Editor)' บนสาขา 'dev' (Test Demo) เท่านั้น" -ForegroundColor Yellow
+    } else {
+        Write-Host "   บัญชีของคุณ ($currentEmail) ไม่มีสิทธิ์ Deploy" -ForegroundColor Yellow
+    }
+    Write-Host "   เฉพาะเจ้าของระบบ ($ownerEmail / sarawutoatmeal-art) คนเดียวเท่านั้นที่สามารถสั่ง Deploy ขึ้น Production ได้" -ForegroundColor Yellow
+    Write-Host "   👉 กรุณาใช้คำสั่ง .\save-edit.ps1 เพื่อบันทึกโค้ดที่แก้ไขขึ้นสาขา 'dev' (Test Demo) แล้วให้เจ้าของกด Deploy ครับ" -ForegroundColor Cyan
     exit 1
 }
 
@@ -33,7 +39,7 @@ if ($status) {
     git push -u origin dev
 }
 
-Write-Host "🚀 กำลังรวมโค้ดจาก 'dev' เข้าสู่ 'main' เพื่อ Deploy ขึ้น Production..." -ForegroundColor Cyan
+Write-Host "🚀 กำลังรวมโค้ดจาก 'dev' เข้าสู่ 'main' เพื่อ Deploy ขึ้น Production โดย [$ownerEmail]..." -ForegroundColor Cyan
 git checkout main
 git merge dev --no-edit
 git push dbobasketball main
