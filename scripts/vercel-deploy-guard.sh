@@ -12,6 +12,7 @@
 
 AUTHORIZED_OWNER_LOGIN="sarawutoatmeal-art"
 AUTHORIZED_OWNER_EMAIL="sarawut.oatmeal@gmail.com"
+AUTHORIZED_CO_EDITOR_LOGIN="Chaomaeosom"
 AUTHORIZED_CO_EDITOR_EMAIL="wissava.ard@gmail.com"
 
 COMMIT_EMAIL=$(git log -1 --pretty=format:'%ae' 2>/dev/null || echo "")
@@ -34,10 +35,10 @@ if [ "$ENV_TARGET" = "production" ] || [ "$BRANCH" = "main" ]; then
 fi
 
 # 2. Preview / Test Demo Deployment (dev branch): Allow ONLY the 2 authorized editors
-if [ "$COMMIT_AUTHOR" = "$AUTHORIZED_OWNER_LOGIN" ] || [ "$COMMIT_EMAIL" = "$AUTHORIZED_OWNER_EMAIL" ] || [ "$COMMIT_EMAIL" = "$AUTHORIZED_CO_EDITOR_EMAIL" ]; then
-  echo "✅ Authorized Editor ($COMMIT_EMAIL) verified. Proceeding with Test Demo / Preview build on branch '$BRANCH'."
+if [ "$COMMIT_AUTHOR" = "$AUTHORIZED_OWNER_LOGIN" ] || [ "$COMMIT_AUTHOR" = "$AUTHORIZED_CO_EDITOR_LOGIN" ] || [ "$COMMIT_EMAIL" = "$AUTHORIZED_OWNER_EMAIL" ] || [ "$COMMIT_EMAIL" = "$AUTHORIZED_CO_EDITOR_EMAIL" ]; then
+  echo "✅ Authorized Editor ($COMMIT_AUTHOR / $COMMIT_EMAIL) verified. Proceeding with Test Demo / Preview build on branch '$BRANCH'."
   exit 1
 else
-  echo "🚫 Unauthorized Commit Email ($COMMIT_EMAIL): Only $AUTHORIZED_OWNER_EMAIL and $AUTHORIZED_CO_EDITOR_EMAIL are permitted to edit."
+  echo "🚫 Unauthorized Commit ($COMMIT_AUTHOR / $COMMIT_EMAIL): Only $AUTHORIZED_OWNER_EMAIL and $AUTHORIZED_CO_EDITOR_EMAIL ($AUTHORIZED_CO_EDITOR_LOGIN) are permitted to edit."
   exit 0
 fi
