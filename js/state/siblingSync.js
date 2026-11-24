@@ -39,18 +39,21 @@ function syncSharedSiblingQuota(sourceStudent, target = 'regular') {
   return;
 }
 
-function switchSibling(studentIdStr) {
-  const sid = parseInt(studentIdStr, 10);
-  const target = students.find(s => s.id === sid);
-  if (!target) return;
+function getLinkedStudents(student) {
+  if (!student) return [];
+  const phone = (student.phone || '').replace(/[^\d]/g, '');
+  return students.filter(candidate => {
+    if (candidate.id === student.id) return true;
+    if (student.siblingGroupId && student.siblingGroupId === candidate.siblingGroupId) return true;
+    return Boolean(phone && phone === (candidate.phone || '').replace(/[^\d]/g, ''));
+  });
+}
 
+function switchSibling(studentId) {
+  const target = getLinkedStudents(loggedInStudent).find(student => String(student.id) === String(studentId));
+  if (!target) return;
   loggedInStudent = target;
   localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
-  
-  const cleanPhone = (loggedInStudent.phone || '').replace(/[^\d]/g, '');
-  const matched = students.filter(s => (s.phone || '').replace(/[^\d]/g, '') === cleanPhone || (s.siblingGroupId && s.siblingGroupId === target.siblingGroupId));
-  if (typeof renderParentView === 'function') {
-    renderParentView(matched);
-  }
-  showToast(`สลับดูข้อมูลน้อง ${target.name} เรียบร้อยแล้ว`);
+  renderParentView();
+  showToast('สลับนักเรียนแล้ว');
 }

@@ -13,6 +13,26 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+function renderMeasurementHistory(history, currentValue, element) {
+  if (!element) return;
+  if (currentValue === null) {
+    element.textContent = 'รอผลทดสอบ';
+    return;
+  }
+  const byDate = new Map();
+  for (const measurement of history || []) {
+    const value = Number(measurement?.val);
+    if (isAttendanceDateKey(measurement?.dateKey) && value > 0) byDate.set(measurement.dateKey, value);
+  }
+  const dated = [...byDate].sort(([a], [b]) => a.localeCompare(b)).slice(-3);
+  if (dated.length < 2) {
+    element.textContent = 'ล่าสุด ' + currentValue + ' ซม.';
+    return;
+  }
+  const format = new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', timeZone: 'Asia/Bangkok' });
+  element.textContent = dated.map(([dateKey, value]) => format.format(new Date(dateKey + 'T12:00:00Z')) + ' · ' + value + ' ซม.').join(' → ');
+}
+
 function renderParentView(matchedList) {
   const loginBox = document.getElementById('parent-login-box');
   const dashBox = document.getElementById('parent-dashboard');
@@ -38,6 +58,7 @@ function renderParentView(matchedList) {
     if (dashBox) dashBox.classList.add('hidden');
     if (coachPortalBox) {
       coachPortalBox.classList.remove('hidden');
+      document.getElementById('staffHomeDate').textContent = new Intl.DateTimeFormat('th-TH', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).format(new Date());
       const nameEl = document.getElementById('coachPortalStaffName');
       if (nameEl) nameEl.innerText = `${currentStaff.fullName} (${currentStaff.role})`;
     }
@@ -111,7 +132,6 @@ function renderParentView(matchedList) {
   // Hero Widget Name & Description
   const heroNameEl = document.getElementById('hero-student-name');
   const heroDescEl = document.getElementById('hero-course-desc');
-  const heroSharedPill = document.getElementById('hero-shared-pill');
   if (heroNameEl) heroNameEl.innerText = `น้อง ${loggedInStudent.name}`;
   if (heroDescEl) {
     if (loggedInStudent.courseType === 'monthly') heroDescEl.innerText = 'แพ็กเกจรายเดือนสม่ำเสมอ (ซ้อม 2 วัน/สัปดาห์) • สนามเตชะวิทย์';
@@ -124,51 +144,31 @@ function renderParentView(matchedList) {
   const sibSelect = document.getElementById('siblingSelect');
   const sibBadge = document.getElementById('dash-sibling-badge');
   const sibSharedNotice = document.getElementById('siblingSharedQuotaNotice');
-  const sibSharedTag = document.getElementById('siblingSharedTag');
   const sibSharedDesc = document.getElementById('siblingSharedDesc');
   const sibQuickPills = document.getElementById('siblingQuickPills');
 
-  const currentCleanPhone = (loggedInStudent.phone || '').replace(/[^\d]/g, '');
-  const familySiblings = students.filter(s => {
-    if (s.siblingGroupId && loggedInStudent.siblingGroupId && s.siblingGroupId === loggedInStudent.siblingGroupId) return true;
-    const sPhone = (s.phone || '').replace(/[^\d]/g, '');
-    return (currentCleanPhone && sPhone === currentCleanPhone);
-  });
+  const familySiblings = getLinkedStudents(loggedInStudent);
 
   if (familySiblings.length > 1) {
     if (sibBox) sibBox.classList.remove('hidden');
     if (sibSelect) {
       sibSelect.innerHTML = familySiblings.map(s => `
-        <option value="${s.id}" ${s.id === loggedInStudent.id ? 'selected' : ''}>น้อง ${s.name} (${s.remaining !== undefined ? s.remaining : 0} ครั้ง)</option>
+        <option value="${s.id}" ${s.id === loggedInStudent.id ? 'selected' : ''}>น้อง ${escapeHtml(s.name)} (${s.remaining !== undefined ? s.remaining : 0} ครั้ง)</option>
       `).join('');
     }
 
-    const isSharedPool = (loggedInStudent.siblingMode === 'shared') || (loggedInStudent.siblingGroupId && loggedInStudent.siblingGroupId.startsWith('sib_') && ['sib_boston_harden', 'sib_manta_matang', 'sib_inthach_thawin'].includes(loggedInStudent.siblingGroupId));
-    
     if (sibBadge) {
       sibBadge.classList.remove('hidden');
-      sibBadge.innerText = isSharedPool ? 'ครอบครัวพี่น้อง (ใช้โควต้าร่วมกัน)' : 'ครอบครัวพี่น้อง (จ่ายแยกคอร์ส)';
-    }
-
-    if (heroSharedPill) {
-      if (isSharedPool) heroSharedPill.classList.remove('hidden');
-      else heroSharedPill.classList.add('hidden');
+      sibBadge.textContent = 'พี่น้อง';
     }
 
     if (sibSharedNotice) {
       sibSharedNotice.classList.remove('hidden');
-      const otherNames = familySiblings.map(s => s.name).join(' & ');
-      if (isSharedPool) {
-        if (sibSharedTag) sibSharedTag.innerText = 'นับ 10 ครั้งร่วมกัน';
-        if (sibSharedDesc) sibSharedDesc.innerHTML = `บ้านน้อง <strong>${otherNames}</strong> เป็นพี่น้องกันและใช้โควต้าคอร์ส 10 ครั้งร่วมกัน หากน้องคนใดเข้าเรียนหรือโค้ชตัดสิทธิ์ โควต้าจะลดและคงเหลือเท่ากันทั้งสองคนครับ`;
-      } else {
-        if (sibSharedTag) sibSharedTag.innerText = 'เบอร์เดียว ดูได้ทั้งพี่น้อง';
-        if (sibSharedDesc) sibSharedDesc.innerHTML = `บ้านน้อง <strong>${otherNames}</strong> เป็นพี่น้องกันแต่จ่ายแยกคอร์ส สามารถใช้เบอร์เดียวล็อกอินเพื่อสลับดูสิทธิ์ของแต่ละคนได้อย่างสะดวกสบายครับ`;
-      }
+      if (sibSharedDesc) sibSharedDesc.textContent = 'สิทธิ์แยกตามนักเรียน';
       if (sibQuickPills) {
         sibQuickPills.innerHTML = familySiblings.map(s => `
           <button type="button" onclick="switchSibling(${s.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${s.id === loggedInStudent.id ? 'bg-purple-600 text-white shadow-2xs' : 'bg-white border border-purple-200 text-purple-900 hover:bg-purple-100'} transition cursor-pointer">
-            น้อง ${s.name} (${s.remaining} ครั้ง)
+            น้อง ${escapeHtml(s.name)} (${s.remaining} ครั้ง)
           </button>
         `).join('');
       }
@@ -177,17 +177,16 @@ function renderParentView(matchedList) {
     if (sibBox) sibBox.classList.add('hidden');
     if (sibBadge) sibBadge.classList.add('hidden');
     if (sibSharedNotice) sibSharedNotice.classList.add('hidden');
-    if (heroSharedPill) heroSharedPill.classList.add('hidden');
   }
 
   // Dynamic Class Day Status Banner
   try {
-    const nowD = new Date();
-    const dayW = nowD.getDay();
+    const nowD = new Date(getTodayDateKey() + 'T12:00:00Z');
+    const dayW = nowD.getUTCDay();
     const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
     const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-    const thaiYear = nowD.getFullYear() + 543;
-    const formattedDate = `${thaiDays[dayW]}ที่ ${nowD.getDate()} ${thaiMonths[nowD.getMonth()]} ${thaiYear}`;
+    const thaiYear = nowD.getUTCFullYear() + 543;
+    const formattedDate = `${thaiDays[dayW]}ที่ ${nowD.getUTCDate()} ${thaiMonths[nowD.getUTCMonth()]} ${thaiYear}`;
 
     const pDateLabel = document.getElementById('parentTodayDateLabel');
     const headingEl = document.getElementById('parentClassStatusHeading');
@@ -293,17 +292,7 @@ function renderParentView(matchedList) {
 
   if (vJumpEl) vJumpEl.innerText = vJumpVal !== null ? vJumpVal : '-';
   if (vJumpBar) vJumpBar.style.width = vJumpVal !== null ? Math.min(100, Math.round((vJumpVal / 60) * 100)) + '%' : '0%';
-  if (vJumpHistEl) {
-    if (vJumpVal !== null) {
-      if (loggedInStudent.vJumpHistory && loggedInStudent.vJumpHistory.length > 0) {
-        vJumpHistEl.innerText = loggedInStudent.vJumpHistory.map(h => `${h.val}`).join(' ➔ ') + ` ซม.`;
-      } else {
-        vJumpHistEl.innerText = `${vJumpVal} ซม.`;
-      }
-    } else {
-      vJumpHistEl.innerText = 'รอการทดสอบสมรรถภาพ';
-    }
-  }
+  renderMeasurementHistory(loggedInStudent.vJumpHistory, vJumpVal, vJumpHistEl);
   if (vJumpDiff) {
     vJumpDiff.innerText = vJumpVal !== null ? `${vJumpVal} ซม.` : 'รอทดสอบ';
   }
@@ -315,17 +304,7 @@ function renderParentView(matchedList) {
 
   if (longJumpEl) longJumpEl.innerText = longJumpVal !== null ? longJumpVal : '-';
   if (longJumpBar) longJumpBar.style.width = longJumpVal !== null ? Math.min(100, Math.round((longJumpVal / 220) * 100)) + '%' : '0%';
-  if (longJumpHistEl) {
-    if (longJumpVal !== null) {
-      if (loggedInStudent.longJumpHistory && loggedInStudent.longJumpHistory.length > 0) {
-        longJumpHistEl.innerText = loggedInStudent.longJumpHistory.map(h => `${h.val}`).join(' ➔ ') + ` ซม.`;
-      } else {
-        longJumpHistEl.innerText = `${longJumpVal} ซม.`;
-      }
-    } else {
-      longJumpHistEl.innerText = 'รอการทดสอบสมรรถภาพ';
-    }
-  }
+  renderMeasurementHistory(loggedInStudent.longJumpHistory, longJumpVal, longJumpHistEl);
   if (longJumpDiff) {
     longJumpDiff.innerText = longJumpVal !== null ? `${longJumpVal} ซม.` : 'รอทดสอบ';
   }
@@ -471,63 +450,44 @@ function renderParentView(matchedList) {
     }
   }
 
-  // History Table
   const historyTbody = document.getElementById('dash-history-tbody');
-  const recs = loggedInStudent.records || {};
-  let rowsHtml = '';
-  
-  const todayKey = getTodayDateKey();
-  const todayAtt = dailyAttendance[todayKey] ? dailyAttendance[todayKey][loggedInStudent.id] : null;
-  if (todayAtt && (todayAtt.status === 'attending' || todayAtt.status === 'leave')) {
-    const nowD = new Date();
-    const thaiM = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-    const todayThaiStr = `วันนี้ (${nowD.getDate()} ${thaiM[nowD.getMonth()]} ${nowD.getFullYear() + 543})`;
-    rowsHtml += `
-      <tr class="bg-emerald-50/50 hover:bg-emerald-50 transition border-b border-emerald-100">
-        <td class="py-2.5 px-3.5 font-mono text-xs font-semibold text-emerald-950">${todayThaiStr}</td>
-        <td class="py-2.5 px-3.5 text-xs text-slate-800">คลาสปกติ (17:30-19:30 น.)</td>
-        <td class="py-2.5 px-3.5 text-center">
-          ${todayAtt.status === 'attending' 
-            ? '<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ยืนยันเข้าเรียนแล้ว</span>' 
-            : `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> ลา: ${todayAtt.leaveReason || 'ลาเรียน'}</span>`}
-        </td>
-        <td class="py-2.5 px-3.5 text-center text-xs font-mono font-medium text-slate-700">${todayAtt.status === 'attending' ? '-1 ครั้ง' : '0'}</td>
-      </tr>
-    `;
+  const student = loggedInStudent;
+  const history = new Map();
+  for (const [dateKey, records] of Object.entries(dailyAttendance)) {
+    const entry = records?.[student.id];
+    if (!isAttendanceDateKey(dateKey) || !entry || !['attending', 'leave'].includes(entry.status)) continue;
+    history.set(dateKey, { ...entry, deduction: entry.status === 'attending' && entry.updatedBy && entry.updatedBy !== 'parent' ? 1 : 0 });
+  }
+  const legacyDates = { '5/11/26': '2026-11-05', '3/11/26': '2026-11-03', '1/11/26': '2026-11-01', '29/10': '2026-10-29' };
+  for (const [key, mark] of Object.entries(student.records || {})) {
+    const dateKey = legacyDates[key] || key;
+    if (!isAttendanceDateKey(dateKey) || history.has(dateKey) || !['/', '//', 'ลา'].includes(mark)) continue;
+    history.set(dateKey, { status: mark === 'ลา' ? 'leave' : 'attending', deduction: mark === '//' ? 2 : mark === '/' ? 1 : 0 });
   }
 
-  const pastDates = [
-    { label: '5 พ.ย. 2569', classType: 'คลาสปกติ (17:30-19:30 น.)', key: '5/11/26' },
-    { label: '3 พ.ย. 2569', classType: 'คลาสปกติ (17:30-19:30 น.)', key: '3/11/26' },
-    { label: '1 พ.ย. 2569', classType: 'คลาส Basic กับ Coach Oat', key: '1/11/26' },
-    { label: '29 ต.ค. 2569', classType: 'คลาสปกติ (17:30-19:30 น.)', key: '29/10' }
-  ];
-
-  pastDates.forEach(d => {
-    const val = recs[d.key];
-    const isPresent = (val === '/' || val === '//');
-    const isLeave = (val === 'ลา');
-    
-    let statusBadge = '<span class="text-slate-400 font-mono">-</span>';
-    if (isPresent) {
-      statusBadge = '<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> มาเรียน (/)</span>';
-    } else if (isLeave) {
-      statusBadge = '<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> ลาเรียน</span>';
-    }
-
-    const deduct = isPresent ? (val === '//' ? '-2 ครั้ง' : '-1 ครั้ง') : '0';
-
-    rowsHtml += `
-      <tr class="hover:bg-slate-50 transition">
-        <td class="py-2.5 px-3.5 font-mono text-xs font-medium text-slate-700">${d.label}</td>
-        <td class="py-2.5 px-3.5 text-xs text-slate-800">${d.classType}</td>
-        <td class="py-2.5 px-3.5 text-center">${statusBadge}</td>
-        <td class="py-2.5 px-3.5 text-center text-xs font-mono text-slate-500">${deduct}</td>
-      </tr>
-    `;
-  });
-
-  historyTbody.innerHTML = rowsHtml;
+  const dateFormat = new Intl.DateTimeFormat('th-TH', { timeZone: 'Asia/Bangkok', dateStyle: 'medium' });
+  const dates = [...history.keys()].sort((a, b) => b.localeCompare(a));
+  historyTbody.innerHTML = dates.map(dateKey => {
+    const entry = history.get(dateKey);
+    const date = new Date(dateKey + 'T12:00:00Z');
+    const training = getTrainingDay(new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    const label = entry.status === 'leave' ? 'แจ้งลา' : entry.updatedBy === 'parent' ? 'ยืนยันมาเรียน' : 'มาเรียน';
+    return `<tr>
+      <td data-label="วันที่ฝึกซ้อม" class="px-3 py-2">${dateFormat.format(date)}</td>
+      <td data-label="คลาส" class="px-3 py-2">${escapeHtml(entry.slot || training.title || 'รอบซ้อม')}</td>
+      <td data-label="สถานะ" class="px-3 py-2">${label}</td>
+      <td data-label="ตัดโควต้า" class="px-3 py-2">${entry.deduction ? '−' + entry.deduction + ' ครั้ง' : '0'}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="4" class="px-3 py-4 text-nike-mute">ยังไม่มีประวัติเข้าเรียน</td></tr>';
+  const latest = document.getElementById('dash-latest-practice');
+  const latestDate = dates.find(dateKey => dateKey <= getTodayDateKey() && history.get(dateKey).status === 'attending' && history.get(dateKey).updatedBy !== 'parent');
+  const advice = document.getElementById('dash-coach-advice');
+  if (advice) {
+    const remarks = [loggedInStudent.remarkOat, loggedInStudent.remarkOak].filter(remark => typeof remark === 'string' && remark.trim());
+    advice.hidden = !remarks.length;
+    advice.querySelector('p').textContent = remarks.join(' · ');
+  }
+  if (latest) latest.textContent = latestDate ? 'ซ้อมล่าสุด ' + dateFormat.format(new Date(latestDate + 'T12:00:00Z')) : 'ยังไม่มีบันทึกการซ้อม';
   updateParentTodayStatusUI();
   renderLivePeers();
   switchParentCategory(activeParentCategory);
@@ -583,9 +543,9 @@ function renderLivePeers() {
   });
 }
 
-function openRsvpModal() {
+function openRsvpModal(dateKey = getTodayDateKey()) {
   const modal = document.getElementById('rsvpModal');
-  document.getElementById('rsvpDateInput').value = new Date().toISOString().split('T')[0];
+  document.getElementById('rsvpDateInput').value = dateKey;
   modal.classList.remove('hidden');
 }
 function closeRsvpModal() { document.getElementById('rsvpModal').classList.add('hidden'); }
@@ -594,14 +554,17 @@ function handleRsvpSubmit(e) {
   e.preventDefault();
   const date = document.getElementById('rsvpDateInput').value;
   const slot = document.getElementById('rsvpTimeSlot').value;
+  if (!setTodayAttendanceFromParent('attending', '', date, slot)) {
+    if (!loggedInStudent) closeRsvpModal();
+    return;
+  }
   closeRsvpModal();
-  setTodayAttendanceFromParent('attending');
   showToast(`แจ้งเข้าเรียนวันที่ ${date} (${slot}) ให้ทีมโค้ชทราบเรียบร้อยครับ`);
 }
 
-function openLeaveModal() {
+function openLeaveModal(dateKey = getTodayDateKey()) {
   const modal = document.getElementById('leaveModal');
-  document.getElementById('leaveDateInput').value = new Date().toISOString().split('T')[0];
+  document.getElementById('leaveDateInput').value = dateKey;
   modal.classList.remove('hidden');
 }
 function closeLeaveModal() { document.getElementById('leaveModal').classList.add('hidden'); }
@@ -610,27 +573,40 @@ function handleLeaveSubmit(e) {
   e.preventDefault();
   const date = document.getElementById('leaveDateInput').value;
   const reason = document.getElementById('leaveReasonInput').value || 'แจ้งลาเรียน';
+  if (!setTodayAttendanceFromParent('leave', reason, date)) {
+    if (!loggedInStudent) closeLeaveModal();
+    return;
+  }
   closeLeaveModal();
-  setTodayAttendanceFromParent('leave', reason);
   showToast(`บันทึกการลาวันที่ ${date} (${reason}) เรียบร้อย โดยไม่ตัดโควต้าครับ`);
 }
 
-function setTodayAttendanceFromParent(status, leaveReason = '') {
+function setTodayAttendanceFromParent(status, leaveReason = '', dateKey = getTodayDateKey(), slot = '') {
   if (!loggedInStudent) {
     showToast('กรุณาเข้าสู่ระบบก่อนแจ้งสถานะการเข้าเรียนครับ');
     switchTab('parent-portal');
     return;
   }
 
-  const todayKey = getTodayDateKey();
-  if (!dailyAttendance[todayKey]) dailyAttendance[todayKey] = {};
+  if (!isAttendanceDateKey(dateKey)) {
+    showToast('กรุณาเลือกวันที่ให้ถูกต้อง');
+    return false;
+  }
+  if (!dailyAttendance[dateKey]) dailyAttendance[dateKey] = {};
+  const existing = dailyAttendance[dateKey][loggedInStudent.id];
+  if (existing && existing.updatedBy && existing.updatedBy !== 'parent') {
+    showToast('โค้ชบันทึกสถานะของรอบนี้แล้ว');
+    return false;
+  }
 
-  const nowTime = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+  const nowTime = new Date().toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' }) + ' น.';
 
-  dailyAttendance[todayKey][loggedInStudent.id] = {
+  dailyAttendance[dateKey][loggedInStudent.id] = {
     studentId: loggedInStudent.id,
     name: loggedInStudent.name,
-    status: status,
+    status,
+    dateKey,
+    slot,
     leaveReason: leaveReason || (status === 'leave' ? 'แจ้งลาเรียน' : ''),
     time: nowTime,
     updatedBy: 'parent',
@@ -648,7 +624,8 @@ function setTodayAttendanceFromParent(status, leaveReason = '') {
     status: status,
     leaveReason: leaveReason || (status === 'leave' ? 'แจ้งลาเรียน' : ''),
     time: nowTime,
-    dateKey: todayKey
+    dateKey,
+    slot
   };
 
   if (typeof publishToMqttBrokers === 'function') {
@@ -666,24 +643,24 @@ function setTodayAttendanceFromParent(status, leaveReason = '') {
       targetRole: 'coach',
       title: status === 'attending' ? `🏀 น้อง ${loggedInStudent.name} แจ้งเข้าเรียน` : `📝 น้อง ${loggedInStudent.name} ขอลาเรียน`,
       body: status === 'attending' 
-        ? `ผู้ปกครองแจ้งเข้าเรียนคลาสวันนี้ (${nowTime}) • น้อง ${loggedInStudent.name}` 
-        : `ผู้ปกครองแจ้งขอลาเรียน: ${leaveReason || 'ลาเรียน'} (${nowTime}) • น้อง ${loggedInStudent.name}`,
+        ? `ผู้ปกครองแจ้งเข้าเรียนวันที่ ${dateKey} (${nowTime}) • น้อง ${loggedInStudent.name}`
+        : `ผู้ปกครองแจ้งขอลาวันที่ ${dateKey}: ${leaveReason || 'ลาเรียน'} (${nowTime}) • น้อง ${loggedInStudent.name}`,
       tag: `parent-status-${loggedInStudent.id}-${Date.now()}`
     });
   }
 
-  updateParentTodayStatusUI();
-  renderParentClassmatesList();
+  renderParentView();
   if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
   playNotificationChime();
 
   if (status === 'attending') {
-    showToast(`ยืนยันการเข้าเรียนวันนี้ของน้อง ${loggedInStudent.name} เรียบร้อยแล้ว`);
-    triggerTelegramPush(`น้อง ${loggedInStudent.name} ยืนยันเข้าเรียนคลาสวันนี้ (${nowTime})`, 'DBO Attendance Check-in');
+    showToast(`ยืนยันเข้าเรียนวันที่ ${dateKey} ของน้อง ${loggedInStudent.name} เรียบร้อยแล้ว`);
+    triggerTelegramPush(`น้อง ${loggedInStudent.name} ยืนยันเข้าเรียนวันที่ ${dateKey} (${nowTime})`, 'DBO Attendance Check-in');
   } else {
     showToast(`แจ้งลาเรียนของน้อง ${loggedInStudent.name} เรียบร้อย`);
-    triggerTelegramPush(`น้อง ${loggedInStudent.name} แจ้งขอลาหยุดวันนี้: ${leaveReason || 'ลาเรียน'}`, 'DBO Leave Notice');
+    triggerTelegramPush(`น้อง ${loggedInStudent.name} แจ้งลาวันที่ ${dateKey}: ${leaveReason || 'ลาเรียน'}`, 'DBO Leave Notice');
   }
+  return true;
 }
 
 function updateParentTodayStatusUI() {
@@ -921,13 +898,13 @@ function renderParentRegistrations() {
         <span class="text-[10px] text-slate-400 font-mono">ลงทะเบียน: ${reg.createdDateStr}</span>
       </div>
 
-      <div class="flex items-center gap-2 self-end sm:self-auto flex-shrink-0">
+      <div class="flex flex-wrap items-center justify-end gap-2 max-w-full">
         <button onclick="rejectParentRegistration('${reg.id}')" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
           ปฏิเสธ
         </button>
         <button onclick="approveParentRegistration('${reg.id}')" class="btn-touch px-3.5 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs flex items-center gap-1.5 transition-colors">
           <i data-lucide="check" class="w-3.5 h-3.5"></i>
-          <span>อนุมัติ & ผูกเบอร์อัตโนมัติ</span>
+          <span>อนุมัติและผูกเบอร์</span>
         </button>
       </div>
     `;
@@ -1001,17 +978,14 @@ function rejectParentRegistration(regId) {
 }
 
 // Course type changes & fee calculations
+function getRegistrationCourseType() {
+  return document.querySelector('#regCourseType input:checked').value;
+}
+
 function handleCourseTypeChange(val) {
   const privateGroup = document.getElementById('privateClassGroup');
   const hint = document.getElementById('monthlyRenewalHint');
   const startInput = document.getElementById('regStartDate');
-  if (startInput && !startInput.dataset.boundMonthlyChange) {
-    startInput.dataset.boundMonthlyChange = '1';
-    startInput.addEventListener('change', () => {
-      const ct = document.getElementById('regCourseType');
-      if (ct) handleCourseTypeChange(ct.value);
-    });
-  }
   
   if (val === 'private') {
     if (privateGroup) privateGroup.classList.remove('hidden');
@@ -1076,7 +1050,7 @@ function toggleReferralInput(checked) {
 }
 
 function calculateFee() {
-  const courseType = document.getElementById('regCourseType').value;
+  const courseType = getRegistrationCourseType();
   const school = (document.getElementById('regSchool').value || '').trim();
   const isTechawit = school.includes('เตชะวิทย์') || school.toLowerCase().includes('techawit');
   const refCheck = document.getElementById('regReferralCheck');
@@ -1161,7 +1135,7 @@ function handleNewStudentRegister(e) {
   const fullName = document.getElementById('regFullName').value.trim();
   const phone = document.getElementById('regParentPhone').value.trim();
   const school = document.getElementById('regSchool').value.trim();
-  const courseType = document.getElementById('regCourseType').value;
+  const courseType = getRegistrationCourseType();
   const startDate = document.getElementById('regStartDate').value;
   const parentName = document.getElementById('regParentName').value.trim() || `ผู้ปกครองน้อง ${nickName}`;
 
@@ -1201,5 +1175,6 @@ function handleNewStudentRegister(e) {
   triggerTelegramPush(`🎉 ได้รับใบสมัครใหม่: น้อง ${nickName} (${courseType === 'private' ? 'Private Class' : 'คอร์สเรียน'}) สลิป ${amount.toLocaleString()} บ.`, 'DBO Academy Roster');
   showToast(`ส่งใบสมัครและสลิปของ "น้อง ${nickName}" เรียบร้อย! ทีมงานจะตรวจสอบและอนุมัติระบบให้ทันที`);
   document.getElementById('newStudentForm').reset();
+  handleCourseTypeChange(getRegistrationCourseType());
   switchTab('parent-portal');
 }

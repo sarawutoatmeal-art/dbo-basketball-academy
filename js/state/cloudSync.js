@@ -42,6 +42,7 @@ async function pushStateToCloudApi(snapshot) {
 }
 
 function publishToMqttBrokers(topic, payloadObj, options = { qos: 1, retain: false }) {
+  if (IS_TEST_DEMO_ENV) return;
   const msg = JSON.stringify(payloadObj);
   const clients = [window.realtimeMqttClient, window.backupMqttClient].filter(Boolean);
   clients.forEach(client => {
@@ -528,8 +529,8 @@ function handleIncomingMqttMessage(topic, message) {
           ? '🏀 แจ้งเตือนโค้ช: มีนักเรียนแจ้งเข้าเรียน' 
           : '⚠️ แจ้งเตือนโค้ช: มีนักเรียนแจ้งลาหยุด';
         const bodyText = isAttending
-          ? `ผู้ปกครองน้อง ${stName} แจ้งยืนยันเข้าเรียนคลาสวันนี้ (${nowT})`
-          : `ผู้ปกครองน้อง ${stName} แจ้งลาหยุดคลาสวันนี้${reason} (${nowT})`;
+          ? `ผู้ปกครองน้อง ${stName} แจ้งเข้าเรียนวันที่ ${payload.dateKey || getTodayDateKey()} (${nowT})`
+          : `ผู้ปกครองน้อง ${stName} แจ้งลาวันที่ ${payload.dateKey || getTodayDateKey()}${reason} (${nowT})`;
 
         // Notify if user is coach or staff
         if (isCoachAuth || currentStaff) {
@@ -666,7 +667,7 @@ function initRealtimeEngine() {
   // 1. Cross-tab Local BroadcastChannel
   try {
     if ('BroadcastChannel' in window) {
-      window.dboRealtimeBC = new BroadcastChannel('dbo_academy_bus');
+      window.dboRealtimeBC = new BroadcastChannel(IS_TEST_DEMO_ENV ? 'dbo_demo_bus' : 'dbo_academy_bus');
       window.dboRealtimeBC.onmessage = (event) => {
         if (event.data && event.data.type === 'STATE_CHANGED' && event.data.data) {
           applyIncomingState(event.data.data, event.data.actionDesc);
@@ -685,6 +686,8 @@ function initRealtimeEngine() {
       reloadStateFromStorage();
     }
   });
+
+  if (IS_TEST_DEMO_ENV) return;
 
   // 2. Pull from Vercel Cloud API
   pullStateFromCloudApi();

@@ -13,17 +13,11 @@ function setCoachRosterViewMode(mode) {
   const cardsEl = document.getElementById('coachRosterMobileCards');
   const tableEl = document.getElementById('coachRosterDesktopTable');
 
-  if (mode === 'cards') {
-    if (cardsEl) cardsEl.classList.remove('hidden');
-    if (tableEl) tableEl.classList.add('hidden');
-    if (btnCards) btnCards.className = 'px-2.5 py-1 rounded-md font-medium text-xs transition flex items-center gap-1 bg-white text-slate-900 shadow-2xs';
-    if (btnTable) btnTable.className = 'px-2.5 py-1 rounded-md font-medium text-xs transition flex items-center gap-1 text-slate-600 hover:text-slate-900';
-  } else {
-    if (cardsEl) cardsEl.classList.add('hidden');
-    if (tableEl) tableEl.classList.remove('hidden');
-    if (btnCards) btnCards.className = 'px-2.5 py-1 rounded-md font-medium text-xs transition flex items-center gap-1 text-slate-600 hover:text-slate-900';
-    if (btnTable) btnTable.className = 'px-2.5 py-1 rounded-md font-medium text-xs transition flex items-center gap-1 bg-white text-slate-900 shadow-2xs';
-  }
+  const showingCards = mode === 'cards';
+  cardsEl?.classList.toggle('hidden', !showingCards);
+  tableEl?.classList.toggle('hidden', showingCards);
+  btnCards?.setAttribute('aria-pressed', String(showingCards));
+  btnTable?.setAttribute('aria-pressed', String(!showingCards));
 }
 
 function filterCoachCategory(cat) {
@@ -31,20 +25,7 @@ function filterCoachCategory(cat) {
   const cats = ['all', 'regular', 'monthly', 'saturday', 'low'];
   cats.forEach(c => {
     const btn = document.getElementById(`btn-filter-${c}`);
-    if (!btn) return;
-    if (c === cat) {
-      if (c === 'low') {
-        btn.className = 'filter-chip active text-xs font-semibold bg-[#D30005] border-[#D30005] text-white flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95';
-      } else {
-        btn.className = 'filter-chip active text-xs font-semibold bg-nike-ink border-nike-ink text-white flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95';
-      }
-    } else {
-      if (c === 'low') {
-        btn.className = 'filter-chip text-xs font-medium text-[#D30005] hover:bg-red-50 flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95';
-      } else {
-        btn.className = 'filter-chip text-xs font-medium bg-nike-canvas text-nike-ink hover:bg-nike-cloud transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer active:scale-95';
-      }
-    }
+    btn?.setAttribute('aria-pressed', String(c === cat));
   });
   renderCoachRosterTable();
 }
@@ -56,25 +37,14 @@ function switchCoachSubTab(subTab) {
   const btnRoster = document.getElementById('coachSubTabRoster');
   const btnRecords = document.getElementById('coachSubTabRecords');
 
-  if (subTab === 'records') {
-    if (rosterSec) rosterSec.classList.add('hidden');
-    if (recordsSec) recordsSec.classList.remove('hidden');
-    if (btnRecords) {
-      btnRecords.className = 'btn-touch px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-900 text-white shadow-2xs';
-    }
-    if (btnRoster) {
-      btnRoster.className = 'btn-touch px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100';
-    }
+  const showingRecords = subTab === 'records';
+  rosterSec?.classList.toggle('hidden', showingRecords);
+  recordsSec?.classList.toggle('hidden', !showingRecords);
+  btnRoster?.setAttribute('aria-pressed', String(!showingRecords));
+  btnRecords?.setAttribute('aria-pressed', String(showingRecords));
+  if (showingRecords) {
     if (typeof renderTeachingRecordsList === 'function') renderTeachingRecordsList();
   } else {
-    if (recordsSec) recordsSec.classList.add('hidden');
-    if (rosterSec) rosterSec.classList.remove('hidden');
-    if (btnRoster) {
-      btnRoster.className = 'btn-touch px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-900 text-white shadow-2xs';
-    }
-    if (btnRecords) {
-      btnRecords.className = 'btn-touch px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100';
-    }
     renderCoachRosterTable();
   }
   lucide.createIcons();
@@ -215,29 +185,28 @@ function renderCoachRosterTable() {
       tr.className = "hover:bg-slate-50 transition";
       
       tr.innerHTML = `
-        <td class="py-2.5 px-3 text-center text-xs text-slate-400 font-mono font-medium">${s.id}</td>
-        <td class="py-2.5 px-3">
+        <td data-label="เลขที่" class="py-2.5 px-3 text-center text-xs text-slate-400 font-mono font-medium">${s.id}</td>
+        <td data-label="นักเรียน" class="py-2.5 px-3">
           <div class="flex items-center gap-1.5 flex-wrap">
             <strong onclick="openEditStudentModal(${s.id})" class="text-xs sm:text-sm font-bold text-dbo-navy hover:text-indigo-600 cursor-pointer" title="คลิกเพื่อแก้ไข">น้อง ${s.name}</strong>
-            <span class="sm:hidden">${typeBadge}</span>
           </div>
           ${s.phone ? `<span class="font-mono text-slate-500 text-xs flex items-center gap-1 pt-0.5"><i data-lucide="phone" class="w-3 h-3 text-slate-400"></i> ${maskPhone(s.phone)}</span>` : `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-medium bg-amber-50 text-amber-800 border border-amber-200 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
         </td>
-        <td class="py-2.5 px-3 hidden sm:table-cell">${typeBadge}</td>
-        <td class="py-2.5 px-3 hidden md:table-cell">
+        <td data-label="คอร์ส" class="py-2.5 px-3 hidden sm:table-cell">${typeBadge}</td>
+        <td data-label="รอบตัดยอด" class="py-2.5 px-3 hidden md:table-cell">
           ${dateCycleColHtml}
         </td>
-        <td class="py-2.5 px-3 text-center whitespace-nowrap">
+        <td data-label="สิทธิ์คงเหลือ" class="py-2.5 px-3 text-center whitespace-nowrap">
           ${remBadge}
         </td>
-        <td class="py-2.5 px-3 text-center">
+        <td data-label="จัดการ" class="py-2.5 px-3 text-center">
           <div class="inline-flex items-center gap-1">
-            <button type="button" onclick="openEditStudentModal(${s.id})" title="แก้ไขชื่อ / สิทธิ์ / ข้อมูล" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 transition-colors cursor-pointer">
+            <button type="button" onclick="openEditStudentModal(${s.id})" aria-label="แก้ไขชื่อ สิทธิ์ หรือข้อมูล" title="แก้ไขชื่อ / สิทธิ์ / ข้อมูล" class="roster-edit-button px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 transition-colors cursor-pointer">
               <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
               <span>แก้ไข</span>
             </button>
             ${!isAsst ? `
-            <button type="button" onclick="coachDeleteStudent(${s.id})" title="ลบชื่อ" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer">
+            <button type="button" onclick="coachDeleteStudent(${s.id})" aria-label="ลบชื่อ" title="ลบชื่อ" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer">
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             </button>` : ''}
           </div>
@@ -246,44 +215,34 @@ function renderCoachRosterTable() {
       tbody.appendChild(tr);
     }
 
-    // 2. Mobile Cards (Clean, Spacious, Never Truncated, No Duplicate Notifications)
     if (cardsContainer) {
       const card = document.createElement('div');
-      card.className = "card-clean p-3.5 rounded-[14px] border border-nike-hairlineSoft bg-white hover:border-black/30 transition-all space-y-2.5";
-
+      card.className = 'card-clean roster-card';
       card.innerHTML = `
-        <!-- Row 1: Student ID + Full Legible Name + Course Badge + Action Buttons -->
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex items-center gap-2 min-w-0 flex-wrap">
-            <span class="w-7 h-7 rounded-full bg-nike-cloud text-nike-ink font-mono font-bold text-xs flex items-center justify-center flex-shrink-0 border border-nike-hairlineSoft">
-              #${s.id}
-            </span>
-            <h4 onclick="openEditStudentModal(${s.id})" class="font-bold text-nike-ink text-sm sm:text-base leading-snug cursor-pointer hover:underline">
-              น้อง ${s.name}
-            </h4>
-            ${typeBadge}
+        <div class="roster-card-heading">
+          <div class="roster-card-identity">
+            <h4><button type="button" onclick="openEditStudentModal(${s.id})" class="text-start hover:underline">น้อง ${s.name}</button></h4>
+            <div class="roster-card-meta">
+              <span class="tabular-nums">#${s.id}</span>
+              ${typeBadge}
+            </div>
           </div>
-
-          <div class="flex items-center gap-1.5 flex-shrink-0 pt-0.5">
-            <button type="button" onclick="openEditStudentModal(${s.id})" class="btn-touch px-2.5 py-1 rounded-full text-xs font-semibold bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft inline-flex items-center gap-1 transition-all active:scale-95 cursor-pointer" title="แก้ไขข้อมูล & ปรับสิทธิ์">
-              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-nike-ink"></i>
-              <span>แก้ไข</span>
+          <div class="roster-card-actions">
+            <button type="button" onclick="openEditStudentModal(${s.id})" class="roster-edit-button" title="แก้ไขข้อมูลและปรับสิทธิ์">
+              <i data-lucide="pencil"></i><span>แก้ไข</span>
             </button>
             ${!isAsst ? `
-            <button type="button" onclick="coachDeleteStudent(${s.id})" title="ลบชื่อ" class="w-7 h-7 rounded-full text-neutral-400 hover:text-[#D30005] hover:bg-red-50 flex items-center justify-center transition-all active:scale-90 cursor-pointer">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <button type="button" onclick="coachDeleteStudent(${s.id})" aria-label="ลบชื่อ" title="ลบชื่อ" class="roster-delete-button">
+              <i data-lucide="trash-2"></i>
             </button>` : ''}
           </div>
         </div>
-
-        <!-- Row 2: Phone & Single Clear Quota Badge (Never Repetitive) -->
-        <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
-          <div class="flex items-center gap-2 text-xs text-nike-mute min-w-0">
-            ${s.phone ? `<span class="font-mono text-nike-mute flex items-center gap-1"><i data-lucide="phone" class="w-3 h-3 text-nike-mute"></i> ${maskPhone(s.phone)}</span>` : `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
+        <div class="roster-card-details">
+          <div class="roster-card-contact">
+            <i data-lucide="phone"></i>
+            <span>${s.phone ? maskPhone(s.phone) : 'รอผูกเบอร์'}</span>
           </div>
-          <div class="flex-shrink-0">
-            ${remBadge}
-          </div>
+          <div class="roster-card-quota">${remBadge}</div>
         </div>
       `;
       cardsContainer.appendChild(card);
@@ -702,7 +661,7 @@ function handleSaveStudent(e) {
         if (!student.vJumpHistory) student.vJumpHistory = [];
         if (vJVal !== student.vJump) {
           const nowD = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
-          student.vJumpHistory.push({ date: nowD, val: vJVal });
+          student.vJumpHistory.push({ date: nowD, dateKey: getTodayDateKey(), val: vJVal });
         }
         student.vJump = vJVal;
       } else {
@@ -714,7 +673,7 @@ function handleSaveStudent(e) {
         if (!student.longJumpHistory) student.longJumpHistory = [];
         if (lJVal !== student.longJump) {
           const nowD = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
-          student.longJumpHistory.push({ date: nowD, val: lJVal });
+          student.longJumpHistory.push({ date: nowD, dateKey: getTodayDateKey(), val: lJVal });
         }
         student.longJump = lJVal;
       } else {
@@ -751,9 +710,9 @@ function handleSaveStudent(e) {
       remarkOat: rOat || '',
       remarkOak: rOak || '',
       vJump: vJVal > 0 ? vJVal : null,
-      vJumpHistory: vJVal > 0 ? [{ date: 'แรกเข้า', val: vJVal }] : [],
+      vJumpHistory: vJVal > 0 ? [{ date: 'แรกเข้า', dateKey: getTodayDateKey(), val: vJVal }] : [],
       longJump: lJVal > 0 ? lJVal : null,
-      longJumpHistory: lJVal > 0 ? [{ date: 'แรกเข้า', val: lJVal }] : [],
+      longJumpHistory: lJVal > 0 ? [{ date: 'แรกเข้า', dateKey: getTodayDateKey(), val: lJVal }] : [],
       isRealSportsMetrics: !!(rOat || rOak || vJVal > 0 || lJVal > 0),
       _updatedAt: Date.now(),
       _lastCoachActionAt: Date.now(),

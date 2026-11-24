@@ -3,12 +3,19 @@
 // (Roll Call Sessions, History Modal, Daily Attendance Board, DBO Academy Records)
 // ========================================================
 
-function getTodayDateKey() {
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+const attendanceDateFormatter = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit'
+});
+
+function getTodayDateKey(date = new Date()) {
+  const parts = Object.fromEntries(attendanceDateFormatter.formatToParts(date).map(part => [part.type, part.value]));
+  return parts.year + '-' + parts.month + '-' + parts.day;
+}
+
+function isAttendanceDateKey(key) {
+  if (typeof key !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(key)) return false;
+  const date = new Date(key + 'T12:00:00Z');
+  return Number.isFinite(date.valueOf()) && date.toISOString().slice(0, 10) === key;
 }
 
 let activeAttendanceDate = getTodayDateKey();
@@ -163,6 +170,7 @@ function openAttendanceHistoryModal() {
   if (!modal) return;
   renderAttendanceHistoryModal();
   modal.classList.remove('hidden');
+  if (modal.firstElementChild) modal.firstElementChild.scrollTop = 0;
   lucide.createIcons();
 }
 
@@ -201,8 +209,7 @@ function renderAttendanceHistoryModal() {
     listContainer.innerHTML = `
       <div class="p-8 text-center text-slate-400 space-y-2">
         <i data-lucide="calendar-x-2" class="w-10 h-10 mx-auto text-slate-300"></i>
-        <p class="font-bold text-slate-600">ยังไม่มีประวัติการเช็คชื่อที่ถูกบันทึก</p>
-        <p class="text-xs">เมื่อโค้ชเช็คชื่อเข้าฝึกซ้อม ข้อมูลสถิติรายวันจะถูกรวบรวมไว้ที่นี่อัตโนมัติ</p>
+        <p class="font-bold text-slate-600">ยังไม่มีประวัติเข้าเรียน</p>
       </div>
     `;
     lucide.createIcons();
@@ -227,42 +234,19 @@ function renderAttendanceHistoryModal() {
     const isToday = (dk === getTodayDateKey());
 
     const item = document.createElement('div');
-    item.className = "card-clean p-4 rounded-xl border border-slate-200 bg-white space-y-3";
+    item.className = 'card-clean history-entry';
     item.innerHTML = `
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
-        <div>
-          <div class="flex items-center gap-2">
-            <h4 class="font-bold text-slate-900 text-sm sm:text-base">${formattedDate}</h4>
-            ${isToday ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">วันนี้</span>' : ''}
-          </div>
-          <span class="text-xs text-slate-500 font-medium">${scheduleNote}</span>
-        </div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-            มาเรียน ${attending.length} คน
-          </span>
-          <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
-            ลา ${leave.length} คน
-          </span>
-          <button type="button" onclick="jumpToDateForRollCall('${dk}')" class="btn-touch px-3 py-1 rounded-lg text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white transition flex items-center gap-1 cursor-pointer">
-            <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400"></i>
-            <span>เปิดรอบเช็คชื่อ</span>
-          </button>
-          <button type="button" onclick="copyDailyAttendanceLineSummary('${dk}')" class="btn-touch px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center gap-1 cursor-pointer" title="คัดลอกสรุปส่งไลน์กลุ่ม">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-            <span>ก๊อปส่งไลน์</span>
-          </button>
-        </div>
+      <div class="history-entry-heading">
+        <h4>${formattedDate}${isToday ? ' · วันนี้' : ''}</h4>
+        <p>${scheduleNote}</p>
       </div>
-
-      <div class="space-y-1.5">
-        <div class="flex items-center justify-between text-xs text-slate-600">
-          <span class="font-bold text-emerald-800">รายชื่อนักเรียนที่มาเรียน (${attending.length} คน):</span>
-          <button type="button" onclick="toggleHistoryAttendeeList('histAttList_${dk}')" class="text-indigo-600 hover:underline text-[11px] font-semibold cursor-pointer">
-            ดู/ซ่อนรายชื่อ
-          </button>
-        </div>
-        <div id="histAttList_${dk}" class="flex flex-wrap gap-1.5 pt-1">
+      <div class="history-entry-counts">
+        <span class="text-emerald-800">มาเรียน <strong>${attending.length}</strong></span>
+        <span class="text-amber-800">ลา <strong>${leave.length}</strong></span>
+      </div>
+      <details>
+        <summary>รายชื่อผู้มาเรียน</summary>
+        <div class="flex flex-wrap gap-1.5 pt-2">
           ${attending.map(a => `
             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-900 border border-emerald-200">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
@@ -271,16 +255,19 @@ function renderAttendanceHistoryModal() {
             </span>
           `).join('') || '<span class="text-xs text-slate-400 italic">ไม่มีข้อมูลผู้มาเรียน</span>'}
         </div>
+      </details>
+      <div class="history-entry-actions">
+        <button type="button" onclick="jumpToDateForRollCall('${dk}')" class="btn-touch bg-nike-ink text-white">
+          <i data-lucide="calendar"></i><span>เปิดรอบ</span>
+        </button>
+        <button type="button" onclick="copyDailyAttendanceLineSummary('${dk}')" class="btn-touch bg-nike-cloud text-nike-ink" title="คัดลอกสรุปสำหรับส่ง LINE">
+          <i data-lucide="copy"></i><span>คัดลอกสรุป</span>
+        </button>
       </div>
     `;
     listContainer.appendChild(item);
   });
   lucide.createIcons();
-}
-
-function toggleHistoryAttendeeList(elId) {
-  const el = document.getElementById(elId);
-  if (el) el.classList.toggle('hidden');
 }
 
 function jumpToDateForRollCall(dateKey) {
@@ -291,6 +278,25 @@ function jumpToDateForRollCall(dateKey) {
   closeAttendanceHistoryModal();
   switchTab('coach-roster');
   showToast(`สลับไปยังรอบเช็คชื่อวันที่ ${dateKey} เรียบร้อยแล้ว`);
+}
+
+async function copyTeachingRecordSummary(recordId) {
+  if (!isCoachAuth) return;
+  const record = teachingRecords.find(item => item.id === recordId);
+  if (!record || !isAttendanceDateKey(record.date)) return;
+  const date = new Intl.DateTimeFormat('th-TH', { timeZone: 'Asia/Bangkok', dateStyle: 'long' }).format(new Date(record.date + 'T12:00:00Z'));
+  const text = [
+    'สรุปหลังซ้อม DBO · ' + date,
+    record.slot,
+    'มาเรียน ' + (record.attendingStudents?.length || 0) + ' คน · ลา ' + (record.leaveStudents?.length || 0) + ' คน',
+    record.topic ? 'หัวข้อซ้อม: ' + record.topic : ''
+  ].filter(Boolean).join('\n');
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('คัดลอกสรุปหลังซ้อมแล้ว');
+  } catch {
+    window.prompt('คัดลอกสรุปหลังซ้อม', text);
+  }
 }
 
 function copyDailyAttendanceLineSummary(dateKey) {
@@ -341,6 +347,58 @@ function copyDailyAttendanceLineSummary(dateKey) {
 }
 
 // Daily Attendance Board
+function buildAttendanceWeeks(recordsByDate, today) {
+  const shortDate = new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', timeZone: 'Asia/Bangkok' });
+  const anchor = new Date(getTodayDateKey(today) + 'T12:00:00Z');
+  const dateAt = offset => new Date(anchor.valueOf() + offset * 86400000);
+  return Array.from({ length: 4 }, (_, index) => {
+    const firstDay = -27 + index * 7;
+    const start = dateAt(firstDay);
+    const end = dateAt(firstDay + 6);
+    let attendance = 0;
+    let recorded = false;
+    for (let offset = 0; offset < 7; offset++) {
+      const date = dateAt(firstDay + offset);
+      const key = getTodayDateKey(date);
+      const entries = Object.values(recordsByDate[key] || {});
+      recorded ||= entries.some(entry => entry?.status === 'attending' || entry?.status === 'leave');
+      attendance += entries.filter(entry => entry?.status === 'attending').length;
+    }
+    return { label: shortDate.format(start), period: shortDate.format(start) + ' – ' + shortDate.format(end), attendance, recorded };
+  });
+}
+
+function renderAttendanceTrend() {
+  const bars = document.getElementById('attendanceTrendBars');
+  const empty = document.getElementById('attendanceTrendEmpty');
+  if (!bars || !empty) return;
+
+  const weeks = buildAttendanceWeeks(dailyAttendance, new Date());
+  const hasRecords = weeks.some(week => week.recorded);
+  bars.classList.toggle('hidden', !hasRecords);
+  empty.classList.toggle('hidden', hasRecords);
+  bars.replaceChildren();
+  if (!hasRecords) return;
+
+  const maxAttendance = Math.max(1, ...weeks.map(week => week.attendance));
+  for (const week of weeks) {
+    const item = document.createElement('li');
+    item.setAttribute('aria-label', week.period + (week.recorded ? ' · ' + week.attendance + ' ครั้ง' : ' · ยังไม่มีบันทึก'));
+    const value = document.createElement('strong');
+    value.textContent = week.recorded ? week.attendance : '–';
+    const track = document.createElement('span');
+    track.className = 'attendance-trend-track';
+    track.setAttribute('aria-hidden', 'true');
+    const fill = document.createElement('span');
+    fill.style.setProperty('--attendance-share', (week.attendance / maxAttendance) * 100 + '%');
+    track.appendChild(fill);
+    const label = document.createElement('span');
+    label.textContent = week.label;
+    item.append(value, track, label);
+    bars.appendChild(item);
+  }
+}
+
 function renderDailyAttendanceBoard() {
   const todayKey = getTodayDateKey();
   const records = dailyAttendance[todayKey] || {};
@@ -377,6 +435,10 @@ function renderDailyAttendanceBoard() {
   if (attendingCountEl) attendingCountEl.innerText = attending.length;
   if (leaveCountEl) leaveCountEl.innerText = leave.length;
   if (unconfirmedCountEl) unconfirmedCountEl.innerText = unconfirmed.length;
+  document.getElementById('homeAttendingCount').textContent = attending.length;
+  document.getElementById('homeLeaveCount').textContent = leave.length;
+  document.getElementById('homeUnconfirmedCount').textContent = unconfirmed.length;
+  if (isCoachAuth) renderAttendanceTrend();
 
   if (attendingBadge) attendingBadge.innerText = attending.length;
   if (leaveBadge) leaveBadge.innerText = leave.length;
@@ -567,32 +629,35 @@ function renderTeachingRecordsList(filterMonth = null) {
 
       <div class="space-y-1.5">
         <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">รายชื่อนักเรียนที่เช็คชื่อเข้าเรียน:</span>
-        <div class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1">
+        <div class="flex flex-wrap gap-1.5 p-1">
           ${attendingChips}
         </div>
         ${leaveStudents.length > 0 ? `
           <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block pt-1">รายชื่อนักเรียนที่แจ้งลา:</span>
-          <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1">
+          <div class="flex flex-wrap gap-1.5 p-1">
             ${leaveChips}
           </div>
         ` : ''}
       </div>
 
       <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <button type="button" onclick="openEditTeachingRecordModal('${rec.id}')" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 transition cursor-pointer shadow-2xs">
             <i data-lucide="edit-3" class="w-3.5 h-3.5 text-emerald-400"></i>
-            <span>✏️ ดู / แก้ไข Record นี้</span>
+            <span>ดูหรือแก้ไข</span>
+          </button>
+          <button type="button" onclick="copyTeachingRecordSummary('${rec.id}')" class="btn-touch px-3 bg-nike-cloud text-nike-ink flex gap-2">
+            <i data-lucide="copy"></i><span>สรุปหลังซ้อม</span>
           </button>
           <button type="button" onclick="resendTeachingRecordNotifications('${rec.id}')" class="btn-touch px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 flex items-center gap-1.5 transition cursor-pointer" title="ส่งการแจ้งเตือนไปยังเครื่องผู้ปกครองอีกครั้ง">
             <i data-lucide="bell-ring" class="w-3.5 h-3.5 text-slate-500"></i>
-            <span>📢 ส่งแจ้งเตือน ผปค ซ้ำ</span>
+            <span>แจ้งผู้ปกครองอีกครั้ง</span>
           </button>
         </div>
 
         <button type="button" onclick="deleteTeachingRecord('${rec.id}')" class="btn-touch px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 border border-rose-200 hover:border-rose-300 flex items-center gap-1 transition cursor-pointer" title="ลบ Record นี้ และคืนสิทธิ์ให้นักเรียน">
           <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-          <span>ลบ Record (คืนสิทธิ์)</span>
+          <span>ลบและคืนสิทธิ์</span>
         </button>
       </div>
     `;
@@ -612,40 +677,74 @@ function resetRecordMonthFilter() {
   renderTeachingRecordsList();
 }
 
-function openNewTeachingRecordModal() {
+function openNewTeachingRecordModal(dateKey = activeAttendanceDate || getTodayDateKey()) {
+  if (!isCoachAuth) return;
   const modal = document.getElementById('teachingRecordModal');
   if (!modal) return;
 
   document.getElementById('editingRecordId').value = '';
-  document.getElementById('recordModalTitle').innerText = 'บันทึกการสอน & เช็คชื่อเข้าเรียน (New Record)';
+  document.getElementById('recordModalTitle').innerText = 'เช็กชื่อรอบใหม่';
   
-  const todayKey = activeAttendanceDate || getTodayDateKey();
-  document.getElementById('recordDateInput').value = todayKey;
+  document.getElementById('recordDateInput').value = dateKey;
 
   const coachSelect = document.getElementById('recordCoachSelect');
   if (coachSelect && currentStaff) {
     coachSelect.value = currentStaff.role.includes('ผู้ช่วย') ? 'ผู้ช่วยโค้ช (Assistant)' : (currentStaff.name.includes('โอ๊ค') ? 'โค้ชโอ๊ค' : 'โค้ชโอ๊ต (Head Coach)');
   }
 
-  const parts = todayKey.split('-');
-  const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-  const slotSelect = document.getElementById('recordSlotSelect');
-  if (slotSelect) {
-    if (d.getDay() === 6) slotSelect.value = 'คลาสวันเสาร์ Basic Coach Oat 09:00 - 10:30 น.';
-    else slotSelect.value = 'คลาสปกติ 17:00 - 18:30 น.';
-  }
+  selectTeachingSlot(dateKey);
+  if (openExistingTeachingSlot(dateKey)) return;
 
   document.getElementById('recordTopicInput').value = '';
   document.getElementById('recordStudentSearchInput').value = '';
 
-  const existingDay = dailyAttendance[todayKey] || {};
-  populateRecordChecklist(existingDay);
+  populateRecordChecklist(getPendingAttendanceForSlot(dateKey));
 
   modal.classList.remove('hidden');
+  modal.firstElementChild.scrollTop = 0;
   lucide.createIcons();
 }
 
+function selectTeachingSlot(dateKey) {
+  const date = new Date(dateKey + 'T12:00:00Z');
+  const slot = document.getElementById('recordSlotSelect');
+  slot.selectedIndex = date.getUTCDay() === 6 ? 2 : 0;
+}
+
+function getPendingAttendanceForSlot(dateKey) {
+  const slot = normalizeTeachingSlot(document.getElementById('recordSlotSelect').value);
+  return Object.fromEntries(Object.entries(dailyAttendance[dateKey] || {}).filter(([, entry]) =>
+    entry?.updatedBy === 'parent' && (!entry.slot || normalizeTeachingSlot(entry.slot) === slot)
+  ));
+}
+
+function openExistingTeachingSlot(dateKey) {
+  const slot = normalizeTeachingSlot(document.getElementById('recordSlotSelect').value);
+  const existing = teachingRecords.find(record => record.date === dateKey && normalizeTeachingSlot(record.slot) === slot);
+  if (!existing) return false;
+  openEditTeachingRecordModal(existing.id);
+  return true;
+}
+
+function changeTeachingRecordSlot() {
+  if (document.getElementById('editingRecordId').value) return;
+  const dateKey = document.getElementById('recordDateInput').value;
+  if (!isAttendanceDateKey(dateKey) || openExistingTeachingSlot(dateKey)) return;
+  populateRecordChecklist(getPendingAttendanceForSlot(dateKey));
+  filterRecordStudents(document.getElementById('recordStudentSearchInput').value);
+  lucide.createIcons();
+}
+
+function changeTeachingRecordDate() {
+  if (document.getElementById('editingRecordId').value) return;
+  const dateKey = document.getElementById('recordDateInput').value;
+  if (!isAttendanceDateKey(dateKey)) return;
+  selectTeachingSlot(dateKey);
+  changeTeachingRecordSlot();
+}
+
 function openEditTeachingRecordModal(recordId) {
+  if (!isCoachAuth) return;
   const modal = document.getElementById('teachingRecordModal');
   if (!modal) return;
 
@@ -653,11 +752,16 @@ function openEditTeachingRecordModal(recordId) {
   if (!rec) return;
 
   document.getElementById('editingRecordId').value = rec.id;
-  document.getElementById('recordModalTitle').innerText = `แก้ไข Record การสอน (${rec.date})`;
+  document.getElementById('recordModalTitle').innerText = `แก้ไขรอบซ้อม (${rec.date})`;
   document.getElementById('recordDateInput').value = rec.date || getTodayDateKey();
   
   const slotSelect = document.getElementById('recordSlotSelect');
-  if (slotSelect && rec.slot) slotSelect.value = rec.slot;
+  if (slotSelect && rec.slot) {
+    if (!Array.from(slotSelect.options).some(option => option.value === rec.slot)) {
+      slotSelect.add(new Option(rec.slot, rec.slot));
+    }
+    slotSelect.value = rec.slot;
+  }
 
   const coachSelect = document.getElementById('recordCoachSelect');
   if (coachSelect && rec.coach) coachSelect.value = rec.coach;
@@ -676,6 +780,7 @@ function openEditTeachingRecordModal(recordId) {
   populateRecordChecklist(stateMap);
 
   modal.classList.remove('hidden');
+  modal.firstElementChild.scrollTop = 0;
   lucide.createIcons();
 }
 
@@ -698,6 +803,7 @@ function populateRecordChecklist(stateMap = {}) {
     row.setAttribute('data-student-name', (s.name || '').toLowerCase());
 
     const currentStatus = (stateMap[s.id] && stateMap[s.id].status) || 'absent';
+    row.dataset.status = ['attending', 'leave'].includes(currentStatus) ? currentStatus : 'absent';
     const rem = s.remaining !== undefined ? s.remaining : 0;
     const quotaColor = rem > 3 ? 'text-emerald-700' : (rem >= 1 ? 'text-amber-700' : 'text-rose-700 font-bold');
 
@@ -715,14 +821,14 @@ function populateRecordChecklist(stateMap = {}) {
       </div>
 
       <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs flex-shrink-0">
-        <button type="button" onclick="setRecordStudentStatus(${s.id}, 'attending')" id="btnStatus_${s.id}_attending" class="btn-touch px-2.5 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${currentStatus === 'attending' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'}">
-          ✓ มา (-1)
+        <button type="button" onclick="setRecordStudentStatus(${s.id}, 'attending')" data-record-status="attending" aria-pressed="${row.dataset.status === 'attending'}" class="btn-touch record-status-button">
+          มาเรียน
         </button>
-        <button type="button" onclick="setRecordStudentStatus(${s.id}, 'leave')" id="btnStatus_${s.id}_leave" class="btn-touch px-2 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${currentStatus === 'leave' ? 'bg-amber-500 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'}">
+        <button type="button" onclick="setRecordStudentStatus(${s.id}, 'leave')" data-record-status="leave" aria-pressed="${row.dataset.status === 'leave'}" class="btn-touch record-status-button">
           ลา
         </button>
-        <button type="button" onclick="setRecordStudentStatus(${s.id}, 'absent')" id="btnStatus_${s.id}_absent" class="btn-touch px-2 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${currentStatus === 'absent' ? 'bg-slate-300 text-slate-800' : 'text-slate-500 hover:text-slate-900'}">
-          ไม่มา
+        <button type="button" onclick="setRecordStudentStatus(${s.id}, 'absent')" data-record-status="absent" aria-pressed="${row.dataset.status === 'absent'}" class="btn-touch record-status-button">
+          ยังไม่ระบุ
         </button>
       </div>
     `;
@@ -733,16 +839,14 @@ function populateRecordChecklist(stateMap = {}) {
   updateRecordModalCounts();
 }
 
-function setRecordStudentStatus(studentId, status) {
-  const btnAtt = document.getElementById(`btnStatus_${studentId}_attending`);
-  const btnLeave = document.getElementById(`btnStatus_${studentId}_leave`);
-  const btnAbsent = document.getElementById(`btnStatus_${studentId}_absent`);
-
-  if (btnAtt) btnAtt.className = `btn-touch px-2.5 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${status === 'attending' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`;
-  if (btnLeave) btnLeave.className = `btn-touch px-2 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${status === 'leave' ? 'bg-amber-500 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'}`;
-  if (btnAbsent) btnAbsent.className = `btn-touch px-2 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${status === 'absent' ? 'bg-slate-300 text-slate-800' : 'text-slate-500 hover:text-slate-900'}`;
-
-  updateRecordModalCounts();
+function setRecordStudentStatus(studentId, status, updateCounts = true) {
+  const row = document.querySelector(`.record-student-row[data-student-id="${studentId}"]`);
+  if (!row) return;
+  row.dataset.status = status;
+  for (const button of row.querySelectorAll('[data-record-status]')) {
+    button.setAttribute('aria-pressed', String(button.dataset.recordStatus === status));
+  }
+  if (updateCounts) updateRecordModalCounts();
 }
 
 function filterRecordStudents(query) {
@@ -760,11 +864,13 @@ function filterRecordStudents(query) {
 }
 
 function recordSelectAllAttending() {
-  students.forEach(s => setRecordStudentStatus(s.id, 'attending'));
+  students.forEach(s => setRecordStudentStatus(s.id, 'attending', false));
+  updateRecordModalCounts();
 }
 
 function recordClearAllAttendance() {
-  students.forEach(s => setRecordStudentStatus(s.id, 'absent'));
+  students.forEach(s => setRecordStudentStatus(s.id, 'absent', false));
+  updateRecordModalCounts();
 }
 
 function updateRecordModalCounts() {
@@ -772,13 +878,11 @@ function updateRecordModalCounts() {
   let leave = 0;
   let absent = 0;
 
-  students.forEach(s => {
-    const btnAtt = document.getElementById(`btnStatus_${s.id}_attending`);
-    const btnLeave = document.getElementById(`btnStatus_${s.id}_leave`);
-    if (btnAtt && btnAtt.classList.contains('bg-emerald-600')) attending++;
-    else if (btnLeave && btnLeave.classList.contains('bg-amber-500')) leave++;
+  for (const row of document.querySelectorAll('.record-student-row')) {
+    if (row.dataset.status === 'attending') attending++;
+    else if (row.dataset.status === 'leave') leave++;
     else absent++;
-  });
+  }
 
   const elAtt = document.getElementById('recordModalAttendingCount');
   const elLeave = document.getElementById('recordModalLeaveCount');
@@ -788,7 +892,63 @@ function updateRecordModalCounts() {
   if (elAbsent) elAbsent.innerText = absent;
 }
 
+function getRecordQuotaField(slot) {
+  return (slot || '').includes('วันเสาร์') ? 'saturday' : 'regular';
+}
+
+function normalizeTeachingSlot(slot) {
+  if (['คลาสปกติ 17:00 - 18:30 น.', '17:30 - 19:30 น. (คลาสปกติ)'].includes(slot)) return 'คลาสปกติ 17:30 - 19:30 น.';
+  if (slot === '16:00 - 17:30 น. (คลาสวันเสาร์ Coach Oat)') return 'คลาสวันเสาร์ Team DBO 16:00 - 17:30 น.';
+  return slot || '';
+}
+
+function getRecordQuotaChanges(previous, next) {
+  const changes = new Map();
+  for (const [record, delta] of [[previous, 1], [next, -1]]) {
+    if (!record) continue;
+    const course = getRecordQuotaField(record.slot);
+    for (const studentId of new Set((record.attendingStudents || []).map(entry => String(entry.id)))) {
+      const key = studentId + ':' + course;
+      const change = changes.get(key) || { studentId, course, delta: 0 };
+      change.delta += delta;
+      changes.set(key, change);
+    }
+  }
+  return [...changes.values()].filter(change => change.delta !== 0);
+}
+
+function updateRecordedAttendance(previous, next, time) {
+  if (previous) {
+    const entries = dailyAttendance[previous.date] || {};
+    for (const person of [...(previous.attendingStudents || []), ...(previous.leaveStudents || [])]) {
+      const entry = entries[person.id];
+      if (entry?.recordId === previous.id || (entry && !entry.recordId && entry.updatedBy === previous.coach)) {
+        const other = teachingRecords.find(record => record.id !== previous.id && record.date === previous.date &&
+          [...(record.attendingStudents || []), ...(record.leaveStudents || [])].some(student => String(student.id) === String(person.id)));
+        if (other) {
+          const present = (other.attendingStudents || []).some(student => String(student.id) === String(person.id));
+          entries[person.id] = { ...entry, status: present ? 'attending' : 'leave', recordId: other.id, updatedBy: other.coach, slot: other.slot };
+        } else {
+          delete entries[person.id];
+        }
+      }
+    }
+  }
+  if (!next) return;
+  dailyAttendance[next.date] ||= {};
+  for (const [status, people] of [['attending', next.attendingStudents], ['leave', next.leaveStudents]]) {
+    for (const person of people) {
+      dailyAttendance[next.date][person.id] = {
+        studentId: person.id, name: person.name, status, time,
+        recordId: next.id, dateKey: next.date, slot: next.slot,
+        updatedBy: next.coach, updatedAt: next.updatedAt
+      };
+    }
+  }
+}
+
 async function saveTeachingRecordFromModal() {
+  if (!isCoachAuth || document.getElementById('teachingRecordModal').classList.contains('hidden')) return;
   const editingId = document.getElementById('editingRecordId').value;
   const dateVal = document.getElementById('recordDateInput').value;
   const slotVal = document.getElementById('recordSlotSelect').value;
@@ -797,128 +957,59 @@ async function saveTeachingRecordFromModal() {
   const sendPushCheckbox = document.getElementById('recordSendPushCheckbox');
   const sendPush = sendPushCheckbox ? sendPushCheckbox.checked : true;
 
-  if (!dateVal) {
-    showToast('กรุณาระบุวันที่สอน');
+  if (!isAttendanceDateKey(dateVal) || !slotVal) {
+    showToast('เลือกวันที่และรอบซ้อม');
     return;
   }
 
+  const targetField = getRecordQuotaField(slotVal);
   const nowTs = Date.now();
-  const isSaturday = slotVal.includes('วันเสาร์');
-  const targetField = isSaturday ? 'saturday' : 'regular';
+  const existing = teachingRecords.find(record => record.date === dateVal && normalizeTeachingSlot(record.slot) === normalizeTeachingSlot(slotVal));
+  const previousRecord = editingId ? teachingRecords.find(record => record.id === editingId) : null;
+  if ((editingId && !previousRecord) || (existing && existing.id !== editingId)) {
+    showToast('รอบนี้มีบันทึกอยู่แล้ว เปิดรายการเดิมเพื่อแก้ไข');
+    return;
+  }
 
+  const studentById = new Map(students.map(student => [String(student.id), student]));
   const attending = [];
   const leave = [];
-
-  students.forEach(s => {
-    const btnAtt = document.getElementById(`btnStatus_${s.id}_attending`);
-    const btnLeave = document.getElementById(`btnStatus_${s.id}_leave`);
-    if (btnAtt && btnAtt.classList.contains('bg-emerald-600')) {
-      attending.push({ id: s.id, name: s.name });
-    } else if (btnLeave && btnLeave.classList.contains('bg-amber-500')) {
-      leave.push({ id: s.id, name: s.name });
-    }
-  });
-
-  let previousRecord = null;
-  if (editingId) {
-    previousRecord = teachingRecords.find(r => r.id === editingId);
+  for (const row of document.querySelectorAll('.record-student-row')) {
+    const student = studentById.get(row.dataset.studentId);
+    if (!student) continue;
+    const entry = { id: student.id, name: student.name };
+    if (row.dataset.status === 'attending') attending.push(entry);
+    else if (row.dataset.status === 'leave') leave.push(entry);
   }
 
-  if (previousRecord) {
-    const prevAttMap = new Set((previousRecord.attendingStudents || []).map(a => a.id));
-    const newAttMap = new Set(attending.map(a => a.id));
-
-    prevAttMap.forEach(sid => {
-      if (!newAttMap.has(sid)) {
-        const st = students.find(s => s.id === sid);
-        if (st) {
-          if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) + 1;
-          else st.remaining = (st.remaining || 0) + 1;
-          st._updatedAt = nowTs;
-          st._lastCoachActionAt = nowTs;
-          st._isCoachAuthoritative = true;
-          syncSharedSiblingQuota(st, targetField);
-        }
-      }
-    });
-
-    newAttMap.forEach(sid => {
-      if (!prevAttMap.has(sid)) {
-        const st = students.find(s => s.id === sid);
-        if (st) {
-          if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) - 1;
-          else st.remaining = (st.remaining || 0) - 1;
-          st._updatedAt = nowTs;
-          st._lastCoachActionAt = nowTs;
-          st._isCoachAuthoritative = true;
-          syncSharedSiblingQuota(st, targetField);
-        }
-      }
-    });
-
-    previousRecord.date = dateVal;
-    previousRecord.slot = slotVal;
-    previousRecord.coach = coachVal;
-    previousRecord.topic = topicVal;
-    previousRecord.attendingCount = attending.length;
-    previousRecord.leaveCount = leave.length;
-    previousRecord.attendingStudents = attending;
-    previousRecord.leaveStudents = leave;
-    previousRecord.updatedAt = nowTs;
-  } else {
-    attending.forEach(a => {
-      const st = students.find(s => s.id === a.id);
-      if (st) {
-        if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) - 1;
-        else st.remaining = (st.remaining || 0) - 1;
-        st._updatedAt = nowTs;
-        st._lastCoachActionAt = nowTs;
-        st._isCoachAuthoritative = true;
-        syncSharedSiblingQuota(st, targetField);
-      }
-    });
-
-    const newRecord = {
-      id: 'rec_' + dateVal.replace(/-/g, '') + '_' + Date.now().toString(36),
-      date: dateVal,
-      slot: slotVal,
-      coach: coachVal,
-      topic: topicVal,
-      attendingCount: attending.length,
-      leaveCount: leave.length,
-      attendingStudents: attending,
-      leaveStudents: leave,
-      createdAt: nowTs,
-      updatedAt: nowTs
-    };
-    teachingRecords.unshift(newRecord);
+  const savedRecord = {
+    id: previousRecord?.id || ('rec_' + dateVal.replace(/-/g, '') + '_' + nowTs.toString(36)),
+    createdAt: previousRecord?.createdAt || nowTs,
+    date: dateVal,
+    slot: slotVal,
+    coach: coachVal,
+    topic: topicVal,
+    attendingCount: attending.length,
+    leaveCount: leave.length,
+    attendingStudents: attending,
+    leaveStudents: leave,
+    updatedAt: nowTs
+  };
+  for (const change of getRecordQuotaChanges(previousRecord, savedRecord)) {
+    const student = studentById.get(change.studentId);
+    if (!student) continue;
+    const field = change.course === 'saturday' ? 'saturdayRemaining' : 'remaining';
+    student[field] = (Number(student[field]) || 0) + change.delta;
+    student._updatedAt = nowTs;
+    student._lastCoachActionAt = nowTs;
+    student._isCoachAuthoritative = true;
+    syncSharedSiblingQuota(student, change.course);
   }
 
-  dailyAttendance[dateVal] = {};
-  const nowTimeStr = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
-  attending.forEach(a => {
-    dailyAttendance[dateVal][a.id] = {
-      studentId: a.id,
-      name: a.name,
-      status: 'attending',
-      time: nowTimeStr,
-      updatedBy: coachVal,
-      dateKey: dateVal,
-      updatedAt: nowTs
-    };
-  });
-  leave.forEach(l => {
-    dailyAttendance[dateVal][l.id] = {
-      studentId: l.id,
-      name: l.name,
-      status: 'leave',
-      time: nowTimeStr,
-      leaveReason: 'แจ้งลาใน Record',
-      updatedBy: coachVal,
-      dateKey: dateVal,
-      updatedAt: nowTs
-    };
-  });
+  if (previousRecord) teachingRecords = teachingRecords.map(record => record.id === previousRecord.id ? savedRecord : record);
+  else teachingRecords.unshift(savedRecord);
+  const nowTimeStr = new Date(nowTs).toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' }) + ' น.';
+  updateRecordedAttendance(previousRecord, savedRecord, nowTimeStr);
 
   if (sendPush) {
     attending.forEach((a, i) => {
@@ -972,11 +1063,11 @@ async function saveTeachingRecordFromModal() {
     renderParentView();
   }
 
-  showToast(`บันทึก Record การสอนสำเร็จ (มาเรียน ${attending.length} คน, ลา ${leave.length} คน)`);
-  triggerTelegramPush(`บันทึกการสอนรอบ ${dateVal} โดย ${coachVal}: มาเรียน ${attending.length} คน, ลา ${leave.length} คน • อัปเดตทุกเครื่องแล้ว`, 'DBO Post-Teaching Record');
+  showToast(`บันทึกแล้ว · มาเรียน ${attending.length} คน · ลา ${leave.length} คน`);
 }
 
 function deleteTeachingRecord(recordId) {
+  if (!isCoachAuth) return;
   const rec = teachingRecords.find(r => r.id === recordId);
   if (!rec) return;
 
@@ -986,24 +1077,19 @@ function deleteTeachingRecord(recordId) {
   }
 
   const nowTs = Date.now();
-  const isSaturday = (rec.slot || '').includes('วันเสาร์');
-  const targetField = isSaturday ? 'saturday' : 'regular';
-
-  (rec.attendingStudents || []).forEach(a => {
-    const st = students.find(s => s.id === a.id);
-    if (st) {
-      if (targetField === 'saturday') st.saturdayRemaining = (st.saturdayRemaining || 0) + 1;
-      else st.remaining = (st.remaining || 0) + 1;
-      st._updatedAt = nowTs;
-      syncSharedSiblingQuota(st, targetField);
-    }
-  });
-
-  if (dailyAttendance[rec.date]) {
-    delete dailyAttendance[rec.date];
+  for (const change of getRecordQuotaChanges(rec, null)) {
+    const student = students.find(item => String(item.id) === change.studentId);
+    if (!student) continue;
+    const field = change.course === 'saturday' ? 'saturdayRemaining' : 'remaining';
+    student[field] = (Number(student[field]) || 0) + change.delta;
+    student._updatedAt = nowTs;
+    student._lastCoachActionAt = nowTs;
+    student._isCoachAuthoritative = true;
+    syncSharedSiblingQuota(student, change.course);
   }
 
   teachingRecords = teachingRecords.filter(r => r.id !== recordId);
+  updateRecordedAttendance(rec, null);
   saveState(true, `ลบ Record การสอนวันที่ ${rec.date} และคืนสิทธิ์นักเรียน`, true);
   renderTeachingRecordsList();
   if (typeof renderCoachRosterTable === 'function') renderCoachRosterTable();

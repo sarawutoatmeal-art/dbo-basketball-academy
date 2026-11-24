@@ -12,6 +12,9 @@ function switchTab(tabName) {
 
   const tabs = ['parent-portal', 'daily-attendance', 'renew-payment', 'register-new', 'calendar', 'coach-roster'];
   
+  if (!tabs.includes(tabName)) tabName = 'parent-portal';
+  sessionStorage.setItem('dbo_active_tab', tabName);
+
   tabs.forEach(t => {
     const sec = document.getElementById(`tab-${t}`);
     const navBtn = document.getElementById(`nav-${t}`);
@@ -29,7 +32,11 @@ function switchTab(tabName) {
   });
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (tabName === 'daily-attendance' && typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+  if (tabName === 'parent-portal') renderNextTraining();
+  if (tabName === 'daily-attendance') {
+    renderTrainingWeek();
+    renderDailyAttendanceBoard();
+  }
   if (tabName === 'calendar') {
     if (typeof updateCourtCalendarRoleVisibility === 'function') updateCourtCalendarRoleVisibility();
     if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
@@ -49,6 +56,8 @@ function handlePortalTabClick() {
 
 // Global View Refresh Helper
 function refreshAllViews() {
+  renderNextTraining();
+  renderTrainingWeek();
   if (isCoachAuth) {
     if (typeof updateSessionDateDisplay === 'function') updateSessionDateDisplay();
     if (typeof renderCoachRosterTable === 'function') renderCoachRosterTable();
@@ -138,19 +147,22 @@ window.addEventListener('DOMContentLoaded', () => {
     const demoBanner = document.createElement('div');
     demoBanner.id = 'testDemoModeBanner';
     demoBanner.className = 'bg-amber-500 text-neutral-950 text-center py-1.5 px-3 text-[11px] sm:text-xs font-bold tracking-wide border-b border-amber-600 sticky top-0 z-50 flex items-center justify-center gap-2 flex-wrap';
-    demoBanner.innerHTML = '<span>🧪 TEST DEMO MODE (โหมดทดสอบก่อน Deploy)</span><span class="font-normal text-neutral-900">• ข้อมูลแยกอิสระ 100% ไม่กระทบและไม่ทับซ้อนข้อมูลจริงบน Production</span>';
+    demoBanner.textContent = 'โหมดทดสอบ · ใช้ข้อมูลแยกจากระบบจริง';
     document.body.insertBefore(demoBanner, document.body.firstChild);
+    document.getElementById('recordPushOptions')?.classList.add('hidden');
+    const recordPush = document.getElementById('recordSendPushCheckbox');
+    if (recordPush) recordPush.checked = false;
   }
 
   // Dynamic live date & class schedule banner based on real calendar
   try {
-    const now = new Date();
+    const now = new Date(getTodayDateKey() + 'T12:00:00Z');
     const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
     const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
     const thaiMonthsFull = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
-    const dayNum = now.getDate();
-    const dayW = now.getDay();
-    const thaiYear = now.getFullYear() + 543;
+    const dayNum = now.getUTCDate();
+    const dayW = now.getUTCDay();
+    const thaiYear = now.getUTCFullYear() + 543;
 
     let scheduleNote = '';
     if (dayW === 1 || dayW === 2 || dayW === 4) {
@@ -162,10 +174,10 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     const pLabel = document.getElementById('parentTodayDateLabel');
-    if (pLabel) pLabel.innerText = `${thaiDays[dayW]}ที่ ${dayNum} ${thaiMonths[now.getMonth()]} ${thaiYear} • ${scheduleNote}`;
+    if (pLabel) pLabel.innerText = `${thaiDays[dayW]}ที่ ${dayNum} ${thaiMonths[now.getUTCMonth()]} ${thaiYear} • ${scheduleNote}`;
 
     const bLabel = document.getElementById('dailyBoardDateLabel');
-    if (bLabel) bLabel.innerText = `${thaiDays[dayW]}ที่ ${dayNum} ${thaiMonthsFull[now.getMonth()]} ${thaiYear} • ${scheduleNote}`;
+    if (bLabel) bLabel.innerText = `${thaiDays[dayW]}ที่ ${dayNum} ${thaiMonthsFull[now.getUTCMonth()]} ${thaiYear} • ${scheduleNote}`;
   } catch (e) {
     console.log('Date banner update error:', e);
   }
@@ -200,12 +212,7 @@ window.addEventListener('DOMContentLoaded', () => {
     setInterval(runClassNotificationScheduler, 30000);
   }
 
-  // Auto-restore active view based on authentication state
-  if (isCoachAuth && currentStaff) {
-    switchTab('coach-roster');
-  } else if (loggedInStudent) {
-    switchTab('parent-portal');
-  }
+  switchTab(sessionStorage.getItem('dbo_active_tab') || 'parent-portal');
 
   // Support direct link triggers (e.g. ?action=register-parent)
   try {
@@ -225,8 +232,9 @@ window.addEventListener('DOMContentLoaded', () => {
     initRealtimeEngine();
   }
 
-  // Dismiss Native Splash Screen after 3 seconds as requested
-  setTimeout(hideSplashScreen, 3000);
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const remainingSplashTime = reducedMotion ? 0 : Math.max(0, 1500 - performance.now());
+  setTimeout(hideSplashScreen, remainingSplashTime);
 });
 
 // Fallback safety trigger for Splash Screen dismissal (4 seconds maximum)
@@ -241,5 +249,5 @@ function hideSplashScreen() {
     if (splash.parentNode) {
       splash.parentNode.removeChild(splash);
     }
-  }, 550);
+  }, 220);
 }

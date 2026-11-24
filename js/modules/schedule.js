@@ -144,8 +144,7 @@ function saveWeeklyScheduleData() {
 
 let currentCalModalDateKey = '';
 let currentCalModalChoice = 'normal';
-let currentMasterCalYear = 2026;
-let currentMasterCalMonth = 11; // 1-12
+let [currentMasterCalYear, currentMasterCalMonth] = getTodayDateKey().split('-').map(Number);
 
 function stepMasterCalendarMonth(step) {
   currentMasterCalMonth += step;
@@ -160,9 +159,7 @@ function stepMasterCalendarMonth(step) {
 }
 
 function jumpToCurrentMasterCalendarMonth() {
-  const now = new Date();
-  currentMasterCalYear = now.getFullYear();
-  currentMasterCalMonth = now.getMonth() + 1;
+  [currentMasterCalYear, currentMasterCalMonth] = getTodayDateKey().split('-').map(Number);
   renderMasterCalendarGrid();
 }
 
@@ -190,6 +187,70 @@ async function syncGoogleCalendarData() {
   }
 }
 
+function getTrainingDay(date) {
+  const weekday = date.getDay();
+  const dateKey = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
+  const override = calendarDayOverrides[dateKey];
+  const isNormal = [1, 2, 4].includes(weekday) || override?.status === 'normal';
+  const isSaturday = weekday === 6;
+  const identity = { dateKey, weekday, isNormal, isSaturday };
+  if (override?.status === 'canceled') return { ...identity, kind: 'canceled', title: 'งดคลาส' };
+  if (override?.isCustom) return { ...identity, kind: 'special', title: override.title || override.topic || 'คลาสพิเศษ', time: override.time };
+  if (isSaturday) return { ...identity, kind: 'saturday', title: 'คลาสวันเสาร์', time: '16:00–17:30 น.' };
+  if (isNormal) return { ...identity, kind: 'regular', title: 'คลาสปกติ', time: override?.time || '17:30–19:30 น.' };
+  return identity;
+}
+
+function renderNextTraining() {
+  const card = document.getElementById('nextTrainingCard');
+  if (!card) return;
+  const today = new Date(getTodayDateKey() + 'T12:00:00');
+  for (let offset = 1; offset <= 31; offset++) {
+    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
+    const session = getTrainingDay(date);
+    if (!session.kind || session.kind === 'canceled') continue;
+
+    document.getElementById('nextTrainingDay').textContent = date.getDate();
+    document.getElementById('nextTrainingMonth').textContent = new Intl.DateTimeFormat('th-TH', { month: 'short' }).format(date);
+    document.getElementById('nextTrainingTitle').textContent = session.title;
+    document.getElementById('nextTrainingTime').textContent = session.time || '';
+    const dateLabel = new Intl.DateTimeFormat('th-TH', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
+    card.setAttribute('aria-label', ['รอบซ้อมถัดไป', dateLabel, session.title, session.time].filter(Boolean).join(' · '));
+    card.onclick = () => openCalendarDayModal(date.getDate(), session.weekday, session.isSaturday, session.isNormal, session.dateKey, true);
+    card.classList.remove('hidden');
+    return;
+  }
+  card.classList.add('hidden');
+}
+
+function renderTrainingWeek() {
+  const week = document.getElementById('trainingWeek');
+  if (!week) return;
+  const today = new Date(getTodayDateKey() + 'T12:00:00');
+  const monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (today.getDay() + 6) % 7);
+  const weekdays = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+  const dateLabel = new Intl.DateTimeFormat('th-TH', { dateStyle: 'full' });
+  week.replaceChildren();
+  for (let offset = 0; offset < 7; offset++) {
+    const date = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + offset);
+    const session = getTrainingDay(date);
+    const control = document.createElement('button');
+    control.type = 'button';
+    control.setAttribute('aria-label', [dateLabel.format(date), session.title, session.time].filter(Boolean).join(' · '));
+    if (session.kind) control.dataset.classStatus = session.kind;
+    const isToday = date.toDateString() === today.toDateString();
+    if (isToday) control.setAttribute('aria-current', 'date');
+
+    const weekday = document.createElement('span');
+    weekday.textContent = weekdays[session.weekday];
+    const number = document.createElement('strong');
+    number.textContent = date.getDate();
+    control.append(weekday, number);
+    control.onclick = () => openCalendarDayModal(date.getDate(), session.weekday, session.isSaturday, session.isNormal, session.dateKey, session.dateKey >= getTodayDateKey());
+    week.appendChild(control);
+  }
+}
+
 function renderMasterCalendarGrid() {
   const grid = document.getElementById('masterCalendarGrid');
   if (!grid) return;
@@ -209,73 +270,43 @@ function renderMasterCalendarGrid() {
   const startDayOfWeek = firstDayDateObj.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
 
   // Check today's date
-  const now = new Date();
-  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const todayKey = getTodayDateKey();
 
-  // 1. Render empty filler cells for days before the 1st
-  for (let i = 0; i < startDayOfWeek; i++) {
-    const filler = document.createElement('div');
-    filler.className = 'p-1 sm:p-2 rounded-xl bg-nike-cloud/30 border border-transparent min-h-[58px] sm:min-h-[72px] opacity-40 select-none';
-    grid.appendChild(filler);
-  }
-
-  // 2. Render each day of the month
-  for (let day = 1; day <= totalDays; day++) {
-    const dayOfWeek = (startDayOfWeek + (day - 1)) % 7;
-    const isNormalClass = (dayOfWeek === 1 || dayOfWeek === 2 || dayOfWeek === 4); // Mon, Tue, Thu
-    const isSaturdayCoachOat = (dayOfWeek === 6); // Sat
-    const dateKey = `${currentMasterCalYear}-${String(currentMasterCalMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const isToday = (dateKey === todayKey);
-
-    const override = (typeof calendarDayOverrides !== 'undefined' && calendarDayOverrides[dateKey]) ? calendarDayOverrides[dateKey] : null;
-    const isCanceled = (override && override.status === 'canceled');
-    const isConfirmedNormal = (override && override.status === 'normal');
-    const isCustomSpecial = (override && override.isCustom);
-
-    let cellClass = 'bg-white border-nike-hairlineSoft text-nike-mute hover:border-black/30';
-    let badge = '';
-    let dotHtml = '';
-
-    if (isCanceled) {
-      cellClass = 'bg-rose-50/80 border-rose-300 text-rose-950 hover:bg-rose-100 shadow-2xs';
-      badge = `<span class="text-[8px] sm:text-[10px] font-bold text-rose-700 bg-rose-100/90 px-1 py-0.5 rounded-full text-center whitespace-nowrap border border-rose-200 block"><span class="hidden sm:inline">🚫 งดคลาส</span><span class="sm:hidden">🚫 งด</span></span>`;
-      dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>';
-    } else if (isCustomSpecial) {
-      cellClass = 'bg-purple-50/80 border-purple-200 text-purple-950 hover:bg-purple-100/60';
-      badge = `<span class="text-[8px] sm:text-[10px] font-bold text-purple-700 bg-purple-100/80 px-1 py-0.5 rounded-full text-center whitespace-nowrap block"><span class="hidden sm:inline">⭐ ${override.topic || 'ไพรเวท'}</span><span class="sm:hidden">⭐ พิเศษ</span></span>`;
-      dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-purple-600"></span>';
-    } else if (isSaturdayCoachOat) {
-      cellClass = 'bg-indigo-50/80 border-indigo-200 text-indigo-950 hover:bg-indigo-100/60';
-      badge = `<span class="text-[8px] sm:text-[10px] font-bold text-indigo-700 bg-indigo-100/80 px-1 py-0.5 rounded-full text-center whitespace-nowrap block"><span class="hidden sm:inline">16:00 เสาร์</span><span class="sm:hidden">16:00</span></span>`;
-      dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>';
-    } else if (isNormalClass || isConfirmedNormal) {
-      cellClass = 'bg-amber-50/70 border-amber-200 text-amber-950 hover:bg-amber-100/60';
-      badge = `<span class="text-[8px] sm:text-[10px] font-bold text-amber-800 bg-amber-100/80 px-1 py-0.5 rounded-full text-center whitespace-nowrap block"><span class="hidden sm:inline">17:30 ปกติ</span><span class="sm:hidden">17:30</span></span>`;
-      dotHtml = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>';
-    } else {
-      cellClass = 'bg-white border-nike-hairlineSoft text-neutral-400 hover:bg-neutral-50';
+  const slots = Math.ceil((startDayOfWeek + totalDays) / 7) * 7;
+  for (let slot = 0; slot < slots; slot++) {
+    const day = slot + 1 - startDayOfWeek;
+    if (day < 1 || day > totalDays) {
+      const neighbor = document.createElement('div');
+      neighbor.className = 'calendar-date-placeholder';
+      neighbor.setAttribute('aria-hidden', 'true');
+      neighbor.textContent = new Date(currentMasterCalYear, currentMasterCalMonth - 1, day).getDate();
+      grid.appendChild(neighbor);
+      continue;
     }
+    const date = new Date(currentMasterCalYear, currentMasterCalMonth - 1, day);
+    const session = getTrainingDay(date);
+    const isToday = session.dateKey === todayKey;
 
-    if (isToday) {
-      cellClass += ' ring-2 ring-black font-extrabold';
+    const cell = document.createElement('button');
+    cell.type = 'button';
+    cell.className = 'calendar-date';
+    if (isToday) cell.setAttribute('aria-current', 'date');
+    cell.setAttribute('aria-label', [session.dateKey, session.title, session.time].filter(Boolean).join(' · '));
+    cell.title = session.title;
+    const dateNumber = document.createElement('span');
+    dateNumber.className = 'calendar-date-number';
+    dateNumber.textContent = day;
+    cell.appendChild(dateNumber);
+    if (session.kind) {
+      const dot = document.createElement('span');
+      dot.className = 'calendar-date-dot';
+      dot.dataset.classStatus = session.kind;
+      dot.setAttribute('aria-hidden', 'true');
+      cell.appendChild(dot);
     }
-
-    const cell = document.createElement('div');
-    cell.className = `p-1 sm:p-2 rounded-xl border min-h-[58px] sm:min-h-[72px] flex flex-col justify-between transition-all cursor-pointer select-none active:scale-95 ${cellClass}`;
-
-    cell.innerHTML = `
-      <div class="flex items-center justify-between">
-        <span class="text-xs sm:text-sm font-mono font-bold ${isToday ? 'text-black font-black underline' : (isCanceled ? 'text-rose-700' : (isSaturdayCoachOat ? 'text-indigo-700' : (isNormalClass ? 'text-amber-900' : 'text-neutral-500')))}">${day}</span>
-        <div class="flex items-center gap-1">
-          ${isToday ? '<span class="hidden sm:inline text-[9px] font-bold bg-black text-white px-1 py-0.5 rounded-sm">วันนี้</span><span class="sm:hidden w-1.5 h-1.5 rounded-full bg-black flex-shrink-0" title="วันนี้"></span>' : ''}
-          ${dotHtml}
-        </div>
-      </div>
-      <div class="mt-1 flex justify-center w-full">${badge}</div>
-    `;
 
     cell.onclick = () => {
-      openCalendarDayModal(day, dayOfWeek, isSaturdayCoachOat, isNormalClass, dateKey);
+      openCalendarDayModal(day, session.weekday, session.isSaturday, session.isNormal, session.dateKey);
     };
 
     grid.appendChild(cell);
@@ -283,7 +314,7 @@ function renderMasterCalendarGrid() {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-function openCalendarDayModal(day, dayOfWeek, isSat, isNormal, dateKey) {
+function openCalendarDayModal(day, dayOfWeek, isSat, isNormal, dateKey, showAttendanceActions = true) {
   const modal = document.getElementById('calendarDayModal');
   if (!modal) return;
   const dKey = dateKey || `${currentMasterCalYear}-${String(currentMasterCalMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -328,29 +359,34 @@ function openCalendarDayModal(day, dayOfWeek, isSat, isNormal, dateKey) {
     }
     if (time) time.innerText = 'งดการฝึกซ้อมประจำวัน';
     if (coach) coach.innerText = `แจ้งโดย ${override.updatedBy || 'ทีมโค้ช'}`;
-    if (topic) topic.innerHTML = `<span class="text-rose-700 font-bold">⚠️ วันนี้งดคลาสการฝึกซ้อม:</span> ${safeEscape(override.reason || 'พักฟื้นร่างกายหรือติดภารกิจ')}`;
+    if (topic) topic.innerHTML = `<span class="text-rose-700 font-bold">งดคลาส:</span> ${safeEscape(override.reason || 'พักฟื้นร่างกายหรือติดภารกิจ')}`;
     if (parentActionBox) parentActionBox.classList.add('hidden');
   } else {
     if (cancelAlert) cancelAlert.classList.add('hidden');
-    if (parentActionBox) parentActionBox.classList.remove('hidden');
+    if (parentActionBox) parentActionBox.classList.toggle('hidden', !showAttendanceActions || dKey < getTodayDateKey());
 
-    if (isSat) {
+    if (override?.isCustom) {
+      if (dot) dot.className = 'w-3 h-3 rounded-full bg-purple-600';
+      if (time) time.innerText = override.time || 'ตามนัด';
+      if (coach) coach.innerText = override.updatedBy || 'ทีมโค้ช';
+      if (topic) topic.innerText = override.title || override.topic || 'คลาสพิเศษ';
+    } else if (isSat) {
       if (dot) dot.className = 'w-3 h-3 rounded-full bg-indigo-600';
       if (time) time.innerText = '16:00 - 17:30 น. (คลาสวันเสาร์)';
       if (coach) coach.innerText = 'โค้ชโอ๊ต (Head Coach)';
-      if (topic) topic.innerHTML = '<strong>คลาส Basic Coach Oat:</strong> วิทยาศาสตร์การกีฬาสำหรับเด็ก การเคลื่อนไหว ความคล่องตัว (Agility Speed Ladder) การประสานงานร่างกาย และเสริมสร้างกล้ามเนื้อมัดเล็ก';
+      if (topic) topic.innerHTML = '<strong>พื้นฐานกับโค้ชโอ๊ต</strong> · ฝึกความคล่องตัว การประสานงาน และกล้ามเนื้อมัดเล็ก';
     } else if (isNormal || (override && override.status === 'normal')) {
       if (dot) dot.className = 'w-3 h-3 rounded-full bg-amber-500';
-      if (time) time.innerText = '17:30 - 19:30 น. (คลาสปกติ)';
+      if (time) time.innerText = override?.time || '17:30 - 19:30 น. (คลาสปกติ)';
       if (dayOfWeek === 1) {
         if (coach) coach.innerText = 'โค้ชโอ๊ต & โค้ชโอ๊ค';
-        if (topic) topic.innerHTML = '<strong>Fundamental Dribbling:</strong> ทักษะการทรงตัว บาสเกตบอลฟันดาเมนทัล สปีดเลี้ยงบอลสองมือ Footwork การเปลี่ยนทิศทาง และสมรรถภาพร่างกาย';
+        if (topic) topic.innerHTML = '<strong>เลี้ยงบอลพื้นฐาน</strong> · ทรงตัว เลี้ยงสองมือ เปลี่ยนทิศ และฝึกฟุตเวิร์ก';
       } else if (dayOfWeek === 2) {
         if (coach) coach.innerText = 'โค้ชโอ๊ค & โค้ชโอ๊ต';
-        if (topic) topic.innerHTML = '<strong>Passing Vision & IQ:</strong> การอ่านจังหวะในสนาม Spacing การจ่ายบอลแบบ Drive & Kick ฟุตเวิร์กเกมรับ และการตัดสินใจ 2 on 1 / 3 on 2';
+        if (topic) topic.innerHTML = '<strong>จ่ายบอลและอ่านเกม</strong> · เว้นระยะ เจาะแล้วจ่าย ฟุตเวิร์กเกมรับ และเล่น 2 ต่อ 1 / 3 ต่อ 2';
       } else {
         if (coach) coach.innerText = 'โค้ชโอ๊ต & โค้ชโอ๊ค';
-        if (topic) topic.innerHTML = '<strong>Shooting Mechanics & Game:</strong> ฟอร์มการยิงลูก Finishing under pressure การเลย์อัพใต้แป้น และสถานการณ์จำลอง 3 on 3';
+        if (topic) topic.innerHTML = '<strong>ชู้ตและจบสกอร์</strong> · ฟอร์มยิง เลย์อัพ รับแรงกดดัน และเล่น 3 ต่อ 3';
       }
     } else {
       if (dot) dot.className = 'w-3 h-3 rounded-full bg-slate-300';
@@ -374,6 +410,7 @@ function openCalendarDayModal(day, dayOfWeek, isSat, isNormal, dateKey) {
   }
 
   modal.classList.remove('hidden');
+  if (modal.firstElementChild) modal.firstElementChild.scrollTop = 0;
   lucide.createIcons();
 }
 
@@ -382,34 +419,10 @@ function setCalModalStatusChoice(choice) {
   const btnNormal = document.getElementById('btnCalSetNormal');
   const btnCanceled = document.getElementById('btnCalSetCanceled');
   const reasonBox = document.getElementById('calModalReasonBox');
-  const badge = document.getElementById('calModalCoachBadge');
-
-  if (choice === 'canceled') {
-    if (btnCanceled) {
-      btnCanceled.className = 'btn-touch py-1.5 px-2 rounded-xl text-xs font-bold bg-rose-600 text-white flex items-center justify-center gap-1 shadow-xs border border-rose-500';
-    }
-    if (btnNormal) {
-      btnNormal.className = 'btn-touch py-1.5 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-emerald-300 flex items-center justify-center gap-1 border border-slate-700';
-    }
-    if (reasonBox) reasonBox.classList.remove('hidden');
-    if (badge) {
-      badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-rose-950 text-rose-300 border border-rose-800';
-      badge.innerText = 'งดคลาสวันนี้';
-    }
-  } else {
-    if (btnNormal) {
-      btnNormal.className = 'btn-touch py-1.5 px-2 rounded-xl text-xs font-bold bg-emerald-600 text-white flex items-center justify-center gap-1 shadow-xs border border-emerald-500';
-    }
-    if (btnCanceled) {
-      btnCanceled.className = 'btn-touch py-1.5 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-rose-300 flex items-center justify-center gap-1 border border-slate-700';
-    }
-    if (reasonBox) reasonBox.classList.add('hidden');
-    if (badge) {
-      badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-800 text-emerald-400 border border-slate-700';
-      badge.innerText = 'มีคลาสปกติ';
-    }
-  }
-  lucide.createIcons();
+  const isCanceled = choice === 'canceled';
+  btnNormal?.setAttribute('aria-pressed', String(!isCanceled));
+  btnCanceled?.setAttribute('aria-pressed', String(isCanceled));
+  reasonBox?.classList.toggle('hidden', !isCanceled);
 }
 
 function saveCalModalClassOverride() {
