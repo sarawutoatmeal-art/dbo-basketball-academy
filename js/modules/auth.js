@@ -191,24 +191,24 @@ function updateHeaderProfileUI() {
 
   if (isCoachAuth && currentStaff) {
     headerArea.innerHTML = `
-      <div class="flex items-center gap-1.5 sm:gap-2">
-        <div class="flex items-center gap-1.5 bg-slate-100 border border-slate-200 text-slate-800 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-medium">
+      <div class="app-header-account flex items-center gap-1.5 sm:gap-2">
+        <div class="app-header-identity flex items-center gap-1.5 bg-slate-100 border border-slate-200 text-slate-800 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-medium">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span class="truncate max-w-[120px] sm:max-w-none">${currentStaff.title}</span>
+          <span class="truncate max-w-[120px] sm:max-w-none" title="${currentStaff.title}"><span class="app-header-staff-title">${currentStaff.title}</span><span class="app-header-staff-name">${currentStaff.name}</span></span>
         </div>
-        <button onclick="appLogout()" title="ออกจากระบบ" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors border border-slate-200">
+        <button type="button" onclick="appLogout()" aria-label="ออกจากระบบ" title="ออกจากระบบ" class="app-header-logout p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors border border-slate-200">
           <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
         </button>
       </div>
     `;
   } else if (loggedInStudent) {
     headerArea.innerHTML = `
-      <div class="flex items-center gap-1.5 sm:gap-2">
-        <div class="flex items-center gap-1.5 bg-slate-100 border border-slate-200 text-slate-800 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-medium">
+      <div class="app-header-account flex items-center gap-1.5 sm:gap-2">
+        <div class="app-header-identity flex items-center gap-1.5 bg-slate-100 border border-slate-200 text-slate-800 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-medium">
           <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
           <span class="truncate max-w-[120px] sm:max-w-none">น้อง ${loggedInStudent.name}</span>
         </div>
-        <button onclick="appLogout()" title="ออกจากระบบ" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors border border-slate-200">
+        <button type="button" onclick="appLogout()" aria-label="ออกจากระบบ" title="ออกจากระบบ" class="app-header-logout p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors border border-slate-200">
           <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
         </button>
       </div>

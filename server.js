@@ -21,26 +21,14 @@ const MIME_TYPES = {
   '.webmanifest': 'application/manifest+json'
 };
 
-// Import sync handler for /api/sync
-let syncHandler;
-try {
-  syncHandler = require('./api/sync');
-} catch (e) {
-  console.log('API sync handler will run in fallback mode:', e.message);
-}
-
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   let pathname = parsedUrl.pathname;
 
-  // Handle API route: /api/sync
-  if (pathname === '/api/sync') {
-    if (syncHandler) {
-      return syncHandler(req, res);
-    } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ ok: true, message: 'Sync mock fallback' }));
-    }
+  // Local development serves the browser's isolated demo.
+  if (pathname === '/api' || pathname.startsWith('/api/')) {
+    res.writeHead(404, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+    return res.end(JSON.stringify({ ok: false, error: 'API unavailable in local demo' }));
   }
 
   // Normalize static file path

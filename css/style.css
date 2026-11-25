@@ -4,21 +4,29 @@
   text-rendering: optimizeLegibility;
   color-scheme: light;
 
-  /* Nike Design System Tokens */
-  --nike-ink: #111111;
+  /* DBO team colors and shared interface palette. */
+  --page-title-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  --section-title-size: clamp(1.125rem, 1.05rem + 0.4vw, 1.375rem);
+  --action-height: 44px;
+  --action-icon-size: 1rem;
+  --dbo-purple: #38196b;
+  --dbo-purple-deep: #241044;
+  --dbo-gold: #deb95b;
+  --dbo-gold-muted: #f4e3b2;
+  --nike-ink: var(--dbo-purple-deep);
   --nike-canvas: #FFFFFF;
-  --nike-cloud: #F5F5F5;
-  --nike-charcoal: #39393B;
-  --nike-ash: #4B4B4D;
-  --nike-mute: #707072;
+  --nike-cloud: #f6f3fa;
+  --nike-charcoal: var(--dbo-purple);
+  --nike-ash: #51475f;
+  --nike-mute: #665c72;
   --nike-stone: #9E9EA0;
-  --nike-hairline: #CACACB;
-  --nike-hairline-soft: #E5E5E5;
+  --nike-hairline: #cfc5db;
+  --nike-hairline-soft: #e4dced;
   --nike-sale: #D30005;
   --nike-sale-deep: #780700;
   --nike-success: #007D48;
   --nike-success-bright: #1EAA52;
-  --nike-info: #1151FF;
+  --nike-info: #6840a8;
 }
 
 /* Nike Clean Global Typography & Canvas */
@@ -28,7 +36,7 @@ html, body {
   overflow-x: hidden;
   font-family: 'Inter', 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  padding-top: env(safe-area-inset-top, 0px);
+
 }
 
 button, input, select, textarea {
@@ -74,7 +82,7 @@ button, input, select, textarea {
 
 /* Nike Universal Touch & Micro-Animation */
 .btn-touch {
-  min-height: 40px;
+  min-height: var(--action-height);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -313,11 +321,11 @@ header {
   height: 100vh;
   height: 100dvh;
   min-height: -webkit-fill-available;
-  background: radial-gradient(circle at 50% 38%, #2D1854 0%, #1A1137 55%, #0F0922 100%);
+  background: var(--nike-ink);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding-top: max(env(safe-area-inset-top, 0px), 28px);
   padding-bottom: max(env(safe-area-inset-bottom, 0px), 32px);
   padding-left: 20px;
@@ -325,39 +333,92 @@ header {
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
-  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s;
+  transition: opacity 180ms ease, visibility 180ms;
 }
 
 #appSplashScreen.splash-fade-out {
   opacity: 0;
-  transform: scale(1.05);
   pointer-events: none;
   visibility: hidden;
 }
 
-@keyframes splashLogoBreath {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 10px 40px -10px rgba(197, 155, 39, 0.4), 0 0 60px rgba(120, 70, 220, 0.3);
-  }
-  50% {
-    transform: scale(1.035);
-    box-shadow: 0 16px 50px -6px rgba(197, 155, 39, 0.6), 0 0 85px rgba(150, 90, 250, 0.45);
-  }
+.splash-brand {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
 }
-
-.splash-logo-animated {
-  animation: splashLogoBreath 2.6s ease-in-out infinite;
+.splash-court {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(156px, 47vw, 220px);
+  aspect-ratio: 1;
 }
-
-@keyframes splashBarProgress {
-  0% { transform: translateX(-100%); }
-  50% { transform: translateX(0%); }
-  100% { transform: translateX(100%); }
+.splash-court-ring {
+  position: absolute;
+  inset: 7%;
+  border: 1px solid rgb(222 185 91 / 48%);
+  border-radius: 50%;
+  animation: splash-court-reveal 420ms ease-out both;
 }
-
-.splash-progress-shimmer {
-  animation: splashBarProgress 1.4s ease-in-out infinite;
+.splash-court-ring::before {
+  content: "";
+  position: absolute;
+  inset: 50% -36px auto;
+  border-top: 1px solid rgb(222 185 91 / 32%);
+}
+.splash-crest {
+  position: relative;
+  width: 112%;
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  transform: translate(1.5%, 1%) rotate(15deg);
+}
+@keyframes splash-court-reveal {
+  from { opacity: 0; transform: scale(0.86); }
+  to { opacity: 1; transform: scale(1); }
+}
+.splash-wordmark {
+  color: var(--nike-canvas);
+  font-family: 'Bebas Neue', 'Inter', sans-serif;
+  font-size: clamp(36px, 10vw, 64px);
+  line-height: 0.95;
+  letter-spacing: 0.015em;
+}
+.splash-wordmark span {
+  display: block;
+  margin-block-start: 4px;
+  color: var(--dbo-gold);
+  font-size: 0.55em;
+  letter-spacing: 0.16em;
+}
+.splash-loading {
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  color: var(--nike-canvas);
+  font-size: 12px;
+}
+.splash-progress {
+  width: 96px;
+  height: 3px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 20%);
+}
+.splash-progress > span {
+  display: block;
+  width: 36px;
+  height: 100%;
+  background: var(--dbo-gold);
+  animation: splash-progress 1.2s ease-in-out infinite alternate;
+}
+@keyframes splash-progress { to { transform: translateX(60px); } }
+@media (prefers-reduced-motion: reduce) {
+  .splash-court-ring, .splash-progress > span { animation: none; }
 }
 
 /* Print Optimization for Formal Court Statement */
@@ -390,4 +451,1275 @@ header {
     padding: 10px !important;
     margin: 0 !important;
   }
+}
+
+/* Phone layouts for the academy portal and staff tools. */
+@media screen and (max-width: 767px) {
+  #testDemoModeBanner {
+    position: static;
+    gap: 0 8px;
+    line-height: 1.45;
+  }
+  header button, header a, .mobile-tab-btn, main .filter-chip,
+  main .btn-touch {
+    min-height: 44px;
+  }
+  header button, header a {
+    min-width: 44px;
+    justify-content: center;
+  }
+  header button[title="ออกจากระบบ"] {
+    display: grid;
+    place-items: center;
+  }
+  main > section, main .card-clean { min-width: 0; }
+  body :is(input:not([type]), input:is([type="text"],[type="tel"],[type="number"],[type="search"],[type="date"],[type="email"]), select, textarea) {
+    font-size: 16px;
+    max-width: 100%;
+  }
+  main .btn-touch {
+    white-space: normal;
+    line-height: 1.4;
+  }
+  .mobile-bottom-nav .mobile-tab-btn {
+    min-width: 0;
+    line-height: 1.4;
+    font-size: 12px;
+  }
+}
+header .app-header-identity {
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+.app-header-staff-name { display: none; }
+@media screen and (max-width: 639px) {
+  .app-header-staff-title { display: none; }
+  .app-header-staff-name { display: inline; }
+  header a > div { display: none; }
+  header .app-header-row {
+    gap: 4px;
+    min-height: 56px;
+    height: auto;
+  }
+  .app-header-row > a { flex: 0 0 44px; }
+  .app-header-row .app-header-actions,
+  .app-header-actions #userHeaderArea,
+  .app-header-row .app-header-account { display: contents; }
+  .app-header-identity {
+    order: -1;
+    flex: 1;
+    min-width: 0;
+    padding-inline: 4px;
+    background: transparent;
+    border: 0;
+  }
+  .app-header-row > a { order: -2; }
+  .app-header-identity > :first-child { flex-shrink: 0; }
+  .app-header-identity .truncate {
+    max-width: none;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .app-header-row :is(#btnHeaderManualRefresh, #btnInstallAppHeader, .app-header-logout) {
+    width: 44px;
+    flex: 0 0 44px;
+    padding: 0;
+    border: 1px solid var(--nike-hairline-soft);
+    border-radius: 12px;
+    background: var(--nike-cloud);
+    color: var(--nike-ink);
+  }
+  .app-header-row :is(#btnInstallAppHeader, .app-header-logout) svg {
+    width: 16px;
+    height: 16px;
+    color: inherit;
+  }
+  .app-header-logout { margin-inline-start: 0; }
+  .app-header-row:not(:has(.app-header-identity)) > a { margin-inline-end: auto; }
+  .app-header-row:not(:has(.app-header-identity)) #userHeaderArea > div { display: none; }
+}
+
+/* Academy-wide application of the palette and component scales in DESIGN.md. */
+@media screen {
+  body { background-color: var(--nike-cloud); }
+  body > header, .mobile-bottom-nav { background: var(--nike-canvas); }
+  #testDemoModeBanner {
+    font-size: 12px;
+    background: var(--nike-cloud);
+    color: var(--nike-ink);
+    border-color: var(--nike-hairline-soft);
+    font-weight: 500;
+  }
+  main .card-clean, main .card-cloud, body [id$="Modal"] > .card-clean {
+    border-radius: 18px;
+    border-color: var(--nike-hairline-soft);
+  }
+  main .font-campaign {
+    font-size: clamp(36px, 5.5vw, 72px);
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+  main :is(h1:not(.font-campaign), h2), body [id$="Modal"] h3 {
+    font-weight: 600;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+  main section > .card-clean > :first-child h2,
+  #staffCardName, #newStudentFormTitle, #tab-register-new h1 {
+    font-size: var(--section-title-size);
+  }
+  #staffProfileCard { background: var(--nike-ink); }
+  main .btn-touch, body [id$="Modal"] .btn-touch {
+    border-radius: 9999px;
+    font-weight: 500;
+  }
+  body button.btn-touch:is(.bg-indigo-600,.bg-emerald-600,.bg-dbo-gold,.bg-dbo-navy),
+  body button[type="submit"]:is(.bg-emerald-600,.bg-indigo-600,.bg-dbo-gold) {
+    background-color: var(--nike-ink);
+    color: var(--nike-canvas);
+    border-color: var(--nike-ink);
+    border-radius: 9999px;
+  }
+  body button.btn-touch:is(.bg-indigo-600,.bg-emerald-600,.bg-dbo-gold,.bg-dbo-navy):hover {
+    background-color: var(--nike-charcoal);
+  }
+  main :is(input, select, textarea):not([type="checkbox"],[type="radio"],[type="file"],[type="range"],[type="color"],[type="hidden"]),
+  body [id$="Modal"] :is(input:not([type]),input[type="text"],input[type="number"],input[type="tel"],select,textarea) {
+    border: 1px solid var(--nike-hairline);
+    border-radius: 12px;
+    background-color: var(--nike-canvas);
+    color: var(--nike-ink);
+    min-height: 44px;
+  }
+  main input.search-pill { border-radius: 9999px; }
+  body :is(button,a,input,select,textarea):focus-visible {
+    outline: 2px solid var(--nike-info);
+    outline-offset: 2px;
+  }
+  main table thead, body [id$="Modal"] table thead {
+    background: var(--nike-cloud);
+    color: var(--nike-charcoal);
+  }
+  main table, body [id$="Modal"] table { font-variant-numeric: tabular-nums; }
+  .mobile-bottom-nav .mobile-tab-btn.active {
+    box-shadow: inset 0 2px var(--nike-ink);
+  }
+  body [id$="Modal"].fixed {
+    background-color: rgb(17 17 17 / 62%);
+    backdrop-filter: none;
+  }
+  body [id$="Modal"].fixed > :first-child {
+    border-radius: 24px;
+    max-height: min(92dvh, calc(100dvh - 2rem));
+    overflow-y: auto;
+  }
+  @media (max-width: 639px) {
+    body [id$="Modal"].fixed > :first-child { border-radius: 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #appSplashScreen, .btn-touch { transition: none; }
+  }
+}
+
+@media screen and (max-width: 639px) {
+  /* Keep all seven dates and their times inside the available card width. */
+  #tab-calendar > .card-clean { padding-inline: 12px; }
+  #subViewGCal > .card-clean { padding-inline: 4px; border-inline: 0; }
+  #masterCalendarGrid > div { padding: 4px 1px; min-width: 0; }
+}
+@media screen and (max-width: 1023px) {
+  #masterCalendarGrid > div > div:first-child { flex-wrap: wrap; }
+  #masterCalendarGrid .whitespace-nowrap {
+    padding-inline: 1px;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 10px;
+    line-height: 1.3;
+  }
+}
+@media screen and (max-width: 639px) {
+
+  #tab-register-new > .card-clean,
+  #tab-coach-roster > .card-clean { padding: 16px; }
+  #staffProfileCard > .flex:first-child { gap: 8px; }
+  #staffProfileCard > .flex:first-child > div:last-child { min-width: 0; }
+  main .card-clean :is(p.text-xs, label.text-xs) { font-size: 13px; line-height: 1.5; }
+}
+@media screen and (min-width: 768px) and (max-width: 1279px) {
+  #mobileBottomNavContainer { max-width: 48rem; margin-inline: auto; }
+  #mobileBottomNavContainer button { min-height: 48px; font-size: 13px; }
+}
+
+/* The staff landing page leads directly to everyday coaching tasks. */
+#tab-parent-portal:has(.staff-home:not(.hidden)) > .py-2 {
+  margin: 0;
+  padding: 0;
+}
+.staff-home {
+  max-width: 56rem;
+  margin-inline: auto;
+}
+.staff-home-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: clamp(20px, 4vw, 40px);
+  background: var(--dbo-purple-deep);
+  color: white;
+  border-radius: 18px;
+}
+.staff-home-heading h1 {
+  margin: 8px 0;
+  font-size: var(--page-title-size);
+}
+.staff-home-heading p { font-size: 14px; color: var(--dbo-gold-muted); }
+.staff-home-heading img { width: clamp(56px, 12vw, 104px); height: auto; }
+.staff-home-links {
+  margin-block: 16px 8px;
+  border: 1px solid var(--nike-hairline-soft);
+  border-radius: 16px;
+  background: white;
+  overflow: hidden;
+}
+.staff-home-links button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 24px 1fr 20px;
+  align-items: center;
+  gap: 16px;
+  min-height: 68px;
+  padding: 12px 16px;
+  text-align: start;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.staff-home-links button + button { border-top: 1px solid var(--nike-hairline-soft); }
+.staff-home-links button:hover { background: var(--nike-cloud); }
+.staff-home-links small { display: block; font-size: 13px; font-weight: 400; color: var(--nike-mute); }
+.staff-home-links svg, .staff-home-logout svg { width: 20px; height: 20px; }
+.staff-home-links button > svg:last-child { width: 16px; color: var(--nike-mute); }
+.staff-home-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding-inline: 8px;
+  font-size: 13px;
+  color: var(--nike-ash);
+}
+
+@media screen {
+  main .workspace-title { text-align: start; padding-block-end: 16px; border-bottom: 1px solid var(--nike-hairline-soft); }
+  main :is(.workspace-title h1, .workspace-title h2, .workspace-heading, #calendarTabHeaderTitle, #coachRosterHeading) {
+    margin: 0;
+    font-size: var(--page-title-size);
+    line-height: 1.3;
+    font-weight: 600;
+  }
+  main .workspace-title p { margin-top: 6px; font-size: 14px; line-height: 1.55; color: var(--nike-ash); }
+  #tab-parent-portal > .py-2 { padding: 0; }
+  #tab-parent-portal:has(#parent-dashboard:not(.hidden)) > .py-2 { display: none; }
+  #parent-login-box { margin: clamp(12px, 5vh, 56px) auto; }
+  #renew-content > .workspace-title { padding: 0 0 16px; }
+  #renew-content > .grid > .card-clean { border-width: 1px; padding: 20px; }
+  #tab-calendar > .card-clean, #tab-coach-roster > details + .card-clean {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  #tab-calendar > .card-clean > :first-child,
+  #tab-coach-roster > details + .card-clean > :first-child {
+    padding-block: 8px 16px;
+  }
+  #tab-coach-roster .staff-account {
+    font-size: 14px;
+    color: var(--nike-ash);
+  }
+  .staff-account summary { width: fit-content; padding: 10px 0; cursor: pointer; }
+  .staff-account[open] summary { margin-bottom: 8px; }
+  #tab-daily-attendance > .team-scoreboard { border-radius: 16px; }
+  #tab-daily-attendance > .team-scoreboard p { margin-top: 8px; font-size: 14px; }
+  #tab-register-new > .card-clean { max-width: 44rem; }
+  #newStudentForm label, #phoneLoginForm label { font-size: 14px; }
+  body [id$="Modal"].fixed:not(#printCourtStatementModal) > .card-clean {
+    padding: clamp(16px, 3vw, 28px);
+    border: 1px solid var(--nike-hairline-soft);
+  }
+  body [id$="Modal"] .card-clean h3 { font-size: 20px; line-height: 1.35; }
+}
+@media screen and (max-width: 639px) {
+
+
+  #tab-register-new > .card-clean, #parent-login-box { padding: 20px 16px; }
+  #calendarSubViewNav { flex-wrap: wrap; }
+  body [id$="Modal"].fixed:not(#printCourtStatementModal) {
+    align-items: end;
+    padding: 0;
+  }
+  body [id$="Modal"].fixed:not(#printCourtStatementModal) > .card-clean {
+    width: 100%;
+    max-width: none;
+    max-height: calc(100dvh - max(16px, env(safe-area-inset-top)));
+    border-radius: 20px 20px 0 0;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* Screen type scale for static markup and dynamically rendered content. */
+@media screen {
+  :is(main, body [id$="Modal"], .telegram-toast) :is(.text-\[8px\], .text-\[9px\], .text-\[10px\], .text-\[11px\]) {
+    font-size: 0.75rem;
+    line-height: 1.45;
+    letter-spacing: normal;
+  }
+  :is(main, body [id$="Modal"]) :is(p, label).text-xs,
+  :is(main, body [id$="Modal"]) button.btn-touch {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  :is(main, body [id$="Modal"]) :is(input:not([type]), input:is([type="text"], [type="tel"], [type="number"], [type="search"], [type="date"], [type="email"]), select, textarea) {
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 100%;
+  }
+  :is(main, body [id$="Modal"]) :is(p, label, small, td).text-slate-400 {
+    color: var(--nike-mute);
+  }
+  :is(main, body [id$="Modal"]) .btn-touch {
+    overflow-wrap: anywhere;
+  }
+}
+@media screen and (max-width: 639px) {
+  /* Calendar times fit in the seven-column month grid. */
+  main #masterCalendarGrid .whitespace-nowrap {
+    font-size: 0.6875rem;
+    line-height: 1.3;
+  }
+}
+@media print {
+  #printCourtDocumentSheet .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+}
+
+@media screen {
+  /* Keep action icons legible when adjacent labels wrap. */
+  :is(header, main, nav, [id$="Modal"]) :is(button, a) > svg.lucide {
+    flex-shrink: 0;
+    inline-size: var(--action-icon-size);
+    block-size: var(--action-icon-size);
+    stroke-width: 1.75;
+  }
+
+  .coach-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-bottom: 1px solid var(--nike-hairline-soft);
+  }
+  .coach-tabs button, .roster-view-options button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px;
+    font-size: 0.875rem;
+    color: var(--nike-ash);
+  }
+  .coach-tabs button[aria-pressed="true"] {
+    box-shadow: inset 0 -2px var(--nike-ink);
+    color: var(--nike-ink);
+    font-weight: 600;
+  }
+  .coach-tabs button span { min-width: 0; }
+  .coach-tabs button span:last-child {
+    flex-shrink: 0;
+    padding: 0;
+    color: var(--nike-mute);
+    background: transparent;
+    font-weight: 500;
+  }
+  .roster-tools { display: grid; gap: 12px; }
+  .roster-filters, .roster-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .roster-filters .filter-chip {
+    min-height: 44px;
+    max-width: 100%;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--nike-canvas);
+    transition: background-color 150ms, border-color 150ms;
+  }
+  .roster-filters .filter-chip[aria-pressed="true"] {
+    background: var(--nike-cloud);
+    border-color: var(--nike-ink);
+    font-weight: 600;
+  }
+  .roster-count {
+    font-size: 0.75rem;
+    color: var(--nike-mute);
+    font-variant-numeric: tabular-nums;
+  }
+  .roster-toolbar > .relative {
+    flex: 1 1 15rem;
+    min-width: 0;
+  }
+  .roster-view-options {
+    display: inline-flex;
+    border: 1px solid var(--nike-hairline-soft);
+    border-radius: 10px;
+    background: var(--nike-canvas);
+  }
+  .roster-view-options button { padding-inline: 12px; border-radius: 8px; }
+  .roster-view-options button[aria-pressed="true"] {
+    background: var(--nike-cloud);
+    color: var(--nike-ink);
+    font-weight: 600;
+  }
+  #coachRosterMobileCards > .card-clean { border-radius: 12px; }
+  #coachRosterMobileCards h4 { overflow-wrap: anywhere; }
+  #coachRosterMobileCards button[title="ลบชื่อ"] {
+    width: 44px;
+    height: 44px;
+    color: var(--nike-mute);
+  }
+}
+@media screen and (max-width: 420px) {
+  .roster-toolbar > .relative { flex-basis: 100%; }
+  .coach-tabs button { gap: 4px; }
+  .coach-tabs button > svg.lucide { display: none; }
+}
+
+@media screen {
+  #parentPendingList button:first-child { white-space: nowrap; }
+}
+
+/* The narrow table view presents each record in two readable columns. */
+@media screen and (max-width: 1023px) {
+  .responsive-table, .responsive-table tbody { display: block; }
+  .responsive-table { position: relative; }
+  .responsive-table thead {
+    position: absolute;
+    inset-inline-start: 0;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .responsive-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 16px;
+    padding: 12px 16px;
+  }
+  .responsive-table tbody td {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    text-align: start;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .responsive-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 2px;
+    color: var(--nike-mute);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .responsive-table td[colspan] { grid-column: 1 / -1; }
+  .responsive-table td .truncate { white-space: normal; }
+  #coachRosterDesktopTable tbody td:last-child button {
+    min-height: 44px;
+  }
+}
+@media screen and (max-width: 639px) {
+  body > header {
+    padding-top: max(env(safe-area-inset-top, 0px), 4px) !important;
+  }
+  header .app-header-identity {
+    border: 0;
+    background: transparent;
+    padding-inline: 4px;
+  }
+}
+
+@media screen and (max-width: 639px) {
+  #printCourtDocumentSheet {
+    padding: 12px;
+    overflow-wrap: anywhere;
+  }
+  #printCourtDocumentSheet > :first-child {
+    flex-direction: column;
+    gap: 12px;
+  }
+  #printCourtDocumentSheet > :first-child > :last-child { text-align: start; }
+  #printCourtDocumentSheet > :first-child img { flex-shrink: 0; }
+  #printCourtDocumentSheet > .flex { flex-wrap: wrap; }
+  #printCourtDocumentSheet > .grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media screen {
+  html,
+  body > [id$="Modal"].fixed > .card-clean {
+    scrollbar-width: none;
+  }
+  html:has(body > [id$="Modal"].fixed:not(.hidden)) {
+    overflow: hidden;
+  }
+  body > [id$="Modal"].fixed > .card-clean {
+    overscroll-behavior-y: contain;
+  }
+}
+
+@media screen {
+  .print-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .print-actions > div { flex-wrap: wrap; }
+  .print-actions > div:last-child { margin-inline-start: auto; flex-wrap: nowrap; }
+  .print-actions button:first-child { white-space: nowrap; padding-inline: 12px; }
+  .print-actions button:last-child { min-width: 44px; min-height: 44px; }
+
+  #masterCalendarGrid {
+    gap: 2px;
+    background: var(--nike-hairline-soft);
+    border: 1px solid var(--nike-hairline-soft);
+    border-radius: 8px;
+    padding: 2px;
+  }
+  .calendar-date, .calendar-date-placeholder {
+    min-width: 0;
+    min-height: clamp(44px, 8vw, 72px);
+    background: var(--nike-canvas);
+  }
+  .calendar-date {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 4px;
+    padding-block: 4px;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    color: var(--nike-ink);
+  }
+  .calendar-date:hover { background: var(--nike-cloud); }
+  .calendar-date:focus-visible { outline-offset: -2px; }
+  .calendar-date-number {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+  }
+  .calendar-date[aria-current="date"] .calendar-date-number {
+    background: var(--nike-ink);
+    color: var(--nike-canvas);
+  }
+  .calendar-date-dot { width: 6px; height: 6px; border-radius: 50%; }
+}
+
+@media screen {
+  .btn-nike-primary, main .btn-touch.bg-nike-ink,
+  body button.btn-touch:is(.bg-indigo-600, .bg-emerald-600, .bg-dbo-gold, .bg-dbo-navy) {
+    background-color: var(--dbo-purple);
+    border-color: var(--dbo-purple);
+    color: var(--nike-canvas);
+  }
+  .btn-nike-primary:hover, main .btn-touch.bg-nike-ink:hover,
+  body button.btn-touch:is(.bg-indigo-600, .bg-emerald-600, .bg-dbo-gold, .bg-dbo-navy):hover {
+    background-color: var(--dbo-purple-deep);
+  }
+  .staff-home-heading, #tab-daily-attendance > .team-scoreboard {
+    border-bottom: 4px solid var(--dbo-gold);
+  }
+  #tab-daily-attendance > .team-scoreboard {
+    background: var(--dbo-purple-deep);
+  }
+  #dailyBoardDateLabel { color: var(--dbo-gold-muted); }
+  .staff-home-links button > svg:first-child { color: var(--dbo-purple); }
+  .mobile-bottom-nav .mobile-tab-btn.active,
+  .coach-tabs button[aria-pressed="true"] {
+    color: var(--dbo-purple);
+    background: var(--nike-cloud);
+  }
+  .mobile-bottom-nav .mobile-tab-btn.active {
+    box-shadow: inset 0 3px var(--dbo-gold);
+  }
+  .coach-tabs button[aria-pressed="true"] {
+    box-shadow: inset 0 -3px var(--dbo-gold);
+  }
+  .roster-filters .filter-chip[aria-pressed="true"] {
+    color: var(--dbo-purple);
+    border-color: var(--dbo-purple);
+  }
+  header nav .pill-tab svg { color: inherit; }
+  .calendar-date[aria-current="date"] .calendar-date-number {
+    background: var(--dbo-purple);
+    box-shadow: 0 0 0 2px var(--dbo-gold);
+  }
+  #tab-parent-portal .workspace-title, #tab-register-new .workspace-title {
+    border-bottom-color: var(--dbo-gold);
+  }
+}
+
+@media screen {
+  #dailyBoardActionBox > button { min-height: var(--action-height); }
+  #dailyBoardActionBox > button:first-child { gap: 6px; }
+  .staff-home-links button > svg:first-child,
+  .mobile-bottom-nav .mobile-tab-btn > svg.lucide {
+    inline-size: 18px;
+    block-size: 18px;
+  }
+  header #btnHeaderManualRefresh, header #btnInstallAppHeader, header .app-header-logout,
+  #subViewGCal button[title="เดือนก่อนหน้า"], #subViewGCal button[title="เดือนถัดไป"] {
+    min-height: var(--action-height);
+    min-width: var(--action-height);
+  }
+}
+
+@media screen {
+  .calendar-toolbar {
+    display: grid;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--nike-hairline-soft);
+  }
+  .calendar-month-controls {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 8px;
+  }
+  .calendar-month-label {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dbo-purple-deep);
+  }
+  .calendar-actions {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .calendar-actions > :is(a, button),
+  #btnCourtPrintModal,
+  #calendarSubViewNav > button {
+    min-height: 44px;
+    border-radius: 8px;
+    justify-content: center;
+  }
+  #calendarSubViewNav:not(.hidden) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #calendarSubViewNav > button { padding-inline: 8px; }
+  .calendar-legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .calendar-legend li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--nike-hairline-soft);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .calendar-legend .calendar-date-dot { display: inline-block; flex: 0 0 6px; }
+  .calendar-legend small { display: block; color: var(--nike-mute); font-size: 12px; font-weight: 400; }
+  .calendar-weekdays { gap: 1px; padding-inline: 1px; }
+  #masterCalendarGrid {
+    gap: 1px;
+    padding: 0;
+    overflow: hidden;
+  }
+  #masterCalendarGrid .calendar-date-placeholder {
+    padding: 8px 0 0;
+    text-align: center;
+    font-size: 14px;
+    color: var(--nike-mute);
+    background: var(--nike-cloud);
+  }
+}
+@media screen and (min-width: 1024px) {
+  .calendar-toolbar { grid-template-columns: minmax(240px, 1fr) auto; align-items: center; }
+  .calendar-legend { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media screen and (max-width: 639px) {
+  .calendar-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .calendar-actions > a {
+    grid-column: 1 / -1;
+    background: var(--nike-canvas);
+    color: var(--dbo-purple);
+    border: 1px solid var(--nike-hairline-soft);
+  }
+}
+@media screen and (max-height: 440px) {
+  .splash-court { width: 108px; }
+  .splash-wordmark { font-size: 32px; }
+  .splash-brand { gap: 8px; }
+}
+
+@media screen {
+  .course-picker { display: grid; gap: 8px; min-width: 0; }
+  .course-picker legend { padding-bottom: 8px; font-size: 16px; font-weight: 600; }
+  .course-picker label {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 60px;
+    padding: 10px;
+    border: 1px solid var(--nike-hairline);
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    cursor: pointer;
+  }
+  .course-picker label:has(input:checked) {
+    background: var(--nike-cloud);
+    border-color: var(--dbo-purple);
+  }
+  .course-picker input { accent-color: var(--dbo-purple); }
+  .course-picker small {
+    display: block;
+    color: var(--nike-mute);
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .course-price { text-align: end; color: var(--dbo-purple); font-weight: 600; }
+  #tab-coach-roster .roster-edit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 44px;
+    min-width: 76px;
+    padding: 6px 10px;
+    border: 1px solid var(--nike-hairline-soft);
+    border-radius: 8px;
+    background: var(--nike-cloud);
+    color: var(--dbo-purple);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  #tab-coach-roster .roster-edit-button:hover {
+    border-color: var(--dbo-purple);
+  }
+}
+
+@media screen {
+  #coachRosterMobileCards > .roster-card {
+    padding: 14px 14px 12px;
+    border-radius: 12px;
+    border-inline-start: 3px solid var(--dbo-gold);
+  }
+  .roster-card-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 8px;
+  }
+  .roster-card-identity h4 {
+    color: var(--dbo-purple-deep);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .roster-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 8px;
+    margin-top: 3px;
+    color: var(--nike-mute);
+    font-size: 12px;
+  }
+  .roster-card-meta > span:last-child {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-weight: 500;
+  }
+  .roster-card-actions { display: flex; align-items: center; gap: 2px; }
+  #coachRosterMobileCards .roster-delete-button {
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+  }
+  #coachRosterMobileCards .roster-delete-button:hover {
+    background: #fff1f2;
+    color: var(--nike-sale);
+  }
+  .roster-card-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px solid var(--nike-hairline-soft);
+  }
+  .roster-card-contact {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--nike-mute);
+    font-size: 12px;
+  }
+  .roster-card-contact svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .roster-card-quota { max-width: 100%; margin-inline-start: auto; text-align: end; }
+  .roster-card-quota span {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media screen {
+  .staff-home-heading {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 152px;
+  }
+  .staff-home-heading > div:first-child { min-width: 0; }
+  .staff-home-crest {
+    position: relative;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: clamp(80px, 23vw, 160px);
+    aspect-ratio: 1;
+  }
+  .staff-home-crest img { position: relative; width: 72%; }
+  .staff-home-crest::before,
+  .staff-home-crest::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+  .staff-home-crest::before {
+    inset: -45% -65% -45% -26%;
+    border: 1px solid rgb(222 185 91 / 36%);
+    border-radius: 50%;
+  }
+  .staff-home-crest::after {
+    inset: 15% -85% 15% 24%;
+    border: 1px solid rgb(222 185 91 / 50%);
+    border-right: 0;
+    border-radius: 40px 0 0 40px;
+    z-index: -1;
+  }
+
+  #tab-daily-attendance > .team-scoreboard {
+    display: grid;
+    gap: 16px;
+    padding: clamp(16px, 3vw, 28px);
+    background: var(--dbo-purple-deep);
+    color: var(--nike-canvas);
+  }
+  .scoreboard-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    background: #170a2c;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .scoreboard-stat {
+    padding: 10px 4px 6px;
+    text-align: center;
+    border-top: 3px solid #bcb1cd;
+  }
+  .scoreboard-stat + .scoreboard-stat { border-inline-start: 1px solid rgb(255 255 255 / 18%); }
+  .scoreboard-stat.is-attending { border-top-color: #74d7a2; }
+  .scoreboard-stat.is-on-leave { border-top-color: var(--dbo-gold); }
+  .scoreboard-stat dt { font-size: 12px; color: #e5daef; }
+  .scoreboard-stat dd {
+    margin: 0;
+    font: 400 clamp(36px, 9vw, 60px) / 1 'Bebas Neue', 'Inter', sans-serif;
+    font-variant-numeric: tabular-nums;
+    color: white;
+  }
+  .scoreboard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #dailyBoardActionBox > button {
+    justify-content: center;
+    padding-inline: 10px;
+    border-radius: 8px;
+  }
+  #dailyBoardActionBox > button:last-child {
+    background: var(--dbo-gold);
+    color: var(--dbo-purple-deep);
+  }
+  #dailyBoardActionBox > button:last-child:hover { background: var(--dbo-gold-muted); }
+  #dailyBoardActionBox > button:last-child > svg { color: inherit; }
+}
+@media screen and (max-width: 420px) {
+  .scoreboard-actions > button { flex: 1 1 8rem; }
+}
+
+@media screen {
+  main .workspace-title,
+  #tab-calendar > .card-clean > :first-child,
+  #tab-coach-roster > details + .card-clean > :first-child {
+    border-inline-start: 3px solid var(--dbo-gold);
+    padding-inline-start: 12px;
+  }
+  #calendarDayModal #calModalTopic {
+    padding: 10px 12px;
+    border-inline-start: 3px solid var(--dbo-gold);
+    background: var(--nike-cloud);
+  }
+  .class-status-panel {
+    padding: 12px;
+    background: var(--nike-cloud);
+    border: 1px solid var(--nike-hairline-soft);
+    border-radius: 12px;
+    color: var(--nike-ink);
+  }
+  #calendarDayModal button.btn-touch,
+  #attendanceHistoryModal button.btn-touch { border-radius: 8px; }
+  #calendarDayModal :is(#btnCalSetNormal, #btnCalSetCanceled) {
+    background: white;
+    border-color: var(--nike-hairline);
+    color: var(--nike-ash);
+  }
+  #calendarDayModal :is(#btnCalSetNormal, #btnCalSetCanceled)[aria-pressed="true"] {
+    background: var(--dbo-purple);
+    border-color: var(--dbo-purple);
+    color: white;
+  }
+  #calendarDayModal #btnCalSetCanceled[aria-pressed="true"] {
+    background: #a12139;
+    border-color: #a12139;
+  }
+  #calendarDayModal .class-status-panel label { color: var(--nike-ash); }
+  #calendarDayModal .class-status-panel > button {
+    background: var(--dbo-gold);
+    color: var(--dbo-purple-deep);
+  }
+  #calModalParentActionBox button:last-child {
+    background: white;
+    border-color: var(--nike-hairline);
+    color: var(--dbo-purple);
+  }
+  .history-metrics {
+    gap: 1px;
+    border: 1px solid var(--nike-hairline-soft);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #57416c;
+  }
+  .history-metrics > div {
+    padding: 8px 4px;
+    border: 0;
+    border-radius: 0;
+    background: var(--dbo-purple-deep);
+  }
+  .history-metrics > div > p:first-child { color: #e5daef; }
+  .history-metrics > div > p:last-child { color: white; }
+  .history-entry {
+    padding: 12px;
+    display: grid;
+    gap: 8px;
+  }
+  .history-entry-heading h4 { font-size: 15px; font-weight: 600; color: var(--dbo-purple-deep); }
+  .history-entry-heading p { color: var(--nike-mute); }
+  .history-entry-counts { display: flex; gap: 16px; font-size: 13px; }
+  .history-entry summary { cursor: pointer; min-height: 36px; padding-block: 8px; color: var(--dbo-purple); }
+  .history-entry-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    border-top: 1px solid var(--nike-hairline-soft);
+    padding-top: 8px;
+  }
+  .history-entry-actions > button { gap: 6px; }
+}
+
+@media screen {
+  .home-class-card {
+    margin-top: 14px;
+    padding: 10px 14px 14px;
+    background: var(--nike-canvas);
+    border: 1px solid var(--nike-hairline-soft);
+    border-radius: 12px;
+  }
+  .home-class-link {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    color: var(--dbo-purple-deep);
+  }
+  .home-class-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--nike-hairline-soft);
+  }
+  .home-class-stats > div { padding: 8px 3px 0; text-align: center; }
+  .home-class-stats > div + div { border-inline-start: 1px solid var(--nike-hairline-soft); }
+  .home-class-stats dt { font-size: 12px; color: var(--nike-mute); }
+  .home-class-stats dd { font: 400 32px/1 'Bebas Neue', 'Inter', sans-serif; color: var(--dbo-purple); }
+  .training-week {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+    max-width: 100%;
+    padding: 4px;
+    background: var(--nike-canvas);
+    border: 1px solid var(--nike-hairline-soft);
+    border-radius: 10px;
+  }
+  .training-week button {
+    display: grid;
+    justify-items: center;
+    gap: 1px;
+    padding: 4px 0;
+    min-height: 48px;
+    border-radius: 7px;
+    color: var(--nike-mute);
+    font-size: 12px;
+  }
+  .training-week button strong { color: var(--dbo-purple-deep); font-size: 16px; font-variant-numeric: tabular-nums; }
+  .training-week button[aria-current="date"] {
+    background: var(--dbo-purple);
+    color: var(--dbo-gold-muted);
+    box-shadow: inset 0 -2px var(--dbo-gold);
+  }
+  .training-week button[aria-current="date"] strong { color: white; }
+  .training-week button:not([aria-current="date"]):hover { background: var(--nike-cloud); }
+  #parent-dashboard > .player-quota { border-top: 3px solid var(--dbo-gold); }
+}
+
+@media screen {
+  body > header {
+    border-bottom: 2px solid var(--dbo-gold);
+  }
+  .mobile-bottom-nav .mobile-tab-btn.active {
+    font-weight: 600;
+    color: var(--dbo-purple);
+  }
+  #calendarSubViewNav > button.bg-nike-ink,
+  #tab-coach-roster .coach-tabs button[aria-pressed="true"] {
+    box-shadow: inset 0 -2px var(--dbo-gold);
+  }
+  #tab-register-new .course-picker label:has(input:checked) {
+    box-shadow: inset 3px 0 var(--dbo-gold);
+  }
+}
+
+@media screen {
+  .next-training-card:not(.hidden) {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) 16px;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 76px;
+    margin-top: 12px;
+    padding: 10px 12px;
+    text-align: start;
+    background: var(--nike-canvas);
+    border: 1px solid var(--nike-hairline-soft);
+    border-inline-start: 3px solid var(--dbo-gold);
+    border-radius: 10px;
+  }
+  .next-training-card:hover { background: var(--nike-cloud); }
+  .next-training-date {
+    display: grid;
+    justify-items: center;
+    padding: 6px 2px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--dbo-gold-muted);
+    background: var(--dbo-purple-deep);
+  }
+  .next-training-date strong { font: 400 30px/1 'Bebas Neue', 'Inter', sans-serif; color: white; }
+  .next-training-info { display: grid; min-width: 0; gap: 1px; overflow-wrap: anywhere; }
+  .next-training-info small, .next-training-info > span { color: var(--nike-mute); font-size: 12px; }
+  .next-training-info strong { color: var(--dbo-purple-deep); font-size: 15px; }
+  [data-class-status="regular"] { --class-color: #d78c16; }
+  [data-class-status="saturday"] { --class-color: #6855ce; }
+  [data-class-status="canceled"] { --class-color: #d43e65; }
+  [data-class-status="special"] { --class-color: #a151c2; }
+  .calendar-date-dot[data-class-status] { background: var(--class-color); }
+  .training-week button { grid-template-rows: auto auto 5px; }
+  .training-week button[data-class-status]::after {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--class-color);
+  }
+}
+
+@media screen {
+  .attendance-trend {
+    margin-top: 14px;
+    padding: 12px 14px 14px;
+    border: 1px solid var(--nike-hairline-soft);
+    border-radius: 12px;
+    background: var(--nike-canvas);
+  }
+  .attendance-trend-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .attendance-trend-heading h2 { color: var(--dbo-purple-deep); font-size: 16px; font-weight: 600; }
+  .attendance-trend-heading p, #attendanceTrendEmpty { color: var(--nike-mute); font-size: 12px; }
+  .attendance-trend-heading button {
+    gap: 6px;
+    min-height: 44px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    color: var(--dbo-purple);
+    background: var(--nike-cloud);
+  }
+  .attendance-trend-bars:not(.hidden) {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .attendance-trend-bars > li {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    color: var(--nike-mute);
+    font-size: 12px;
+    text-align: center;
+  }
+  .attendance-trend-bars strong {
+    color: var(--dbo-purple-deep);
+    font: 400 26px/1 'Bebas Neue', 'Inter', sans-serif;
+  }
+  .attendance-trend-track {
+    display: flex;
+    align-items: end;
+    width: 100%;
+    max-width: 48px;
+    height: 62px;
+    background: var(--nike-cloud);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .attendance-trend-track > span {
+    width: 100%;
+    height: var(--attendance-share);
+    background: var(--dbo-purple);
+  }
+  .attendance-trend-bars > li:last-child .attendance-trend-track > span { background: var(--dbo-gold); }
+  #attendanceTrendEmpty:not(.hidden) { margin-top: 12px; }
+}
+
+@media screen {
+  .staff-rollcall {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+    margin-top: 10px;
+    background: var(--dbo-gold);
+    color: var(--dbo-purple-deep);
+    border-radius: 8px;
+  }
+  .staff-rollcall:hover { background: var(--dbo-gold-muted); }
+  .staff-home-heading {
+    min-height: clamp(120px, 20vw, 184px);
+    padding-block: 16px;
+  }
+  .record-student-row > :last-child {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .record-student-row .record-status-button {
+    min-height: 44px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: var(--nike-ash);
+    font-size: 13px;
+  }
+  .record-status-button[aria-pressed="true"][data-record-status="attending"] {
+    background: var(--nike-success);
+    color: white;
+  }
+  .record-status-button[aria-pressed="true"][data-record-status="leave"] {
+    background: var(--dbo-gold);
+    color: var(--dbo-purple-deep);
+  }
+  .record-status-button[aria-pressed="true"][data-record-status="absent"] {
+    background: var(--nike-hairline-soft);
+    color: var(--nike-ink);
+  }
+  #recordStudentChecklistContainer > .record-student-row > :first-child { min-width: 0; }
+  #recordStudentChecklistContainer .record-student-row strong { white-space: normal; overflow-wrap: anywhere; }
+  #dash-latest-practice { margin-top: 4px; }
+  #parent-dashboard .player-quota > :first-child,
+  #parent-dashboard .player-quota .justify-between {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #dash-remaining-number { font-variant-numeric: tabular-nums; }
+  #renewCheckoutSection { border-top: 3px solid var(--dbo-gold); }
+  body > [id$="Modal"].fixed > .card-clean button[aria-label^="ปิด"] {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 8px;
+  }
+}
+@media screen and (max-width: 479px) {
+  #recordStudentChecklistContainer > .record-student-row:not(.hidden) {
+    display: grid;
+    gap: 8px;
+  }
+  .record-student-row > :last-child { width: 100%; }
 }

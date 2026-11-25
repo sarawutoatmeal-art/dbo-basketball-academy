@@ -63,6 +63,7 @@ function getStoredPushSubscriptions() {
 
 // Register or refresh Web Push Subscription on Server
 async function registerWebPushSubscription(forceResubscribe = false) {
+  if (IS_TEST_DEMO_ENV) return null;
   if (isRegisteringPush) return window.__dboPushSub;
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
     console.log('Web Push not supported in this browser environment');
@@ -153,6 +154,7 @@ async function registerWebPushSubscription(forceResubscribe = false) {
 
 // Send Real Cloud Push via Serverless Engine (Works Outside the App / When Phone is Locked)
 async function sendCloudWebPush(options = {}) {
+  if (IS_TEST_DEMO_ENV) return false;
   try {
     const payload = {
       action: 'send',

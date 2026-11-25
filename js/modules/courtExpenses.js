@@ -215,25 +215,25 @@ function renderCourtExpenseStatement() {
     const formattedDate = `${item.dayName}ที่ ${item.day} ${data.monthName}`;
 
     tr.innerHTML = `
-      <td class="py-2.5 px-3 text-center text-slate-400 font-mono text-[11px]">${index + 1}</td>
-      <td class="py-2.5 px-3 font-semibold ${isCanceled ? 'line-through text-slate-400' : 'text-slate-900'}">
+      <td data-label="ลำดับ" class="py-2.5 px-3 text-center text-slate-400 font-mono text-[11px]">${index + 1}</td>
+      <td data-label="วันและวันที่" class="py-2.5 px-3 font-semibold ${isCanceled ? 'line-through text-slate-400' : 'text-slate-900'}">
         ${formattedDate}
       </td>
-      <td class="py-2.5 px-3 min-w-0">
+      <td data-label="รายการและเวลา" class="py-2.5 px-3 min-w-0">
         <span class="font-bold ${isCanceled ? 'line-through text-slate-400' : 'text-slate-800'} block truncate">${item.title}</span>
         <span class="text-[10px] text-slate-500 font-mono block">${item.time}${item.reason ? ` • <span class="text-rose-600 font-sans">${item.reason}</span>` : ''}</span>
       </td>
-      <td class="py-2.5 px-3 text-center font-mono font-bold ${isCanceled ? 'text-slate-400 line-through' : 'text-indigo-700'}">
+      <td data-label="ชั่วโมง" class="py-2.5 px-3 text-center font-mono font-bold ${isCanceled ? 'text-slate-400 line-through' : 'text-indigo-700'}">
         ${item.hours.toFixed(1)}
       </td>
-      <td class="py-2.5 px-3 text-right font-mono text-slate-500">
+      <td data-label="อัตราต่อชั่วโมง" class="py-2.5 px-3 text-right font-mono text-slate-500">
         ${isCanceled ? '-' : '500 บ.'}
       </td>
-      <td class="py-2.5 px-3 text-right font-mono font-extrabold ${isCanceled ? 'text-slate-400 line-through' : 'text-emerald-700'}">
+      <td data-label="รวมเงิน" class="py-2.5 px-3 text-right font-mono font-extrabold ${isCanceled ? 'text-slate-400 line-through' : 'text-emerald-700'}">
         ${isCanceled ? '0 บ.' : `฿ ${item.amount.toLocaleString('th-TH')}`}
       </td>
-      <td class="py-2.5 px-3 text-center">${statusBadge}</td>
-      <td class="py-2.5 px-3 text-right">
+      <td data-label="สถานะ" class="py-2.5 px-3 text-center">${statusBadge}</td>
+      <td data-label="แก้ไข" class="py-2.5 px-3 text-right">
         <button type="button" onclick="openEditCourtDayModal('${item.dateKey}')" class="btn-touch px-2.5 py-1 rounded-lg text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-2xs inline-flex items-center gap-1 transition cursor-pointer">
           <i data-lucide="edit-3" class="w-3 h-3 text-slate-500"></i>
           <span>ปรับแก้</span>
@@ -340,8 +340,8 @@ function updateCourtCalendarRoleVisibility() {
   if (isCoach) {
     if (printBtn) printBtn.classList.remove('hidden');
     if (navBar) navBar.classList.remove('hidden');
-    if (headerTitle) headerTitle.innerText = 'ตารางซ้อม & สรุปค่าสนามรายเดือน (ส่งโรงเรียน)';
-    if (headerSub) headerSub.innerText = 'เชื่อมต่อ Google Calendar • สรุปยอดค่าเช่าสนามฝึกซ้อมรายเดือน (ชม. ละ 500 บ.)';
+    if (headerTitle) headerTitle.innerText = 'ปฏิทินและค่าสนาม';
+    if (headerSub) headerSub.innerText = 'ตารางซ้อมและค่าเช่าสนาม 500 บาท/ชม.';
     setCalendarTabSubView(currentCalendarSubView);
   } else {
     // Parents, students, public visitors
@@ -349,8 +349,8 @@ function updateCourtCalendarRoleVisibility() {
     if (navBar) navBar.classList.add('hidden');
     if (vStat) vStat.classList.add('hidden');
     if (vGCal) vGCal.classList.remove('hidden');
-    if (headerTitle) headerTitle.innerText = 'ตารางฝึกซ้อม & ปฏิทิน DBO Basketball Academy';
-    if (headerSub) headerSub.innerText = 'ตารางคลาสฝึกซ้อมประจำสัปดาห์ & ปฏิทิน Google Calendar';
+    if (headerTitle) headerTitle.innerText = 'ปฏิทินฝึกซ้อม';
+    if (headerSub) headerSub.innerText = 'ตารางซ้อมประจำสัปดาห์';
     if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
     if (typeof renderWeeklyScheduleView === 'function') renderWeeklyScheduleView();
   }
@@ -632,18 +632,18 @@ function openPrintCourtStatementModal() {
       const isCanceled = (item.status === 'canceled');
       tr.className = "border-b border-slate-200 text-xs text-slate-800";
       tr.innerHTML = `
-        <td class="py-2 px-2.5 text-center font-mono">${index + 1}</td>
-        <td class="py-2 px-2.5 font-medium">${item.dayName}ที่ ${item.day} ${data.monthName}</td>
-        <td class="py-2 px-2.5">
+        <td data-label="ลำดับ" class="py-2 px-2.5 text-center font-mono">${index + 1}</td>
+        <td data-label="วันและวันที่" class="py-2 px-2.5 font-medium">${item.dayName}ที่ ${item.day} ${data.monthName}</td>
+        <td data-label="รายการและเวลา" class="py-2 px-2.5">
           <strong class="${isCanceled ? 'line-through text-slate-400' : 'text-slate-900'}">${item.title}</strong>
           <span class="block text-[11px] text-slate-500 font-mono">${item.time}${item.reason ? ` (${item.reason})` : ''}</span>
         </td>
-        <td class="py-2 px-2.5 text-center font-mono ${isCanceled ? 'line-through text-slate-400' : ''}">${item.hours.toFixed(1)}</td>
-        <td class="py-2 px-2.5 text-right font-mono">${isCanceled ? '-' : '500'}</td>
-        <td class="py-2 px-2.5 text-right font-mono font-bold ${isCanceled ? 'line-through text-slate-400' : 'text-slate-900'}">
+        <td data-label="ชั่วโมง" class="py-2 px-2.5 text-center font-mono ${isCanceled ? 'line-through text-slate-400' : ''}">${item.hours.toFixed(1)}</td>
+        <td data-label="อัตราต่อชั่วโมง" class="py-2 px-2.5 text-right font-mono">${isCanceled ? '-' : '500'}</td>
+        <td data-label="จำนวนเงิน" class="py-2 px-2.5 text-right font-mono font-bold ${isCanceled ? 'line-through text-slate-400' : 'text-slate-900'}">
           ${isCanceled ? '0' : item.amount.toLocaleString('th-TH')}
         </td>
-        <td class="py-2 px-2.5 text-center text-[11px]">
+        <td data-label="สถานะ" class="py-2 px-2.5 text-center text-[11px]">
           ${isCanceled ? '<span class="text-rose-600 font-semibold">งดคลาส (0 บ.)</span>' : (item.status === 'private' ? '<span class="text-purple-700 font-semibold">ไพรเวท</span>' : '<span class="text-emerald-700 font-semibold">ปกติ</span>')}
         </td>
       `;
