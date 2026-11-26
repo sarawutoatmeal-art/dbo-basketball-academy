@@ -3,8 +3,11 @@ const path = require('path');
 const os = require('os');
 
 const TMP_FILE = path.join(os.tmpdir(), 'dbo_cloud_state_v17.json');
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://igbgetsqqshzhhwnjfgm.supabase.co';
+const SUPABASE_API_KEY = process.env.SUPABASE_API_KEY || 'sb_publishable_8a6VGS9ItL20guHGSdlzEA_QkuuI3iA';
+const SERVER_UA = 'DBO-Academy-Server/2.0';
 
-function loadStoredState() {
+function loadLocalTmpState() {
   if (global.__dboCloudState) {
     return global.__dboCloudState;
   }
@@ -21,12 +24,99 @@ function loadStoredState() {
   return null;
 }
 
-function saveStoredState(state) {
+function saveLocalTmpState(state) {
   global.__dboCloudState = state;
   try {
     fs.writeFileSync(TMP_FILE, JSON.stringify(state), 'utf8');
   } catch (e) {
     console.error('Write tmp state error:', e);
+  }
+}
+
+async function loadSupabaseState(envId = 'production') {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/dbo_app_state?id=eq.${encodeURIComponent(envId)}&select=state,updated_at`,
+      {
+        method: 'GET',
+        headers: {
+          'apikey': SUPABASE_API_KEY,
+          'Accept': 'application/json',
+          'User-Agent': SERVER_UA
+        },
+        signal: AbortSignal.timeout(4500)
+      }
+    );
+    if (res.ok) {
+      const rows = await res.json();
+      if (Array.isArray(rows) && rows.length > 0 && rows[0].state) {
+        return rows[0].state;
+      }
+    }
+  } catch (e) {
+    console.warn('Supabase load state fallback to local tmp:', e.message);
+  }
+  return null;
+}
+
+async function saveSupabaseState(state, envId = 'production') {
+  if (!state) return;
+  const nowIso = new Date().toISOString();
+
+  // 1. Upsert full state snapshot into dbo_app_state
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/dbo_app_state?on_conflict=id`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_API_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal',
+        'User-Agent': SERVER_UA
+      },
+      body: JSON.stringify([
+        {
+          id: envId,
+          state: state,
+          updated_at: nowIso
+        }
+      ]),
+      signal: AbortSignal.timeout(5000)
+    });
+  } catch (e) {
+    console.warn('Supabase dbo_app_state upsert error:', e.message);
+  }
+
+  // 2. Sync normalized students table when saving production state
+  if (envId === 'production' && Array.isArray(state.students) && state.students.length > 0) {
+    try {
+      const studentRows = state.students
+        .filter(s => s && s.id != null)
+        .map(s => ({
+          id: Number(s.id),
+          name: String(s.name || ''),
+          course: String(s.course || ''),
+          course_type: String(s.courseType || 'regular'),
+          remaining: Number(s.remaining || 0),
+          next_renewal: String(s.nextRenewal || '-'),
+          phone: String(s.phone || ''),
+          data: s,
+          updated_at: nowIso
+        }));
+
+      await fetch(`${SUPABASE_URL}/rest/v1/dbo_students?on_conflict=id`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_API_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates,return=minimal',
+          'User-Agent': SERVER_UA
+        },
+        body: JSON.stringify(studentRows),
+        signal: AbortSignal.timeout(5000)
+      });
+    } catch (e) {
+      console.warn('Supabase dbo_students sync error:', e.message);
+    }
   }
 }
 
@@ -53,12 +143,10 @@ function mergeStates(existing, incoming) {
     pushSubscriptions: []
   };
 
-  // 1. Merge weeklySchedule (latest timestamp wins)
   result.weeklySchedule = (incoming.weeklySchedule && (incoming.updatedAt || 0) >= (existing.updatedAt || 0))
     ? incoming.weeklySchedule
     : (existing.weeklySchedule || incoming.weeklySchedule || null);
 
-  // 1.1 Merge calendarDayOverrides
   const calOverrides = { ...(existing.calendarDayOverrides || {}) };
   for (const [k, v] of Object.entries(incoming.calendarDayOverrides || {})) {
     if (!calOverrides[k] || (v && (v.updatedAt || 0) >= (calOverrides[k].updatedAt || 0))) {
@@ -67,7 +155,6 @@ function mergeStates(existing, incoming) {
   }
   result.calendarDayOverrides = calOverrides;
 
-  // 1. Merge deletedStudentIds timestamps
   const delMap = {};
   for (const [k, v] of Object.entries(existing.deletedStudentIds || {})) delMap[k] = v;
   for (const [k, v] of Object.entries(incoming.deletedStudentIds || {})) {
@@ -75,12 +162,10 @@ function mergeStates(existing, incoming) {
   }
   result.deletedStudentIds = delMap;
 
-  // 2. Merge students by id & _updatedAt
   const nowTs = Date.now();
   const studentMap = new Map();
   (existing.students || []).forEach(s => {
     if (s && s.id != null) {
-      // Clamp any legacy future timestamps to past so fresh edits always win
       if ((s._updatedAt || 0) > nowTs + 5000) {
         s._updatedAt = nowTs - 10000;
       }
@@ -101,7 +186,6 @@ function mergeStates(existing, incoming) {
       if (curTime > nowTs + 5000) curTime = nowTs - 10000;
 
       if (curAction > 0 && incAction < curAction) {
-        // Existing coach action is authoritative! Do not overwrite quota
         if (inc.phone && !cur.phone) cur.phone = inc.phone;
         studentMap.set(key, cur);
       } else if (incAction > curAction || (curAction === 0 && incTime >= curTime)) {
@@ -117,7 +201,6 @@ function mergeStates(existing, incoming) {
     return (s._updatedAt || 0) > delTime;
   });
 
-  // 3. Merge dailyAttendance by dateKey -> studentId -> updatedAt
   const allDates = new Set([
     ...Object.keys(existing.dailyAttendance || {}),
     ...Object.keys(incoming.dailyAttendance || {})
@@ -135,7 +218,6 @@ function mergeStates(existing, incoming) {
     result.dailyAttendance[dk] = mergedDay;
   });
 
-  // 4. Merge parentRegistrations by id -> updatedAt
   const regMap = new Map();
   (existing.parentRegistrations || []).forEach(r => {
     if (r && r.id) regMap.set(r.id, r);
@@ -149,7 +231,6 @@ function mergeStates(existing, incoming) {
   });
   result.parentRegistrations = Array.from(regMap.values()).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 
-  // 5. Merge pendingSlips by id & filter out processedSlipIds
   const procMap = result.processedSlipIds;
   const slipMap = new Map();
   (existing.pendingSlips || []).forEach(s => {
@@ -165,7 +246,6 @@ function mergeStates(existing, incoming) {
   });
   result.pendingSlips = Array.from(slipMap.values());
 
-  // 6. Merge assistantCoaches by id
   const asstMap = new Map();
   (existing.assistantCoaches || []).forEach(a => {
     if (a && a.id) asstMap.set(a.id, a);
@@ -179,7 +259,6 @@ function mergeStates(existing, incoming) {
   });
   result.assistantCoaches = Array.from(asstMap.values());
 
-  // 7. Merge teachingRecords by id & updatedAt (Techawit Post-Teaching Records)
   const recMap = new Map();
   (existing.teachingRecords || []).forEach(r => {
     if (r && r.id) recMap.set(r.id, r);
@@ -193,7 +272,6 @@ function mergeStates(existing, incoming) {
   });
   result.teachingRecords = Array.from(recMap.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
-  // 8. Merge pushSubscriptions by endpoint
   const subMap = new Map();
   (existing.pushSubscriptions || []).forEach(s => {
     if (s && s.endpoint) subMap.set(s.endpoint, s);
@@ -217,9 +295,19 @@ module.exports = async (req, res) => {
   }
 
   if (req.method === 'GET') {
-    const state = loadStoredState();
+    const supaState = await loadSupabaseState('production');
+    const localState = loadLocalTmpState();
+    const state = supaState && localState
+      ? mergeStates(supaState, localState)
+      : (supaState || localState || null);
+
+    if (state) {
+      saveLocalTmpState(state);
+    }
+
     return res.status(200).json({
       ok: true,
+      storage: supaState ? 'supabase' : 'tmp',
       hasState: !!state,
       state: state || null,
       data: state || null
@@ -231,17 +319,26 @@ module.exports = async (req, res) => {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const incoming = body && body.data ? body.data : body;
       if (body && body.overwrite) {
-        saveStoredState(incoming);
+        saveLocalTmpState(incoming);
+        await saveSupabaseState(incoming, 'production');
         return res.status(200).json({
           ok: true,
+          storage: 'supabase',
           data: incoming
         });
       }
-      const existing = loadStoredState();
-      const merged = mergeStates(existing, incoming);
-      saveStoredState(merged);
+      const supaExisting = await loadSupabaseState('production');
+      const localExisting = loadLocalTmpState();
+      const baseExisting = supaExisting && localExisting
+        ? mergeStates(supaExisting, localExisting)
+        : (supaExisting || localExisting);
+
+      const merged = mergeStates(baseExisting, incoming);
+      saveLocalTmpState(merged);
+      await saveSupabaseState(merged, 'production');
       return res.status(200).json({
         ok: true,
+        storage: 'supabase',
         data: merged
       });
     } catch (err) {
