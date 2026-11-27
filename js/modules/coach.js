@@ -22,7 +22,7 @@ function setCoachRosterViewMode(mode) {
 
 function filterCoachCategory(cat) {
   currentCoachFilter = cat;
-  const cats = ['all', 'regular', 'monthly', 'saturday', 'low'];
+  const cats = ['all', 'regular', 'monthly', 'saturday', 'low', 'U8', 'U10', 'U12', 'U14', 'U16', 'U18'];
   cats.forEach(c => {
     const btn = document.getElementById(`btn-filter-${c}`);
     btn?.setAttribute('aria-pressed', String(c === cat));
@@ -92,10 +92,25 @@ function renderCoachRosterTable() {
   if (cntSat) cntSat.innerText = cSat;
   if (cntLow) cntLow.innerText = cLow;
 
+  // Compute U-Age competition category counts (U8, U10, U12, U14, U16, U18)
+  const uBrackets = ['U8', 'U10', 'U12', 'U14', 'U16', 'U18'];
+  uBrackets.forEach(uCode => {
+    const cntEl = document.getElementById(`count-${uCode}`);
+    if (cntEl && typeof calculateAthleteAgeAndUCategory === 'function') {
+      cntEl.innerText = students.filter(s => calculateAthleteAgeAndUCategory(s).uCategory === uCode).length;
+    }
+  });
+
   let filtered = students.filter(s => {
-    const matchSearch = s.name.toLowerCase().includes(search) || (s.phone || '').includes(search) || String(s.id).includes(search);
+    const matchSearch = s.name.toLowerCase().includes(search) || (s.fullName || '').toLowerCase().includes(search) || (s.phone || '').includes(search) || String(s.id).includes(search);
     if (!matchSearch) return false;
     if (currentCoachFilter === 'all') return true;
+    if (uBrackets.includes(currentCoachFilter)) {
+      if (typeof calculateAthleteAgeAndUCategory === 'function') {
+        return calculateAthleteAgeAndUCategory(s).uCategory === currentCoachFilter;
+      }
+      return false;
+    }
     if (currentCoachFilter === 'regular') return s.courseType === 'regular' || s.courseType === 'both' || !s.courseType;
     if (currentCoachFilter === 'saturday') return s.courseType === 'saturday' || s.courseType === 'both';
     if (currentCoachFilter === 'monthly') return s.courseType === 'monthly';
@@ -179,6 +194,14 @@ function renderCoachRosterTable() {
         })()
       : `<span class="text-[11px] text-slate-400">ไม่มีวันตัดรอบ (นับตามครั้ง)</span>`;
 
+    const uInfo = (typeof calculateAthleteAgeAndUCategory === 'function') ? calculateAthleteAgeAndUCategory(s) : { uCategory: 'ไม่ระบุ', ageText: '-' };
+    const uBadgeHtml = uInfo.uCategory && uInfo.uCategory !== 'ไม่ระบุ'
+      ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#241044] text-[#DEB95B] border border-[#DEB95B]/60">${uInfo.uCategory} (${uInfo.ageText})</span>`
+      : `<button type="button" onclick="openAthleteProfileModal(${s.id})" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 cursor-pointer">+ ใส่วันเกิด/รุ่น U</button>`;
+    const pdpaBadgeHtml = s.pdpaConsentAccepted
+      ? `<span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200" title="ผู้ปกครองยินยอม PDPA แล้ว">✓ PDPA</span>`
+      : '';
+
     // 1. Desktop Table
     if (tbody) {
       const tr = document.createElement('tr');
@@ -189,7 +212,10 @@ function renderCoachRosterTable() {
         <td data-label="นักเรียน" class="py-2.5 px-3">
           <div class="flex items-center gap-1.5 flex-wrap">
             <strong onclick="openEditStudentModal(${s.id})" class="text-xs sm:text-sm font-bold text-dbo-navy hover:text-indigo-600 cursor-pointer" title="คลิกเพื่อแก้ไข">น้อง ${s.name}</strong>
+            ${uBadgeHtml}
+            ${pdpaBadgeHtml}
           </div>
+          ${s.fullName ? `<div class="text-[11px] text-slate-500">${s.fullName}</div>` : ''}
           ${s.phone ? `<span class="font-mono text-slate-500 text-xs flex items-center gap-1 pt-0.5"><i data-lucide="phone" class="w-3 h-3 text-slate-400"></i> ${maskPhone(s.phone)}</span>` : `<span class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-medium bg-amber-50 text-amber-800 border border-amber-200 mt-0.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> รอผูกเบอร์</span>`}
         </td>
         <td data-label="คอร์ส" class="py-2.5 px-3 hidden sm:table-cell">${typeBadge}</td>
@@ -201,6 +227,9 @@ function renderCoachRosterTable() {
         </td>
         <td data-label="จัดการ" class="py-2.5 px-3 text-center">
           <div class="inline-flex items-center gap-1">
+            <button type="button" onclick="openAthleteProfileModal(${s.id})" aria-label="ข้อมูลนักกีฬา/รุ่น U" title="ข้อมูลนักกีฬา / วันเกิด / รุ่น U" class="px-2 py-1 rounded-lg text-[11px] font-bold text-[#241044] bg-[#FBF4DD] hover:bg-[#DEB95B] border border-[#DEB95B] inline-flex items-center gap-1 transition-colors cursor-pointer">
+              <span>🏅 รุ่น U</span>
+            </button>
             <button type="button" onclick="openEditStudentModal(${s.id})" aria-label="แก้ไขชื่อ สิทธิ์ หรือข้อมูล" title="แก้ไขชื่อ / สิทธิ์ / ข้อมูล" class="roster-edit-button px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 transition-colors cursor-pointer">
               <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
               <span>แก้ไข</span>
@@ -222,12 +251,17 @@ function renderCoachRosterTable() {
         <div class="roster-card-heading">
           <div class="roster-card-identity">
             <h4><button type="button" onclick="openEditStudentModal(${s.id})" class="text-start hover:underline">น้อง ${s.name}</button></h4>
-            <div class="roster-card-meta">
+            <div class="roster-card-meta flex-wrap">
               <span class="tabular-nums">#${s.id}</span>
               ${typeBadge}
+              ${uBadgeHtml}
+              ${pdpaBadgeHtml}
             </div>
           </div>
           <div class="roster-card-actions">
+            <button type="button" onclick="openAthleteProfileModal(${s.id})" class="px-2 py-1 rounded-lg text-[11px] font-bold bg-[#FBF4DD] text-[#241044] border border-[#DEB95B] cursor-pointer" title="ข้อมูลนักกีฬาและรุ่น U">
+              🏅 รุ่น U
+            </button>
             <button type="button" onclick="openEditStudentModal(${s.id})" class="roster-edit-button" title="แก้ไขข้อมูลและปรับสิทธิ์">
               <i data-lucide="pencil"></i><span>แก้ไข</span>
             </button>
@@ -888,10 +922,24 @@ function rejectSlip(slipId) {
 function selectRenewPackage(name, price) {
   document.getElementById('selectedPackageName').value = name;
   document.getElementById('selectedPackagePrice').value = price;
+  if (typeof updateDynamicPromptPayQrDisplay === 'function') {
+    updateDynamicPromptPayQrDisplay(price, name);
+  }
   const el = document.getElementById('renewCheckoutSection');
   if (el) {
     el.scrollIntoView({ behavior: 'smooth' });
-    showToast(`เลือกแพ็กเกจ ${name} (${price}.-) สแกน QR และแนบสลิปด้านล่าง`);
+    showToast(`เลือกแพ็กเกจ ${name} (${Number(price).toLocaleString()}.-) สแกน QR และแนบสลิปด้านล่าง`);
+  }
+}
+
+function updateDynamicPromptPayQrDisplay(price, pkgName) {
+  const amountBadge = document.getElementById('qrExactAmountBadge');
+  const pkgBadge = document.getElementById('qrSelectedPackageNameLabel');
+  if (amountBadge) {
+    amountBadge.innerText = `ยอดชำระ ${Number(price || 0).toLocaleString()} บาท`;
+  }
+  if (pkgBadge && pkgName) {
+    pkgBadge.innerText = pkgName;
   }
 }
 
@@ -900,37 +948,62 @@ function copyAccountNum() {
   showToast('คัดลอกเลขบัญชี 150-2-79563-1 แล้ว');
 }
 
+let renewSlipDataUrl = 'assets/images/kbank-qr.jpg';
 function previewSlip(input) {
   if (input.files && input.files[0]) {
-    document.getElementById('slipFileLabel').innerText = `✓ แนบไฟล์แล้ว: ${input.files[0].name}`;
+    const file = input.files[0];
+    document.getElementById('slipFileLabel').innerText = `✓ แนบไฟล์แล้ว: ${file.name}`;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      if (evt && evt.target && evt.target.result) {
+        renewSlipDataUrl = evt.target.result;
+      }
+    };
+    reader.readAsDataURL(file);
   }
 }
 
 function handleSlipSubmit(e) {
   e.preventDefault();
   const pkg = document.getElementById('selectedPackageName').value;
-  const price = parseInt(document.getElementById('selectedPackagePrice').value);
+  const price = parseInt(document.getElementById('selectedPackagePrice').value, 10) || 0;
   const sName = document.getElementById('slipStudentName').value.trim();
+  const refId = 'DBO-' + Date.now().toString().slice(-6);
+  const submittedAt = new Date().toLocaleString('th-TH');
 
   const newSlip = {
     id: 'slip-' + Date.now(),
+    refCode: refId,
     studentName: sName,
     parentName: `ผู้ปกครองน้อง ${sName}`,
     phone: loggedInStudent ? loggedInStudent.phone : '-',
     courseType: pkg.includes('รายเดือน') ? 'monthly' : (pkg.includes('เสาร์') ? 'saturday' : 'regular'),
     amount: price,
-    slipImage: 'assets/images/kbank-qr.jpg',
+    slipImage: renewSlipDataUrl || 'assets/images/kbank-qr.jpg',
     date: new Date().toLocaleDateString('th-TH') + ' (ต่อคอร์ส)',
     school: loggedInStudent ? loggedInStudent.school : 'ทั่วไป',
     status: 'รอตรวจสอบ'
   };
 
   pendingSlips.unshift(newSlip);
-  saveState();
+  saveState(true, `ส่งสลิปต่อคอร์สน้อง ${sName} (${price.toLocaleString()} บาท)`);
   renderPendingSlips();
 
-  showToast(`ส่งหลักฐานชำระเงิน ${price} บาท สำเร็จ! อยู่ระหว่างรอทีมงานตรวจสลิป`);
+  playNotificationChime();
+  triggerTelegramPush(`💳 มีสลิปต่อคอร์สใหม่ [${refId}]: น้อง ${sName} • ${pkg} (${price.toLocaleString()} บาท)`, 'DBO Slip Confirmation');
+  showToast(`ส่งหลักฐานชำระเงิน ${price.toLocaleString()} บาท สำเร็จ! อยู่ระหว่างรอทีมงานตรวจสลิป`);
   switchTab('parent-portal');
+
+  if (typeof showSlipSubmissionReceiptModal === 'function') {
+    showSlipSubmissionReceiptModal({
+      refId: refId,
+      studentName: sName,
+      packageName: pkg,
+      amount: price,
+      slipImage: renewSlipDataUrl,
+      submittedAt: submittedAt
+    });
+  }
 }
 
 // Assistant Coach Management

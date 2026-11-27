@@ -4,8 +4,8 @@
 
 // Tab Navigation Switcher
 function switchTab(tabName) {
-  if (tabName === 'coach-roster' && !isCoachAuth) {
-    showToast('เฉพาะโค้ชและแอดมินเท่านั้นที่มีสิทธิ์เข้าใช้งาน');
+  if ((tabName === 'coach-roster' || tabName === 'coach-board') && !isCoachAuth) {
+    showToast('เฉพาะโค้ชและทีมงานเท่านั้นที่มีสิทธิ์เข้าใช้งานหน้านี้');
     switchTab('parent-portal');
     return;
   }
@@ -78,6 +78,7 @@ function refreshAllViews() {
   if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
   if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
   if (typeof updateInstallButtonVisibility === 'function') updateInstallButtonVisibility();
+  if (typeof applyAppLanguageUI === 'function') applyAppLanguageUI();
   lucide.createIcons();
 }
 
@@ -167,13 +168,15 @@ window.addEventListener('DOMContentLoaded', () => {
     const dayW = now.getUTCDay();
     const thaiYear = now.getUTCFullYear() + 543;
 
+    const todayKeyStr = getTodayDateKey();
+    const curInfo = (typeof getDayCurriculumDetails === 'function') ? getDayCurriculumDetails(todayKeyStr, dayW) : null;
     let scheduleNote = '';
     if (dayW === 1 || dayW === 2 || dayW === 4) {
-      scheduleNote = 'คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์';
+      scheduleNote = `คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์${curInfo && curInfo.topic ? ` • หัวข้อซ้อม: ${curInfo.topic}` : ''}`;
     } else if (dayW === 6) {
-      scheduleNote = 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 17:30 น. ณ ยิมเตชะวิทย์';
+      scheduleNote = `คลาสวันเสาร์ Basic Coach Oat 16:00 - 17:30 น. ณ ยิมเตชะวิทย์${curInfo && curInfo.topic ? ` • หัวข้อซ้อม: ${curInfo.topic}` : ''}`;
     } else {
-      scheduleNote = 'วันนี้ไม่มีคลาส';
+      scheduleNote = 'วันนี้ไม่มีคลาสฝึกซ้อมประจำ (ติดตามคลาสพิเศษได้ในปฏิทิน)';
     }
 
     const pLabel = document.getElementById('parentTodayDateLabel');
@@ -202,6 +205,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
   if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
   if (typeof updateInstallButtonVisibility === 'function') updateInstallButtonVisibility();
+  if (typeof applyAppLanguageUI === 'function') applyAppLanguageUI();
   lucide.createIcons();
 
   // Background sync for Web Push Subscription if permission already granted

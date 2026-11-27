@@ -274,13 +274,9 @@ function updateNotificationPermissionUI() {
   const coachTxt = document.getElementById('staffNotificationText');
 
   if (!('Notification' in window)) {
-    if (badge) {
-      badge.innerText = 'ระบบในแอปพร้อมใช้งาน';
-      badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-700 border border-slate-300';
-    }
     if (btn) {
-      btn.innerHTML = '<i data-lucide="bell-ring" class="w-3.5 h-3.5 text-emerald-600"></i><span>เปิดรับแจ้งเตือนในแอปแล้ว</span>';
-      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1.5 flex-shrink-0 cursor-default shadow-2xs';
+      btn.innerHTML = '<i data-lucide="bell-ring" class="w-3.5 h-3.5 text-emerald-700"></i><span id="pushStatusBadge">แจ้งเตือนเปิดแล้ว</span>';
+      btn.className = 'h-8 px-2.5 sm:px-3 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 text-[11px] font-extrabold flex items-center gap-1 cursor-default';
       btn.onclick = null;
     }
     return;
@@ -292,13 +288,9 @@ function updateNotificationPermissionUI() {
       registerWebPushSubscription(false);
     }
 
-    if (badge) {
-      badge.innerText = 'เปิดใช้งานแล้ว';
-      badge.className = 'text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1';
-    }
     if (btn) {
-      btn.innerHTML = '<i data-lucide="bell-ring" class="w-3.5 h-3.5 text-emerald-600"></i><span>เปิดรับการแจ้งเตือนแล้ว</span>';
-      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-1.5 flex-shrink-0 cursor-default shadow-2xs';
+      btn.innerHTML = '<i data-lucide="bell-ring" class="w-3.5 h-3.5 text-emerald-300"></i><span id="pushStatusBadge">เปิดแจ้งเตือนแล้ว</span>';
+      btn.className = 'h-8 px-2.5 sm:px-3 rounded-full bg-emerald-500/25 text-emerald-200 border border-emerald-400/50 text-[11px] font-bold flex items-center gap-1 cursor-default';
       btn.onclick = null;
     }
     if (coachBtn && coachTxt) {
@@ -307,13 +299,9 @@ function updateNotificationPermissionUI() {
       coachBtn.onclick = null;
     }
   } else if (Notification.permission === 'denied') {
-    if (badge) {
-      badge.innerText = 'ถูกปิดกั้นในเบราว์เซอร์';
-      badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-rose-100 text-rose-800 border border-rose-300';
-    }
     if (btn) {
-      btn.innerHTML = '<i data-lucide="settings" class="w-3.5 h-3.5"></i><span>ตั้งค่าอนุญาตแจ้งเตือน</span>';
-      btn.className = 'btn-touch px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer';
+      btn.innerHTML = '<i data-lucide="bell-off" class="w-3.5 h-3.5 text-rose-200"></i><span id="pushStatusBadge">ตั้งค่าแจ้งเตือน</span>';
+      btn.className = 'h-8 px-2.5 sm:px-3 rounded-full bg-rose-500/30 text-rose-100 border border-rose-400/50 text-[11px] font-bold flex items-center gap-1 cursor-pointer';
       btn.onclick = () => {
         showToast('กรุณาเปิดสิทธิ์การแจ้งเตือนในการตั้งค่าเบราว์เซอร์ของคุณ');
       };
@@ -324,13 +312,9 @@ function updateNotificationPermissionUI() {
       coachBtn.onclick = () => showToast('กรุณาเปิดสิทธิ์การแจ้งเตือนในการตั้งค่าเบราว์เซอร์ของคุณ');
     }
   } else {
-    if (badge) {
-      badge.innerText = 'ยังไม่เปิดใช้งาน';
-      badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 border border-amber-300';
-    }
     if (btn) {
-      btn.innerHTML = '<i data-lucide="bell" class="w-3.5 h-3.5"></i><span>เปิดแจ้งเตือนบนมือถือ</span>';
-      btn.className = 'btn-touch px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-colors flex items-center gap-1.5 flex-shrink-0 shadow-xs cursor-pointer';
+      btn.innerHTML = '<i data-lucide="bell" class="w-3.5 h-3.5 text-[#241044]"></i><span id="pushStatusBadge">เปิดแจ้งเตือน</span>';
+      btn.className = 'h-8 px-2.5 sm:px-3 rounded-full bg-[#DEB95B] hover:bg-[#CAA044] text-[#241044] text-[11px] font-extrabold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shadow-xs';
       btn.onclick = requestNotificationPermission;
     }
     if (coachBtn && coachTxt) {

@@ -91,52 +91,85 @@ function getNextTrainingSessionDetails() {
   return null;
 }
 
+function getThisWeeksDatesMap() {
+  const todayStr = (typeof getTodayDateKey === 'function') ? getTodayDateKey() : new Date().toISOString().slice(0, 10);
+  const parts = todayStr.split('-');
+  const refDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+  const day = refDate.getDay(); // 0=Sun, 1=Mon, ... 6=Sat
+  // Anchor to Monday of current week (if Sunday, use upcoming Monday)
+  const diffToMon = (day === 0) ? 1 : (1 - day);
+  const monDate = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate() + diffToMon);
+  const thaiMonthsShort = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+
+  const makeInfo = (offsetDays) => {
+    const d = new Date(monDate.getFullYear(), monDate.getMonth(), monDate.getDate() + offsetDays);
+    const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const thaiDateLabel = `${d.getDate()} ${thaiMonthsShort[d.getMonth()]} ${d.getFullYear() + 543}`;
+    return { dateObj: d, dateKey, thaiDateLabel };
+  };
+
+  return {
+    mon: makeInfo(0),
+    tue: makeInfo(1),
+    thu: makeInfo(3),
+    sat: makeInfo(5)
+  };
+}
+
 function buildWeeklyScheduleCardsHtml(allowCoachEditButton = true) {
   const isCoach = Boolean((typeof isCoachAuth !== 'undefined' && isCoachAuth) || (typeof currentStaff !== 'undefined' && currentStaff));
+  const weekMap = getThisWeeksDatesMap();
   const days = [
-    { key: 'mon', dayName: 'วันจันทร์', time: '17:30 - 19:30 น.', color: 'amber', badge: 'คลาสปกติ 10 ครั้ง / รายเดือน' },
-    { key: 'tue', dayName: 'วันอังคาร', time: '17:30 - 19:30 น.', color: 'amber', badge: 'คลาสปกติ 10 ครั้ง / รายเดือน' },
-    { key: 'thu', dayName: 'วันพฤหัสบดี', time: '17:30 - 19:30 น.', color: 'amber', badge: 'คลาสปกติ 10 ครั้ง / รายเดือน' },
-    { key: 'sat', dayName: 'วันเสาร์', time: '16:00 - 17:30 น.', color: 'indigo', badge: 'Basic Coach Oat (4 ครั้ง)' }
+    { key: 'mon', dayOfWeek: 1, dayName: 'วันจันทร์', time: '17:30 - 19:30 น.', color: 'amber', badge: 'คลาสปกติ (จ./อ./พฤ.)' },
+    { key: 'tue', dayOfWeek: 2, dayName: 'วันอังคาร', time: '17:30 - 19:30 น.', color: 'amber', badge: 'คลาสปกติ (จ./อ./พฤ.)' },
+    { key: 'thu', dayOfWeek: 4, dayName: 'วันพฤหัสบดี', time: '17:30 - 19:30 น.', color: 'amber', badge: 'คลาสปกติ (จ./อ./พฤ.)' },
+    { key: 'sat', dayOfWeek: 6, dayName: 'วันเสาร์', time: '16:00 - 17:30 น.', color: 'indigo', badge: 'Basic Coach Oat' }
   ];
 
   const safeEsc = (str) => String(str || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
 
   return days.map(d => {
-    const item = (weeklySchedule && weeklySchedule[d.key]) || defaultWeeklySchedule[d.key];
+    const wInfo = weekMap[d.key];
+    const override = (typeof calendarDayOverrides !== 'undefined' && calendarDayOverrides && wInfo)
+      ? calendarDayOverrides[wInfo.dateKey]
+      : null;
+    const isCanceled = Boolean(override && override.status === 'canceled');
+    // If parent view (allowCoachEditButton === false) and day is canceled in Calendar, show compact canceled notice or hide as linked with Calendar
+    const cur = (wInfo && typeof getDayCurriculumDetails === 'function')
+      ? getDayCurriculumDetails(wInfo.dateKey, d.dayOfWeek)
+      : ((weeklySchedule && weeklySchedule[d.key]) || defaultWeeklySchedule[d.key]);
+
     const isIndigo = d.color === 'indigo';
-    const borderClass = isIndigo ? 'border-indigo-200 bg-indigo-50/40' : 'border-[#DEB95B] bg-[#FBF4DD]/40';
-    const textClass = isIndigo ? 'text-indigo-950' : 'text-[#241044]';
-    const badgeClass = isIndigo ? 'bg-indigo-100 text-indigo-800 border-indigo-200' : 'bg-[#FBF4DD] text-[#241044] border-[#DEB95B]';
-    const coachBadge = isIndigo ? 'bg-indigo-600 text-white' : 'bg-[#241044] text-[#DEB95B]';
+    const borderClass = isCanceled
+      ? 'border-rose-200 bg-rose-50/50 opacity-75'
+      : (isIndigo ? 'border-indigo-200 bg-indigo-50/40' : 'border-[#DEB95B] bg-[#FBF4DD]/40');
+    const textClass = isCanceled ? 'text-rose-800 line-through' : (isIndigo ? 'text-indigo-950' : 'text-[#241044]');
+    const badgeClass = isCanceled
+      ? 'bg-rose-100 text-rose-800 border-rose-300'
+      : (isIndigo ? 'bg-indigo-100 text-indigo-800 border-indigo-200' : 'bg-[#FBF4DD] text-[#241044] border-[#DEB95B]');
+    const fullDayTitle = wInfo ? `${d.dayName}ที่ ${wInfo.thaiDateLabel}` : d.dayName;
 
     return `
-      <div class="card-clean p-4 sm:p-5 rounded-2xl border ${borderClass} space-y-3 shadow-2xs">
-        <div class="flex items-center justify-between gap-2 border-b border-slate-200/60 pb-2.5 flex-wrap">
+      <div class="card-clean p-3.5 sm:p-4 rounded-2xl border ${borderClass} space-y-2 shadow-2xs">
+        <div class="flex items-center justify-between gap-2 border-b border-slate-200/60 pb-2 flex-wrap">
           <div>
             <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full ${isIndigo ? 'bg-indigo-600' : 'bg-[#DEB95B]'}"></span>
-              <h4 class="text-sm sm:text-base font-extrabold ${textClass}">${d.dayName}</h4>
+              <span class="w-2.5 h-2.5 rounded-full ${isCanceled ? 'bg-rose-500' : (isIndigo ? 'bg-indigo-600' : 'bg-[#DEB95B]')}"></span>
+              <h4 class="text-sm sm:text-base font-extrabold ${textClass}">${fullDayTitle}</h4>
             </div>
-            <p class="text-xs font-mono font-medium text-slate-500 mt-0.5">เวลา: ${d.time}</p>
+            <p class="text-xs font-mono font-medium text-slate-600 mt-0.5">⏰ เวลา: ${d.time} • 📍 โรงยิม รร.เตชะวิทย์</p>
           </div>
           <div class="flex items-center gap-1.5">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${badgeClass}">${d.badge}</span>
-            ${(isCoach && allowCoachEditButton) ? `<button type="button" onclick="openEditScheduleModal()" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] hover:bg-[#38196B] cursor-pointer">✏️ แก้ไข</button>` : ''}
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${badgeClass}">${isCanceled ? 'งดคลาสซ้อม' : d.badge}</span>
+            ${(isCoach && allowCoachEditButton) ? `<button type="button" onclick="openDayScheduleModal('${wInfo ? wInfo.dateKey : ''}')" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] hover:bg-[#38196B] cursor-pointer">✏️ แก้ไข</button>` : ''}
           </div>
         </div>
 
-        <div class="space-y-2">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-xs font-semibold text-slate-500">โค้ชผู้สอน:</span>
-            <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold ${coachBadge} shadow-2xs">${safeEsc(item.coaches)}</span>
-          </div>
-          <div>
-            <span class="text-xs font-semibold text-slate-500 block mb-1">เนื้อหาการสอน / หัวข้อฝึกซ้อม:</span>
-            <p class="text-xs text-slate-800 font-medium leading-relaxed bg-white p-2.5 rounded-xl border border-slate-200/80">
-              ${safeEsc(item.topic)}
-            </p>
-          </div>
+        <div>
+          ${isCanceled
+            ? `<p class="text-xs text-rose-700 font-semibold bg-white p-2.5 rounded-xl border border-rose-200">🚫 งดคลาสฝึกซ้อมในวันนี้ (${safeEsc((override && override.note) || 'ตามประกาศในปฏิทิน')})</p>`
+            : `<p class="text-xs text-slate-800 font-medium leading-relaxed bg-white p-2.5 rounded-xl border border-slate-200/80"><strong class="text-[#241044]">หัวข้อซ้อม:</strong> ${safeEsc(cur.topic)} <span class="text-[11px] text-slate-500">(${safeEsc(cur.coaches)})</span></p>`
+          }
         </div>
       </div>
     `;

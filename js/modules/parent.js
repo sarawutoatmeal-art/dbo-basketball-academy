@@ -45,6 +45,8 @@ function renderParentView(matchedList) {
   const regMNav = document.getElementById('nav-m-register-new');
   const calNav = document.getElementById('nav-calendar');
   const calMNav = document.getElementById('nav-m-calendar');
+  const boardNav = document.getElementById('nav-coach-board');
+  const boardMNav = document.getElementById('nav-m-coach-board');
 
   const renewGate = document.getElementById('renew-locked-gate');
   const renewContent = document.getElementById('renew-content');
@@ -52,7 +54,7 @@ function renderParentView(matchedList) {
   const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
   const mPortalIcon = document.querySelector('#nav-m-parent-portal i');
 
-  // State 1: Coach Logged In
+  // State 1: Coach Logged In (Sees Coach Board, Coach Panel, Register, Calendar, Today's Class)
   if (isCoachAuth && currentStaff) {
     if (loginBox) loginBox.classList.add('hidden');
     if (dashBox) dashBox.classList.add('hidden');
@@ -63,7 +65,7 @@ function renderParentView(matchedList) {
       if (nameEl) nameEl.innerText = `${currentStaff.fullName} (${currentStaff.role})`;
     }
 
-    if (mPortalLabel) mPortalLabel.innerText = 'หน้าหลัก';
+    if (mPortalLabel) mPortalLabel.innerText = typeof tLang === 'function' ? tLang('nav_home_coach') : 'หน้าหลัก';
     if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'home');
 
     if (renewNav) renewNav.classList.add('hidden');
@@ -74,18 +76,20 @@ function renderParentView(matchedList) {
     if (calMNav) calMNav.classList.remove('hidden');
     if (regNav) regNav.classList.remove('hidden');
     if (regMNav) regMNav.classList.remove('hidden');
+    if (boardNav) boardNav.classList.remove('hidden');
+    if (boardMNav) boardMNav.classList.remove('hidden');
 
     lucide.createIcons();
     return;
   }
 
-  // State 2: Not Logged In
+  // State 2: Not Logged In (Public View: Shows Sign In, Calendar, Today's Class, Register New — NO Coach Board)
   if (!loggedInStudent) {
     if (loginBox) loginBox.classList.remove('hidden');
     if (dashBox) dashBox.classList.add('hidden');
     if (coachPortalBox) coachPortalBox.classList.add('hidden');
 
-    if (mPortalLabel) mPortalLabel.innerText = 'เข้าสู่ระบบ';
+    if (mPortalLabel) mPortalLabel.innerText = typeof tLang === 'function' ? tLang('nav_home_login') : 'เข้าสู่ระบบ';
     if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'user');
 
     if (renewNav) renewNav.classList.add('hidden');
@@ -96,6 +100,8 @@ function renderParentView(matchedList) {
     if (calMNav) calMNav.classList.remove('hidden');
     if (regNav) regNav.classList.remove('hidden');
     if (regMNav) regMNav.classList.remove('hidden');
+    if (boardNav) boardNav.classList.add('hidden');
+    if (boardMNav) boardMNav.classList.add('hidden');
 
     if (renewGate) renewGate.classList.remove('hidden');
     if (renewContent) renewContent.classList.add('hidden');
@@ -103,7 +109,7 @@ function renderParentView(matchedList) {
     return;
   }
 
-  // State 3: Parent Logged In
+  // State 3: Parent Logged In (Private Parent Portal: Hides Register New & Hides Coach Board)
   if (loginBox) loginBox.classList.add('hidden');
   if (coachPortalBox) coachPortalBox.classList.add('hidden');
   if (dashBox) dashBox.classList.remove('hidden');
@@ -117,8 +123,10 @@ function renderParentView(matchedList) {
   if (dailyMNav) dailyMNav.classList.remove('hidden');
   if (calNav) calNav.classList.remove('hidden');
   if (calMNav) calMNav.classList.remove('hidden');
-  if (regNav) regNav.classList.remove('hidden');
-  if (regMNav) regMNav.classList.remove('hidden');
+  if (regNav) regNav.classList.add('hidden');
+  if (regMNav) regMNav.classList.add('hidden');
+  if (boardNav) boardNav.classList.add('hidden');
+  if (boardMNav) boardMNav.classList.add('hidden');
 
   if (renewGate) renewGate.classList.add('hidden');
   if (renewContent) renewContent.classList.remove('hidden');
@@ -139,15 +147,19 @@ function renderParentView(matchedList) {
     else heroDescEl.innerText = 'คอร์สปกติ 10 ครั้ง (จ./อ./พฤ. 17:30-19:30 น.) • สนามเตชะวิทย์';
   }
 
-  // Sibling Bar & Shared Course Handler
+  // Sibling Bar & Separate Main Student Cards Handler
   const sibBox = document.getElementById('siblingSelectorBox');
   const sibSelect = document.getElementById('siblingSelect');
   const sibBadge = document.getElementById('dash-sibling-badge');
   const sibSharedNotice = document.getElementById('siblingSharedQuotaNotice');
   const sibSharedDesc = document.getElementById('siblingSharedDesc');
   const sibQuickPills = document.getElementById('siblingQuickPills');
+  const familyMultiCardsBox = document.getElementById('familyMultiCardsContainer');
+  const singleChildCardsBox = document.getElementById('singleChildMainCardsWrapper');
+  const renewSiblingPicker = document.getElementById('renewSiblingCardsPicker');
 
   const familySiblings = getLinkedStudents(loggedInStudent);
+  const todayKeyForCards = (typeof getTodayDateKey === 'function') ? getTodayDateKey() : '';
 
   if (familySiblings.length > 1) {
     if (sibBox) sibBox.classList.remove('hidden');
@@ -162,7 +174,7 @@ function renderParentView(matchedList) {
       sibBadge.textContent = `พี่น้อง ${familySiblings.length} คน`;
     }
 
-    if (sibSharedDesc) sibSharedDesc.textContent = 'แตะชื่อเพื่อสลับดูข้อมูล';
+    if (sibSharedDesc) sibSharedDesc.textContent = 'แยกการ์ดหลักของลูกแต่ละคน';
     if (sibQuickPills) {
       sibQuickPills.innerHTML = familySiblings.map(s => {
         const isCurrent = s.id === loggedInStudent.id;
@@ -180,10 +192,126 @@ function renderParentView(matchedList) {
         `;
       }).join('');
     }
+
+    // Render SEPARATE Main Student Cards for EACH Child!
+    if (familyMultiCardsBox) {
+      familyMultiCardsBox.classList.remove('hidden');
+      if (singleChildCardsBox) singleChildCardsBox.classList.add('hidden');
+
+      familyMultiCardsBox.innerHTML = familySiblings.map(s => {
+        const isSelected = Number(s.id) === Number(loggedInStudent.id);
+        const sRem = s.courseType === 'saturday' ? (s.saturdayRemaining ?? s.remaining ?? 0) : (s.remaining ?? 0);
+        const sTotal = s.courseType === 'saturday' ? 4 : 10;
+        const sPct = Math.max(0, Math.min(100, Math.round((sRem / sTotal) * 100)));
+        const uInfo = (typeof calculateAthleteAgeAndUCategory === 'function') ? calculateAthleteAgeAndUCategory(s) : { uCategory: 'รอวันเกิด' };
+        const todayAtt = (dailyAttendance[todayKeyForCards] && dailyAttendance[todayKeyForCards][s.id]) ? dailyAttendance[todayKeyForCards][s.id] : null;
+        const attBadge = !todayAtt || todayAtt.status === 'unchecked'
+          ? '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">วันนี้: ยังไม่แจ้ง</span>'
+          : todayAtt.status === 'attending'
+            ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-300">✓ มาเรียนวันนี้ (${todayAtt.time || ''})</span>`
+            : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300">แจ้งลา (${todayAtt.leaveReason || 'ลา'})</span>`;
+
+        const cTypeLabel = s.courseType === 'monthly' ? 'รายเดือน' : s.courseType === 'saturday' ? 'วันเสาร์ 4 ครั้ง' : s.courseType === 'both' ? 'ปกติ 10 + เสาร์ 4' : 'คอร์สปกติ 10 ครั้ง';
+        const remColor = sRem > 3 ? 'text-[#241044]' : sRem >= 1 ? 'text-amber-700' : 'text-[#D30005]';
+        const barColor = sRem > 3 ? 'bg-[#007D48]' : sRem >= 1 ? 'bg-amber-500' : 'bg-[#D30005]';
+
+        return `
+          <article class="card-clean p-4 sm:p-5 rounded-2xl bg-white border-2 ${isSelected ? 'border-[#241044] ring-2 ring-[#DEB95B]' : 'border-nike-hairlineSoft'} space-y-3.5 shadow-sm transition-all">
+            <!-- Header: Avatar + Full Name + Course + U-Category -->
+            <div class="flex items-start justify-between gap-2.5 pb-3 border-b border-nike-hairlineSoft">
+              <div class="flex items-start gap-3 min-w-0">
+                <div class="w-12 h-12 rounded-full ${isSelected ? 'bg-[#241044] text-[#DEB95B] ring-2 ring-[#DEB95B]' : 'bg-nike-cloud text-nike-ink border border-nike-hairlineSoft'} flex items-center justify-center text-lg font-extrabold font-mono flex-shrink-0">
+                  ${escapeHtml(s.name.charAt(0))}
+                </div>
+                <div class="min-w-0 space-y-1">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <h2 class="text-lg font-extrabold text-[#241044] leading-tight">น้อง ${escapeHtml(s.name)}</h2>
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-nike-cloud text-nike-mute border border-nike-hairlineSoft">ID: #${s.id}</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#241044] text-[#DEB95B]">${escapeHtml(uInfo.uCategory)}</span>
+                  </div>
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FBF4DD] text-[#241044] border border-[#DEB95B]">${cTypeLabel}</span>
+                    ${attBadge}
+                  </div>
+                </div>
+              </div>
+              <button type="button" onclick="openAthleteProfileModal(${s.id})" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-nike-cloud hover:bg-purple-100 text-[#241044] border border-nike-hairlineSoft flex-shrink-0 cursor-pointer">
+                🪪 ข้อมูลนักกีฬา
+              </button>
+            </div>
+
+            <!-- Remaining Quota & Direct Renew Button for THIS Child -->
+            <div class="p-3.5 rounded-xl bg-[#F6F3FA] border border-nike-hairlineSoft space-y-2.5">
+              <div class="flex items-baseline justify-between gap-2">
+                <div>
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-nike-mute block">สิทธิ์คงเหลือของน้อง ${escapeHtml(s.name)}</span>
+                  <div class="flex items-baseline gap-1.5 mt-0.5">
+                    <span class="text-4xl font-black font-mono ${remColor}">${sRem}</span>
+                    <span class="text-xs font-bold text-nike-mute">ครั้ง / ${sTotal} ครั้ง</span>
+                  </div>
+                </div>
+                <button type="button" onclick="openRenewForSibling(${s.id})" class="btn-touch px-3.5 py-2 rounded-full text-xs font-extrabold bg-[#241044] hover:bg-[#38196B] text-[#DEB95B] border border-[#DEB95B] flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                  <span>🔄 ต่อคอร์สน้อง${escapeHtml(s.name)}</span>
+                </button>
+              </div>
+              <div class="w-full bg-white rounded-full h-2 overflow-hidden border border-nike-hairlineSoft">
+                <div class="h-2 rounded-full ${barColor}" style="width: ${sPct}%"></div>
+              </div>
+            </div>
+
+            <!-- Direct Attendance Check-in / Leave Buttons for THIS Child -->
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="setTodayAttendanceForSibling(${s.id}, 'attending')" class="btn-touch py-2.5 px-3 rounded-full text-xs font-bold bg-[#007D48] hover:bg-emerald-700 text-white flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>✓ แจ้งมาเรียน (น้อง${escapeHtml(s.name)})</span>
+              </button>
+              <button type="button" onclick="openLeaveModalForSibling(${s.id})" class="btn-touch py-2.5 px-3 rounded-full text-xs font-bold bg-nike-cloud hover:bg-amber-100 text-nike-ink border border-nike-hairlineSoft flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>แจ้งลา (น้อง${escapeHtml(s.name)})</span>
+              </button>
+            </div>
+
+            <!-- Focus History & Growth Details Below for THIS Child -->
+            <button type="button" onclick="switchSibling(${s.id})" class="w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer ${isSelected ? 'bg-[#FBF4DD] text-[#241044] border border-[#DEB95B]' : 'bg-white text-nike-mute hover:text-nike-ink border border-nike-hairlineSoft'}">
+              <span>${isSelected ? `📌 กำลังแสดงตารางประวัติด้านล่างของ: น้อง ${escapeHtml(s.name)}` : `📋 แตะเพื่อดูประวัติเข้าเรียน & พัฒนาการของ น้อง ${escapeHtml(s.name)}`}</span>
+            </button>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // Populate Sibling Picker Cards on the Renewal Tab so parents never renew the wrong child!
+    if (renewSiblingPicker) {
+      renewSiblingPicker.classList.remove('hidden');
+      renewSiblingPicker.innerHTML = `
+        <div class="p-3.5 rounded-2xl bg-[#FBF4DD]/70 border-2 border-[#DEB95B] space-y-2">
+          <div class="text-xs font-extrabold text-[#241044] flex items-center justify-between">
+            <span>👨‍👩‍👧‍👦 เลือกบุตรหลานที่ต้องการต่อคอร์สเรียน (ป้องกันการต่อคอร์สผิดคน):</span>
+            <span class="text-[11px] text-[#38196B]">กำลังเลือก: น้อง ${escapeHtml(loggedInStudent.name)}</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            ${familySiblings.map(s => {
+              const isCur = Number(s.id) === Number(loggedInStudent.id);
+              const r = s.remaining ?? 0;
+              return `
+                <button type="button" onclick="switchSibling(${s.id})" class="p-3 rounded-xl text-left border-2 transition-all cursor-pointer flex items-center justify-between gap-2 ${isCur ? 'bg-[#241044] text-white border-[#DEB95B] shadow-sm' : 'bg-white text-[#241044] border-nike-hairlineSoft hover:bg-purple-50'}">
+                  <div>
+                    <div class="text-xs sm:text-sm font-extrabold">น้อง ${escapeHtml(s.name)}</div>
+                    <div class="text-[11px] ${isCur ? 'text-[#DEB95B]' : 'text-nike-mute'}">คงเหลือปัจจุบัน: ${r} ครั้ง</div>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${isCur ? 'bg-[#DEB95B] text-[#241044]' : 'bg-nike-cloud text-nike-mute'}">${isCur ? '✓ เลือกอยู่' : 'แตะเลือก'}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
   } else {
     if (sibBox) sibBox.classList.add('hidden');
     if (sibBadge) sibBadge.classList.add('hidden');
     if (sibSharedNotice) sibSharedNotice.classList.add('hidden');
+    if (familyMultiCardsBox) familyMultiCardsBox.classList.add('hidden');
+    if (singleChildCardsBox) singleChildCardsBox.classList.remove('hidden');
+    if (renewSiblingPicker) renewSiblingPicker.classList.add('hidden');
   }
 
   // Dynamic Class Day Status Banner
@@ -482,43 +610,103 @@ function renderParentView(matchedList) {
     history.set(dateKey, { status: mark === 'ลา' ? 'leave' : 'attending', deduction: mark === '//' ? 2 : mark === '/' ? 1 : 0 });
   }
 
-  const dateFormat = new Intl.DateTimeFormat('th-TH', { timeZone: 'Asia/Bangkok', dateStyle: 'medium' });
+  const dateFormat = new Intl.DateTimeFormat('th-TH', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'short', year: '2-digit' });
   const dates = [...history.keys()].sort((a, b) => b.localeCompare(a));
-  historyTbody.innerHTML = dates.map(dateKey => {
+
+  // Compute running session balance after each historical session
+  let runningBalance = (student.courseType === 'saturday')
+    ? (student.saturdayRemaining !== undefined ? Number(student.saturdayRemaining) : Number(student.remaining || 0))
+    : Number(student.remaining !== undefined ? student.remaining : 0);
+
+  const historyHeadingNameEl = document.getElementById('dash-history-student-label');
+  if (historyHeadingNameEl) {
+    historyHeadingNameEl.textContent = `ของ น้อง ${student.name}`;
+  }
+
+  historyTbody.innerHTML = dates.map((dateKey, idx) => {
     const entry = history.get(dateKey);
+    const balanceAfterThisSession = runningBalance;
+    if (entry.deduction) {
+      runningBalance += Number(entry.deduction);
+    }
+
     const date = new Date(dateKey + 'T12:00:00Z');
     const training = getTrainingDay(new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
     const isLeave = entry.status === 'leave';
     const isParentRsvp = !isLeave && entry.updatedBy === 'parent';
-    const label = isLeave ? 'แจ้งลา' : isParentRsvp ? 'ยืนยันมาเรียน' : 'มาเรียน';
+    const label = isLeave ? 'แจ้งลา' : isParentRsvp ? 'แจ้งมา' : 'มาเรียน';
 
     const classTitle = entry.slot || training.title || 'คลาสปกติ';
     const isSatClass = classTitle.includes('เสาร์');
+    const shortClass = isSatClass ? 'คลาสเสาร์' : 'คลาสปกติ';
     const classBadgeHtml = isSatClass
-      ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">${escapeHtml(classTitle)}</span>`
-      : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FBF4DD] text-[#241044] border border-[#DEB95B]">${escapeHtml(classTitle)}</span>`;
+      ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 whitespace-nowrap">${shortClass}</span>`
+      : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#FBF4DD] text-[#241044] border border-[#DEB95B] whitespace-nowrap">${shortClass}</span>`;
 
     const statusBadgeHtml = isLeave
-      ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-50 text-amber-800 border border-amber-300"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span>${label}</span></span>`
+      ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-50 text-amber-800 border border-amber-300 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span>${label}</span></span>`
       : isParentRsvp
-        ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-50 text-sky-800 border border-sky-300"><span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span><span>${label}</span></span>`
-        : `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-300"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>✓ ${label}</span></span>`;
+        ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-sky-50 text-sky-800 border border-sky-300 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span><span>${label}</span></span>`
+        : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-300 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>✓ ${label}</span></span>`;
 
     const quotaBadgeHtml = entry.deduction
-      ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-extrabold bg-rose-50 text-rose-700 border border-rose-300">−${entry.deduction} ครั้ง</span>`
-      : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-slate-100 text-slate-600 border border-slate-200">0 (ไม่ตัดสิทธิ์)</span>`;
+      ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-extrabold bg-rose-50 text-rose-700 border border-rose-300 whitespace-nowrap">−${entry.deduction} ครั้ง</span>`
+      : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">0</span>`;
 
+    const balanceBadgeHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-extrabold bg-[#241044] text-[#DEB95B] whitespace-nowrap">เหลือ ${balanceAfterThisSession} ครั้ง</span>`;
+
+    const zebraBg = idx % 2 === 0 ? 'bg-white' : 'bg-[#F6F3FA]';
     const rowAccent = isLeave
-      ? 'border-l-4 border-l-amber-400 bg-amber-50/15'
-      : 'border-l-4 border-l-emerald-500 bg-white';
+      ? `border-l-4 border-l-amber-400 ${zebraBg}`
+      : `border-l-4 border-l-emerald-500 ${zebraBg}`;
 
     return `<tr class="${rowAccent}">
-      <td data-label="วันที่ฝึกซ้อม" class="px-3 py-2.5"><span class="font-extrabold text-[#241044]">${dateFormat.format(date)}</span></td>
-      <td data-label="คลาส" class="px-3 py-2.5">${classBadgeHtml}</td>
-      <td data-label="สถานะ" class="px-3 py-2.5">${statusBadgeHtml}</td>
-      <td data-label="ตัดโควต้า" class="px-3 py-2.5">${quotaBadgeHtml}</td>
+      <td class="px-2.5 py-2 whitespace-nowrap"><span class="font-extrabold text-xs text-[#241044]">${dateFormat.format(date)}</span></td>
+      <td class="px-2 py-2 whitespace-nowrap">${classBadgeHtml}</td>
+      <td class="px-2 py-2 text-center whitespace-nowrap">${statusBadgeHtml}</td>
+      <td class="px-2 py-2 text-center whitespace-nowrap">${quotaBadgeHtml}</td>
+      <td class="px-2.5 py-2 text-right whitespace-nowrap">${balanceBadgeHtml}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="4" class="px-3 py-4 text-nike-mute">ยังไม่มีประวัติเข้าเรียน</td></tr>';
+  }).join('') || '<tr><td colspan="5" class="px-3 py-4 text-center text-nike-mute">ยังไม่มีประวัติเข้าเรียน</td></tr>';
+
+  // Populate Athlete Profile & PDPA Summary Card inside Growth Tab
+  const athleteSummaryBox = document.getElementById('dash-athlete-competition-summary');
+  if (athleteSummaryBox && typeof calculateAthleteAgeAndUCategory === 'function') {
+    const uInfo = calculateAthleteAgeAndUCategory(student);
+    const pdpaOk = Boolean(student.pdpaConsentAcceptedAt);
+    athleteSummaryBox.innerHTML = `
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-100">
+        <div>
+          <h4 class="text-xs font-extrabold text-[#241044] flex items-center gap-1.5">
+            <span>🪪 ข้อมูลนักกีฬาสำหรับส่งแข่งขัน & PDPA (น้อง ${escapeHtml(student.name)})</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#241044] text-[#DEB95B]">${escapeHtml(uInfo.uCategory)}</span>
+          </h4>
+          <p class="text-[11px] text-slate-500 mt-0.5">ใช้ตรวจสอบรุ่นอายุแข่งขัน (U8–U18) และจัดเตรียมรายชื่อส่งรายการแข่งขัน</p>
+        </div>
+        <button type="button" onclick="openAthleteProfileModal(${student.id})" class="px-3 py-1.5 rounded-full text-xs font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] hover:bg-[#38196B] cursor-pointer self-start sm:self-auto">
+          ✏️ แก้ไขข้อมูลนักกีฬา / วันเกิด
+        </button>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs pt-1">
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+          <span class="text-[10px] text-slate-500 block">ชื่อ-นามสกุลจริง</span>
+          <strong class="text-slate-900 font-bold">${escapeHtml(student.fullName || 'รอระบุชื่อ-นามสกุลจริง')}</strong>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+          <span class="text-[10px] text-slate-500 block">วันเกิด & รุ่นอายุ</span>
+          <strong class="text-slate-900 font-bold">${student.birthDate ? `${escapeHtml(student.birthDate)} (${uInfo.age} ปี • ${uInfo.uCategory})` : 'รอระบุวันเกิด'}</strong>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+          <span class="text-[10px] text-slate-500 block">เลขบัตรประชาชน (ส่งแข่ง)</span>
+          <strong class="font-mono text-slate-900 font-bold">${typeof maskCitizenId === 'function' ? maskCitizenId(student.citizenId) : (student.citizenId || 'รอระบุ')}</strong>
+        </div>
+        <div class="p-2.5 rounded-xl ${pdpaOk ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'} border">
+          <span class="text-[10px] text-slate-500 block">สถานะความยินยอม PDPA</span>
+          <strong class="${pdpaOk ? 'text-emerald-800' : 'text-amber-800'} font-bold">${pdpaOk ? '✓ ยินยอมแล้ว (มีบันทึก Log)' : 'รอยืนยัน PDPA'}</strong>
+        </div>
+      </div>
+    `;
+  }
   const latest = document.getElementById('dash-latest-practice');
   const latestDate = dates.find(dateKey => dateKey <= getTodayDateKey() && history.get(dateKey).status === 'attending' && history.get(dateKey).updatedBy !== 'parent');
   const advice = document.getElementById('dash-coach-advice');
@@ -703,6 +891,34 @@ function setTodayAttendanceFromParent(status, leaveReason = '', dateKey = getTod
   return true;
 }
 
+function openRenewForSibling(studentId) {
+  const st = students.find(s => s.id === studentId);
+  if (st) {
+    loggedInStudent = st;
+    localStorage.setItem('dbo_active_sibling_id', String(st.id));
+    renderParentView();
+  }
+  switchTab('renew-payment');
+}
+
+function setTodayAttendanceForSibling(studentId, status) {
+  const st = students.find(s => s.id === studentId);
+  if (!st) return;
+  loggedInStudent = st;
+  localStorage.setItem('dbo_active_sibling_id', String(st.id));
+  setTodayAttendanceFromParent(status);
+}
+
+function openLeaveModalForSibling(studentId) {
+  const st = students.find(s => s.id === studentId);
+  if (st) {
+    loggedInStudent = st;
+    localStorage.setItem('dbo_active_sibling_id', String(st.id));
+    renderParentView();
+  }
+  openLeaveModal();
+}
+
 function updateParentTodayStatusUI() {
   if (!loggedInStudent) return;
   const todayKey = getTodayDateKey();
@@ -734,15 +950,40 @@ function renderParentClassmatesList() {
 
   if (!attendingListEl || !leaveListEl) return;
 
+  const parts = todayKey.split('-');
+  const todayDateObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+  const dayOfWeek = todayDateObj.getDay(); // 0=Sun, 1=Mon, 2=Tue, 4=Thu, 6=Sat
+  const dayCodeMap = { 1: 'mon', 2: 'tue', 4: 'thu', 6: 'sat' };
+  const todayCode = dayCodeMap[dayOfWeek] || null;
+  const isSaturdaySession = (dayOfWeek === 6);
+  const isTrainingDay = Boolean(todayCode) && !(typeof calendarDayOverrides !== 'undefined' && calendarDayOverrides && calendarDayOverrides[todayKey] && calendarDayOverrides[todayKey].status === 'canceled');
+
   const attending = [];
   const leave = [];
 
   students.forEach(st => {
     const att = records[st.id];
-    if (att && att.status === 'attending') {
-      attending.push({ ...st, time: att.time });
-    } else if (att && att.status === 'leave') {
+    if (att && att.status === 'leave') {
       leave.push({ ...st, reason: att.leaveReason, time: att.time });
+      return;
+    }
+    if (att && att.status === 'attending') {
+      attending.push({ ...st, time: att.time, confirmed: true });
+      return;
+    }
+    // Default classmates enrolled on this training day (unless they submitted leave)
+    if (!isTrainingDay) return;
+    if (Array.isArray(st.enrolledDays) && st.enrolledDays.length > 0) {
+      if (st.enrolledDays.includes(todayCode)) {
+        attending.push({ ...st, time: '', confirmed: false });
+      }
+    } else {
+      const cType = st.courseType || 'regular';
+      if (isSaturdaySession && (cType === 'saturday' || cType === 'both')) {
+        attending.push({ ...st, time: '', confirmed: false });
+      } else if (!isSaturdaySession && (cType === 'regular' || cType === 'both' || cType === 'monthly')) {
+        attending.push({ ...st, time: '', confirmed: false });
+      }
     }
   });
 
@@ -750,11 +991,13 @@ function renderParentClassmatesList() {
   if (leaveCountEl) leaveCountEl.innerText = `${leave.length} คน`;
 
   if (attending.length === 0) {
-    attendingListEl.innerHTML = '<span class="text-[11px] text-slate-400 italic">ยังไม่มีเพื่อนลงทะเบียนวันนี้ (เป็นคนแรกได้เลย!)</span>';
+    attendingListEl.innerHTML = isTrainingDay
+      ? '<span class="text-[11px] text-slate-400 italic">ยังไม่มีรายชื่อเพื่อนในรอบวันนี้</span>'
+      : '<span class="text-[11px] text-slate-400 italic">วันนี้ไม่มีคลาสฝึกซ้อม (รายชื่อเพื่อนจะแสดงในวันที่มีคลาส จ./อ./พฤ./ส.)</span>';
   } else {
     attendingListEl.innerHTML = attending.map(st => `
-      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-white text-emerald-950 border border-emerald-300 shadow-2xs">
-        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${st.confirmed ? 'bg-emerald-50 text-emerald-950 border-emerald-400' : 'bg-white text-slate-800 border-emerald-200'} border shadow-2xs">
+        <span class="w-2 h-2 rounded-full ${st.confirmed ? 'bg-emerald-500' : 'bg-emerald-300'}"></span>
         <span>น้อง ${st.name}</span>
         ${st.time ? `<span class="text-[10px] text-emerald-600 font-normal">(${st.time})</span>` : ''}
       </span>
@@ -863,7 +1106,9 @@ function handleParentLinkSubmit(e) {
   }
 
   const nowTs = Date.now();
-  const canAutoBind = matchedStudent && (!matchedStudent.phone || matchedStudent.phone.replace(/[^\d]/g, '') === rawPhone);
+  // SECURITY FIX: Only auto-bind if the student record ALREADY has this exact phone pre-registered by Coach Oat.
+  // All new/unlinked phone bindings require Coach Oat's verification & approval to prevent unauthorized takeovers.
+  const canAutoBind = Boolean(matchedStudent && matchedStudent.phone && matchedStudent.phone.replace(/[^\d]/g, '') === rawPhone);
 
   const newReg = {
     id: 'reg-' + nowTs,
@@ -1216,4 +1461,14 @@ function handleNewStudentRegister(e) {
   document.getElementById('newStudentForm').reset();
   handleCourseTypeChange(getRegistrationCourseType());
   switchTab('parent-portal');
+  if (typeof showSlipSubmissionReceiptModal === 'function') {
+    showSlipSubmissionReceiptModal({
+      refId: pendingItem.id,
+      studentName: nickName,
+      packageName: courseType === 'private' ? 'คลาสเรียนส่วนตัว (Private Class)' : (courseType === 'monthly' ? 'แพ็กเกจรายเดือน' : (courseType === 'saturday' ? 'คลาสวันเสาร์ Basic Coach Oat' : 'คลาสปกติ 10 ครั้ง')),
+      amount: amount,
+      slipImage: regSlipDataUrl,
+      submittedAt: new Date().toLocaleString('th-TH')
+    });
+  }
 }

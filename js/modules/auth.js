@@ -101,11 +101,15 @@ function handleParentPhoneLogin(e, forcedInput = null) {
 
     loggedInStudent = matched[0];
     localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
+    localStorage.setItem('dbo_my_device_login_ts', String(Date.now()));
     sessionStorage.setItem('dbo_tab_parent_logged', JSON.stringify(loggedInStudent));
     updateCoachStateUI();
     updateHeaderProfileUI();
     renderParentView(matched);
     switchTab('parent-portal');
+    if (typeof checkAndPromptPdpaConsent === 'function') {
+      setTimeout(checkAndPromptPdpaConsent, 350);
+    }
     showToast(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name}`);
     triggerTelegramPush(`🏀 ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name} เข้าสู่ระบบ DBO`, 'DBO Basketball Academy');
 
@@ -192,32 +196,30 @@ function updateHeaderProfileUI() {
   if (isCoachAuth && currentStaff) {
     headerArea.innerHTML = `
       <div class="app-header-account flex items-center gap-1.5 sm:gap-2">
-        <div class="app-header-identity flex items-center gap-1.5 bg-slate-100 border border-slate-200 text-slate-800 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-medium">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span class="truncate max-w-[120px] sm:max-w-none" title="${currentStaff.title}"><span class="app-header-staff-title">${currentStaff.title}</span><span class="app-header-staff-name">${currentStaff.name}</span></span>
+        <div class="app-header-identity flex items-center gap-1.5 bg-white/15 border border-[#DEB95B]/60 text-white px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span class="truncate max-w-[130px] sm:max-w-none" title="${currentStaff.title}"><span class="app-header-staff-title text-[#DEB95B]">${currentStaff.title}</span> <span class="app-header-staff-name text-white">${currentStaff.name}</span></span>
         </div>
-        <button type="button" onclick="appLogout()" aria-label="ออกจากระบบ" title="ออกจากระบบ" class="app-header-logout p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors border border-slate-200">
-          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-        </button>
       </div>
     `;
   } else if (loggedInStudent) {
+    const family = (typeof getLinkedStudents === 'function') ? getLinkedStudents(loggedInStudent) : [loggedInStudent];
+    const familyLabel = family.length > 1
+      ? family.map(s => `น้อง ${s.name}`).join(' & ')
+      : `น้อง ${loggedInStudent.name}`;
     headerArea.innerHTML = `
       <div class="app-header-account flex items-center gap-1.5 sm:gap-2">
-        <div class="app-header-identity flex items-center gap-1.5 bg-slate-100 border border-slate-200 text-slate-800 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-medium">
-          <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-          <span class="truncate max-w-[120px] sm:max-w-none">น้อง ${loggedInStudent.name}</span>
+        <div class="app-header-identity flex items-center gap-1.5 bg-white/15 border border-[#DEB95B]/60 text-white px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span class="truncate max-w-[150px] sm:max-w-none">${familyLabel}</span>
         </div>
-        <button type="button" onclick="appLogout()" aria-label="ออกจากระบบ" title="ออกจากระบบ" class="app-header-logout p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors border border-slate-200">
-          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-        </button>
       </div>
     `;
   } else {
     headerArea.innerHTML = `
-      <div class="flex items-center gap-1.5 text-xs text-slate-400">
-        <span class="w-2 h-2 rounded-full bg-slate-300"></span>
-        <span class="hidden sm:inline font-medium">Start from 0 to No. 1</span>
+      <div class="flex items-center gap-1.5 text-xs text-[#FBF4DD]/80">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span class="hidden sm:inline font-semibold">Start from 0 to No. 1</span>
       </div>
     `;
   }
@@ -228,6 +230,8 @@ function updateCoachStateUI() {
   if (typeof updateCourtCalendarRoleVisibility === 'function') updateCourtCalendarRoleVisibility();
   const coachTab = document.getElementById('nav-coach-roster');
   const coachMTab = document.getElementById('nav-m-coach-roster');
+  const boardTab = document.getElementById('nav-coach-board');
+  const boardMTab = document.getElementById('nav-m-coach-board');
   const staffCard = document.getElementById('staffProfileCard');
   const parentApprovalSec = document.getElementById('parentApprovalSection');
   const pendingSlipSec = document.getElementById('pendingSlipSection');
@@ -240,6 +244,8 @@ function updateCoachStateUI() {
   if (isCoachAuth && currentStaff) {
     if (coachTab) coachTab.classList.remove('hidden');
     if (coachMTab) coachMTab.classList.remove('hidden');
+    if (boardTab) boardTab.classList.remove('hidden');
+    if (boardMTab) boardMTab.classList.remove('hidden');
     if (btnEditSch) btnEditSch.classList.remove('hidden');
     if (staffCard) {
       staffCard.classList.remove('hidden');
@@ -288,6 +294,8 @@ function updateCoachStateUI() {
   } else {
     if (coachTab) coachTab.classList.add('hidden');
     if (coachMTab) coachMTab.classList.add('hidden');
+    if (boardTab) boardTab.classList.add('hidden');
+    if (boardMTab) boardMTab.classList.add('hidden');
     if (staffCard) staffCard.classList.add('hidden');
     if (typeof renderParentView === 'function') renderParentView();
   }

@@ -518,6 +518,25 @@ function handleIncomingMqttMessage(topic, message) {
         return;
       }
 
+      // 0. Handle Multi-Device Remote Force Logout
+      if (payload.type === 'FORCE_LOGOUT_ALL_DEVICES') {
+        if (loggedInStudent && !isCoachAuth) {
+          const myPhone = (loggedInStudent.phone || '').replace(/\D/g, '');
+          const ids = Array.isArray(payload.studentIds) ? payload.studentIds.map(Number) : [];
+          if ((payload.phone && myPhone === payload.phone) || ids.includes(Number(loggedInStudent.id))) {
+            loggedInStudent = null;
+            localStorage.removeItem('dbo_parent_logged_v14');
+            sessionStorage.removeItem('dbo_tab_parent_logged');
+            if (typeof updateCoachStateUI === 'function') updateCoachStateUI();
+            if (typeof updateHeaderProfileUI === 'function') updateHeaderProfileUI();
+            if (typeof renderParentView === 'function') renderParentView();
+            if (typeof switchTab === 'function') switchTab('parent-portal');
+            if (typeof showToast === 'function') showToast('บัญชีของคุณถูกสั่งออกจากระบบทุกเครื่อง (Logged out from all devices)');
+          }
+        }
+        return;
+      }
+
       // 1. Parent Attendance Update -> Notify Coach Devices
       if (payload.type === 'PARENT_ATTENDANCE_EVENT') {
         const stName = payload.studentName || 'นักเรียน';
