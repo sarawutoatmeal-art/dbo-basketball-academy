@@ -99,24 +99,13 @@ function handleParentPhoneLogin(e, forcedInput = null) {
     localStorage.setItem('dbo_is_coach_v14', 'false');
     localStorage.removeItem('dbo_current_staff');
 
-    loggedInStudent = matched[0];
-    localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
-    localStorage.setItem('dbo_my_device_login_ts', String(Date.now()));
-    sessionStorage.setItem('dbo_tab_parent_logged', JSON.stringify(loggedInStudent));
-    updateCoachStateUI();
-    updateHeaderProfileUI();
-    renderParentView(matched);
-    switchTab('parent-portal');
-    if (typeof checkAndPromptPdpaConsent === 'function') {
-      setTimeout(checkAndPromptPdpaConsent, 350);
+    // MULTI-CHILD POPUP: If linked to 2+ students (siblings), prompt popup modal first!
+    if (matched.length > 1) {
+      openSiblingSelectModal(matched, cleanPhone);
+      return;
     }
-    showToast(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name}`);
-    triggerTelegramPush(`🏀 ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name} เข้าสู่ระบบ DBO`, 'DBO Basketball Academy');
 
-    // Sync Web Push subscription for this student in background
-    if (typeof registerWebPushSubscription === 'function' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-      registerWebPushSubscription(false);
-    }
+    loginAsStudent(matched[0]);
     return;
   }
 
@@ -313,3 +302,129 @@ function maskPhone(phone) {
   }
   return phone;
 }
+
+// ========================================================
+// SIBLING / MULTI-STUDENT LOGIN POPUP SELECTION LOGIC
+// ========================================================
+let pendingSiblingMatches = [];
+let pendingSiblingPhone = '';
+
+function openSiblingSelectModal(matchedStudents = null, phone = '') {
+  if (matchedStudents && Array.isArray(matchedStudents) && matchedStudents.length > 0) {
+    pendingSiblingMatches = matchedStudents;
+    pendingSiblingPhone = phone;
+  } else if (loggedInStudent && typeof getLinkedStudents === 'function') {
+    pendingSiblingMatches = getLinkedStudents(loggedInStudent);
+    pendingSiblingPhone = loggedInStudent.phone || '';
+  }
+
+  if (!pendingSiblingMatches || pendingSiblingMatches.length === 0) return;
+
+  const modal = document.getElementById('siblingSelectModal');
+  const container = document.getElementById('siblingSelectCardsContainer');
+  const subtitle = document.getElementById('siblingSelectSubtitle');
+  if (!modal || !container) return;
+
+  const isEn = typeof currentAppLang !== 'undefined' && currentAppLang === 'en';
+
+  if (subtitle) {
+    subtitle.textContent = isEn
+      ? `Phone number linked to ${pendingSiblingMatches.length} students. Please select which student to view:`
+      : `เบอร์โทรนี้ผูกข้อมูลนักเรียนไว้ ${pendingSiblingMatches.length} คน กรุณากดเลือกบุตรหลานที่ต้องการเข้าดูข้อมูล:`;
+  }
+
+  container.innerHTML = pendingSiblingMatches.map(s => {
+    const isCur = loggedInStudent && Number(s.id) === Number(loggedInStudent.id);
+    const sName = (typeof getStudentDisplayName === 'function') ? getStudentDisplayName(s.name, isEn) : (isEn ? s.name : `น้อง ${s.name}`);
+    const uInfo = (typeof calculateAthleteAgeAndUCategory === 'function') ? calculateAthleteAgeAndUCategory(s) : { uCategory: isEn ? 'Age Pending' : 'รอวันเกิด' };
+    const cTypeLabel = s.courseType === 'monthly' ? (isEn ? 'Monthly' : 'คอร์สรายเดือน') : s.courseType === 'saturday' ? (isEn ? 'Saturday 4' : 'คอร์สวันเสาร์ 4 ครั้ง') : (isEn ? 'Regular 10' : 'คอร์สปกติ 10 ครั้ง');
+
+    return `
+      <button type="button" onclick="selectLoginStudent(${s.id})" class="w-full p-4 rounded-2xl transition-all cursor-pointer text-left border-2 flex items-center justify-between gap-3 group active:scale-[0.98] ${isCur ? 'bg-[#241044] text-white border-[#DEB95B] shadow-md ring-2 ring-[#DEB95B]' : 'bg-white hover:bg-purple-50 text-[#241044] border-nike-hairlineSoft hover:border-[#241044] shadow-sm'}">
+        <div class="flex items-center gap-3.5 min-w-0">
+          <div class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-black font-mono flex-shrink-0 transition-transform group-hover:scale-105 ${isCur ? 'bg-[#DEB95B] text-[#241044]' : 'bg-[#241044] text-[#DEB95B]'}">
+            ${typeof escapeHtml === 'function' ? escapeHtml(s.name.charAt(0)) : s.name.charAt(0)}
+          </div>
+          <div class="min-w-0 space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-base sm:text-lg font-black ${isCur ? 'text-white' : 'text-[#241044]'}">${typeof escapeHtml === 'function' ? escapeHtml(sName) : sName}</span>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${isCur ? 'bg-white/20 text-[#DEB95B]' : 'bg-[#FBF4DD] text-[#241044] border border-[#DEB95B]'}">${typeof escapeHtml === 'function' ? escapeHtml(cTypeLabel) : cTypeLabel}</span>
+            </div>
+            <div class="text-xs ${isCur ? 'text-white/80' : 'text-slate-500'} flex items-center gap-2 flex-wrap">
+              <span>${typeof escapeHtml === 'function' ? escapeHtml(s.fullName || s.name) : (s.fullName || s.name)}</span>
+              <span>•</span>
+              <span class="font-mono">ID: #${s.id}</span>
+              <span>•</span>
+              <span class="font-bold ${isCur ? 'text-[#DEB95B]' : 'text-[#241044]'}">${typeof escapeHtml === 'function' ? escapeHtml(uInfo.uCategory) : uInfo.uCategory}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          <span class="text-xs font-extrabold ${isCur ? 'text-[#DEB95B]' : 'text-[#241044] group-hover:text-[#DEB95B]'}">${isCur ? (isEn ? 'Viewing' : 'กำลังดูคนนี้') : (isEn ? 'Select' : 'เลือกคนนี้')}</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 ${isCur ? 'text-[#DEB95B]' : 'text-slate-400 group-hover:text-[#DEB95B]'}"></i>
+        </div>
+      </button>
+    `;
+  }).join('');
+
+  modal.classList.remove('hidden');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function closeSiblingSelectModal() {
+  const modal = document.getElementById('siblingSelectModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function selectLoginStudent(studentId) {
+  let target = null;
+  if (pendingSiblingMatches && pendingSiblingMatches.length > 0) {
+    target = pendingSiblingMatches.find(s => Number(s.id) === Number(studentId));
+  }
+  if (!target && loggedInStudent && typeof getLinkedStudents === 'function') {
+    target = getLinkedStudents(loggedInStudent).find(s => Number(s.id) === Number(studentId));
+  }
+  if (!target && typeof students !== 'undefined') {
+    target = students.find(s => Number(s.id) === Number(studentId));
+  }
+  if (!target) return;
+
+  closeSiblingSelectModal();
+  loginAsStudent(target);
+}
+
+function loginAsStudent(student) {
+  if (!student) return;
+
+  isCoachAuth = false;
+  currentStaff = null;
+  localStorage.setItem('dbo_is_coach_v14', 'false');
+  localStorage.removeItem('dbo_current_staff');
+
+  loggedInStudent = student;
+  localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
+  localStorage.setItem('dbo_my_device_login_ts', String(Date.now()));
+  sessionStorage.setItem('dbo_tab_parent_logged', JSON.stringify(loggedInStudent));
+
+  updateCoachStateUI();
+  updateHeaderProfileUI();
+  if (typeof renderParentView === 'function') renderParentView();
+  switchTab('parent-portal');
+
+  if (typeof checkAndPromptPdpaConsent === 'function') {
+    setTimeout(checkAndPromptPdpaConsent, 350);
+  }
+
+  showToast(`เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name}`);
+  triggerTelegramPush(`🏀 ยินดีต้อนรับผู้ปกครองน้อง ${loggedInStudent.name} เข้าสู่ระบบ DBO`, 'DBO Basketball Academy');
+
+  if (typeof registerWebPushSubscription === 'function' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+    registerWebPushSubscription(false);
+  }
+}
+
+window.openSiblingSelectModal = openSiblingSelectModal;
+window.closeSiblingSelectModal = closeSiblingSelectModal;
+window.selectLoginStudent = selectLoginStudent;
+window.loginAsStudent = loginAsStudent;

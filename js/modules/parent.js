@@ -176,118 +176,42 @@ function renderParentView(matchedList) {
 
     if (sibBadge) {
       sibBadge.classList.remove('hidden');
-      sibBadge.textContent = `${tLang('sibling_count_badge')} ${familySiblings.length} ${isEn ? '' : 'คน'}`;
+      sibBadge.innerHTML = `
+        <button type="button" onclick="openSiblingSelectModal()" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FBF4DD] hover:bg-[#DEB95B] text-[#241044] border border-[#DEB95B] transition-colors cursor-pointer">
+          <i data-lucide="users" class="w-3 h-3 text-[#241044]"></i>
+          <span>${tLang('sibling_count_badge')} ${familySiblings.length} ${isEn ? 'Students' : 'คน'} (สลับคน ▾)</span>
+        </button>
+      `;
     }
 
     if (sibSharedDesc) sibSharedDesc.textContent = tLang('family_separate_desc');
     if (sibQuickPills) {
       sibQuickPills.innerHTML = familySiblings.map(s => {
-        const isCurrent = s.id === loggedInStudent.id;
+        const isCurrent = Number(s.id) === Number(loggedInStudent.id);
         const remCount = s.remaining !== undefined ? s.remaining : 0;
         const sName = (typeof getStudentDisplayName === 'function') ? getStudentDisplayName(s.name, isEn) : (isEn ? s.name : `น้อง ${s.name}`);
         return `
-          <button type="button" onclick="switchSibling(${s.id})" aria-pressed="${isCurrent}" class="flex flex-col items-start justify-between gap-1.5 p-3 rounded-xl text-left transition-all cursor-pointer ${isCurrent ? 'bg-nike-ink text-white ring-2 ring-dbo-gold shadow-sm' : 'bg-nike-cloud border border-nike-hairlineSoft text-nike-ink hover:bg-purple-100/70'}">
+          <button type="button" onclick="switchSibling(${s.id})" aria-pressed="${isCurrent}" class="flex flex-col items-start justify-between gap-1.5 p-2.5 sm:p-3 rounded-xl text-left transition-all cursor-pointer ${isCurrent ? 'bg-[#241044] text-white ring-2 ring-[#DEB95B] shadow-sm' : 'bg-nike-cloud border border-nike-hairlineSoft text-nike-ink hover:bg-purple-100/70'}">
             <div class="w-full flex items-center justify-between gap-1.5">
-              <span class="w-6 h-6 rounded-full ${isCurrent ? 'bg-dbo-gold text-nike-ink' : 'bg-white text-nike-ink border border-nike-hairlineSoft'} flex items-center justify-center text-xs font-extrabold flex-shrink-0">${escapeHtml(s.name.charAt(0))}</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${isCurrent ? 'bg-white/15 text-dbo-gold' : 'bg-white text-nike-mute border border-nike-hairlineSoft'} flex-shrink-0">${remCount} ${tLang('sessions_unit')}</span>
+              <span class="w-6 h-6 rounded-full ${isCurrent ? 'bg-[#DEB95B] text-[#241044]' : 'bg-white text-nike-ink border border-nike-hairlineSoft'} flex items-center justify-center text-xs font-black flex-shrink-0">${escapeHtml(s.name.charAt(0))}</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${isCurrent ? 'bg-white/15 text-[#DEB95B]' : 'bg-white text-nike-mute border border-nike-hairlineSoft'} flex-shrink-0">${remCount} ${tLang('sessions_unit')}</span>
             </div>
-            <div class="w-full font-extrabold text-xs sm:text-sm leading-snug break-words ${isCurrent ? 'text-white' : 'text-nike-ink'}">
-              ${escapeHtml(sName)}
+            <div class="w-full font-extrabold text-xs sm:text-sm leading-snug break-words ${isCurrent ? 'text-[#DEB95B]' : 'text-nike-ink'}">
+              ${escapeHtml(sName)} ${isCurrent ? `<span class="text-[10px] text-white/90 font-normal ml-1">(${isEn ? 'Active' : 'กำลังดู'})</span>` : ''}
             </div>
           </button>
         `;
       }).join('');
     }
 
-    // Render SEPARATE Main Student Cards for EACH Child!
+    // Keep familyMultiCardsBox HIDDEN and singleChildCardsBox SHOWN so ONLY the selected child is displayed!
+    // (Prevents duplicate stacked cards and clashing data, as requested by user)
     if (familyMultiCardsBox) {
-      familyMultiCardsBox.classList.remove('hidden');
-      if (singleChildCardsBox) singleChildCardsBox.classList.add('hidden');
-
-      familyMultiCardsBox.innerHTML = familySiblings.map(s => {
-        const isSelected = Number(s.id) === Number(loggedInStudent.id);
-        const sName = (typeof getStudentDisplayName === 'function') ? getStudentDisplayName(s.name, isEn) : (isEn ? s.name : `น้อง ${s.name}`);
-        const sRem = s.courseType === 'saturday' ? (s.saturdayRemaining ?? s.remaining ?? 0) : (s.remaining ?? 0);
-        const sTotal = s.courseType === 'saturday' ? 4 : 10;
-        const sPct = Math.max(0, Math.min(100, Math.round((sRem / sTotal) * 100)));
-        const uInfo = (typeof calculateAthleteAgeAndUCategory === 'function') ? calculateAthleteAgeAndUCategory(s) : { uCategory: isEn ? 'Age Pending' : 'รอวันเกิด' };
-        const todayAtt = (dailyAttendance[todayKeyForCards] && dailyAttendance[todayKeyForCards][s.id]) ? dailyAttendance[todayKeyForCards][s.id] : null;
-        const attBadge = !todayAtt || todayAtt.status === 'unchecked'
-          ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">${isEn ? 'Today: Unchecked' : 'วันนี้: ยังไม่แจ้ง'}</span>`
-          : todayAtt.status === 'attending'
-            ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-300">✓ ${isEn ? 'Attending Today' : 'มาเรียนวันนี้'} (${todayAtt.time || ''})</span>`
-            : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300">${isEn ? 'Leave' : 'แจ้งลา'} (${todayAtt.leaveReason || (isEn ? 'Leave' : 'ลา')})</span>`;
-
-        const cTypeLabel = s.courseType === 'monthly' ? (isEn ? 'Monthly' : 'รายเดือน') : s.courseType === 'saturday' ? (isEn ? 'Saturday 4' : 'วันเสาร์ 4 ครั้ง') : s.courseType === 'both' ? (isEn ? 'Regular 10 + Sat 4' : 'ปกติ 10 + เสาร์ 4') : (isEn ? 'Regular 10' : 'คอร์สปกติ 10 ครั้ง');
-        const remColor = sRem > 3 ? 'text-[#241044]' : sRem >= 1 ? 'text-amber-700' : 'text-[#D30005]';
-        const barColor = sRem > 3 ? 'bg-[#007D48]' : sRem >= 1 ? 'bg-amber-500' : 'bg-[#D30005]';
-
-        return `
-          <article class="card-clean p-4 sm:p-5 rounded-2xl bg-white border-2 ${isSelected ? 'border-[#241044] ring-2 ring-[#DEB95B]' : 'border-nike-hairlineSoft'} space-y-3.5 shadow-sm transition-all">
-            <!-- Header: Avatar + Full Name + Course + U-Category -->
-            <div class="flex items-start justify-between gap-2.5 pb-3 border-b border-nike-hairlineSoft">
-              <div class="flex items-start gap-3 min-w-0">
-                <div class="w-12 h-12 rounded-full ${isSelected ? 'bg-[#241044] text-[#DEB95B] ring-2 ring-[#DEB95B]' : 'bg-nike-cloud text-nike-ink border border-nike-hairlineSoft'} flex items-center justify-center text-lg font-extrabold font-mono flex-shrink-0">
-                  ${escapeHtml(s.name.charAt(0))}
-                </div>
-                <div class="min-w-0 space-y-1">
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                    <h2 class="text-lg font-extrabold text-[#241044] leading-tight">${escapeHtml(sName)}</h2>
-                    <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-nike-cloud text-nike-mute border border-nike-hairlineSoft">ID: #${s.id}</span>
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#241044] text-[#DEB95B]">${escapeHtml(uInfo.uCategory)}</span>
-                  </div>
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FBF4DD] text-[#241044] border border-[#DEB95B]">${cTypeLabel}</span>
-                    ${attBadge}
-                  </div>
-                </div>
-              </div>
-              <button type="button" onclick="openAthleteProfileModal(${s.id})" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-nike-cloud hover:bg-purple-100 text-[#241044] border border-nike-hairlineSoft flex-shrink-0 cursor-pointer flex items-center gap-1">
-                <i data-lucide="id-card" class="w-3.5 h-3.5 text-[#241044]"></i>
-                <span>${tLang('btn_athlete_info')}</span>
-              </button>
-            </div>
-
-            <!-- Remaining Quota & Direct Renew Button for THIS Child -->
-            <div class="p-3.5 rounded-xl bg-[#F6F3FA] border border-nike-hairlineSoft space-y-2.5">
-              <div class="flex items-baseline justify-between gap-2">
-                <div>
-                  <span class="text-[11px] font-bold uppercase tracking-wider text-nike-mute block">${tLang('quota_remaining_child')}${escapeHtml(sName)}</span>
-                  <div class="flex items-baseline gap-1.5 mt-0.5">
-                    <span class="text-4xl font-black font-mono ${remColor}">${sRem}</span>
-                    <span class="text-xs font-bold text-nike-mute">${tLang('sessions_unit')} / ${sTotal} ${tLang('sessions_unit')}</span>
-                  </div>
-                </div>
-                <button type="button" onclick="openRenewForSibling(${s.id})" class="btn-touch px-3.5 py-2 rounded-full text-xs font-extrabold bg-[#241044] hover:bg-[#38196B] text-[#DEB95B] border border-[#DEB95B] flex items-center gap-1.5 cursor-pointer shadow-2xs">
-                  <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-                  <span>${tLang('btn_renew_for_prefix')}${escapeHtml(sName)}</span>
-                </button>
-              </div>
-              <div class="w-full bg-white rounded-full h-2 overflow-hidden border border-nike-hairlineSoft">
-                <div class="h-2 rounded-full ${barColor}" style="width: ${sPct}%"></div>
-              </div>
-            </div>
-
-            <!-- Direct Attendance Check-in / Leave Buttons for THIS Child -->
-            <div class="grid grid-cols-2 gap-2">
-              <button type="button" onclick="setTodayAttendanceForSibling(${s.id}, 'attending')" class="btn-touch py-2.5 px-3 rounded-full text-xs font-bold bg-[#007D48] hover:bg-emerald-700 text-white flex items-center justify-center gap-1.5 cursor-pointer">
-                <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                <span>${tLang('btn_attend_prefix')} (${escapeHtml(sName)})</span>
-              </button>
-              <button type="button" onclick="openLeaveModalForSibling(${s.id})" class="btn-touch py-2.5 px-3 rounded-full text-xs font-bold bg-nike-cloud hover:bg-amber-100 text-nike-ink border border-nike-hairlineSoft flex items-center justify-center gap-1.5 cursor-pointer">
-                <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-slate-500"></i>
-                <span>${tLang('btn_leave_prefix')} (${escapeHtml(sName)})</span>
-              </button>
-            </div>
-
-            <!-- Focus History & Growth Details Below for THIS Child -->
-            <button type="button" onclick="switchSibling(${s.id})" class="w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer ${isSelected ? 'bg-[#FBF4DD] text-[#241044] border border-[#DEB95B]' : 'bg-white text-nike-mute hover:text-nike-ink border border-nike-hairlineSoft'}">
-              <i data-lucide="${isSelected ? 'check-circle-2' : 'history'}" class="w-3.5 h-3.5 ${isSelected ? 'text-[#DEB95B]' : 'text-slate-400'}"></i>
-              <span>${isSelected ? `${tLang('showing_history_for')}: ${escapeHtml(sName)}` : `${tLang('tap_to_view_history')}: ${escapeHtml(sName)}`}</span>
-            </button>
-          </article>
-        `;
-      }).join('');
+      familyMultiCardsBox.classList.add('hidden');
+      familyMultiCardsBox.innerHTML = '';
+    }
+    if (singleChildCardsBox) {
+      singleChildCardsBox.classList.remove('hidden');
     }
 
     // Clean Minimal Sibling Picker for Renew

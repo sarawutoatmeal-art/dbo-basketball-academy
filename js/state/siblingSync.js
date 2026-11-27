@@ -52,8 +52,12 @@ function getLinkedStudents(student) {
 function switchSibling(studentId) {
   const target = getLinkedStudents(loggedInStudent).find(student => String(student.id) === String(studentId));
   if (!target) return;
-  loggedInStudent = target;
-  localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
-  renderParentView();
-  showToast('สลับนักเรียนแล้ว');
+  if (typeof loginAsStudent === 'function') {
+    loginAsStudent(target);
+  } else {
+    loggedInStudent = target;
+    localStorage.setItem('dbo_parent_logged_v14', JSON.stringify(loggedInStudent));
+    renderParentView();
+    showToast(`สลับดูข้อมูลน้อง ${target.name} แล้ว`);
+  }
 }
