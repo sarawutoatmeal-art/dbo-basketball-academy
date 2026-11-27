@@ -290,6 +290,9 @@
             <button type="button" onclick="switchTab('coach-board')">
               <i data-lucide="clipboard-list"></i><span>Coach Board<small>กระดานวางแผนแทคติกและฝึกซ้อมสนาม DBO</small></span><i data-lucide="arrow-right"></i>
             </button>
+            <button type="button" onclick="openEditScheduleModal()">
+              <i data-lucide="book-open"></i><span>แก้ไขเนื้อหาการสอน<small>ปรับหัวข้อฝึกซ้อมและโค้ชประจำวัน / ประจำสัปดาห์</small></span><i data-lucide="arrow-right"></i>
+            </button>
           </div>
           <section class="attendance-trend" aria-labelledby="attendanceTrendTitle">
             <div class="attendance-trend-heading">
@@ -647,13 +650,16 @@
             </div>
             <div>
               <span class="text-base font-bold text-dbo-navy block" id="dash-next-class-title">พฤหัสบดีนี้ (17:30 – 19:30 น.)</span>
-              <span class="text-xs text-slate-500" id="dash-next-class-topic">คลาส Game Situation & Team Tactics</span>
+              <span class="text-xs text-slate-600 font-medium block mt-0.5" id="dash-next-class-topic">คลาส Game Situation & Team Tactics</span>
             </div>
+            <div id="parentWeeklyThemeBanner" class="hidden p-2.5 rounded-xl bg-[#FBF4DD] border border-[#DEB95B] text-xs"></div>
             <div class="flex items-center gap-1.5 text-xs text-slate-500">
               <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i>
               <span>โรงยิม โรงเรียนเตชะวิทย์</span>
             </div>
           </div>
+
+          <div id="parentWeeklyCurriculumList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
         </div>
 
       </div>
@@ -1397,11 +1403,19 @@
 
           <!-- Weekly Schedule Section for Parents & Students -->
           <div class="space-y-3 pt-2">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
               <h3 class="text-sm font-bold text-nike-ink flex items-center gap-2">
                 <i data-lucide="calendar-days" class="w-4 h-4 text-nike-ink"></i>
                 <span>หัวข้อฝึกซ้อมประจำสัปดาห์ (Weekly Training Curriculum)</span>
               </h3>
+              <button type="button" id="btnEditWeeklySchedule" onclick="openEditScheduleModal()" class="hidden px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] hover:bg-[#38196B] flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                <span>แก้ไขเนื้อหาการสอนประจำสัปดาห์</span>
+              </button>
+            </div>
+            <div id="weeklyThemeDisplayBanner" class="hidden p-3 rounded-xl bg-[#FBF4DD] border border-[#DEB95B] text-xs text-[#241044]">
+              <strong class="font-extrabold">🎯 เป้าหมายการฝึกซ้อมประจำสัปดาห์:</strong>
+              <span id="weeklyThemeDisplayText" class="font-semibold ml-1"></span>
             </div>
             <div id="weeklyScheduleCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               <!-- Dynamically rendered via renderWeeklyScheduleView() -->
@@ -2286,13 +2300,24 @@
           </div>
 
           <div id="calModalReasonBox" class="hidden space-y-1 pt-1">
-            <label class="block text-[11px] text-slate-300">เหตุผลที่งดคลาส</label>
-            <input type="text" id="calModalReasonInput" placeholder="เช่น ฝนตกหนัก" class="w-full px-3 py-1.5 text-xs rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 focus:outline-hidden focus:border-amber-400" />
+            <label class="block text-[11px] font-semibold text-rose-700">เหตุผลที่งดคลาส</label>
+            <input type="text" id="calModalReasonInput" placeholder="เช่น ฝนตกหนัก, โรงเรียนใช้สนาม..." class="w-full px-3 py-1.5 text-xs rounded-xl bg-white border border-rose-300 text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-rose-600" />
+          </div>
+
+          <div id="calModalCurriculumEditBox" class="space-y-2 pt-1">
+            <div>
+              <label for="calModalCoachInput" class="block text-[11px] font-bold text-slate-700 mb-0.5">โค้ชผู้สอนในวันนี้</label>
+              <input type="text" id="calModalCoachInput" placeholder="เช่น โค้ชโอ๊ต & โค้ชโอ๊ค" class="w-full px-3 py-1.5 text-xs font-semibold rounded-xl bg-white border border-slate-300 text-dbo-navy focus:outline-hidden focus:border-dbo-navy" />
+            </div>
+            <div>
+              <label for="calModalTopicInput" class="block text-[11px] font-bold text-slate-700 mb-0.5">เนื้อหาการสอน / หัวข้อฝึกซ้อมของวันนี้</label>
+              <textarea id="calModalTopicInput" rows="2" placeholder="ระบุเนื้อหาการสอนเฉพาะวันนี้..." class="w-full p-2.5 text-xs rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-hidden focus:border-dbo-navy"></textarea>
+            </div>
           </div>
 
           <button type="button" onclick="saveCalModalClassOverride()" class="btn-touch w-full py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center justify-center gap-1.5 shadow-xs cursor-pointer">
             <i data-lucide="send" class="w-3.5 h-3.5"></i>
-            <span>บันทึกและแจ้งผู้ปกครอง</span>
+            <span>บันทึกเนื้อหาการสอน & สถานะคลาส</span>
           </button>
         </div>
 
@@ -2870,6 +2895,12 @@
       </div>
 
       <div class="space-y-4 text-xs">
+        <!-- Weekly Theme / Focus -->
+        <div class="p-3.5 rounded-2xl bg-[#FBF4DD] border border-[#DEB95B] space-y-1.5">
+          <strong class="text-[#241044] font-extrabold block text-sm">🎯 เป้าหมาย / หัวข้อหลักประจำสัปดาห์ (Weekly Focus)</strong>
+          <input type="text" id="schWeekTheme" placeholder="เช่น สัปดาห์นี้เน้น: การเคลื่อนที่โดยไม่มีบอล (Off-Ball Movement) & เกมรับโซน 2-3" class="w-full bg-white border border-[#DEB95B] rounded-xl px-3 py-2 text-xs text-[#241044] font-semibold">
+        </div>
+
         <!-- Monday -->
         <div class="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-2">
           <strong class="text-amber-950 font-bold block text-sm">วันจันทร์ (17:30 - 19:30 น.)</strong>
