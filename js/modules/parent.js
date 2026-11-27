@@ -168,12 +168,14 @@ function renderParentView(matchedList) {
         const isCurrent = s.id === loggedInStudent.id;
         const remCount = s.remaining !== undefined ? s.remaining : 0;
         return `
-          <button type="button" onclick="switchSibling(${s.id})" aria-pressed="${isCurrent}" class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${isCurrent ? 'bg-nike-ink text-white ring-2 ring-dbo-gold shadow-2xs' : 'bg-nike-cloud border border-nike-hairlineSoft text-nike-ink hover:bg-purple-100/70'}">
-            <span class="flex items-center gap-2 min-w-0">
-              <span class="w-5 h-5 rounded-full ${isCurrent ? 'bg-dbo-gold text-nike-ink' : 'bg-white text-nike-ink border border-nike-hairlineSoft'} flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">${escapeHtml(s.name.charAt(0))}</span>
-              <span class="truncate">น้อง ${escapeHtml(s.name)}</span>
-            </span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${isCurrent ? 'bg-white/15 text-dbo-gold' : 'bg-white text-nike-mute border border-nike-hairlineSoft'} flex-shrink-0">${remCount} ครั้ง</span>
+          <button type="button" onclick="switchSibling(${s.id})" aria-pressed="${isCurrent}" class="flex flex-col items-start justify-between gap-1.5 p-3 rounded-xl text-left transition-all cursor-pointer ${isCurrent ? 'bg-nike-ink text-white ring-2 ring-dbo-gold shadow-sm' : 'bg-nike-cloud border border-nike-hairlineSoft text-nike-ink hover:bg-purple-100/70'}">
+            <div class="w-full flex items-center justify-between gap-1.5">
+              <span class="w-6 h-6 rounded-full ${isCurrent ? 'bg-dbo-gold text-nike-ink' : 'bg-white text-nike-ink border border-nike-hairlineSoft'} flex items-center justify-center text-xs font-extrabold flex-shrink-0">${escapeHtml(s.name.charAt(0))}</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${isCurrent ? 'bg-white/15 text-dbo-gold' : 'bg-white text-nike-mute border border-nike-hairlineSoft'} flex-shrink-0">${remCount} ครั้ง</span>
+            </div>
+            <div class="w-full font-extrabold text-xs sm:text-sm leading-snug break-words ${isCurrent ? 'text-white' : 'text-nike-ink'}">
+              น้อง ${escapeHtml(s.name)}
+            </div>
           </button>
         `;
       }).join('');
