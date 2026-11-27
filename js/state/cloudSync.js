@@ -260,8 +260,19 @@ function applyIncomingState(incomingData, actionDesc = '') {
       if (deletedStudentIds[String(sid)]) return;
 
       const existing = studentMap.get(sid);
-      if (existing && existing.name) {
-        existing.name = existing.name.replace(/^น้อง\s*/, '').trim();
+      if (existing) {
+        // Heal corrupted name or question marks from incoming clean name
+        if (inc.name && (!existing.name || existing.name.includes('?'))) {
+          existing.name = inc.name;
+          hasChanges = true;
+        }
+        if (inc.fullName && (!existing.fullName || existing.fullName.includes('?'))) {
+          existing.fullName = inc.fullName;
+          hasChanges = true;
+        }
+        if (existing.name) {
+          existing.name = existing.name.replace(/^น้อง\s*/, '').trim();
+        }
       }
       if (!existing) {
         studentMap.set(sid, inc);
@@ -280,6 +291,14 @@ function applyIncomingState(incomingData, actionDesc = '') {
         if (existingActionTs > 0 && incActionTs < existingActionTs) {
           if (inc.phone && !existing.phone) {
             existing.phone = inc.phone;
+            hasChanges = true;
+          }
+          if (inc.name && (!existing.name || existing.name.includes('?'))) {
+            existing.name = inc.name;
+            hasChanges = true;
+          }
+          if (inc.fullName && (!existing.fullName || existing.fullName.includes('?'))) {
+            existing.fullName = inc.fullName;
             hasChanges = true;
           }
         } else if (incActionTs > existingActionTs || (existingActionTs === 0 && incTs > existingTs)) {

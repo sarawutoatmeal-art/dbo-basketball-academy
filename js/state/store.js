@@ -153,18 +153,31 @@ initialRawData.forEach(raw => {
         _updatedAt: raw._updatedAt || Date.now()
       });
     } else {
-      if (raw.phone && !existing.phone) existing.phone = raw.phone;
-      if (raw.parentName && !existing.parentName) existing.parentName = raw.parentName;
-      if (raw.parentRelation && !existing.parentRelation) existing.parentRelation = raw.parentRelation;
-      if (raw.fullName && !existing.fullName) existing.fullName = raw.fullName;
+      // Heal corrupted name or question marks from stale cache
+      if (raw.name && (!existing.name || existing.name.includes('?'))) {
+        existing.name = raw.name;
+      }
+      if (raw.fullName && (!existing.fullName || existing.fullName.includes('?'))) {
+        existing.fullName = raw.fullName;
+      }
+      if (raw.phone && (!existing.phone || existing.phone.includes('?'))) existing.phone = raw.phone;
+      if (raw.parentName && (!existing.parentName || existing.parentName.includes('?'))) existing.parentName = raw.parentName;
+      if (raw.parentRelation && (!existing.parentRelation || existing.parentRelation.includes('?'))) existing.parentRelation = raw.parentRelation;
     }
   }
 });
 
-// Normalize names for all students in memory
+// Universal cache corruption auto-heal & name normalization for all students in memory
 students.forEach(st => {
-  if (st && st.name) {
-    st.name = st.name.replace(/^น้อง\s*/, '').trim();
+  if (st) {
+    if (!st.name || st.name.includes('?')) {
+      const raw = initialRawData.find(r => Number(r.id) === Number(st.id));
+      if (raw && raw.name) st.name = raw.name;
+      if (raw && raw.fullName && (!st.fullName || st.fullName.includes('?'))) st.fullName = raw.fullName;
+    }
+    if (st.name) {
+      st.name = st.name.replace(/^น้อง\s*/, '').trim();
+    }
   }
 });
 students.sort((a, b) => Number(a.id) - Number(b.id));
