@@ -635,6 +635,13 @@ function updateCoachBoardToolbarUI() {
         ? 'px-3 py-1.5 rounded-full text-xs font-bold bg-[#DEB95B] text-[#241044] border border-[#DEB95B] shadow-2xs cursor-pointer transition-all'
         : 'px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20 hover:bg-white/20 cursor-pointer transition-all';
     }
+    const fsBtn = document.getElementById(`btnFsCourt-${m}`);
+    if (fsBtn) {
+      const active = coachBoardState.courtMode === m;
+      fsBtn.className = active
+        ? 'px-2.5 py-1 rounded-full text-[11px] font-black bg-[#DEB95B] text-[#241044] shadow-xs cursor-pointer transition-all'
+        : 'px-2.5 py-1 rounded-full text-[11px] font-bold text-white hover:bg-white/20 cursor-pointer transition-all';
+    }
   });
 
   // Tool Mode buttons
@@ -977,6 +984,25 @@ function renderCoachBoardSavedPlaysList() {
   `).join('');
 }
 
+function toggleCoachBoardDock(forceState) {
+  const dock = document.getElementById('dboCoachBoardDockWrapper');
+  const lbl = document.getElementById('lblToggleBoardDock');
+  if (!dock) return;
+
+  const shouldCollapse = typeof forceState === 'boolean'
+    ? !forceState
+    : !dock.classList.contains('dbo-dock-collapsed');
+
+  if (shouldCollapse) {
+    dock.classList.add('dbo-dock-collapsed');
+    if (lbl) lbl.textContent = 'เครื่องมือ ▾';
+  } else {
+    dock.classList.remove('dbo-dock-collapsed');
+    if (lbl) lbl.textContent = 'เครื่องมือ ▴ (ซ่อน)';
+  }
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
 async function toggleCoachBoardFullscreen() {
   const wrapper = document.getElementById('dboCoachBoardCardWrapper');
   if (!wrapper) return;
@@ -985,6 +1011,8 @@ async function toggleCoachBoardFullscreen() {
   if (coachBoardState.isFullscreen) {
     wrapper.classList.add('dbo-board-fullscreen');
     document.body.classList.add('dbo-board-fs-active');
+    // Start with dock collapsed so coach has 100% full-screen unobstructed court
+    toggleCoachBoardDock(false);
     try {
       if (wrapper.requestFullscreen) {
         await wrapper.requestFullscreen();
@@ -995,6 +1023,11 @@ async function toggleCoachBoardFullscreen() {
   } else {
     wrapper.classList.remove('dbo-board-fullscreen');
     document.body.classList.remove('dbo-board-fs-active');
+    // Restore normal dock in regular view
+    const dock = document.getElementById('dboCoachBoardDockWrapper');
+    if (dock) dock.classList.remove('dbo-dock-collapsed');
+    const lbl = document.getElementById('lblToggleBoardDock');
+    if (lbl) lbl.textContent = 'เครื่องมือ ▾';
     try {
       if (document.fullscreenElement && document.exitFullscreen) {
         await document.exitFullscreen();
@@ -1010,6 +1043,8 @@ async function toggleCoachBoardFullscreen() {
     if (span) span.textContent = coachBoardState.isFullscreen ? 'ออกจากเต็มจอ' : 'เต็มจอ iPad / มือถือ';
   }
 
+  updateCoachBoardToolbarUI();
+
   setTimeout(() => {
     renderCoachBoardTokens();
     resizeAndRenderCoachBoardCanvas();
@@ -1023,11 +1058,16 @@ document.addEventListener('fullscreenchange', () => {
     coachBoardState.isFullscreen = false;
     if (wrapper) wrapper.classList.remove('dbo-board-fullscreen');
     document.body.classList.remove('dbo-board-fs-active');
+    const dock = document.getElementById('dboCoachBoardDockWrapper');
+    if (dock) dock.classList.remove('dbo-dock-collapsed');
+    const lbl = document.getElementById('lblToggleBoardDock');
+    if (lbl) lbl.textContent = 'เครื่องมือ ▾';
     const btn = document.getElementById('btnCoachBoardFullscreen');
     if (btn) {
       const span = btn.querySelector('span');
       if (span) span.textContent = 'เต็มจอ iPad / มือถือ';
     }
+    updateCoachBoardToolbarUI();
     setTimeout(() => {
       renderCoachBoardTokens();
       resizeAndRenderCoachBoardCanvas();
@@ -1035,3 +1075,5 @@ document.addEventListener('fullscreenchange', () => {
     }, 60);
   }
 });
+
+window.toggleCoachBoardDock = toggleCoachBoardDock;

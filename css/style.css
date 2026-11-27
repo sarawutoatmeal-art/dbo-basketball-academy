@@ -1764,7 +1764,7 @@ header .app-header-identity {
   z-index: 9999 !important;
   width: 100vw !important;
   height: 100dvh !important;
-  background: #000000 !important;
+  background: #090314 !important;
   padding: 0 !important;
   margin: 0 !important;
   display: flex !important;
@@ -1778,54 +1778,120 @@ body.dbo-board-fs-active > nav.mobile-bottom-nav {
   display: none !important;
 }
 
+/* Completely hide topbar & guide banners in fullscreen */
 .dbo-board-fullscreen .dbo-board-topbar {
-  border-radius: 0 !important;
-  border-left: none !important;
-  border-right: none !important;
-  border-top: none !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
-  background: #000000 !important;
-  padding: 6px 12px !important;
+  display: none !important;
 }
 
+/* Floating top bar in fullscreen */
+.dbo-board-fullscreen #dboCoachBoardFsHeader {
+  display: flex !important;
+  position: fixed !important;
+  top: 10px !important;
+  left: 12px !important;
+  right: 12px !important;
+  z-index: 10000 !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  pointer-events: auto !important;
+}
+
+/* Floating Collapsible Tool Drawer in Fullscreen */
 .dbo-board-fullscreen .dbo-board-dock {
-  border-radius: 0 !important;
-  border: none !important;
-  background: #111111 !important;
-  padding: 4px 10px !important;
+  position: fixed !important;
+  top: 48px !important;
+  left: 12px !important;
+  right: 12px !important;
+  max-width: 860px !important;
+  margin: 0 auto !important;
+  z-index: 9999 !important;
+  border-radius: 20px !important;
+  background: rgba(26, 11, 48, 0.96) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1.5px solid #DEB95B !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85) !important;
+  color: #FFFFFF !important;
+  max-height: calc(100dvh - 65px) !important;
+  overflow-y: auto !important;
+  padding: 10px 14px !important;
+  transition: transform 0.2s ease, opacity 0.2s ease !important;
+}
+
+.dbo-board-fullscreen .dbo-board-dock.dbo-dock-collapsed {
+  display: none !important;
+}
+
+.dbo-board-fullscreen .dbo-board-dock span,
+.dbo-board-fullscreen .dbo-board-dock div,
+.dbo-board-fullscreen .dbo-board-dock label {
+  color: #FFFFFF !important;
+}
+
+.dbo-board-fullscreen .dbo-board-dock .text-nike-mute {
+  color: #D1D5DB !important;
+}
+
+.dbo-board-fullscreen .dbo-board-dock .bg-nike-cloud {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+.dbo-board-fullscreen .dbo-board-dock .border-nike-hairlineSoft {
+  border-color: rgba(255, 255, 255, 0.18) !important;
 }
 
 .dbo-board-fullscreen .dbo-board-dock button.dbo-tool-btn {
-  padding: 4px 8px !important;
+  padding: 6px 12px !important;
   font-size: 11px !important;
 }
 
+/* Fullscreen Court Viewport & Stage Scaling (100% full screen edge-to-edge) */
 .dbo-board-fullscreen .dbo-court-viewport-container {
-  flex: 1 1 auto;
-  min-height: 0;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: 100vw !important;
+  max-height: 100dvh !important;
   padding: 0 !important;
+  margin: 0 !important;
   border: none !important;
   border-radius: 0 !important;
-  background: #000000 !important;
+  background: #090314 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 10 !important;
 }
 
 .dbo-board-fullscreen .dbo-court-stage[data-court-mode="full"] {
-  max-height: calc(100dvh - 52px) !important;
-  max-width: min(100vw, calc((100dvh - 52px) * 600 / 940)) !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  max-width: min(100vw, calc(100dvh * 600 / 940)) !important;
+  aspect-ratio: 600 / 940 !important;
   border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 .dbo-board-fullscreen .dbo-court-stage[data-court-mode="landscape"] {
-  max-height: calc(100dvh - 52px) !important;
-  max-width: min(100vw, calc((100dvh - 52px) * 940 / 600)) !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  max-width: min(100vw, calc(100dvh * 940 / 600)) !important;
+  aspect-ratio: 940 / 600 !important;
   border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 .dbo-board-fullscreen .dbo-court-stage[data-court-mode="half"] {
   width: 100vw !important;
+  height: 100dvh !important;
   max-width: 100vw !important;
-  max-height: calc(100dvh - 52px) !important;
+  max-height: 100dvh !important;
+  aspect-ratio: 940 / 560 !important;
   border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 /* Court viewport container in normal tab view - edge-to-edge immersive */
