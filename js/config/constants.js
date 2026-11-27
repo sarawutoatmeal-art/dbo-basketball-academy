@@ -4,6 +4,16 @@
 
 const APP_VERSION = 'v21.0';
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // Detect Test / Demo Environment:
 // Any hostname other than the official production domain (dbobasketball.vercel.app)
 // — including localhost, 127.0.0.1, and Vercel git branch preview URLs (dbobasketball-git-dev-*.vercel.app) —

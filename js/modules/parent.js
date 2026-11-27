@@ -114,7 +114,10 @@ function renderParentView(matchedList) {
   if (coachPortalBox) coachPortalBox.classList.add('hidden');
   if (dashBox) dashBox.classList.remove('hidden');
 
-  if (mPortalLabel) mPortalLabel.innerText = `น้อง${loggedInStudent.name}`;
+  const isEn = typeof currentAppLang !== 'undefined' && currentAppLang === 'en';
+  const displayName = (typeof getStudentDisplayName === 'function') ? getStudentDisplayName(loggedInStudent.name, isEn) : (isEn ? loggedInStudent.name : `น้อง ${loggedInStudent.name}`);
+
+  if (mPortalLabel) mPortalLabel.innerText = displayName;
   if (mPortalIcon) mPortalIcon.setAttribute('data-lucide', 'user');
 
   if (renewNav) renewNav.classList.remove('hidden');
@@ -133,18 +136,18 @@ function renderParentView(matchedList) {
 
   // Populate Student Details
   document.getElementById('dash-avatar').innerText = loggedInStudent.name.charAt(0);
-  document.getElementById('dash-student-name').innerText = `น้อง ${loggedInStudent.name}`;
+  document.getElementById('dash-student-name').innerText = displayName;
   document.getElementById('dash-student-id').innerText = `ID: #${loggedInStudent.id}`;
   document.getElementById('dash-parent-phone').innerText = loggedInStudent.phone;
 
   // Hero Widget Name & Description
   const heroNameEl = document.getElementById('hero-student-name');
   const heroDescEl = document.getElementById('hero-course-desc');
-  if (heroNameEl) heroNameEl.innerText = `น้อง ${loggedInStudent.name}`;
+  if (heroNameEl) heroNameEl.innerText = displayName;
   if (heroDescEl) {
-    if (loggedInStudent.courseType === 'monthly') heroDescEl.innerText = 'แพ็กเกจรายเดือนสม่ำเสมอ (ซ้อม 2 วัน/สัปดาห์) • สนามเตชะวิทย์';
-    else if (loggedInStudent.courseType === 'saturday') heroDescEl.innerText = 'คอร์สวันเสาร์ 4 ครั้ง Coach Oat (16:00-17:30 น.) • สนามเตชะวิทย์';
-    else heroDescEl.innerText = 'คอร์สปกติ 10 ครั้ง (จ./อ./พฤ. 17:30-19:30 น.) • สนามเตชะวิทย์';
+    if (loggedInStudent.courseType === 'monthly') heroDescEl.innerText = isEn ? 'Monthly Membership Package (2 days/week) • Techawit Gym' : 'แพ็กเกจรายเดือนสม่ำเสมอ (ซ้อม 2 วัน/สัปดาห์) • สนามเตชะวิทย์';
+    else if (loggedInStudent.courseType === 'saturday') heroDescEl.innerText = isEn ? 'Saturday Course (4 Sessions) Coach Oat (4:00-5:30 PM) • Techawit Gym' : 'คอร์สวันเสาร์ 4 ครั้ง Coach Oat (16:00-17:30 น.) • สนามเตชะวิทย์';
+    else heroDescEl.innerText = isEn ? 'Regular Course (10 Sessions) (Mon/Tue/Thu 5:30-7:30 PM) • Techawit Gym' : 'คอร์สปกติ 10 ครั้ง (จ./อ./พฤ. 17:30-19:30 น.) • สนามเตชะวิทย์';
   }
 
   // Sibling Bar & Separate Main Student Cards Handler
@@ -164,29 +167,32 @@ function renderParentView(matchedList) {
   if (familySiblings.length > 1) {
     if (sibBox) sibBox.classList.remove('hidden');
     if (sibSelect) {
-      sibSelect.innerHTML = familySiblings.map(s => `
-        <option value="${s.id}" ${s.id === loggedInStudent.id ? 'selected' : ''}>น้อง ${escapeHtml(s.name)} (${s.remaining !== undefined ? s.remaining : 0} ครั้ง)</option>
-      `).join('');
+      sibSelect.innerHTML = familySiblings.map(s => {
+        const sName = (typeof getStudentDisplayName === 'function') ? getStudentDisplayName(s.name, isEn) : (isEn ? s.name : `น้อง ${s.name}`);
+        const remTxt = `${s.remaining !== undefined ? s.remaining : 0} ${tLang('sessions_unit')}`;
+        return `<option value="${s.id}" ${s.id === loggedInStudent.id ? 'selected' : ''}>${escapeHtml(sName)} (${remTxt})</option>`;
+      }).join('');
     }
 
     if (sibBadge) {
       sibBadge.classList.remove('hidden');
-      sibBadge.textContent = `พี่น้อง ${familySiblings.length} คน`;
+      sibBadge.textContent = `${tLang('sibling_count_badge')} ${familySiblings.length} ${isEn ? '' : 'คน'}`;
     }
 
-    if (sibSharedDesc) sibSharedDesc.textContent = 'แยกการ์ดหลักของลูกแต่ละคน';
+    if (sibSharedDesc) sibSharedDesc.textContent = tLang('family_separate_desc');
     if (sibQuickPills) {
       sibQuickPills.innerHTML = familySiblings.map(s => {
         const isCurrent = s.id === loggedInStudent.id;
         const remCount = s.remaining !== undefined ? s.remaining : 0;
+        const sName = (typeof getStudentDisplayName === 'function') ? getStudentDisplayName(s.name, isEn) : (isEn ? s.name : `น้อง ${s.name}`);
         return `
           <button type="button" onclick="switchSibling(${s.id})" aria-pressed="${isCurrent}" class="flex flex-col items-start justify-between gap-1.5 p-3 rounded-xl text-left transition-all cursor-pointer ${isCurrent ? 'bg-nike-ink text-white ring-2 ring-dbo-gold shadow-sm' : 'bg-nike-cloud border border-nike-hairlineSoft text-nike-ink hover:bg-purple-100/70'}">
             <div class="w-full flex items-center justify-between gap-1.5">
               <span class="w-6 h-6 rounded-full ${isCurrent ? 'bg-dbo-gold text-nike-ink' : 'bg-white text-nike-ink border border-nike-hairlineSoft'} flex items-center justify-center text-xs font-extrabold flex-shrink-0">${escapeHtml(s.name.charAt(0))}</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${isCurrent ? 'bg-white/15 text-dbo-gold' : 'bg-white text-nike-mute border border-nike-hairlineSoft'} flex-shrink-0">${remCount} ครั้ง</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${isCurrent ? 'bg-white/15 text-dbo-gold' : 'bg-white text-nike-mute border border-nike-hairlineSoft'} flex-shrink-0">${remCount} ${tLang('sessions_unit')}</span>
             </div>
             <div class="w-full font-extrabold text-xs sm:text-sm leading-snug break-words ${isCurrent ? 'text-white' : 'text-nike-ink'}">
-              น้อง ${escapeHtml(s.name)}
+              ${escapeHtml(sName)}
             </div>
           </button>
         `;
@@ -200,18 +206,19 @@ function renderParentView(matchedList) {
 
       familyMultiCardsBox.innerHTML = familySiblings.map(s => {
         const isSelected = Number(s.id) === Number(loggedInStudent.id);
+        const sName = (typeof getStudentDisplayName === 'function') ? getStudentDisplayName(s.name, isEn) : (isEn ? s.name : `น้อง ${s.name}`);
         const sRem = s.courseType === 'saturday' ? (s.saturdayRemaining ?? s.remaining ?? 0) : (s.remaining ?? 0);
         const sTotal = s.courseType === 'saturday' ? 4 : 10;
         const sPct = Math.max(0, Math.min(100, Math.round((sRem / sTotal) * 100)));
-        const uInfo = (typeof calculateAthleteAgeAndUCategory === 'function') ? calculateAthleteAgeAndUCategory(s) : { uCategory: 'รอวันเกิด' };
+        const uInfo = (typeof calculateAthleteAgeAndUCategory === 'function') ? calculateAthleteAgeAndUCategory(s) : { uCategory: isEn ? 'Age Pending' : 'รอวันเกิด' };
         const todayAtt = (dailyAttendance[todayKeyForCards] && dailyAttendance[todayKeyForCards][s.id]) ? dailyAttendance[todayKeyForCards][s.id] : null;
         const attBadge = !todayAtt || todayAtt.status === 'unchecked'
-          ? '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">วันนี้: ยังไม่แจ้ง</span>'
+          ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">${isEn ? 'Today: Unchecked' : 'วันนี้: ยังไม่แจ้ง'}</span>`
           : todayAtt.status === 'attending'
-            ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-300">✓ มาเรียนวันนี้ (${todayAtt.time || ''})</span>`
-            : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300">แจ้งลา (${todayAtt.leaveReason || 'ลา'})</span>`;
+            ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-300">✓ ${isEn ? 'Attending Today' : 'มาเรียนวันนี้'} (${todayAtt.time || ''})</span>`
+            : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300">${isEn ? 'Leave' : 'แจ้งลา'} (${todayAtt.leaveReason || (isEn ? 'Leave' : 'ลา')})</span>`;
 
-        const cTypeLabel = s.courseType === 'monthly' ? 'รายเดือน' : s.courseType === 'saturday' ? 'วันเสาร์ 4 ครั้ง' : s.courseType === 'both' ? 'ปกติ 10 + เสาร์ 4' : 'คอร์สปกติ 10 ครั้ง';
+        const cTypeLabel = s.courseType === 'monthly' ? (isEn ? 'Monthly' : 'รายเดือน') : s.courseType === 'saturday' ? (isEn ? 'Saturday 4' : 'วันเสาร์ 4 ครั้ง') : s.courseType === 'both' ? (isEn ? 'Regular 10 + Sat 4' : 'ปกติ 10 + เสาร์ 4') : (isEn ? 'Regular 10' : 'คอร์สปกติ 10 ครั้ง');
         const remColor = sRem > 3 ? 'text-[#241044]' : sRem >= 1 ? 'text-amber-700' : 'text-[#D30005]';
         const barColor = sRem > 3 ? 'bg-[#007D48]' : sRem >= 1 ? 'bg-amber-500' : 'bg-[#D30005]';
 
@@ -225,7 +232,7 @@ function renderParentView(matchedList) {
                 </div>
                 <div class="min-w-0 space-y-1">
                   <div class="flex items-center gap-1.5 flex-wrap">
-                    <h2 class="text-lg font-extrabold text-[#241044] leading-tight">น้อง ${escapeHtml(s.name)}</h2>
+                    <h2 class="text-lg font-extrabold text-[#241044] leading-tight">${escapeHtml(sName)}</h2>
                     <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-nike-cloud text-nike-mute border border-nike-hairlineSoft">ID: #${s.id}</span>
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#241044] text-[#DEB95B]">${escapeHtml(uInfo.uCategory)}</span>
                   </div>
@@ -235,8 +242,9 @@ function renderParentView(matchedList) {
                   </div>
                 </div>
               </div>
-              <button type="button" onclick="openAthleteProfileModal(${s.id})" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-nike-cloud hover:bg-purple-100 text-[#241044] border border-nike-hairlineSoft flex-shrink-0 cursor-pointer">
-                🪪 ข้อมูลนักกีฬา
+              <button type="button" onclick="openAthleteProfileModal(${s.id})" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-nike-cloud hover:bg-purple-100 text-[#241044] border border-nike-hairlineSoft flex-shrink-0 cursor-pointer flex items-center gap-1">
+                <i data-lucide="id-card" class="w-3.5 h-3.5 text-[#241044]"></i>
+                <span>${tLang('btn_athlete_info')}</span>
               </button>
             </div>
 
@@ -244,14 +252,15 @@ function renderParentView(matchedList) {
             <div class="p-3.5 rounded-xl bg-[#F6F3FA] border border-nike-hairlineSoft space-y-2.5">
               <div class="flex items-baseline justify-between gap-2">
                 <div>
-                  <span class="text-[11px] font-bold uppercase tracking-wider text-nike-mute block">สิทธิ์คงเหลือของน้อง ${escapeHtml(s.name)}</span>
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-nike-mute block">${tLang('quota_remaining_child')}${escapeHtml(sName)}</span>
                   <div class="flex items-baseline gap-1.5 mt-0.5">
                     <span class="text-4xl font-black font-mono ${remColor}">${sRem}</span>
-                    <span class="text-xs font-bold text-nike-mute">ครั้ง / ${sTotal} ครั้ง</span>
+                    <span class="text-xs font-bold text-nike-mute">${tLang('sessions_unit')} / ${sTotal} ${tLang('sessions_unit')}</span>
                   </div>
                 </div>
                 <button type="button" onclick="openRenewForSibling(${s.id})" class="btn-touch px-3.5 py-2 rounded-full text-xs font-extrabold bg-[#241044] hover:bg-[#38196B] text-[#DEB95B] border border-[#DEB95B] flex items-center gap-1.5 cursor-pointer shadow-2xs">
-                  <span>🔄 ต่อคอร์สน้อง${escapeHtml(s.name)}</span>
+                  <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                  <span>${tLang('btn_renew_for_prefix')}${escapeHtml(sName)}</span>
                 </button>
               </div>
               <div class="w-full bg-white rounded-full h-2 overflow-hidden border border-nike-hairlineSoft">
@@ -262,42 +271,42 @@ function renderParentView(matchedList) {
             <!-- Direct Attendance Check-in / Leave Buttons for THIS Child -->
             <div class="grid grid-cols-2 gap-2">
               <button type="button" onclick="setTodayAttendanceForSibling(${s.id}, 'attending')" class="btn-touch py-2.5 px-3 rounded-full text-xs font-bold bg-[#007D48] hover:bg-emerald-700 text-white flex items-center justify-center gap-1.5 cursor-pointer">
-                <span>✓ แจ้งมาเรียน (น้อง${escapeHtml(s.name)})</span>
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                <span>${tLang('btn_attend_prefix')} (${escapeHtml(sName)})</span>
               </button>
               <button type="button" onclick="openLeaveModalForSibling(${s.id})" class="btn-touch py-2.5 px-3 rounded-full text-xs font-bold bg-nike-cloud hover:bg-amber-100 text-nike-ink border border-nike-hairlineSoft flex items-center justify-center gap-1.5 cursor-pointer">
-                <span>แจ้งลา (น้อง${escapeHtml(s.name)})</span>
+                <i data-lucide="calendar-x" class="w-3.5 h-3.5 text-slate-500"></i>
+                <span>${tLang('btn_leave_prefix')} (${escapeHtml(sName)})</span>
               </button>
             </div>
 
             <!-- Focus History & Growth Details Below for THIS Child -->
             <button type="button" onclick="switchSibling(${s.id})" class="w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer ${isSelected ? 'bg-[#FBF4DD] text-[#241044] border border-[#DEB95B]' : 'bg-white text-nike-mute hover:text-nike-ink border border-nike-hairlineSoft'}">
-              <span>${isSelected ? `📌 กำลังแสดงตารางประวัติด้านล่างของ: น้อง ${escapeHtml(s.name)}` : `📋 แตะเพื่อดูประวัติเข้าเรียน & พัฒนาการของ น้อง ${escapeHtml(s.name)}`}</span>
+              <i data-lucide="${isSelected ? 'check-circle-2' : 'history'}" class="w-3.5 h-3.5 ${isSelected ? 'text-[#DEB95B]' : 'text-slate-400'}"></i>
+              <span>${isSelected ? `${tLang('showing_history_for')}: ${escapeHtml(sName)}` : `${tLang('tap_to_view_history')}: ${escapeHtml(sName)}`}</span>
             </button>
           </article>
         `;
       }).join('');
     }
 
-    // Populate Sibling Picker Cards on the Renewal Tab so parents never renew the wrong child!
+    // Clean Minimal Sibling Picker for Renew
     if (renewSiblingPicker) {
       renewSiblingPicker.classList.remove('hidden');
       renewSiblingPicker.innerHTML = `
-        <div class="p-3.5 rounded-2xl bg-[#FBF4DD]/70 border-2 border-[#DEB95B] space-y-2">
-          <div class="text-xs font-extrabold text-[#241044] flex items-center justify-between">
-            <span>👨‍👩‍👧‍👦 เลือกบุตรหลานที่ต้องการต่อคอร์สเรียน (ป้องกันการต่อคอร์สผิดคน):</span>
-            <span class="text-[11px] text-[#38196B]">กำลังเลือก: น้อง ${escapeHtml(loggedInStudent.name)}</span>
-          </div>
-          <div class="grid grid-cols-2 gap-2.5">
+        <div class="space-y-1.5">
+          <div class="grid grid-cols-2 gap-2">
             ${familySiblings.map(s => {
               const isCur = Number(s.id) === Number(loggedInStudent.id);
               const r = s.remaining ?? 0;
+              const sName = (typeof getStudentDisplayName === 'function') ? getStudentDisplayName(s.name, isEn) : (isEn ? s.name : `น้อง ${s.name}`);
               return `
-                <button type="button" onclick="switchSibling(${s.id})" class="p-3 rounded-xl text-left border-2 transition-all cursor-pointer flex items-center justify-between gap-2 ${isCur ? 'bg-[#241044] text-white border-[#DEB95B] shadow-sm' : 'bg-white text-[#241044] border-nike-hairlineSoft hover:bg-purple-50'}">
+                <button type="button" onclick="switchSibling(${s.id})" class="p-2.5 rounded-xl text-left border transition-all cursor-pointer flex items-center justify-between gap-2 ${isCur ? 'bg-[#241044] text-white border-[#DEB95B] shadow-xs' : 'bg-white text-[#241044] border-nike-hairlineSoft hover:bg-purple-50'}">
                   <div>
-                    <div class="text-xs sm:text-sm font-extrabold">น้อง ${escapeHtml(s.name)}</div>
-                    <div class="text-[11px] ${isCur ? 'text-[#DEB95B]' : 'text-nike-mute'}">คงเหลือปัจจุบัน: ${r} ครั้ง</div>
+                    <div class="text-xs font-extrabold">${escapeHtml(sName)}</div>
+                    <div class="text-[10px] ${isCur ? 'text-[#DEB95B]' : 'text-nike-mute'}">${tLang('quota_remaining_label')}: ${r} ${tLang('sessions_unit')}</div>
                   </div>
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${isCur ? 'bg-[#DEB95B] text-[#241044]' : 'bg-nike-cloud text-nike-mute'}">${isCur ? '✓ เลือกอยู่' : 'แตะเลือก'}</span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isCur ? 'bg-[#DEB95B] text-[#241044]' : 'bg-nike-cloud text-nike-mute'}">${isCur ? tLang('selected_badge') : tLang('select_btn')}</span>
                 </button>
               `;
             }).join('')}
@@ -318,10 +327,17 @@ function renderParentView(matchedList) {
   try {
     const nowD = new Date(getTodayDateKey() + 'T12:00:00Z');
     const dayW = nowD.getUTCDay();
-    const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
-    const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-    const thaiYear = nowD.getUTCFullYear() + 543;
-    const formattedDate = `${thaiDays[dayW]}ที่ ${nowD.getUTCDate()} ${thaiMonths[nowD.getUTCMonth()]} ${thaiYear}`;
+    let formattedDate = '';
+    if (isEn) {
+      const enDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const enMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      formattedDate = `${enDays[dayW]}, ${nowD.getUTCDate()} ${enMonths[nowD.getUTCMonth()]} ${nowD.getUTCFullYear()}`;
+    } else {
+      const thaiDays = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+      const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+      const thaiYear = nowD.getUTCFullYear() + 543;
+      formattedDate = `${thaiDays[dayW]}ที่ ${nowD.getUTCDate()} ${thaiMonths[nowD.getUTCMonth()]} ${thaiYear}`;
+    }
 
     const pDateLabel = document.getElementById('parentTodayDateLabel');
     const headingEl = document.getElementById('parentClassStatusHeading');
@@ -335,8 +351,8 @@ function renderParentView(matchedList) {
     let scheduleNote = '';
     if (todayOverride && todayOverride.status === 'canceled') {
       const cancelReason = todayOverride.reason ? ` (${todayOverride.reason})` : '';
-      scheduleNote = `🚫 วันนี้งดคลาสการฝึกซ้อม${cancelReason}`;
-      if (headingEl) headingEl.innerText = '⚠️ วันนี้งดคลาสฝึกซ้อม (DBO Academy)';
+      scheduleNote = isEn ? `🚫 Class Canceled Today${cancelReason}` : `🚫 วันนี้งดคลาสการฝึกซ้อม${cancelReason}`;
+      if (headingEl) headingEl.innerText = isEn ? '⚠️ Class Canceled Today (DBO Academy)' : '⚠️ วันนี้งดคลาสฝึกซ้อม (DBO Academy)';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
       if (normalActions) normalActions.classList.add('hidden');
       if (noClassBox) {
@@ -345,33 +361,33 @@ function renderParentView(matchedList) {
           <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs space-y-1.5">
             <span class="font-bold flex items-center gap-1.5 text-rose-700">
               <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600"></i>
-              <span>วันนี้นัดงดคลาสการฝึกซ้อม</span>
+              <span>${isEn ? 'Class Canceled Today' : 'วันนี้นัดงดคลาสการฝึกซ้อม'}</span>
             </span>
-            <p class="leading-relaxed">${todayOverride.reason ? 'เหตุผล: ' + escapeHtml(todayOverride.reason) : 'ทางอคาเดมี่ของดการฝึกซ้อมในวันนี้ ผู้ปกครองไม่ต้องแจ้งลาครับ ขอบคุณครับ'}</p>
+            <p class="leading-relaxed">${todayOverride.reason ? (isEn ? 'Reason: ' : 'เหตุผล: ') + escapeHtml(todayOverride.reason) : (isEn ? 'The Academy has canceled today\'s training session. Parents do not need to submit leave. Thank you.' : 'ทางอคาเดมี่ของดการฝึกซ้อมในวันนี้ ผู้ปกครองไม่ต้องแจ้งลาครับ ขอบคุณครับ')}</p>
           </div>
         `;
       }
     } else if (todayOverride && todayOverride.status === 'normal') {
-      scheduleNote = 'คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์ (โค้ชยืนยันเปิดซ้อม)';
-      if (headingEl) headingEl.innerText = 'คลาสฝึกซ้อมประจำวัน (ยืนยันเปิดซ้อม)';
+      scheduleNote = isEn ? 'Regular Class 5:30 - 7:30 PM at Techawit Gym (Confirmed)' : 'คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์ (โค้ชยืนยันเปิดซ้อม)';
+      if (headingEl) headingEl.innerText = isEn ? 'Daily Training Session (Confirmed Open)' : 'คลาสฝึกซ้อมประจำวัน (ยืนยันเปิดซ้อม)';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
       if (normalActions) normalActions.classList.remove('hidden');
       if (noClassBox) noClassBox.classList.add('hidden');
     } else if (dayW === 1 || dayW === 2 || dayW === 4) {
-      scheduleNote = 'คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์';
-      if (headingEl) headingEl.innerText = 'คลาสฝึกซ้อมประจำวัน (เปิดซ้อมปกติ)';
+      scheduleNote = isEn ? 'Regular Class 5:30 - 7:30 PM at Techawit Gym' : 'คลาสปกติ 17:30 - 19:30 น. ณ ยิมเตชะวิทย์';
+      if (headingEl) headingEl.innerText = isEn ? 'Daily Training Session (Open)' : 'คลาสฝึกซ้อมประจำวัน (เปิดซ้อมปกติ)';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
       if (normalActions) normalActions.classList.remove('hidden');
       if (noClassBox) noClassBox.classList.add('hidden');
     } else if (dayW === 6) {
-      scheduleNote = 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 17:30 น. ณ ยิมเตชะวิทย์';
-      if (headingEl) headingEl.innerText = 'คลาสวันเสาร์ Coach Oat (เปิดซ้อมปกติ)';
+      scheduleNote = isEn ? 'Saturday Basic Class Coach Oat 4:00 - 5:30 PM at Techawit Gym' : 'คลาสวันเสาร์ Basic Coach Oat 16:00 - 17:30 น. ณ ยิมเตชะวิทย์';
+      if (headingEl) headingEl.innerText = isEn ? 'Saturday Class Coach Oat (Open)' : 'คลาสวันเสาร์ Coach Oat (เปิดซ้อมปกติ)';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-indigo-600';
       if (normalActions) normalActions.classList.remove('hidden');
       if (noClassBox) noClassBox.classList.add('hidden');
     } else {
-      scheduleNote = 'วันนี้ไม่มีคลาส';
-      if (headingEl) headingEl.innerText = 'วันนี้ไม่มีคลาส';
+      scheduleNote = isEn ? 'No class scheduled today' : 'วันนี้ไม่มีคลาส';
+      if (headingEl) headingEl.innerText = isEn ? 'No Class Scheduled Today' : 'วันนี้ไม่มีคลาส';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-slate-400';
       if (normalActions) normalActions.classList.add('hidden');
       if (noClassBox) noClassBox.classList.remove('hidden');
@@ -610,7 +626,9 @@ function renderParentView(matchedList) {
     history.set(dateKey, { status: mark === 'ลา' ? 'leave' : 'attending', deduction: mark === '//' ? 2 : mark === '/' ? 1 : 0 });
   }
 
-  const dateFormat = new Intl.DateTimeFormat('th-TH', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'short', year: '2-digit' });
+  const dateFormat = isEn
+    ? new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'short', year: '2-digit' })
+    : new Intl.DateTimeFormat('th-TH', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'short', year: '2-digit' });
   const dates = [...history.keys()].sort((a, b) => b.localeCompare(a));
 
   // Compute running session balance after each historical session
@@ -620,7 +638,7 @@ function renderParentView(matchedList) {
 
   const historyHeadingNameEl = document.getElementById('dash-history-student-label');
   if (historyHeadingNameEl) {
-    historyHeadingNameEl.textContent = `ของ น้อง ${student.name}`;
+    historyHeadingNameEl.textContent = `${isEn ? 'For ' : 'ของ '}${displayName}`;
   }
 
   historyTbody.innerHTML = dates.map((dateKey, idx) => {
@@ -634,11 +652,11 @@ function renderParentView(matchedList) {
     const training = getTrainingDay(new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
     const isLeave = entry.status === 'leave';
     const isParentRsvp = !isLeave && entry.updatedBy === 'parent';
-    const label = isLeave ? 'แจ้งลา' : isParentRsvp ? 'แจ้งมา' : 'มาเรียน';
+    const label = isLeave ? tLang('status_excused') : isParentRsvp ? tLang('status_rsvp') : tLang('status_present');
 
     const classTitle = entry.slot || training.title || 'คลาสปกติ';
-    const isSatClass = classTitle.includes('เสาร์');
-    const shortClass = isSatClass ? 'คลาสเสาร์' : 'คลาสปกติ';
+    const isSatClass = classTitle.includes('เสาร์') || classTitle.includes('Saturday');
+    const shortClass = isSatClass ? tLang('class_saturday') : tLang('class_regular');
     const classBadgeHtml = isSatClass
       ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 whitespace-nowrap">${shortClass}</span>`
       : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#FBF4DD] text-[#241044] border border-[#DEB95B] whitespace-nowrap">${shortClass}</span>`;
@@ -650,10 +668,10 @@ function renderParentView(matchedList) {
         : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-300 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>✓ ${label}</span></span>`;
 
     const quotaBadgeHtml = entry.deduction
-      ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-extrabold bg-rose-50 text-rose-700 border border-rose-300 whitespace-nowrap">−${entry.deduction} ครั้ง</span>`
+      ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-extrabold bg-rose-50 text-rose-700 border border-rose-300 whitespace-nowrap">−${entry.deduction} ${tLang('sessions_unit')}</span>`
       : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">0</span>`;
 
-    const balanceBadgeHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-extrabold bg-[#241044] text-[#DEB95B] whitespace-nowrap">เหลือ ${balanceAfterThisSession} ครั้ง</span>`;
+    const balanceBadgeHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-mono font-extrabold bg-[#241044] text-[#DEB95B] whitespace-nowrap">${tLang('remaining_balance_prefix')}${balanceAfterThisSession} ${tLang('sessions_unit')}</span>`;
 
     const zebraBg = idx % 2 === 0 ? 'bg-white' : 'bg-[#F6F3FA]';
     const rowAccent = isLeave
@@ -667,7 +685,7 @@ function renderParentView(matchedList) {
       <td class="px-2 py-2 text-center whitespace-nowrap">${quotaBadgeHtml}</td>
       <td class="px-2.5 py-2 text-right whitespace-nowrap">${balanceBadgeHtml}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="5" class="px-3 py-4 text-center text-nike-mute">ยังไม่มีประวัติเข้าเรียน</td></tr>';
+  }).join('') || `<tr><td colspan="5" class="px-3 py-4 text-center text-nike-mute">${tLang('no_history_records')}</td></tr>`;
 
   // Populate Athlete Profile & PDPA Summary Card inside Growth Tab
   const athleteSummaryBox = document.getElementById('dash-athlete-competition-summary');
@@ -678,31 +696,33 @@ function renderParentView(matchedList) {
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-100">
         <div>
           <h4 class="text-xs font-extrabold text-[#241044] flex items-center gap-1.5">
-            <span>🪪 ข้อมูลนักกีฬาสำหรับส่งแข่งขัน & PDPA (น้อง ${escapeHtml(student.name)})</span>
+            <i data-lucide="id-card" class="w-4 h-4 text-[#DEB95B]"></i>
+            <span>${tLang('athlete_info_heading')} (${displayName})</span>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#241044] text-[#DEB95B]">${escapeHtml(uInfo.uCategory)}</span>
           </h4>
-          <p class="text-[11px] text-slate-500 mt-0.5">ใช้ตรวจสอบรุ่นอายุแข่งขัน (U8–U18) และจัดเตรียมรายชื่อส่งรายการแข่งขัน</p>
+          <p class="text-[11px] text-slate-500 mt-0.5">${isEn ? 'Used for age category verification (U8–U18) and tournament registration roster.' : 'ใช้ตรวจสอบรุ่นอายุแข่งขัน (U8–U18) และจัดเตรียมรายชื่อส่งรายการแข่งขัน'}</p>
         </div>
-        <button type="button" onclick="openAthleteProfileModal(${student.id})" class="px-3 py-1.5 rounded-full text-xs font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] hover:bg-[#38196B] cursor-pointer self-start sm:self-auto">
-          ✏️ แก้ไขข้อมูลนักกีฬา / วันเกิด
+        <button type="button" onclick="openAthleteProfileModal(${student.id})" class="px-3 py-1.5 rounded-full text-xs font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] hover:bg-[#38196B] cursor-pointer self-start sm:self-auto flex items-center gap-1.5">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          <span>${tLang('athlete_edit_btn')}</span>
         </button>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs pt-1">
         <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-          <span class="text-[10px] text-slate-500 block">ชื่อ-นามสกุลจริง</span>
-          <strong class="text-slate-900 font-bold">${escapeHtml(student.fullName || 'รอระบุชื่อ-นามสกุลจริง')}</strong>
+          <span class="text-[10px] text-slate-500 block">${tLang('real_name_label')}</span>
+          <strong class="text-slate-900 font-bold">${escapeHtml(student.fullName || (isEn ? 'Pending full name' : 'รอระบุชื่อ-นามสกุลจริง'))}</strong>
         </div>
         <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-          <span class="text-[10px] text-slate-500 block">วันเกิด & รุ่นอายุ</span>
-          <strong class="text-slate-900 font-bold">${student.birthDate ? `${escapeHtml(student.birthDate)} (${uInfo.age} ปี • ${uInfo.uCategory})` : 'รอระบุวันเกิด'}</strong>
+          <span class="text-[10px] text-slate-500 block">${tLang('birthdate_label')}</span>
+          <strong class="text-slate-900 font-bold">${student.birthDate ? `${escapeHtml(student.birthDate)} (${uInfo.age} ${isEn ? 'yrs' : 'ปี'} • ${uInfo.uCategory})` : (isEn ? 'Pending birthdate' : 'รอระบุวันเกิด')}</strong>
         </div>
         <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-          <span class="text-[10px] text-slate-500 block">เลขบัตรประชาชน (ส่งแข่ง)</span>
-          <strong class="font-mono text-slate-900 font-bold">${typeof maskCitizenId === 'function' ? maskCitizenId(student.citizenId) : (student.citizenId || 'รอระบุ')}</strong>
+          <span class="text-[10px] text-slate-500 block">${tLang('citizen_id_label')}</span>
+          <strong class="font-mono text-slate-900 font-bold">${typeof maskCitizenId === 'function' ? maskCitizenId(student.citizenId) : (student.citizenId || (isEn ? 'Pending' : 'รอระบุ'))}</strong>
         </div>
         <div class="p-2.5 rounded-xl ${pdpaOk ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'} border">
-          <span class="text-[10px] text-slate-500 block">สถานะความยินยอม PDPA</span>
-          <strong class="${pdpaOk ? 'text-emerald-800' : 'text-amber-800'} font-bold">${pdpaOk ? '✓ ยินยอมแล้ว (มีบันทึก Log)' : 'รอยืนยัน PDPA'}</strong>
+          <span class="text-[10px] text-slate-500 block">${tLang('pdpa_status_label')}</span>
+          <strong class="${pdpaOk ? 'text-emerald-800' : 'text-amber-800'} font-bold">${pdpaOk ? tLang('pdpa_accepted') : tLang('pdpa_pending')}</strong>
         </div>
       </div>
     `;
@@ -715,7 +735,7 @@ function renderParentView(matchedList) {
     advice.hidden = !remarks.length;
     advice.querySelector('p').textContent = remarks.join(' · ');
   }
-  if (latest) latest.textContent = latestDate ? 'ซ้อมล่าสุด ' + dateFormat.format(new Date(latestDate + 'T12:00:00Z')) : 'ยังไม่มีบันทึกการซ้อม';
+  if (latest) latest.textContent = latestDate ? (tLang('last_practice_prefix') + dateFormat.format(new Date(latestDate + 'T12:00:00Z'))) : tLang('no_practice_yet');
   updateParentTodayStatusUI();
   renderLivePeers();
   switchParentCategory(activeParentCategory);

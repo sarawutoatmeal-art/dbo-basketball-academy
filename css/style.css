@@ -1822,8 +1822,9 @@ body.dbo-board-fs-active > nav.mobile-bottom-nav {
 }
 
 .dbo-board-fullscreen .dbo-court-stage[data-court-mode="half"] {
+  width: 100vw !important;
+  max-width: 100vw !important;
   max-height: calc(100dvh - 52px) !important;
-  max-width: min(100vw, calc((100dvh - 52px) * 600 / 560)) !important;
   border-radius: 0 !important;
 }
 
@@ -1844,8 +1845,10 @@ body.dbo-board-fs-active > nav.mobile-bottom-nav {
 }
 
 .dbo-court-stage[data-court-mode="half"] {
+  width: 100% !important;
+  max-width: 100% !important;
   height: 100%;
-  aspect-ratio: 600 / 560;
+  aspect-ratio: 940 / 560;
 }
 
 /* Floating quick tactical actions overlay */

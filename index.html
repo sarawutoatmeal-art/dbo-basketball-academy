@@ -343,9 +343,10 @@
       <!-- STATE B: PARENT DASHBOARD (WHEN LOGGED IN) -->
       <div id="parent-dashboard" class="hidden space-y-3.5">
         <div class="flex items-center justify-between gap-2 flex-wrap">
-          <h1 class="workspace-heading">ข้อมูลนักเรียน</h1>
+          <h1 class="workspace-heading" data-i18n="student_info_heading">ข้อมูลนักเรียน</h1>
           <button type="button" onclick="openAthleteProfileModal(loggedInStudent ? loggedInStudent.id : null)" class="px-3 py-1.5 rounded-full text-xs font-bold bg-[#FBF4DD] text-[#241044] border border-[#DEB95B] hover:bg-[#DEB95B] flex items-center gap-1.5 cursor-pointer shadow-2xs">
-            <span>🏅 ข้อมูลนักกีฬา / รุ่นอายุแข่งขัน (U)</span>
+            <i data-lucide="award" class="w-4 h-4 text-[#DEB95B]"></i>
+            <span data-i18n="athlete_modal_btn">ข้อมูลนักกีฬา / รุ่นอายุแข่งขัน (U)</span>
           </button>
         </div>
 
@@ -525,10 +526,10 @@
             <div class="p-3.5 border-b border-slate-100 bg-[#241044] text-white flex items-center justify-between gap-2 flex-wrap">
               <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
                 <i data-lucide="clipboard-list" class="w-4 h-4 text-[#DEB95B]"></i>
-                <span>บันทึกการเช็คชื่อเข้าฝึกซ้อม</span>
+                <span data-i18n="history_heading">บันทึกการเช็คชื่อเข้าฝึกซ้อม</span>
                 <span id="dash-history-student-label" class="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-[#DEB95B] text-[#241044]"></span>
               </h4>
-              <span class="text-[11px] text-[#DEB95B] font-mono">แสดง 1 บรรทัดต่อ 1 วัน • เรียลไทม์</span>
+              <span class="text-[11px] text-[#DEB95B] font-mono" data-i18n="history_subtitle">แสดง 1 บรรทัดต่อ 1 วัน • เรียลไทม์</span>
             </div>
 
             <div class="overflow-x-auto">
@@ -1426,22 +1427,9 @@
               <ul class="calendar-legend flex flex-wrap items-center gap-3 text-xs" aria-label="ประเภทคลาสในปฏิทิน">
                 <li class="inline-flex items-center gap-1.5"><span class="calendar-date-dot bg-amber-500" aria-hidden="true"></span><span><strong>คลาสปกติ</strong> (จ./อ./พฤ. 17:30–19:30)</span></li>
                 <li class="inline-flex items-center gap-1.5"><span class="calendar-date-dot bg-indigo-600" aria-hidden="true"></span><span><strong>คลาสวันเสาร์</strong> (16:00–17:30)</span></li>
-                <li class="inline-flex items-center gap-1.5"><span class="calendar-date-dot bg-rose-500" aria-hidden="true"></span><span><strong>งดคลาส</strong></span></li>
-                <li class="inline-flex items-center gap-1.5"><span class="calendar-date-dot bg-purple-600" aria-hidden="true"></span><span><strong>ไพรเวท/พิเศษ</strong></span></li>
+                <li class="inline-flex items-center gap-1.5"><span class="calendar-date-dot bg-rose-500" aria-hidden="true"></span><span data-i18n="cal_legend_canceled"><strong>งดคลาส</strong></span></li>
+                <li class="inline-flex items-center gap-1.5"><span class="calendar-date-dot bg-purple-600" aria-hidden="true"></span><span data-i18n="cal_legend_private"><strong>ไพรเวท/พิเศษ</strong></span></li>
               </ul>
-
-              <div class="flex items-center gap-1.5 self-end sm:self-auto">
-                <button type="button" id="btnSyncGCal" onclick="syncGoogleCalendarData()" class="btn-touch px-3 py-1 rounded-full text-[11px] font-semibold bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft flex items-center gap-1 transition active:scale-95 cursor-pointer">
-                  <span id="iconSyncGCalWrapper" class="inline-flex items-center justify-center">
-                    <i data-lucide="refresh-cw" id="iconSyncGCal" class="w-3 h-3 text-nike-ink"></i>
-                  </span>
-                  <span>ซิงค์ปฏิทิน</span>
-                </button>
-                <a href="https://calendar.google.com/calendar/u/0/r/week" target="_blank" rel="noopener noreferrer" class="btn-touch px-3 py-1 rounded-full text-[11px] font-semibold bg-nike-ink hover:bg-black text-white flex items-center gap-1 transition active:scale-95 shadow-none">
-                  <span>Google Calendar</span>
-                  <i data-lucide="external-link" class="w-3 h-3 text-neutral-300"></i>
-                </a>
-              </div>
             </div>
           </div>
 
@@ -1870,7 +1858,7 @@
               ↔ เต็มสนาม (iPad แนวนอน)
             </button>
             <button type="button" id="btnCourtMode-half" onclick="setCoachBoardCourtMode('half')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20 cursor-pointer">
-              ครึ่งสนาม (Half)
+              <span data-i18n="board_mode_half">ครึ่งสนาม 3x3 (แนวนอนเต็มจอ)</span>
             </button>
             <button type="button" id="btnCoachBoardFullscreen" onclick="toggleCoachBoardFullscreen()" class="px-3 py-1.5 rounded-full text-xs font-extrabold bg-[#DEB95B] text-[#241044] hover:bg-[#CAA044] flex items-center gap-1 cursor-pointer shadow-sm">
               <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
@@ -1884,36 +1872,40 @@
           <div class="flex items-center justify-between gap-1.5 flex-wrap">
             <!-- Core Drawing & Drag Tools -->
             <div class="flex items-center gap-1.5 flex-wrap">
-              <button type="button" id="btnBoardTool-move" onclick="setCoachBoardTool('move')" aria-pressed="true" class="dbo-tool-btn active flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-[#241044] text-[#DEB95B] ring-2 ring-[#DEB95B] cursor-pointer">
-                <span>🖐️</span><span>ขยับหมาก</span>
+              <button type="button" id="btnBoardTool-move" onclick="setCoachBoardTool('move')" aria-pressed="true" class="dbo-tool-btn active flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-[#241044] text-[#DEB95B] ring-2 ring-[#DEB95B] cursor-pointer">
+                <i data-lucide="hand" class="w-3.5 h-3.5 text-[#DEB95B]"></i><span data-i18n="board_tool_move">ขยับหมาก</span>
               </button>
-              <button type="button" id="btnBoardTool-arrow" onclick="setCoachBoardTool('arrow')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
-                <span>↗️</span><span>ลูกศรวิ่ง/ส่ง</span>
+              <button type="button" id="btnBoardTool-arrow" onclick="setCoachBoardTool('arrow')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-blue-600"></i><span data-i18n="board_tool_arrow">ลูกศรวิ่ง/ส่ง</span>
               </button>
-              <button type="button" id="btnBoardTool-dribble" onclick="setCoachBoardTool('dribble')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
-                <span>〰️</span><span>เลี้ยงบอล</span>
+              <button type="button" id="btnBoardTool-dribble" onclick="setCoachBoardTool('dribble')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+                <i data-lucide="activity" class="w-3.5 h-3.5 text-amber-600"></i><span data-i18n="board_tool_dribble">เลี้ยงบอล</span>
               </button>
-              <button type="button" id="btnBoardTool-screen" onclick="setCoachBoardTool('screen')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
-                <span>⊣</span><span>สกรีน</span>
+              <button type="button" id="btnBoardTool-screen" onclick="setCoachBoardTool('screen')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+                <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-600"></i><span data-i18n="board_tool_screen">สกรีน</span>
               </button>
-              <button type="button" id="btnBoardTool-pen" onclick="setCoachBoardTool('pen')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
-                <span>✏️</span><span>วาดอิสระ</span>
+              <button type="button" id="btnBoardTool-pen" onclick="setCoachBoardTool('pen')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+                <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-purple-600"></i><span data-i18n="board_tool_pen">วาดอิสระ</span>
               </button>
             </div>
 
             <!-- Quick Undo / Clear / Reset -->
             <div class="flex items-center gap-1.5 flex-wrap">
-              <button type="button" onclick="undoCoachBoardDrawing()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-purple-100 text-nike-ink border border-nike-hairlineSoft cursor-pointer">
-                ↩ ย้อนกลับ
+              <button type="button" onclick="undoCoachBoardDrawing()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-purple-100 text-nike-ink border border-nike-hairlineSoft cursor-pointer flex items-center gap-1">
+                <i data-lucide="undo-2" class="w-3.5 h-3.5"></i>
+                <span data-i18n="board_undo">ย้อนกลับ</span>
               </button>
-              <button type="button" onclick="clearCoachBoardDrawings()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-rose-100 text-rose-700 border border-nike-hairlineSoft cursor-pointer">
-                🧹 ล้างเส้น
+              <button type="button" onclick="clearCoachBoardDrawings()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-rose-100 text-rose-700 border border-nike-hairlineSoft cursor-pointer flex items-center gap-1">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
+                <span data-i18n="board_clear">ล้างเส้น</span>
               </button>
-              <button type="button" onclick="addCoachBoardCone()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-amber-100 text-amber-950 border border-amber-300 hover:bg-amber-200 cursor-pointer">
-                + กรวย 🔺
+              <button type="button" onclick="addCoachBoardCone()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-amber-100 text-amber-950 border border-amber-300 hover:bg-amber-200 cursor-pointer flex items-center gap-1">
+                <i data-lucide="triangle" class="w-3.5 h-3.5 text-amber-700"></i>
+                <span data-i18n="board_add_cone">+ กรวย</span>
               </button>
-              <button type="button" onclick="resetCoachBoardAll()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft cursor-pointer">
-                รีเซ็ต
+              <button type="button" onclick="resetCoachBoardAll()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft cursor-pointer flex items-center gap-1">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <span data-i18n="board_reset">รีเซ็ต</span>
               </button>
             </div>
           </div>
@@ -1925,23 +1917,27 @@
               <button type="button" id="btnToggleBoardDefense" onclick="toggleCoachBoardDefense()" class="px-3 py-1 rounded-full text-xs font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] flex items-center gap-1 cursor-pointer">
                 <span>X1-X5 (ทองแชมเปี้ยน DBO)</span>
               </button>
-              <span class="text-[11px] font-bold text-nike-mute">เปลี่ยนสีหมาก X:</span>
+              <span class="text-[11px] font-bold text-nike-mute" data-i18n="board_change_def_color">เปลี่ยนสีหมาก X:</span>
               <div id="quickDefenseColorBar" class="flex items-center gap-1.5"></div>
             </div>
 
             <!-- Collapsible Drawer Triggers (Colors, Presets, Lineup, Saved Plays) -->
             <div class="flex items-center gap-1.5 flex-wrap">
-              <button type="button" id="btnBoardDrawer-colors" onclick="toggleCoachBoardDrawer('colors')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-purple-100 cursor-pointer">
-                🎨 สีหมาก & สีเส้น
+              <button type="button" id="btnBoardDrawer-colors" onclick="toggleCoachBoardDrawer('colors')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-purple-100 cursor-pointer flex items-center gap-1">
+                <i data-lucide="palette" class="w-3.5 h-3.5 text-[#DEB95B]"></i>
+                <span data-i18n="board_drawer_colors">สีหมาก & สีเส้น</span>
               </button>
-              <button type="button" id="btnBoardDrawer-presets" onclick="toggleCoachBoardDrawer('presets')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-purple-100 cursor-pointer">
-                📋 แผนสำเร็จรูป
+              <button type="button" id="btnBoardDrawer-presets" onclick="toggleCoachBoardDrawer('presets')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-purple-100 cursor-pointer flex items-center gap-1">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-[#DEB95B]"></i>
+                <span data-i18n="board_drawer_presets">แผนสำเร็จรูป</span>
               </button>
-              <button type="button" id="btnBoardDrawer-lineup" onclick="toggleCoachBoardDrawer('lineup')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-purple-100 cursor-pointer">
-                👦 ชื่อนักเรียน DBO (1–5)
+              <button type="button" id="btnBoardDrawer-lineup" onclick="toggleCoachBoardDrawer('lineup')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-purple-100 cursor-pointer flex items-center gap-1">
+                <i data-lucide="users" class="w-3.5 h-3.5 text-[#DEB95B]"></i>
+                <span data-i18n="board_drawer_lineup">ชื่อนักเรียน DBO (1–5)</span>
               </button>
-              <button type="button" id="btnBoardDrawer-saves" onclick="toggleCoachBoardDrawer('saves')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-purple-100 cursor-pointer">
-                💾 บันทึกแผน
+              <button type="button" id="btnBoardDrawer-saves" onclick="toggleCoachBoardDrawer('saves')" class="px-2.5 py-1 rounded-full text-xs font-bold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft hover:bg-purple-100 cursor-pointer flex items-center gap-1">
+                <i data-lucide="save" class="w-3.5 h-3.5 text-[#DEB95B]"></i>
+                <span data-i18n="board_drawer_saves">บันทึกแผน</span>
               </button>
             </div>
           </div>
@@ -2125,32 +2121,32 @@
             </svg>
 
             <!-- ========================================================================= -->
-            <!-- 3. HALF COURT DBO SVG (Zoomed Tactics + Die-Cut DBO Gold Crest)          -->
+            <!-- 3. HALF COURT 3X3 DBO SVG (Wide Landscape Edge-to-Edge Without Side Gaps)-->
             <!-- ========================================================================= -->
-            <svg id="dboHalfCourtSvg" viewBox="0 0 600 560" class="hidden w-full h-full block pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="0" y="0" width="600" height="560" fill="#EA8E2C"/>
-              <text x="300" y="25" text-anchor="middle" fill="#FFFFFF" font-family="Kanit, sans-serif" font-weight="900" font-size="16" letter-spacing="4" opacity="0.95">DBO BASKETBALL ACADEMY • HALF COURT</text>
+            <svg id="dboHalfCourtSvg" viewBox="0 0 940 560" class="hidden w-full h-full block pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="940" height="560" fill="#EA8E2C"/>
+              <text x="470" y="24" text-anchor="middle" fill="#FFFFFF" font-family="Kanit, sans-serif" font-weight="900" font-size="15" letter-spacing="4" opacity="0.95">DBO BASKETBALL ACADEMY • 3X3 HALF COURT</text>
 
               <!-- Hardwood Surface -->
-              <rect x="36" y="38" width="528" height="484" rx="4" fill="url(#dboHardwoodPattern)" stroke="#FFFFFF" stroke-width="4"/>
+              <rect x="28" y="34" width="884" height="492" rx="4" fill="url(#dboHardwoodPatternHoriz)" stroke="#FFFFFF" stroke-width="4"/>
 
               <!-- Key Area (Steel Blue) -->
-              <rect x="200" y="38" width="200" height="215" fill="#3B82A6" stroke="#FFFFFF" stroke-width="3.5"/>
-              <path d="M 232 253 A 68 68 0 0 0 368 253" fill="none" stroke="#FFFFFF" stroke-width="3.5"/>
-              <path d="M 232 253 A 68 68 0 0 1 368 253" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="8 8"/>
+              <rect x="380" y="34" width="180" height="190" fill="#3B82A6" stroke="#FFFFFF" stroke-width="3.5"/>
+              <path d="M 410 224 A 60 60 0 0 0 530 224" fill="none" stroke="#FFFFFF" stroke-width="3.5"/>
+              <path d="M 410 224 A 60 60 0 0 1 530 224" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="8 8"/>
 
-              <!-- 3-Point Arc -->
-              <path d="M 72 38 L 72 162 A 236 236 0 0 0 528 162 L 528 38" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+              <!-- 3-Point Arc (Wide FIBA 3x3 Arc) -->
+              <path d="M 120 34 L 120 145 A 350 350 0 0 0 820 145 L 820 34" fill="none" stroke="#FFFFFF" stroke-width="4"/>
 
               <!-- Restricted Arc & Basket -->
-              <path d="M 255 86 A 45 45 0 0 0 345 86" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
-              <line x1="262" y1="70" x2="338" y2="70" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
-              <circle cx="300" cy="86" r="12" fill="none" stroke="#FFFFFF" stroke-width="3.5"/>
+              <path d="M 430 76 A 40 40 0 0 0 510 76" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+              <line x1="435" y1="64" x2="505" y2="64" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
+              <circle cx="470" cy="78" r="11" fill="none" stroke="#FFFFFF" stroke-width="3.5"/>
 
               <!-- Bottom Mid-Court Circle & Die-Cut DBO Gold Crest -->
-              <circle cx="300" cy="520" r="64" fill="#3B82A6" fill-opacity="0.25" stroke="#FFFFFF" stroke-width="3.5"/>
-              <circle cx="300" cy="520" r="22" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
-              <image href="assets/images/dbo-court-crest.png?v=2.0" x="180" y="425" width="240" height="175" preserveAspectRatio="xMidYMid meet" style="filter: drop-shadow(0 5px 8px rgba(13,4,28,0.65));"/>
+              <circle cx="470" cy="526" r="68" fill="#3B82A6" fill-opacity="0.25" stroke="#FFFFFF" stroke-width="3.5"/>
+              <circle cx="470" cy="526" r="22" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+              <image href="assets/images/dbo-court-crest.png?v=2.0" x="335" y="428" width="270" height="196" preserveAspectRatio="xMidYMid meet" style="filter: drop-shadow(0 5px 8px rgba(13,4,28,0.65));"/>
             </svg>
 
             <!-- 4. HTML5 Drawing Canvas Overlay -->

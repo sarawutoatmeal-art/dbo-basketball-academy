@@ -1,12 +1,62 @@
 // ========================================================
-// DBO Basketball Academy - Bilingual (TH/EN), PDPA Consent,
+// DBO Basketball Academy - Comprehensive Bilingual (TH/EN), PDPA Consent,
 // Athlete U-Age Competition Classifier, Multi-Device Logout & Slip Receipt
 // ========================================================
 
 let currentAppLang = localStorage.getItem('dbo_app_lang_v1') || 'th';
 
+const DBO_NICKNAMES_EN = {
+  'บอสตัน': 'Boston',
+  'ฮาเด้น': 'Harden',
+  'ต้นพุด': 'Tonphut',
+  'ซับ': 'Sub',
+  'ไทม์': 'Time',
+  'พัช': 'Patch',
+  'แอร์บัส': 'Airbus',
+  'วินแฟลค': 'Winflag',
+  'ไวล์แฟรงค์': 'Wildfrank',
+  'ดลย์': 'Don',
+  'อคิณ': 'Akin',
+  'ชัทเตอร์': 'Shutter',
+  'ไม้เอก': 'Mai-ek',
+  'จัสติน': 'Justin',
+  'พีต้า': 'Peta',
+  'มาร์ค': 'Mark',
+  'แอร์เมส': 'Hermes',
+  'มาตังค์': 'Matang',
+  'มันตา': 'Manta',
+  'ข้าวตั้ง': 'Khaotang',
+  'สรา': 'Sara',
+  'เป็นหนึ่ง': 'Pennueng',
+  'อินธัช': 'Inthach',
+  'กั๊ตจัง': 'Gatchan',
+  'ชิต้า': 'Cheetah',
+  'เจ้านาย': 'Jaonai',
+  'ภีม': 'Pheme',
+  'เดล': 'Dale',
+  'คิน': 'Kin',
+  'คุณ': 'Khun',
+  'คุณคูณ': 'Khunkoon',
+  'เปรม': 'Prem',
+  'ก๊วยเจ๋ง': 'Guojing',
+  'ปกป้อง': 'Pokpong',
+  'เจคอบ': 'Jacob',
+  'ซิดนีย์': 'Sydney',
+  'ภีมมี่': 'Pheemmy',
+  'เต็งหนึ่ง': 'Tengnueng',
+  'เจ้าขุน': 'Jaokhun'
+};
+
+function getStudentDisplayName(name, isEn) {
+  if (!name) return '';
+  const clean = String(name).replace(/^น้อง\s*/, '').trim();
+  if (!isEn) return `น้อง ${clean}`;
+  return DBO_NICKNAMES_EN[clean] || clean;
+}
+
 const DBO_I18N_DICT = {
   th: {
+    // Nav
     nav_home_login: 'เข้าสู่ระบบ',
     nav_home_coach: 'หน้าหลัก',
     nav_calendar: 'ปฏิทิน',
@@ -16,10 +66,16 @@ const DBO_I18N_DICT = {
     nav_register: 'สมัครเรียนใหม่',
     nav_coach_board: 'Coach Board',
     nav_coach_panel: 'แผงโค้ช',
+
+    // Header & Status
+    header_demo_badge: 'จำลองระบบเสมือนจริง (Demo Playground)',
     header_notify_on: 'แจ้งเตือนเปิดอยู่',
     header_notify_enable: 'เปิดรับแจ้งเตือน',
     header_install: 'ติดตั้งแอป',
     header_online: 'ออนไลน์',
+    header_offline: 'ออฟไลน์',
+
+    // Login
     login_title: 'เข้าสู่ระบบผู้ปกครอง & โค้ช',
     login_subtitle: 'กรอกเบอร์โทรศัพท์มือถือที่ผูกกับนักเรียน',
     login_phone_label: 'เบอร์โทรศัพท์มือถือ',
@@ -28,25 +84,149 @@ const DBO_I18N_DICT = {
     login_today_btn: 'ดูตารางและคลาสวันนี้',
     login_new_prompt: 'สนใจสมัครเรียนบาสเกตบอลใหม่? ',
     login_new_link: 'กดสมัครเรียนที่นี่',
+
+    // Student Dashboard & Quota
     student_info_heading: 'ข้อมูลนักเรียน',
+    athlete_modal_btn: 'ข้อมูลนักกีฬา / รุ่นอายุแข่งขัน (U)',
     remaining_quota_label: 'สิทธิ์คงเหลือ',
+    ready_for_practice: 'พร้อมเข้าฝึกซ้อม',
+    quota_exhausted: 'เรียนครบจำนวนครั้งแล้ว',
+    sessions_unit: 'ครั้ง',
     btn_renew_course: 'ต่อคอร์ส',
+    course_regular_10: 'คอร์สปกติ 10 ครั้ง',
+    course_saturday_4: 'คอร์สวันเสาร์ 4 ครั้ง',
+    course_both: 'คอร์สปกติ 10 + เสาร์ 4',
+    course_monthly: 'แพ็กเกจรายเดือนสม่ำเสมอ',
+    parent_phone_prefix: 'ผปค: ',
+    last_practice_prefix: 'ซ้อมล่าสุด ',
+    no_practice_yet: 'ยังไม่มีบันทึกการซ้อม',
+
+    // Family / Sibling
+    family_account_label: 'สลับดูข้อมูลพี่น้อง (บัญชีครอบครัว)',
+    family_separate_desc: 'สิทธิ์แยกตามนักเรียน',
+    sibling_count_badge: 'พี่น้อง',
+    quota_remaining_child: 'สิทธิ์คงเหลือ: ',
+    btn_renew_for_prefix: 'ต่อคอร์ส ',
+    btn_attend_prefix: 'ยืนยันมาเรียน',
+    btn_leave_prefix: 'แจ้งลาเรียน',
+    showing_history_for: 'กำลังดูประวัติ',
+    tap_to_view_history: 'กดดูประวัติ',
+    quota_remaining_label: 'คงเหลือ',
+    selected_badge: 'กำลังเลือก',
+    select_btn: 'เลือก',
+    btn_athlete_info: 'ข้อมูลนักกีฬา',
+
+    // Today's Practice Card
+    daily_practice_heading: 'คลาสฝึกซ้อมประจำวัน',
+    status_unspecified: 'ยังไม่ได้ระบุสถานะ',
+    status_attending: '✓ มาเรียนวันนี้',
+    status_leave: 'แจ้งลา',
     btn_attend_today: 'แจ้งเข้าเรียนวันนี้',
     btn_leave_today: 'แจ้งขอลาเรียน',
+    no_class_today: 'วันนี้ไม่มีคลาส',
+    class_canceled: 'วันนี้นัดงดคลาสการฝึกซ้อม',
+
+    // Category Tabs
     cat_history: 'ประวัติเข้าเรียน',
-    cat_growth: 'พัฒนาการ & ข้อมูลนักกีฬา',
-    cat_classmates: 'เพื่อนร่วมคลาสวันนี้',
-    cat_schedule: 'ตารางซ้อมประจำสัปดาห์',
-    history_heading: 'บันทึกการเช็คชื่อเข้าฝึกซ้อม (แสดงยอดคงเหลือรายครั้ง)',
+    cat_growth: 'พัฒนาการ & สมรรถภาพ',
+    cat_classmates: 'เพื่อนร่วมคลาส',
+    cat_schedule: 'ตารางซ้อม',
+
+    // History Table
+    history_heading: 'บันทึกการเช็คชื่อเข้าฝึกซ้อม',
+    history_subtitle: 'แสดง 1 บรรทัดต่อ 1 วัน • เรียลไทม์',
     col_date: 'วันที่ซ้อม',
     col_class: 'คลาส',
     col_status: 'สถานะ',
     col_deduct: 'หักสิทธิ์',
     col_balance: 'คงเหลือ',
+    status_present: 'มาเรียน',
+    status_excused: 'แจ้งลา',
+    status_rsvp: 'แจ้งมา',
+    class_regular: 'คลาสปกติ',
+    class_saturday: 'คลาสเสาร์',
+    no_history_records: 'ยังไม่มีประวัติเข้าเรียน',
+    remaining_balance_prefix: 'เหลือ ',
+    renew_notice_expired: 'เรียนครบจำนวนครั้งแล้ว กรุณาต่อคอร์สใหม่',
+    renew_notice_ok: 'ไม่มีวันตัดรอบ • เรียนให้ครบจำนวนครั้ง (จ./อ./พฤ.)',
+
+    // Growth & Fitness Tab
+    athlete_info_heading: 'ข้อมูลนักกีฬาสำหรับส่งแข่งขัน & PDPA',
+    athlete_edit_btn: 'แก้ไขข้อมูลนักกีฬา / วันเกิด',
+    real_name_label: 'ชื่อ-นามสกุลจริง',
+    birthdate_label: 'วันเกิด & รุ่นอายุ',
+    citizen_id_label: 'เลขบัตรประชาชน (ส่งแข่ง)',
+    pdpa_status_label: 'สถานะความยินยอม PDPA',
+    pdpa_accepted: '✓ ยินยอมแล้ว (มีบันทึก Log)',
+    pdpa_pending: 'รอยืนยัน PDPA',
+    coach_oat_title: 'โค้ชโอ๊ต (Head Coach)',
+    coach_oak_title: 'โค้ชโอ๊ค (Head Coach)',
+    oat_specialty: 'บาสเกตบอล & Game IQ',
+    oak_specialty: 'สมรรถภาพ & Footwork',
+    eval_pending_oat: 'อยู่ระหว่างการประเมินพัฒนาการโดยโค้ชโอ๊ต',
+    eval_pending_oak: 'อยู่ระหว่างการประเมินพัฒนาการโดยโค้ชโอ๊ค',
+    sports_science_heading: 'การทดสอบสมรรถภาพทางกาย (Sports Science)',
+    vjump_title: 'Vertical Jump (กระโดดสูง)',
+    longjump_title: 'Long Jump (กระโดดไกล)',
+    cm_unit: 'ซม.',
+    pending_test: 'รอทดสอบ',
+
+    // Classmates Tab
+    classmates_attending_title: 'เพื่อนร่วมคลาสที่มาเรียนวันนี้',
+    classmates_leave_title: 'เพื่อนร่วมคลาสที่แจ้งลาวันนี้',
+    no_classmates_attending: 'ยังไม่มีเพื่อนร่วมคลาสยืนยันมาเรียน',
+    no_classmates_leave: 'ไม่มีเพื่อนร่วมคลาสแจ้งลา',
+
+    // Calendar & Curriculum
+    curriculum_heading: 'หัวข้อฝึกซ้อมประจำสัปดาห์ (Weekly Training Curriculum)',
+    view_curriculum_btn: 'ดูหัวข้อฝึกซ้อม',
+    hide_curriculum_btn: 'ซ่อนหัวข้อ',
+    training_topic_label: 'หัวข้อซ้อม:',
+    coaches_label: 'โค้ชผู้ฝึกสอน:',
+    time_prefix: 'เวลา: ',
+    gym_techawit: 'โรงยิม รร.เตชะวิทย์',
+    cal_btn_weekly: 'รายสัปดาห์',
+    cal_btn_monthly: 'รายเดือน',
+    cal_today_btn: 'วันนี้',
+    cal_legend_regular: 'คลาสปกติ (จ./อ./พฤ. 17:30–19:30)',
+    cal_legend_saturday: 'คลาสวันเสาร์ (16:00–17:30)',
+    cal_legend_canceled: 'งดคลาส',
+    cal_legend_private: 'ไพรเวท/พิเศษ',
+
+    // Coach Board
+    board_mode_full: 'เต็มสนาม (Full Court)',
+    board_mode_half: 'ครึ่งสนาม 3x3 (แนวนอนเต็มจอ)',
+    board_tool_move: 'ขยับหมาก',
+    board_tool_arrow: 'ลูกศรวิ่ง/ส่ง',
+    board_tool_line_pass: 'ส่งบอล (เส้นประ)',
+    board_tool_dribble: 'เลี้ยงบอล',
+    board_tool_line_dribble: 'เคลื่อนที่/วิ่ง',
+    board_tool_screen: 'สกรีน',
+    board_tool_line_screen: 'สกรีน (เส้นตัว T)',
+    board_tool_pen: 'วาดอิสระ',
+    board_undo: 'ย้อนกลับ',
+    board_tool_undo: 'ย้อนกลับ',
+    board_clear: 'ล้างเส้น',
+    board_tool_clear: 'ล้างเส้นวาด',
+    board_reset: 'รีเซ็ต',
+    board_tool_reset: 'รีเซ็ตตำแหน่ง',
+    board_add_cone: '+ กรวย',
+    board_tool_cone: 'เพิ่มกรวยฝึก',
+    board_tool_export: 'บันทึกรูปแผน',
+    board_change_def_color: 'เปลี่ยนสีหมาก X:',
+    board_drawer_colors: 'สีหมาก & สีเส้น',
+    board_drawer_presets: 'แผนสำเร็จรูป',
+    board_drawer_lineup: 'ชื่อนักเรียน (1–5)',
+    board_drawer_saves: 'บันทึกแผน',
+    board_tokens_o: 'ทีมบุก (น้ำเงิน)',
+    board_tokens_d: 'ทีมรับ (ส้ม)',
+
+    // Auth & Logout
     logout_this_device: 'ออกจากระบบเครื่องนี้',
     logout_all_devices: 'ออกจากระบบทุกเครื่อง (Logout All Devices)'
   },
   en: {
+    // Nav
     nav_home_login: 'Sign In',
     nav_home_coach: 'Home',
     nav_calendar: 'Calendar',
@@ -56,33 +236,162 @@ const DBO_I18N_DICT = {
     nav_register: 'Enroll New',
     nav_coach_board: 'Coach Board',
     nav_coach_panel: 'Coach Admin',
+
+    // Header & Status
+    header_demo_badge: 'Simulated Sandbox (Demo Playground)',
     header_notify_on: 'Alerts Active',
     header_notify_enable: 'Enable Alerts',
     header_install: 'Install App',
     header_online: 'Online',
+    header_offline: 'Offline',
+
+    // Login
     login_title: 'Parent & Coach Sign In',
-    login_subtitle: 'Enter the mobile number linked to your athlete',
+    login_subtitle: 'Enter mobile number linked to athlete account',
     login_phone_label: 'Mobile Phone Number',
     login_btn: 'Sign In',
     login_link_btn: 'Link Phone to Student (Requires Verification)',
     login_today_btn: "View Today's Class Board",
     login_new_prompt: 'New to DBO Basketball Academy? ',
-    login_new_link: 'Enroll New Student',
-    student_info_heading: 'Athlete Profile & Cards',
+    login_new_link: 'Enroll New Student Here',
+
+    // Student Dashboard & Quota
+    student_info_heading: 'Athlete Profile & Dashboard',
+    athlete_modal_btn: 'Athlete Profile / Age Group (U)',
     remaining_quota_label: 'REMAINING SESSIONS',
+    ready_for_practice: 'Ready for Practice',
+    quota_exhausted: 'Course completed. Please renew.',
+    sessions_unit: 'Sessions',
     btn_renew_course: 'Renew Course',
-    btn_attend_today: 'Confirm Attending',
-    btn_leave_today: 'Request Leave',
-    cat_history: 'Attendance Log',
-    cat_growth: 'Growth & Athlete Info',
-    cat_classmates: "Today's Classmates",
-    cat_schedule: 'Weekly Schedule',
-    history_heading: 'Attendance & Session Balance History',
+    course_regular_10: 'Regular Course (10 Sessions)',
+    course_saturday_4: 'Saturday Course (4 Sessions)',
+    course_both: 'Regular 10 + Saturday 4',
+    course_monthly: 'Monthly Membership Package',
+    parent_phone_prefix: 'Parent: ',
+    last_practice_prefix: 'Last practice: ',
+    no_practice_yet: 'No practice records yet',
+
+    // Family / Sibling
+    family_account_label: 'Switch Sibling (Family Account)',
+    family_separate_desc: 'Quotas tracked separately per athlete',
+    sibling_count_badge: 'Siblings',
+    quota_remaining_child: 'Remaining: ',
+    btn_renew_for_prefix: 'Renew for ',
+    btn_attend_prefix: 'Confirm Attend',
+    btn_leave_prefix: 'Request Leave',
+    showing_history_for: 'Viewing records for',
+    tap_to_view_history: 'View records for',
+    quota_remaining_label: 'Remaining',
+    selected_badge: 'Selected',
+    select_btn: 'Select',
+    btn_athlete_info: 'Athlete Profile',
+
+    // Today's Practice Card
+    daily_practice_heading: 'Daily Training Session',
+    status_unspecified: 'Status Not Specified',
+    status_attending: '✓ Attending Today',
+    status_leave: 'Excused / Leave',
+    btn_attend_today: 'Confirm Attending Today',
+    btn_leave_today: 'Request Leave / Absence',
+    no_class_today: 'No Class Scheduled Today',
+    class_canceled: 'Class Canceled Today',
+
+    // Category Tabs
+    cat_history: 'Attendance History',
+    cat_growth: 'Growth & Fitness',
+    cat_classmates: 'Classmates',
+    cat_schedule: 'Schedule',
+
+    // History Table
+    history_heading: 'Attendance Log & Quota History',
+    history_subtitle: '1 line per day • Real-time',
     col_date: 'Date',
     col_class: 'Class',
     col_status: 'Status',
     col_deduct: 'Used',
     col_balance: 'Balance',
+    status_present: 'Present',
+    status_excused: 'Excused',
+    status_rsvp: 'RSVP',
+    class_regular: 'Regular Class',
+    class_saturday: 'Saturday Class',
+    no_history_records: 'No attendance records yet',
+    remaining_balance_prefix: 'Bal: ',
+    renew_notice_expired: 'Course completed. Please renew course.',
+    renew_notice_ok: 'No expiration date • Complete all sessions (Mon/Tue/Thu)',
+
+    // Growth & Fitness Tab
+    athlete_info_heading: 'Athlete Tournament Profile & PDPA',
+    athlete_edit_btn: 'Edit Athlete Info / Birthday',
+    real_name_label: 'Full Legal Name',
+    birthdate_label: 'Birth Date & Age Group',
+    citizen_id_label: 'Citizen ID / Passport',
+    pdpa_status_label: 'PDPA Consent Status',
+    pdpa_accepted: '✓ Consented (Audit Logged)',
+    pdpa_pending: 'Pending Consent',
+    coach_oat_title: 'Coach Oat (Head Coach)',
+    coach_oak_title: 'Coach Oak (Head Coach)',
+    oat_specialty: 'Basketball & Game IQ',
+    oak_specialty: 'Fitness & Footwork',
+    eval_pending_oat: 'Currently undergoing assessment by Coach Oat',
+    eval_pending_oak: 'Currently undergoing assessment by Coach Oak',
+    sports_science_heading: 'Physical Fitness Assessment (Sports Science)',
+    vjump_title: 'Vertical Jump',
+    longjump_title: 'Long Jump',
+    cm_unit: 'cm',
+    pending_test: 'Pending Test',
+
+    // Classmates Tab
+    classmates_attending_title: 'Classmates Attending Today',
+    classmates_leave_title: 'Classmates on Leave Today',
+    no_classmates_attending: 'No classmates confirmed attending yet',
+    no_classmates_leave: 'No classmates on leave today',
+
+    // Calendar & Curriculum
+    curriculum_heading: 'Weekly Training Curriculum',
+    view_curriculum_btn: 'View Drill Topics',
+    hide_curriculum_btn: 'Hide Drill Topics',
+    training_topic_label: 'Drill Topic:',
+    coaches_label: 'Coaches:',
+    time_prefix: 'Time: ',
+    gym_techawit: 'Techawit School Gymnasium',
+    cal_btn_weekly: 'Weekly View',
+    cal_btn_monthly: 'Monthly View',
+    cal_today_btn: 'Today',
+    cal_legend_regular: 'Regular (Mon/Tue/Thu 5:30–7:30 PM)',
+    cal_legend_saturday: 'Saturday (4:00–5:30 PM)',
+    cal_legend_canceled: 'Canceled',
+    cal_legend_private: 'Private/Special',
+
+    // Coach Board
+    board_mode_full: 'Full Court',
+    board_mode_half: 'Half Court 3x3 (Full Width)',
+    board_tool_move: 'Move Tokens',
+    board_tool_arrow: 'Movement / Pass',
+    board_tool_line_pass: 'Pass Ball (Dashed)',
+    board_tool_dribble: 'Dribble',
+    board_tool_line_dribble: 'Player Movement',
+    board_tool_screen: 'Screen',
+    board_tool_line_screen: 'Screen (T-Line)',
+    board_tool_pen: 'Freehand Pen',
+    board_undo: 'Undo',
+    board_tool_undo: 'Undo',
+    board_clear: 'Clear',
+    board_tool_clear: 'Clear Drawings',
+    board_reset: 'Reset',
+    board_tool_reset: 'Reset Positions',
+    board_add_cone: '+ Cone',
+    board_tool_cone: 'Add Cone',
+    board_tool_export: 'Export Image',
+    board_change_def_color: 'Defense Token Color:',
+    board_drawer_colors: 'Colors',
+    board_drawer_presets: 'Preset Plays',
+    board_drawer_lineup: 'Roster Lineup',
+    board_drawer_saves: 'Saved Plays',
+    board_tokens_o: 'Offense (Blue)',
+    board_tokens_d: 'Defense (Orange)',
+
+    // Auth & Logout
     logout_this_device: 'Sign Out (This Device)',
     logout_all_devices: 'Sign Out of All Devices'
   }
@@ -100,6 +409,7 @@ function toggleAppLanguage(lang) {
   if (typeof renderParentView === 'function') renderParentView();
   if (typeof renderWeeklyScheduleView === 'function') renderWeeklyScheduleView();
   if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+  if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
 }
 
 function applyAppLanguageUI() {
@@ -144,19 +454,125 @@ function applyAppLanguageUI() {
   setSpan('btnParentLogoutBottom', 'logout_this_device');
   setSpan('btnParentLogoutAllDevices', 'logout_all_devices');
 
+  // Top Bar elements
+  const demoBadge = document.querySelector('.demo-banner span');
+  if (demoBadge) demoBadge.textContent = tLang('header_demo_badge');
+  const installAppBtn = document.querySelector('#btnOpenInstallModal span');
+  if (installAppBtn) installAppBtn.textContent = tLang('header_install');
+
+  // Login Box
   const loginH1 = document.querySelector('#parent-login-box .workspace-title h1');
   if (loginH1) loginH1.textContent = tLang('login_title');
   const loginP = document.querySelector('#parent-login-box .workspace-title p');
   if (loginP) loginP.textContent = tLang('login_subtitle');
+  const loginPhoneLabel = document.querySelector('label[for="loginPhone"]');
+  if (loginPhoneLabel) loginPhoneLabel.textContent = tLang('login_phone_label');
   const loginBtnSpan = document.querySelector('#btnLoginSubmit span');
   if (loginBtnSpan) loginBtnSpan.textContent = tLang('login_btn');
+  const loginLinkBtnSpan = document.querySelector('#btnOpenLinkModal span');
+  if (loginLinkBtnSpan) loginLinkBtnSpan.textContent = tLang('login_link_btn');
+  const loginTodaySpan = document.querySelector('#btnLoginViewTodayBoard span');
+  if (loginTodaySpan) loginTodaySpan.textContent = tLang('login_today_btn');
+
+  // Dashboard static cards & headers
+  const studentHeading = document.querySelector('[data-i18n="student_info_heading"]');
+  if (studentHeading) studentHeading.textContent = tLang('student_info_heading');
+  const athleteModalBtnSpan = document.querySelector('[data-i18n="athlete_modal_btn"]');
+  if (athleteModalBtnSpan) athleteModalBtnSpan.textContent = tLang('athlete_modal_btn');
+
+  // Quota card labels
+  const quotaHeaderLabel = document.querySelector('.player-quota .text-nike-ink.uppercase');
+  if (quotaHeaderLabel) quotaHeaderLabel.textContent = tLang('remaining_quota_label');
+  const quotaUnitLabel = document.querySelector('.player-quota .text-sm.font-bold.text-nike-mute');
+  if (quotaUnitLabel) quotaUnitLabel.textContent = tLang('sessions_unit');
+
+  // Attendance history table headers
+  const historyHeaders = document.querySelectorAll('#parentCatPanel-history thead th');
+  if (historyHeaders.length >= 5) {
+    historyHeaders[0].textContent = tLang('col_date');
+    historyHeaders[1].textContent = tLang('col_class');
+    historyHeaders[2].textContent = tLang('col_status');
+    historyHeaders[3].textContent = tLang('col_deduct');
+    historyHeaders[4].textContent = tLang('col_balance');
+  }
+
+  // Calendar toggle buttons
+  const btnCalW = document.getElementById('btnCalWeekly');
+  if (btnCalW) btnCalW.textContent = tLang('cal_btn_weekly');
+  const btnCalM = document.getElementById('btnCalMonthly');
+  if (btnCalM) btnCalM.textContent = tLang('cal_btn_monthly');
+  const btnCalToday = document.getElementById('btnCalToday');
+  if (btnCalToday) btnCalToday.textContent = tLang('cal_today_btn');
+
+  // Coach Board tools
+  const boardHalfBtn = document.getElementById('btnCourtHalf');
+  if (boardHalfBtn) {
+    const halfSpan = boardHalfBtn.querySelector('span');
+    if (halfSpan) halfSpan.textContent = tLang('board_mode_half');
+  }
+  const boardFullBtn = document.getElementById('btnCourtFull');
+  if (boardFullBtn) {
+    const fullSpan = boardFullBtn.querySelector('span');
+    if (fullSpan) fullSpan.textContent = tLang('board_mode_full');
+  }
+  const exportBtn = document.getElementById('btnExportPlay');
+  if (exportBtn) {
+    const expSpan = exportBtn.querySelector('span');
+    if (expSpan) expSpan.textContent = tLang('board_tool_export');
+  }
+  const resetTokensBtn = document.getElementById('btnResetTokens');
+  if (resetTokensBtn) {
+    const resSpan = resetTokensBtn.querySelector('span');
+    if (resSpan) resSpan.textContent = tLang('board_tool_reset');
+  }
+  const undoBtn = document.getElementById('btnUndoDraw');
+  if (undoBtn) {
+    const uSpan = undoBtn.querySelector('span');
+    if (uSpan) uSpan.textContent = tLang('board_tool_undo');
+  }
+  const clearBtn = document.getElementById('btnClearDraw');
+  if (clearBtn) {
+    const cSpan = clearBtn.querySelector('span');
+    if (cSpan) cSpan.textContent = tLang('board_tool_clear');
+  }
+
+  // Single-child card action buttons
+  const renewSingleBtn = document.querySelector('.player-quota button[onclick*="renew-payment"] span');
+  if (renewSingleBtn) renewSingleBtn.textContent = tLang('btn_renew_course');
+  const attendSingleBtn = document.querySelector('#hasNormalClassActions button[onclick*="attending"] span');
+  if (attendSingleBtn) attendSingleBtn.textContent = tLang('btn_attend_today');
+  const leaveSingleBtn = document.querySelector('#hasNormalClassActions button[onclick*="openLeaveModal"] span');
+  if (leaveSingleBtn) leaveSingleBtn.textContent = tLang('btn_leave_today');
+
+  // Category Tab Headings
+  const classmateHeadings = document.querySelectorAll('#parentCatPanel-classmates h4 span:last-child');
+  if (classmateHeadings.length >= 2) {
+    classmateHeadings[0].textContent = tLang('classmates_attending_title');
+    classmateHeadings[1].textContent = tLang('classmates_leave_title');
+  }
+
+  // Sports science title
+  const ssHeading = document.querySelector('#parentCatPanel-growth h4 span:last-child');
+  if (ssHeading) ssHeading.textContent = tLang('sports_science_heading');
+
+  // Calendar legend
+  const calLegends = document.querySelectorAll('.calendar-legend li span:last-child');
+  if (calLegends.length >= 4) {
+    calLegends[0].innerHTML = `<strong>${isEn ? 'Regular' : 'คลาสปกติ'}</strong> ${isEn ? '(Mon/Tue/Thu 5:30–7:30 PM)' : '(จ./อ./พฤ. 17:30–19:30)'}`;
+    calLegends[1].innerHTML = `<strong>${isEn ? 'Saturday' : 'คลาสวันเสาร์'}</strong> ${isEn ? '(4:00–5:30 PM)' : '(16:00–17:30)'}`;
+    calLegends[2].innerHTML = `<strong>${tLang('cal_legend_canceled')}</strong>`;
+    calLegends[3].innerHTML = `<strong>${tLang('cal_legend_private')}</strong>`;
+  }
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // ========================================================
 // 2. Athlete Age & U-Category Calculator (U8/U10/U12/U14/U16/U18)
 // ========================================================
 function calculateAthleteAgeAndUCategory(student) {
-  if (!student) return { age: null, uCategory: 'ยังไม่ระบุวันเกิด', birthYear: null };
+  const isEn = typeof currentAppLang !== 'undefined' && currentAppLang === 'en';
+  if (!student) return { age: null, uCategory: isEn ? 'Birthday Pending' : 'ยังไม่ระบุวันเกิด', birthYear: null };
   let age = null;
   let birthYear = null;
 
@@ -171,7 +587,7 @@ function calculateAthleteAgeAndUCategory(student) {
   }
 
   if (age === null || isNaN(age) || age <= 0) {
-    return { age: null, uCategory: 'รอระบุวันเกิด', birthYear: null };
+    return { age: null, uCategory: isEn ? 'Birthday Pending' : 'รอระบุวันเกิด', birthYear: null };
   }
 
   let uCat = 'Open';

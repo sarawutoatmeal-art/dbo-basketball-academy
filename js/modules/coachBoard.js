@@ -198,19 +198,19 @@ function getDefaultCoachBoardTokens(mode = 'full', preset = '5out') {
     return tokens;
   }
 
-  // Default Half Court Lineup matching Photo 1
+  // Default Wide 3x3 Half Court Lineup
   return [
-    { id: 'O1', kind: 'offense', num: '57', label: 'Matthew', x: 58, y: 22 },
-    { id: 'O2', kind: 'offense', num: '89', label: 'John', x: 27, y: 52 },
-    { id: 'O3', kind: 'offense', num: '58', label: 'Greg', x: 42, y: 73 },
-    { id: 'O4', kind: 'offense', num: '99', label: 'Peter', x: 64, y: 86 },
-    { id: 'O5', kind: 'offense', num: '74', label: 'Josh', x: 65, y: 55 },
-    { id: 'D1', kind: 'defense', num: '47', label: 'Kevin', x: 67, y: 30 },
-    { id: 'D2', kind: 'defense', num: '68', label: 'Ryan', x: 45, y: 48 },
-    { id: 'D3', kind: 'defense', num: '97', label: 'Steven', x: 71, y: 50 },
-    { id: 'D4', kind: 'defense', num: '77', label: 'Justin', x: 57, y: 71 },
-    { id: 'D5', kind: 'defense', num: '77', label: 'David', x: 69, y: 80 },
-    { id: 'BALL', kind: 'ball', num: '🏀', label: 'บอล', x: 67, y: 44 }
+    { id: 'O1', kind: 'offense', num: '57', label: 'Matthew', x: 50, y: 55 },
+    { id: 'O2', kind: 'offense', num: '89', label: 'John', x: 26, y: 48 },
+    { id: 'O3', kind: 'offense', num: '58', label: 'Greg', x: 18, y: 78 },
+    { id: 'O4', kind: 'offense', num: '99', label: 'Peter', x: 82, y: 78 },
+    { id: 'O5', kind: 'offense', num: '74', label: 'Josh', x: 74, y: 48 },
+    { id: 'D1', kind: 'defense', num: '47', label: 'Kevin', x: 50, y: 44 },
+    { id: 'D2', kind: 'defense', num: '68', label: 'Ryan', x: 38, y: 40 },
+    { id: 'D3', kind: 'defense', num: '97', label: 'Steven', x: 62, y: 40 },
+    { id: 'D4', kind: 'defense', num: '77', label: 'Justin', x: 42, y: 22 },
+    { id: 'D5', kind: 'defense', num: '77', label: 'David', x: 58, y: 22 },
+    { id: 'BALL', kind: 'ball', num: '🏀', label: 'บอล', x: 50, y: 63 }
   ];
 }
 
