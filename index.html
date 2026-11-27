@@ -146,6 +146,11 @@
             <span>สมัครเรียน</span>
           </button>
 
+          <button onclick="switchTab('coach-board')" id="nav-coach-board" class="pill-tab inactive">
+            <i data-lucide="clipboard-list" class="w-4 h-4 text-nike-ink"></i>
+            <span>Coach Board</span>
+          </button>
+
           <button onclick="switchTab('coach-roster')" id="nav-coach-roster" class="pill-tab inactive hidden">
             <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
             <span>แผงโค้ช</span>
@@ -282,6 +287,9 @@
             <button type="button" onclick="switchTab('calendar')">
               <i data-lucide="calendar"></i><span>ปฏิทิน<small>ดูตารางฝึกซ้อมและสรุปค่าสนาม</small></span><i data-lucide="arrow-right"></i>
             </button>
+            <button type="button" onclick="switchTab('coach-board')">
+              <i data-lucide="clipboard-list"></i><span>Coach Board<small>กระดานวางแผนแทคติกและฝึกซ้อมสนาม DBO</small></span><i data-lucide="arrow-right"></i>
+            </button>
           </div>
           <section class="attendance-trend" aria-labelledby="attendanceTrendTitle">
             <div class="attendance-trend-heading">
@@ -306,53 +314,56 @@
         <h1 class="workspace-heading">ข้อมูลนักเรียน</h1>
 
         
-        <!-- 1. Nike Member Profile Header -->
-        <div class="card-clean p-4 sm:p-5 flex items-center justify-between gap-3 bg-white border border-nike-hairlineSoft rounded-[14px]">
-          <div class="flex items-center gap-3.5 min-w-0">
-            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-nike-ink text-white flex items-center justify-center text-base sm:text-lg font-bold font-mono flex-shrink-0">
-              <span id="dash-avatar">#</span>
-            </div>
-            <div class="min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <h2 id="dash-student-name" class="text-base sm:text-lg font-bold text-nike-ink truncate">น้อง...</h2>
-                <span id="dash-student-type" class="px-3 py-0.5 rounded-full text-[11px] font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft">คอร์สปกติ 10 ครั้ง</span>
-                <span id="dash-student-id" class="text-[11px] font-mono text-nike-mute">ID: #0</span>
+        <!-- 1. Nike Member Profile Header (Spacious Full-Width Mobile & Sibling Layout) -->
+        <div class="card-clean p-4 sm:p-5 bg-white border border-nike-hairlineSoft rounded-[14px] space-y-3.5">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3.5 min-w-0 flex-1">
+              <div class="w-12 h-12 rounded-full bg-nike-ink text-white flex items-center justify-center text-base sm:text-lg font-bold font-mono flex-shrink-0 shadow-2xs ring-2 ring-dbo-gold/40">
+                <span id="dash-avatar">#</span>
               </div>
-              <p id="dash-latest-practice" class="text-sm text-nike-mute"></p>
-              <p class="text-[11px] text-nike-mute flex items-center gap-2 mt-0.5">
-                <span>ผปค: <strong id="dash-parent-phone" class="font-mono text-nike-ink">08x-xxx-xxxx</strong></span>
-                <span id="dash-sibling-badge" class="hidden px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200"></span>
-              </p>
+              <div class="min-w-0 flex-1 space-y-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h2 id="dash-student-name" class="text-lg sm:text-xl font-extrabold text-nike-ink leading-snug break-words">น้อง...</h2>
+                  <span id="dash-student-id" class="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-nike-cloud text-nike-mute border border-nike-hairlineSoft flex-shrink-0">ID: #0</span>
+                </div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span id="dash-student-type" class="px-3 py-0.5 rounded-full text-[11px] font-semibold bg-dbo-goldLight text-nike-ink border border-dbo-gold/50 whitespace-nowrap">คอร์สปกติ 10 ครั้ง</span>
+                  <span id="dash-sibling-badge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-800 border border-purple-200 whitespace-nowrap"></span>
+                </div>
+                <p id="dash-latest-practice" class="text-xs sm:text-sm text-nike-mute font-medium pt-0.5"></p>
+                <p class="text-xs text-nike-mute flex items-center gap-2">
+                  <span>ผปค: <strong id="dash-parent-phone" class="font-mono text-nike-ink">08x-xxx-xxxx</strong></span>
+                </p>
+              </div>
             </div>
-          </div>
 
-          <!-- Sibling Switcher & Logout -->
-          <div class="flex items-center gap-2 flex-shrink-0">
-            <div id="siblingSelectorBox" class="hidden flex items-center gap-1 bg-nike-cloud border border-nike-hairlineSoft px-2.5 py-1 rounded-full">
-              <i data-lucide="users" class="w-3.5 h-3.5 text-nike-ink"></i>
-              <select id="siblingSelect" onchange="switchSibling(this.value)" class="bg-white border border-nike-hairlineSoft rounded-full px-2 py-0.5 text-xs text-nike-ink font-bold focus:outline-hidden cursor-pointer"></select>
-            </div>
-
-            <button onclick="parentLogout()" title="ออกจากระบบ" class="w-9 h-9 rounded-full bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft flex items-center justify-center transition-all active:scale-90 cursor-pointer">
+            <!-- Logout Button -->
+            <button onclick="parentLogout()" title="ออกจากระบบ" aria-label="ออกจากระบบ" class="w-9 h-9 rounded-full bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft flex items-center justify-center transition-all active:scale-90 cursor-pointer flex-shrink-0">
               <i data-lucide="log-out" class="w-4 h-4"></i>
             </button>
           </div>
+
+          <!-- Full-Width Sibling Switcher Section (Only visible when 2+ children share a phone number) -->
+          <div id="siblingSelectorBox" class="hidden pt-3 border-t border-nike-hairlineSoft space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-nike-ink flex items-center gap-1.5">
+                <i data-lucide="users" class="w-3.5 h-3.5 text-nike-ink"></i>
+                <span>สลับดูข้อมูลพี่น้อง (บัญชีครอบครัว)</span>
+              </span>
+              <span id="siblingSharedDesc" class="text-[11px] text-nike-mute font-medium">สิทธิ์แยกตามนักเรียน</span>
+            </div>
+            <div id="siblingQuickPills" class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2"></div>
+            <select id="siblingSelect" onchange="switchSibling(this.value)" aria-label="เลือกนักเรียนในครอบครัว" class="sr-only"></select>
+          </div>
         </div>
 
-        <!-- Sibling Shared Quota Notice Banner (Nike Soft Surface) -->
+        <!-- Coach Advice Section -->
         <section id="dash-coach-advice" class="card-clean px-4 py-3" hidden>
           <h3 class="text-sm font-bold text-nike-ink">คำแนะนำโค้ช</h3>
           <p class="mt-1 text-sm text-nike-mute break-words"></p>
         </section>
 
-        <div id="siblingSharedQuotaNotice" class="hidden px-4 py-3 rounded-[14px] bg-nike-cloud border border-nike-hairlineSoft flex items-center justify-between gap-2">
-          <div class="flex items-center gap-2.5 text-xs text-nike-ink font-medium">
-            <i data-lucide="heart-handshake" class="w-4 h-4 text-nike-ink flex-shrink-0"></i>
-            <span class="font-bold">บัญชีครอบครัว</span>
-            <span id="siblingSharedDesc" class="text-[11px] text-nike-mute"></span>
-          </div>
-          <div id="siblingQuickPills" class="hidden sm:flex items-center gap-1.5 flex-shrink-0"></div>
-        </div>
+        <div id="siblingSharedQuotaNotice" class="hidden"></div>
 
         <!-- Remaining course quota -->
         <div class="player-quota card-clean p-5 sm:p-6 rounded-[14px] bg-white border border-nike-hairlineSoft space-y-4">
@@ -1768,6 +1779,310 @@
 
     </section>
 
+    <!-- ======================================================== -->
+    <!-- TAB 7: DBO BASKETBALL COACH TACTIC BOARD                 -->
+    <!-- ======================================================== -->
+    <section id="tab-coach-board" class="hidden space-y-4">
+      <div id="dboCoachBoardCardWrapper" class="space-y-3.5">
+
+        <!-- 1. Top Header & Court Mode Switcher -->
+        <div class="card-clean p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#241044] via-[#31155E] to-[#241044] text-white border-2 border-[#DEB95B] shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="assets/images/dbo-logo.png?v=8.0" alt="DBO Crest" class="w-11 h-11 rounded-full object-cover ring-2 ring-[#DEB95B] flex-shrink-0 bg-[#241044]">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white uppercase">DBO Coach Tactic Board</h1>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#DEB95B] text-[#241044] uppercase tracking-wider">PRO COURT</span>
+              </div>
+              <p class="text-xs text-[#FBF4DD]/90">กระดานวางแผนแทคติกและแบบฝึกซ้อมบาสเกตบอล • ลากตัวผู้เล่นและวาดลูกศรบนสนาม DBO ได้ทันที</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" id="btnCourtMode-full" onclick="setCoachBoardCourtMode('full')" class="px-3 py-1.5 rounded-full text-xs font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] cursor-pointer">
+              เต็มสนาม (Full Court)
+            </button>
+            <button type="button" id="btnCourtMode-half" onclick="setCoachBoardCourtMode('half')" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+              ครึ่งสนาม (Half Court)
+            </button>
+            <button type="button" id="btnCoachBoardFullscreen" onclick="toggleCoachBoardFullscreen()" class="px-3 py-1.5 rounded-full text-xs font-bold bg-[#DEB95B] text-[#241044] hover:bg-[#CAA044] flex items-center gap-1 cursor-pointer">
+              <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+              <span>เต็มจอ</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Main Interactive Tactical Grid (Tools + DBO Court + Lineup) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+          <!-- Left / Top Control Deck: Drawing Tools, Presets & Actions -->
+          <div class="lg:col-span-4 space-y-3">
+
+            <!-- Tool Selector Card -->
+            <div class="card-clean p-3.5 rounded-2xl bg-white border border-nike-hairlineSoft space-y-3">
+              <div class="flex items-center justify-between">
+                <h2 class="text-xs font-extrabold uppercase tracking-wider text-nike-ink flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-[#DEB95B]"></span>
+                  <span>เครื่องมือโค้ช (Tactical Tools)</span>
+                </h2>
+                <span class="text-[11px] text-nike-mute">แตะเลือกโหมด</span>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2">
+                <button type="button" id="btnBoardTool-move" onclick="setCoachBoardTool('move')" aria-pressed="true" class="dbo-tool-btn active flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-[#241044] text-[#DEB95B] ring-2 ring-[#DEB95B] cursor-pointer">
+                  <span>🖐️</span>
+                  <span>ขยับผู้เล่น/บอล</span>
+                </button>
+                <button type="button" id="btnBoardTool-arrow" onclick="setCoachBoardTool('arrow')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+                  <span>↗️</span>
+                  <span>ลูกศรวิ่ง / ส่งบอล</span>
+                </button>
+                <button type="button" id="btnBoardTool-dribble" onclick="setCoachBoardTool('dribble')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+                  <span>〰️</span>
+                  <span>เส้นประเลี้ยงบอล</span>
+                </button>
+                <button type="button" id="btnBoardTool-screen" onclick="setCoachBoardTool('screen')" aria-pressed="false" class="dbo-tool-btn flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+                  <span>⊣</span>
+                  <span>ตั้งสกรีน (Screen)</span>
+                </button>
+                <button type="button" id="btnBoardTool-pen" onclick="setCoachBoardTool('pen')" aria-pressed="false" class="dbo-tool-btn col-span-2 sm:col-span-1 lg:col-span-2 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-nike-cloud text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+                  <span>✏️</span>
+                  <span>ปากกาวาดอิสระ (Freehand)</span>
+                </button>
+              </div>
+
+              <!-- Color Swatches & Undo/Clear -->
+              <div class="pt-2.5 border-t border-nike-hairlineSoft flex items-center justify-between gap-2 flex-wrap">
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-bold text-nike-mute">สีเส้น:</span>
+                  <button type="button" data-board-color="#DEB95B" onclick="setCoachBoardColor('#DEB95B')" aria-label="สีทอง DBO" class="w-6 h-6 rounded-full bg-[#DEB95B] border border-black/20 cursor-pointer transition-transform"></button>
+                  <button type="button" data-board-color="#FFFFFF" onclick="setCoachBoardColor('#FFFFFF')" aria-label="สีขาว" class="w-6 h-6 rounded-full bg-white border border-slate-400 cursor-pointer transition-transform"></button>
+                  <button type="button" data-board-color="#241044" onclick="setCoachBoardColor('#241044')" aria-label="สีม่วง DBO" class="w-6 h-6 rounded-full bg-[#241044] border border-white/40 cursor-pointer transition-transform"></button>
+                  <button type="button" data-board-color="#EF4444" onclick="setCoachBoardColor('#EF4444')" aria-label="สีแดง" class="w-6 h-6 rounded-full bg-red-500 border border-black/20 cursor-pointer transition-transform"></button>
+                  <button type="button" data-board-color="#10B981" onclick="setCoachBoardColor('#10B981')" aria-label="สีเขียว" class="w-6 h-6 rounded-full bg-emerald-500 border border-black/20 cursor-pointer transition-transform"></button>
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="undoCoachBoardDrawing()" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-nike-cloud hover:bg-purple-100 text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+                    ↩ ย้อนกลับ
+                  </button>
+                  <button type="button" onclick="clearCoachBoardDrawings()" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-nike-cloud hover:bg-rose-100 text-rose-700 border border-nike-hairlineSoft cursor-pointer">
+                    🧹 ล้างเส้น
+                  </button>
+                </div>
+              </div>
+
+              <!-- Defense & Cone Equipment Controls -->
+              <div class="pt-2.5 border-t border-nike-hairlineSoft flex items-center gap-2 flex-wrap">
+                <button type="button" id="btnToggleBoardDefense" onclick="toggleCoachBoardDefense()" class="px-3 py-1.5 rounded-full text-xs font-bold bg-rose-700 text-white border border-rose-800 flex items-center gap-1.5 cursor-pointer">
+                  <span>🛡️ ทีมรับ X1-X5: เปิด</span>
+                </button>
+                <button type="button" onclick="addCoachBoardCone()" class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-950 border border-amber-300 hover:bg-amber-200 cursor-pointer">
+                  + เพิ่มกรวย 🔺
+                </button>
+                <button type="button" onclick="clearCoachBoardCones()" class="px-2.5 py-1.5 rounded-full text-[11px] font-semibold bg-nike-cloud text-nike-mute border border-nike-hairlineSoft hover:text-nike-ink cursor-pointer">
+                  ลบกรวย
+                </button>
+                <button type="button" onclick="resetCoachBoardAll()" class="ml-auto px-3 py-1.5 rounded-full text-xs font-bold bg-nike-cloud hover:bg-neutral-200 text-nike-ink border border-nike-hairlineSoft cursor-pointer">
+                  รีเซ็ตสนาม
+                </button>
+              </div>
+            </div>
+
+            <!-- Preset Tactical Formations Card -->
+            <div class="card-clean p-3.5 rounded-2xl bg-white border border-nike-hairlineSoft space-y-2.5">
+              <h2 class="text-xs font-extrabold uppercase tracking-wider text-nike-ink flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-[#241044]"></span>
+                <span>แผนการเล่น & แบบฝึกซ้อมสำเร็จรูป (Presets)</span>
+              </h2>
+              <div class="grid grid-cols-2 gap-1.5">
+                <button type="button" onclick="applyCoachBoardPreset('5out')" class="px-3 py-2 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-[#241044] hover:text-[#DEB95B] text-nike-ink border border-nike-hairlineSoft text-left transition-colors cursor-pointer">
+                  🏀 5-Out Motion
+                </button>
+                <button type="button" onclick="applyCoachBoardPreset('pick_roll')" class="px-3 py-2 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-[#241044] hover:text-[#DEB95B] text-nike-ink border border-nike-hairlineSoft text-left transition-colors cursor-pointer">
+                  ⚡ Pick & Roll (1-5)
+                </button>
+                <button type="button" onclick="applyCoachBoardPreset('zone_23')" class="px-3 py-2 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-[#241044] hover:text-[#DEB95B] text-nike-ink border border-nike-hairlineSoft text-left transition-colors cursor-pointer">
+                  🛡️ 2-3 Zone Defense
+                </button>
+                <button type="button" onclick="applyCoachBoardPreset('zone_131')" class="px-3 py-2 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-[#241044] hover:text-[#DEB95B] text-nike-ink border border-nike-hairlineSoft text-left transition-colors cursor-pointer">
+                  🔥 1-3-1 Zone Trap
+                </button>
+                <button type="button" onclick="applyCoachBoardPreset('box_out')" class="px-3 py-2 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-[#241044] hover:text-[#DEB95B] text-nike-ink border border-nike-hairlineSoft text-left transition-colors cursor-pointer">
+                  💪 Box Out & Rebound
+                </button>
+                <button type="button" onclick="applyCoachBoardPreset('cone_drill')" class="px-3 py-2 rounded-xl text-xs font-bold bg-nike-cloud hover:bg-[#241044] hover:text-[#DEB95B] text-nike-ink border border-nike-hairlineSoft text-left transition-colors cursor-pointer">
+                  🔺 Drill เลี้ยงอ้อมกรวย
+                </button>
+              </div>
+            </div>
+
+            <!-- Assign Real DBO Students to Positions 1-5 -->
+            <div class="card-clean p-3.5 rounded-2xl bg-white border border-nike-hairlineSoft space-y-2.5">
+              <div class="flex items-center justify-between">
+                <h2 class="text-xs font-extrabold uppercase tracking-wider text-nike-ink flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                  <span>จัดตัวนักเรียน DBO ลงกระดาน (1–5)</span>
+                </h2>
+                <span class="text-[10px] text-nike-mute">แสดงชื่อใต้ตัวหมาก</span>
+              </div>
+              <div id="coachBoardLineupSelectors" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-1.5"></div>
+            </div>
+
+          </div>
+
+          <!-- Center / Right: The Official DBO Basketball Court Canvas -->
+          <div class="lg:col-span-8 space-y-3">
+            <div class="card-clean p-2.5 sm:p-4 rounded-2xl bg-[#1A0B33] border-2 border-[#DEB95B] shadow-xl">
+
+              <!-- Interactive Court Stage -->
+              <div id="dboCoachBoardStage" data-court-mode="full" class="dbo-court-stage relative w-full mx-auto select-none overflow-hidden rounded-xl shadow-inner">
+
+                <!-- ================================================= -->
+                <!-- 1. FULL COURT DBO SVG (DBO Purple/Gold + Logo)    -->
+                <!-- ================================================= -->
+                <svg id="dboFullCourtSvg" viewBox="0 0 600 940" class="w-full h-full block pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <!-- Warm Pro Maple Hardwood Floor Pattern -->
+                    <pattern id="dboHardwoodPattern" width="30" height="120" patternUnits="userSpaceOnUse">
+                      <rect width="30" height="120" fill="#D89A52"/>
+                      <rect x="0" y="0" width="15" height="60" fill="#CF9047" opacity="0.55"/>
+                      <rect x="15" y="60" width="15" height="60" fill="#E1A660" opacity="0.55"/>
+                      <line x1="15" y1="0" x2="15" y2="120" stroke="#B97A35" stroke-width="0.7" opacity="0.5"/>
+                      <line x1="0" y1="60" x2="15" y2="60" stroke="#B97A35" stroke-width="0.6" opacity="0.45"/>
+                      <line x1="15" y1="90" x2="30" y2="90" stroke="#B97A35" stroke-width="0.6" opacity="0.45"/>
+                    </pattern>
+                    <clipPath id="dboCenterLogoClipFull">
+                      <circle cx="300" cy="470" r="64"/>
+                    </clipPath>
+                  </defs>
+
+                  <!-- Outer DBO Royal Purple Apron -->
+                  <rect x="0" y="0" width="600" height="940" fill="#241044"/>
+
+                  <!-- Baseline Wordmarks -->
+                  <text x="300" y="25" text-anchor="middle" fill="#DEB95B" font-family="Kanit, sans-serif" font-weight="900" font-size="16" letter-spacing="4">DBO BASKETBALL ACADEMY</text>
+                  <text x="300" y="927" text-anchor="middle" fill="#DEB95B" font-family="Kanit, sans-serif" font-weight="900" font-size="15" letter-spacing="3.5">START FROM 0 TO NO. 1</text>
+
+                  <!-- Playing Court Hardwood Surface -->
+                  <rect x="36" y="38" width="528" height="864" rx="4" fill="url(#dboHardwoodPattern)" stroke="#DEB95B" stroke-width="5"/>
+
+                  <!-- Subtle DBO Purple Tinted Sideline Border -->
+                  <rect x="42" y="44" width="516" height="852" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.7"/>
+
+                  <!-- ================= TOP HALF COURT ================= -->
+                  <!-- Top Painted Key (3-Second Lane in DBO Purple & Gold) -->
+                  <rect x="210" y="38" width="180" height="190" fill="#241044" stroke="#DEB95B" stroke-width="3.5"/>
+                  <rect x="218" y="38" width="164" height="182" fill="#38196B" opacity="0.45"/>
+
+                  <!-- Top Free-Throw Circle -->
+                  <path d="M 240 228 A 60 60 0 0 0 360 228" fill="none" stroke="#DEB95B" stroke-width="3"/>
+                  <path d="M 240 228 A 60 60 0 0 1 360 228" fill="none" stroke="#DEB95B" stroke-width="2.5" stroke-dasharray="8 8"/>
+
+                  <!-- Top 3-Point Line -->
+                  <path d="M 78 38 L 78 145 A 228 228 0 0 0 522 145 L 522 38" fill="none" stroke="#FFFFFF" stroke-width="3.5"/>
+                  <path d="M 78 38 L 78 145 A 228 228 0 0 0 522 145 L 522 38" fill="none" stroke="#241044" stroke-width="1.2" opacity="0.4"/>
+
+                  <!-- Top Restricted Area Arc, Backboard & Rim -->
+                  <path d="M 260 80 A 40 40 0 0 0 340 80" fill="none" stroke="#DEB95B" stroke-width="2.5"/>
+                  <line x1="265" y1="68" x2="335" y2="68" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+                  <circle cx="300" cy="82" r="11" fill="none" stroke="#EA580C" stroke-width="3.5"/>
+
+                  <!-- ================= BOTTOM HALF COURT ================= -->
+                  <!-- Bottom Painted Key (3-Second Lane in DBO Purple & Gold) -->
+                  <rect x="210" y="712" width="180" height="190" fill="#241044" stroke="#DEB95B" stroke-width="3.5"/>
+                  <rect x="218" y="720" width="164" height="182" fill="#38196B" opacity="0.45"/>
+
+                  <!-- Bottom Free-Throw Circle -->
+                  <path d="M 240 712 A 60 60 0 0 1 360 712" fill="none" stroke="#DEB95B" stroke-width="3"/>
+                  <path d="M 240 712 A 60 60 0 0 0 360 712" fill="none" stroke="#DEB95B" stroke-width="2.5" stroke-dasharray="8 8"/>
+
+                  <!-- Bottom 3-Point Line -->
+                  <path d="M 78 902 L 78 795 A 228 228 0 0 1 522 795 L 522 902" fill="none" stroke="#FFFFFF" stroke-width="3.5"/>
+
+                  <!-- Bottom Restricted Area Arc, Backboard & Rim -->
+                  <path d="M 260 860 A 40 40 0 0 1 340 860" fill="none" stroke="#DEB95B" stroke-width="2.5"/>
+                  <line x1="265" y1="872" x2="335" y2="872" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+                  <circle cx="300" cy="858" r="11" fill="none" stroke="#EA580C" stroke-width="3.5"/>
+
+                  <!-- ================= MID-COURT & DBO CENTER LOGO ================= -->
+                  <line x1="36" y1="470" x2="564" y2="470" stroke="#DEB95B" stroke-width="4"/>
+                  <circle cx="300" cy="470" r="76" fill="#241044" stroke="#DEB95B" stroke-width="4.5"/>
+                  <circle cx="300" cy="470" r="66" fill="#241044" stroke="#FFFFFF" stroke-width="1.5" opacity="0.8"/>
+                  <image href="assets/images/dbo-logo.png?v=8.0" x="236" y="406" width="128" height="128" preserveAspectRatio="xMidYMid slice" clip-path="url(#dboCenterLogoClipFull)"/>
+                </svg>
+
+                <!-- ================================================= -->
+                <!-- 2. HALF COURT DBO SVG (Zoomed Tactics + DBO Logo) -->
+                <!-- ================================================= -->
+                <svg id="dboHalfCourtSvg" viewBox="0 0 600 560" class="hidden w-full h-full block pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <clipPath id="dboCenterLogoClipHalf">
+                      <circle cx="300" cy="522" r="56"/>
+                    </clipPath>
+                  </defs>
+
+                  <!-- Outer DBO Royal Purple Apron -->
+                  <rect x="0" y="0" width="600" height="560" fill="#241044"/>
+                  <text x="300" y="25" text-anchor="middle" fill="#DEB95B" font-family="Kanit, sans-serif" font-weight="900" font-size="16" letter-spacing="4">DBO BASKETBALL ACADEMY • HALF COURT</text>
+
+                  <!-- Hardwood Floor -->
+                  <rect x="36" y="38" width="528" height="484" rx="4" fill="url(#dboHardwoodPattern)" stroke="#DEB95B" stroke-width="5"/>
+
+                  <!-- Painted Key in DBO Purple & Gold -->
+                  <rect x="200" y="38" width="200" height="215" fill="#241044" stroke="#DEB95B" stroke-width="4"/>
+                  <rect x="208" y="38" width="184" height="207" fill="#38196B" opacity="0.45"/>
+
+                  <!-- Free-Throw Circle -->
+                  <path d="M 232 253 A 68 68 0 0 0 368 253" fill="none" stroke="#DEB95B" stroke-width="3.5"/>
+                  <path d="M 232 253 A 68 68 0 0 1 368 253" fill="none" stroke="#DEB95B" stroke-width="2.5" stroke-dasharray="8 8"/>
+
+                  <!-- 3-Point Arc -->
+                  <path d="M 72 38 L 72 162 A 236 236 0 0 0 528 162 L 528 38" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+
+                  <!-- Restricted Arc, Backboard & Rim -->
+                  <path d="M 255 86 A 45 45 0 0 0 345 86" fill="none" stroke="#DEB95B" stroke-width="3"/>
+                  <line x1="262" y1="70" x2="338" y2="70" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
+                  <circle cx="300" cy="86" r="12" fill="none" stroke="#EA580C" stroke-width="4"/>
+
+                  <!-- Bottom Mid-Court Line & DBO Center Crest -->
+                  <circle cx="300" cy="522" r="66" fill="#241044" stroke="#DEB95B" stroke-width="4.5"/>
+                  <image href="assets/images/dbo-logo.png?v=8.0" x="244" y="466" width="112" height="112" preserveAspectRatio="xMidYMid slice" clip-path="url(#dboCenterLogoClipHalf)"/>
+                </svg>
+
+                <!-- 3. HTML5 Drawing Canvas Overlay (Arrows, Dribble, Screen, Freehand) -->
+                <canvas id="dboCoachBoardCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-10"></canvas>
+
+                <!-- 4. Interactive Draggable Tokens Layer (Offense 1-5, Defense X1-X5, Ball, Cones) -->
+                <div id="dboCoachBoardTokensLayer" class="absolute inset-0 w-full h-full z-20"></div>
+
+              </div>
+
+            </div>
+
+            <!-- Save & Load Custom Plays Bar -->
+            <div class="card-clean p-3.5 rounded-2xl bg-white border border-nike-hairlineSoft space-y-2.5">
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-extrabold text-nike-ink">💾 บันทึกแผนการเล่นของโค้ช:</span>
+                </div>
+                <div class="flex items-center gap-2 flex-1 sm:max-w-md">
+                  <input type="text" id="coachBoardPlayNameInput" placeholder="ตั้งชื่อแผน เช่น บุกโซน DBO ชุด 1..." class="flex-1 px-3 py-1.5 rounded-full bg-nike-cloud border border-nike-hairlineSoft text-xs text-nike-ink focus:outline-hidden focus:border-nike-ink">
+                  <button type="button" onclick="saveCustomCoachBoardPlay()" class="px-4 py-1.5 rounded-full text-xs font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] hover:bg-[#38196B] cursor-pointer flex-shrink-0">
+                    + บันทึกแผน
+                  </button>
+                </div>
+              </div>
+              <div id="coachBoardSavedPlaysList" class="flex items-center gap-2 flex-wrap pt-1"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
   </main>
   </div>
 
@@ -1803,6 +2118,12 @@
       <button onclick="switchTab('register-new')" id="nav-m-register-new" class="mobile-tab-btn flex-1">
         <i data-lucide="user-plus" class="w-5 h-5"></i>
         <span>สมัครเรียน</span>
+      </button>
+
+      <!-- Coach Tactic Board Tab -->
+      <button onclick="switchTab('coach-board')" id="nav-m-coach-board" class="mobile-tab-btn flex-1">
+        <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+        <span>Coach Board</span>
       </button>
 
       <!-- Coach Tab in mobile (If Coach Mode) -->
@@ -2959,6 +3280,7 @@
   <script src="js/modules/attendance.js"></script>
   <script src="js/modules/courtExpenses.js"></script>
   <script src="js/modules/schedule.js"></script>
+  <script src="js/modules/coachBoard.js"></script>
   <script src="js/modules/pwa.js"></script>
   <script src="js/app.js"></script>
 </body>

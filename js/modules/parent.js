@@ -159,19 +159,24 @@ function renderParentView(matchedList) {
 
     if (sibBadge) {
       sibBadge.classList.remove('hidden');
-      sibBadge.textContent = 'พี่น้อง';
+      sibBadge.textContent = `พี่น้อง ${familySiblings.length} คน`;
     }
 
-    if (sibSharedNotice) {
-      sibSharedNotice.classList.remove('hidden');
-      if (sibSharedDesc) sibSharedDesc.textContent = 'สิทธิ์แยกตามนักเรียน';
-      if (sibQuickPills) {
-        sibQuickPills.innerHTML = familySiblings.map(s => `
-          <button type="button" onclick="switchSibling(${s.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${s.id === loggedInStudent.id ? 'bg-purple-600 text-white shadow-2xs' : 'bg-white border border-purple-200 text-purple-900 hover:bg-purple-100'} transition cursor-pointer">
-            น้อง ${escapeHtml(s.name)} (${s.remaining} ครั้ง)
+    if (sibSharedDesc) sibSharedDesc.textContent = 'แตะชื่อเพื่อสลับดูข้อมูล';
+    if (sibQuickPills) {
+      sibQuickPills.innerHTML = familySiblings.map(s => {
+        const isCurrent = s.id === loggedInStudent.id;
+        const remCount = s.remaining !== undefined ? s.remaining : 0;
+        return `
+          <button type="button" onclick="switchSibling(${s.id})" aria-pressed="${isCurrent}" class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${isCurrent ? 'bg-nike-ink text-white ring-2 ring-dbo-gold shadow-2xs' : 'bg-nike-cloud border border-nike-hairlineSoft text-nike-ink hover:bg-purple-100/70'}">
+            <span class="flex items-center gap-2 min-w-0">
+              <span class="w-5 h-5 rounded-full ${isCurrent ? 'bg-dbo-gold text-nike-ink' : 'bg-white text-nike-ink border border-nike-hairlineSoft'} flex items-center justify-center text-[10px] font-extrabold flex-shrink-0">${escapeHtml(s.name.charAt(0))}</span>
+              <span class="truncate">น้อง ${escapeHtml(s.name)}</span>
+            </span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono ${isCurrent ? 'bg-white/15 text-dbo-gold' : 'bg-white text-nike-mute border border-nike-hairlineSoft'} flex-shrink-0">${remCount} ครั้ง</span>
           </button>
-        `).join('');
-      }
+        `;
+      }).join('');
     }
   } else {
     if (sibBox) sibBox.classList.add('hidden');
@@ -757,8 +762,7 @@ function populateLinkStudentDropdown() {
   sorted.forEach(s => {
     const opt = document.createElement('option');
     opt.value = s.id;
-    const rem = s.remaining !== undefined ? s.remaining : 0;
-    const phoneLabel = s.phone ? '(ผูกเบอร์แล้ว)' : `(คงเหลือ ${rem} ครั้ง • รอผูกเบอร์)`;
+    const phoneLabel = s.phone ? '(ผูกเบอร์แล้ว)' : '(รอผูกเบอร์)';
     opt.innerText = `น้อง ${s.name} ${phoneLabel}`;
     select.appendChild(opt);
   });
