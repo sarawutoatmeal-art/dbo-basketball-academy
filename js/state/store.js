@@ -101,6 +101,13 @@ if (!localStorage.getItem(COLLISION_RECOVERY_KEY)) {
   // Always ensure non-monthly students have nextRenewal: '-' and deleted students are filtered out
   students = students.filter(st => st && !deletedStudentIds[String(st.id)]);
   students.forEach(st => {
+    // Heal stale cached negative quota on parent device if no authoritative coach action set it
+    if (Number(st.id) !== 17 && (st.remaining || 0) < 0 && !st._lastCoachActionAt) {
+      const raw = initialRawData.find(r => Number(r.id) === Number(st.id));
+      if (raw && raw.remaining >= 0) {
+        st.remaining = raw.remaining;
+      }
+    }
     if (st.courseType === 'monthly') {
       if (!st.nextRenewal || !/^\d{4}-\d{2}-\d{2}$/.test(st.nextRenewal)) {
         st.nextRenewal = calculateMonthlyNextRenewal(st.startDate);

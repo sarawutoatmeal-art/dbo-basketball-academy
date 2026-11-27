@@ -1723,3 +1723,181 @@ header .app-header-identity {
   }
   .record-student-row > :last-child { width: 100%; }
 }
+
+/* ======================================================== */
+/* DBO BASKETBALL COACH TACTIC BOARD STYLES                 */
+/* ======================================================== */
+.dbo-court-viewport-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.dbo-court-stage {
+  width: 100%;
+  margin-inline: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.dbo-court-stage[data-court-mode="full"] {
+  aspect-ratio: 600 / 940;
+  max-height: calc(100dvh - 185px);
+  max-width: min(100%, calc((100dvh - 185px) * 600 / 940));
+}
+
+.dbo-court-stage[data-court-mode="landscape"] {
+  aspect-ratio: 940 / 600;
+  max-height: calc(100dvh - 185px);
+  max-width: min(100%, calc((100dvh - 185px) * 940 / 600));
+}
+
+.dbo-court-stage[data-court-mode="half"] {
+  aspect-ratio: 600 / 560;
+  max-height: calc(100dvh - 185px);
+  max-width: min(100%, calc((100dvh - 185px) * 600 / 560));
+}
+
+.dbo-board-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  background: #140826 !important;
+  padding: 8px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  overflow-y: auto !important;
+}
+
+body.dbo-board-fs-active > header,
+body.dbo-board-fs-active > nav.mobile-bottom-nav {
+  display: none !important;
+}
+
+.dbo-board-fullscreen .dbo-court-viewport-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 6px !important;
+}
+
+.dbo-board-fullscreen .dbo-court-stage[data-court-mode="full"] {
+  max-height: calc(100dvh - 135px);
+  max-width: min(100%, calc((100dvh - 135px) * 600 / 940));
+}
+
+.dbo-board-fullscreen .dbo-court-stage[data-court-mode="landscape"] {
+  max-height: calc(100dvh - 135px);
+  max-width: min(100%, calc((100dvh - 135px) * 940 / 600));
+}
+
+.dbo-board-fullscreen .dbo-court-stage[data-court-mode="half"] {
+  max-height: calc(100dvh - 135px);
+  max-width: min(100%, calc((100dvh - 135px) * 600 / 560));
+}
+
+.dbo-board-token {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: transform 0.08s ease;
+  z-index: 22;
+}
+
+.dbo-board-token.dragging {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(1.18);
+  z-index: 35;
+}
+
+.dbo-token-disc {
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 900;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+}
+
+.dbo-token-offense .dbo-token-disc {
+  background: linear-gradient(135deg, #241044 0%, #38196B 100%);
+  color: #DEB95B;
+  border: 2.5px solid #DEB95B;
+}
+
+.dbo-token-defense .dbo-token-disc {
+  background: linear-gradient(135deg, #991B1B 0%, #DC2626 100%);
+  color: #FFFFFF;
+  border: 2.5px solid #FFFFFF;
+}
+
+.dbo-token-ball-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 30% 30%, #FB923C, #C2410C);
+  border: 2px solid #241044;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.dbo-token-cone-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background: rgba(36, 16, 68, 0.85);
+  border: 2px solid #F59E0B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.dbo-token-nameplate {
+  margin-top: 2px;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background: rgba(36, 16, 68, 0.92);
+  color: #FFFFFF;
+  border: 1px solid rgba(222, 185, 91, 0.75);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  max-width: 84px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.dbo-token-defense .dbo-token-nameplate {
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+@media screen and (max-width: 480px) {
+  .dbo-token-disc {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+  .dbo-token-nameplate {
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+}

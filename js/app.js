@@ -10,7 +10,7 @@ function switchTab(tabName) {
     return;
   }
 
-  const tabs = ['parent-portal', 'daily-attendance', 'renew-payment', 'register-new', 'calendar', 'coach-roster'];
+  const tabs = ['parent-portal', 'daily-attendance', 'renew-payment', 'register-new', 'calendar', 'coach-board', 'coach-roster'];
   
   if (!tabs.includes(tabName)) tabName = 'parent-portal';
   sessionStorage.setItem('dbo_active_tab', tabName);
@@ -41,6 +41,9 @@ function switchTab(tabName) {
     if (typeof updateCourtCalendarRoleVisibility === 'function') updateCourtCalendarRoleVisibility();
     if (typeof renderCourtExpenseStatement === 'function') renderCourtExpenseStatement();
     if (typeof renderMasterCalendar === 'function') renderMasterCalendar();
+  }
+  if (tabName === 'coach-board') {
+    if (typeof initCoachBoard === 'function') initCoachBoard();
   }
   if (tabName === 'coach-roster') {
     if (typeof renderCoachRosterTable === 'function') renderCoachRosterTable();

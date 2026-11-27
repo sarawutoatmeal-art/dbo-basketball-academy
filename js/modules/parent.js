@@ -159,19 +159,26 @@ function renderParentView(matchedList) {
 
     if (sibBadge) {
       sibBadge.classList.remove('hidden');
-      sibBadge.textContent = 'พี่น้อง';
+      sibBadge.textContent = `พี่น้อง ${familySiblings.length} คน`;
     }
 
-    if (sibSharedNotice) {
-      sibSharedNotice.classList.remove('hidden');
-      if (sibSharedDesc) sibSharedDesc.textContent = 'สิทธิ์แยกตามนักเรียน';
-      if (sibQuickPills) {
-        sibQuickPills.innerHTML = familySiblings.map(s => `
-          <button type="button" onclick="switchSibling(${s.id})" class="px-2.5 py-1 rounded-lg text-[11px] font-bold ${s.id === loggedInStudent.id ? 'bg-purple-600 text-white shadow-2xs' : 'bg-white border border-purple-200 text-purple-900 hover:bg-purple-100'} transition cursor-pointer">
-            น้อง ${escapeHtml(s.name)} (${s.remaining} ครั้ง)
+    if (sibSharedDesc) sibSharedDesc.textContent = 'แตะชื่อเพื่อสลับดูข้อมูล';
+    if (sibQuickPills) {
+      sibQuickPills.innerHTML = familySiblings.map(s => {
+        const isCurrent = s.id === loggedInStudent.id;
+        const remCount = s.remaining !== undefined ? s.remaining : 0;
+        return `
+          <button type="button" onclick="switchSibling(${s.id})" aria-pressed="${isCurrent}" class="flex flex-col items-start justify-between gap-1.5 p-3 rounded-xl text-left transition-all cursor-pointer ${isCurrent ? 'bg-nike-ink text-white ring-2 ring-dbo-gold shadow-sm' : 'bg-nike-cloud border border-nike-hairlineSoft text-nike-ink hover:bg-purple-100/70'}">
+            <div class="w-full flex items-center justify-between gap-1.5">
+              <span class="w-6 h-6 rounded-full ${isCurrent ? 'bg-dbo-gold text-nike-ink' : 'bg-white text-nike-ink border border-nike-hairlineSoft'} flex items-center justify-center text-xs font-extrabold flex-shrink-0">${escapeHtml(s.name.charAt(0))}</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${isCurrent ? 'bg-white/15 text-dbo-gold' : 'bg-white text-nike-mute border border-nike-hairlineSoft'} flex-shrink-0">${remCount} ครั้ง</span>
+            </div>
+            <div class="w-full font-extrabold text-xs sm:text-sm leading-snug break-words ${isCurrent ? 'text-white' : 'text-nike-ink'}">
+              น้อง ${escapeHtml(s.name)}
+            </div>
           </button>
-        `).join('');
-      }
+        `;
+      }).join('');
     }
   } else {
     if (sibBox) sibBox.classList.add('hidden');
@@ -247,23 +254,33 @@ function renderParentView(matchedList) {
     console.log('Calendar banner err:', e);
   }
 
-  // Next Class Highlights
+  // Next Class Highlights (Dynamic from Coach's Daily & Weekly Teaching Content)
   try {
     const nextTitleEl = document.getElementById('dash-next-class-title');
     const nextTopicEl = document.getElementById('dash-next-class-topic');
-    const dayW = new Date().getDay();
-    if (dayW === 1) {
-      if (nextTitleEl) nextTitleEl.innerText = 'อังคารนี้ (17:30 - 19:30 น.)';
-      if (nextTopicEl) nextTopicEl.innerText = 'Passing Vision & Basketball IQ (โค้ชโอ๊ค & โค้ชโอ๊ต)';
-    } else if (dayW === 2 || dayW === 3) {
-      if (nextTitleEl) nextTitleEl.innerText = 'พฤหัสบดีนี้ (17:30 - 19:30 น.)';
-      if (nextTopicEl) nextTopicEl.innerText = 'Shooting Mechanics & Game Simulation (โค้ชโอ๊ต & โค้ชโอ๊ค)';
-    } else if (dayW === 4 || dayW === 5) {
-      if (nextTitleEl) nextTitleEl.innerText = 'เสาร์นี้ (16:00 - 17:30 น.)';
-      if (nextTopicEl) nextTopicEl.innerText = 'Basic Coach Oat (Agility & Coordination)';
-    } else {
-      if (nextTitleEl) nextTitleEl.innerText = 'จันทร์หน้า (17:30 - 19:30 น.)';
-      if (nextTopicEl) nextTopicEl.innerText = 'Fundamental Dribbling & Movement (โค้ชโอ๊ต & โค้ชโอ๊ค)';
+    const wkThemeBanner = document.getElementById('parentWeeklyThemeBanner');
+    const wkScheduleList = document.getElementById('parentWeeklyCurriculumList');
+
+    if (typeof getNextTrainingSessionDetails === 'function') {
+      const nextSession = getNextTrainingSessionDetails();
+      if (nextSession) {
+        if (nextTitleEl) nextTitleEl.innerText = `${nextSession.dateLabel} (${nextSession.time})`;
+        if (nextTopicEl) nextTopicEl.innerText = `${nextSession.topic} • ${nextSession.coaches}`;
+      }
+    }
+
+    if (wkThemeBanner) {
+      const themeText = (weeklySchedule && weeklySchedule.weekTheme) ? weeklySchedule.weekTheme.trim() : '';
+      if (themeText) {
+        wkThemeBanner.classList.remove('hidden');
+        wkThemeBanner.innerHTML = `<span class="font-extrabold text-[#241044]">🎯 เป้าหมายการฝึกซ้อมประจำสัปดาห์:</span> <span class="text-[#38196B] font-semibold">${escapeHtml(themeText)}</span>`;
+      } else {
+        wkThemeBanner.classList.add('hidden');
+      }
+    }
+
+    if (wkScheduleList && typeof buildWeeklyScheduleCardsHtml === 'function') {
+      wkScheduleList.innerHTML = buildWeeklyScheduleCardsHtml(false);
     }
   } catch (e) {}
 
@@ -471,12 +488,35 @@ function renderParentView(matchedList) {
     const entry = history.get(dateKey);
     const date = new Date(dateKey + 'T12:00:00Z');
     const training = getTrainingDay(new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-    const label = entry.status === 'leave' ? 'แจ้งลา' : entry.updatedBy === 'parent' ? 'ยืนยันมาเรียน' : 'มาเรียน';
-    return `<tr>
-      <td data-label="วันที่ฝึกซ้อม" class="px-3 py-2">${dateFormat.format(date)}</td>
-      <td data-label="คลาส" class="px-3 py-2">${escapeHtml(entry.slot || training.title || 'รอบซ้อม')}</td>
-      <td data-label="สถานะ" class="px-3 py-2">${label}</td>
-      <td data-label="ตัดโควต้า" class="px-3 py-2">${entry.deduction ? '−' + entry.deduction + ' ครั้ง' : '0'}</td>
+    const isLeave = entry.status === 'leave';
+    const isParentRsvp = !isLeave && entry.updatedBy === 'parent';
+    const label = isLeave ? 'แจ้งลา' : isParentRsvp ? 'ยืนยันมาเรียน' : 'มาเรียน';
+
+    const classTitle = entry.slot || training.title || 'คลาสปกติ';
+    const isSatClass = classTitle.includes('เสาร์');
+    const classBadgeHtml = isSatClass
+      ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">${escapeHtml(classTitle)}</span>`
+      : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FBF4DD] text-[#241044] border border-[#DEB95B]">${escapeHtml(classTitle)}</span>`;
+
+    const statusBadgeHtml = isLeave
+      ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-50 text-amber-800 border border-amber-300"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span>${label}</span></span>`
+      : isParentRsvp
+        ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-50 text-sky-800 border border-sky-300"><span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span><span>${label}</span></span>`
+        : `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-300"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>✓ ${label}</span></span>`;
+
+    const quotaBadgeHtml = entry.deduction
+      ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-extrabold bg-rose-50 text-rose-700 border border-rose-300">−${entry.deduction} ครั้ง</span>`
+      : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-slate-100 text-slate-600 border border-slate-200">0 (ไม่ตัดสิทธิ์)</span>`;
+
+    const rowAccent = isLeave
+      ? 'border-l-4 border-l-amber-400 bg-amber-50/15'
+      : 'border-l-4 border-l-emerald-500 bg-white';
+
+    return `<tr class="${rowAccent}">
+      <td data-label="วันที่ฝึกซ้อม" class="px-3 py-2.5"><span class="font-extrabold text-[#241044]">${dateFormat.format(date)}</span></td>
+      <td data-label="คลาส" class="px-3 py-2.5">${classBadgeHtml}</td>
+      <td data-label="สถานะ" class="px-3 py-2.5">${statusBadgeHtml}</td>
+      <td data-label="ตัดโควต้า" class="px-3 py-2.5">${quotaBadgeHtml}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="4" class="px-3 py-4 text-nike-mute">ยังไม่มีประวัติเข้าเรียน</td></tr>';
   const latest = document.getElementById('dash-latest-practice');
@@ -757,8 +797,7 @@ function populateLinkStudentDropdown() {
   sorted.forEach(s => {
     const opt = document.createElement('option');
     opt.value = s.id;
-    const rem = s.remaining !== undefined ? s.remaining : 0;
-    const phoneLabel = s.phone ? '(ผูกเบอร์แล้ว)' : `(คงเหลือ ${rem} ครั้ง • รอผูกเบอร์)`;
+    const phoneLabel = s.phone ? '(ผูกเบอร์แล้ว)' : '(รอผูกเบอร์)';
     opt.innerText = `น้อง ${s.name} ${phoneLabel}`;
     select.appendChild(opt);
   });
