@@ -100,8 +100,8 @@ function renderParentView(matchedList) {
     if (calMNav) calMNav.classList.remove('hidden');
     if (regNav) regNav.classList.remove('hidden');
     if (regMNav) regMNav.classList.remove('hidden');
-    if (boardNav) boardNav.classList.add('hidden');
-    if (boardMNav) boardMNav.classList.add('hidden');
+    if (boardNav) boardNav.classList.remove('hidden');
+    if (boardMNav) boardMNav.classList.remove('hidden');
 
     if (renewGate) renewGate.classList.remove('hidden');
     if (renewContent) renewContent.classList.add('hidden');
@@ -125,8 +125,8 @@ function renderParentView(matchedList) {
   if (calMNav) calMNav.classList.remove('hidden');
   if (regNav) regNav.classList.add('hidden');
   if (regMNav) regMNav.classList.add('hidden');
-  if (boardNav) boardNav.classList.add('hidden');
-  if (boardMNav) boardMNav.classList.add('hidden');
+  if (boardNav) boardNav.classList.remove('hidden');
+  if (boardMNav) boardMNav.classList.remove('hidden');
 
   if (renewGate) renewGate.classList.add('hidden');
   if (renewContent) renewContent.classList.remove('hidden');

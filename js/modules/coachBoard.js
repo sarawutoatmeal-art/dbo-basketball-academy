@@ -94,9 +94,9 @@ const coachBoardState = {
   initialized: false,
   courtMode: 'full',       // 'full' | 'half' | 'landscape'
   tool: 'move',            // 'move' | 'arrow' | 'dribble' | 'screen' | 'pen'
-  strokeColor: '#DEB95B',
-  offenseTheme: 'purple',  // Default Offense 1-5: DBO Purple & Gold
-  defenseTheme: 'gold',    // Default Defense X1-X5: DBO Gold & Navy (changeable to any color!)
+  strokeColor: '#FFFFFF',  // Crisp white tactical lines matching screenshot
+  offenseTheme: 'blue',    // Team A: Royal Blue (Photo 1 & 2)
+  defenseTheme: 'red',     // Team B: Tactical Red (Photo 1 & 2)
   showDefense: true,
   isFullscreen: false,
   openDrawer: null,        // null | 'colors' | 'presets' | 'lineup' | 'saves'
@@ -104,6 +104,7 @@ const coachBoardState = {
   isDrawing: false,
   currentDrawing: null,
   drawings: [],            // Normalized 0..1000 coords
+  redoStack: [],           // Stack for Redo
   tokens: [],              // Normalized 0..100 coords (stored in vertical portrait reference frame)
   lineupNames: {
     O1: 'PG (1)',
@@ -137,77 +138,13 @@ function saveCoachBoardPrefs() {
 }
 
 function getDefaultCoachBoardTokens(mode = 'full', preset = '5out') {
-  if (preset === 'pick_roll') {
-    return [
-      { id: 'O1', kind: 'offense', num: '1', label: coachBoardState.lineupNames.O1, x: 50, y: 38 },
-      { id: 'O2', kind: 'offense', num: '2', label: coachBoardState.lineupNames.O2, x: 86, y: 26 },
-      { id: 'O3', kind: 'offense', num: '3', label: coachBoardState.lineupNames.O3, x: 14, y: 26 },
-      { id: 'O4', kind: 'offense', num: '4', label: coachBoardState.lineupNames.O4, x: 18, y: 12 },
-      { id: 'O5', kind: 'offense', num: '5', label: coachBoardState.lineupNames.O5, x: 42, y: 33 },
-      { id: 'D1', kind: 'defense', num: 'X1', label: 'X1', x: 50, y: 31 },
-      { id: 'D2', kind: 'defense', num: 'X2', label: 'X2', x: 78, y: 22 },
-      { id: 'D3', kind: 'defense', num: 'X3', label: 'X3', x: 22, y: 22 },
-      { id: 'D4', kind: 'defense', num: 'X4', label: 'X4', x: 26, y: 13 },
-      { id: 'D5', kind: 'defense', num: 'X5', label: 'X5', x: 44, y: 26 },
-      { id: 'BALL', kind: 'ball', num: '🏀', label: 'บอล', x: 55, y: 37 }
-    ];
-  }
-
-  if (preset === 'zone_23') {
-    return [
-      { id: 'O1', kind: 'offense', num: '1', label: coachBoardState.lineupNames.O1, x: 50, y: 40 },
-      { id: 'O2', kind: 'offense', num: '2', label: coachBoardState.lineupNames.O2, x: 82, y: 30 },
-      { id: 'O3', kind: 'offense', num: '3', label: coachBoardState.lineupNames.O3, x: 18, y: 30 },
-      { id: 'O4', kind: 'offense', num: '4', label: coachBoardState.lineupNames.O4, x: 50, y: 23 },
-      { id: 'O5', kind: 'offense', num: '5', label: coachBoardState.lineupNames.O5, x: 64, y: 13 },
-      { id: 'D1', kind: 'defense', num: 'X1', label: 'X1', x: 38, y: 26 },
-      { id: 'D2', kind: 'defense', num: 'X2', label: 'X2', x: 62, y: 26 },
-      { id: 'D3', kind: 'defense', num: 'X3', label: 'X3', x: 26, y: 14 },
-      { id: 'D4', kind: 'defense', num: 'X4', label: 'X4', x: 50, y: 13 },
-      { id: 'D5', kind: 'defense', num: 'X5', label: 'X5', x: 74, y: 14 },
-      { id: 'BALL', kind: 'ball', num: '🏀', label: 'บอล', x: 54, y: 39 }
-    ];
-  }
-
-  if (preset === 'zone_131') {
-    return [
-      { id: 'O1', kind: 'offense', num: '1', label: coachBoardState.lineupNames.O1, x: 50, y: 42 },
-      { id: 'O2', kind: 'offense', num: '2', label: coachBoardState.lineupNames.O2, x: 84, y: 32 },
-      { id: 'O3', kind: 'offense', num: '3', label: coachBoardState.lineupNames.O3, x: 16, y: 32 },
-      { id: 'O4', kind: 'offense', num: '4', label: coachBoardState.lineupNames.O4, x: 84, y: 13 },
-      { id: 'O5', kind: 'offense', num: '5', label: coachBoardState.lineupNames.O5, x: 36, y: 18 },
-      { id: 'D1', kind: 'defense', num: 'X1', label: 'X1', x: 50, y: 31 },
-      { id: 'D2', kind: 'defense', num: 'X2', label: 'X2', x: 26, y: 23 },
-      { id: 'D3', kind: 'defense', num: 'X3', label: 'X3', x: 50, y: 22 },
-      { id: 'D4', kind: 'defense', num: 'X4', label: 'X4', x: 74, y: 23 },
-      { id: 'D5', kind: 'defense', num: 'X5', label: 'X5', x: 50, y: 12 },
-      { id: 'BALL', kind: 'ball', num: '🏀', label: 'บอล', x: 54, y: 41 }
-    ];
-  }
-
-  if (preset === 'box_out') {
-    return [
-      { id: 'O1', kind: 'offense', num: '1', label: coachBoardState.lineupNames.O1, x: 50, y: 37 },
-      { id: 'O2', kind: 'offense', num: '2', label: coachBoardState.lineupNames.O2, x: 78, y: 27 },
-      { id: 'O3', kind: 'offense', num: '3', label: coachBoardState.lineupNames.O3, x: 22, y: 27 },
-      { id: 'O4', kind: 'offense', num: '4', label: coachBoardState.lineupNames.O4, x: 30, y: 16 },
-      { id: 'O5', kind: 'offense', num: '5', label: coachBoardState.lineupNames.O5, x: 70, y: 16 },
-      { id: 'D1', kind: 'defense', num: 'X1', label: 'X1', x: 50, y: 27 },
-      { id: 'D2', kind: 'defense', num: 'X2', label: 'X2', x: 64, y: 21 },
-      { id: 'D3', kind: 'defense', num: 'X3', label: 'X3', x: 36, y: 21 },
-      { id: 'D4', kind: 'defense', num: 'X4', label: 'X4', x: 38, y: 14 },
-      { id: 'D5', kind: 'defense', num: 'X5', label: 'X5', x: 62, y: 14 },
-      { id: 'BALL', kind: 'ball', num: '🏀', label: 'บอล', x: 50, y: 10 }
-    ];
-  }
-
   if (preset === 'cone_drill') {
     return [
-      { id: 'O1', kind: 'offense', num: '1', label: coachBoardState.lineupNames.O1, x: 50, y: 46 },
-      { id: 'O2', kind: 'offense', num: '2', label: coachBoardState.lineupNames.O2, x: 50, y: 54 },
-      { id: 'O3', kind: 'offense', num: '3', label: coachBoardState.lineupNames.O3, x: 50, y: 62 },
-      { id: 'O4', kind: 'offense', num: '4', label: coachBoardState.lineupNames.O4, x: 82, y: 28 },
-      { id: 'O5', kind: 'offense', num: '5', label: coachBoardState.lineupNames.O5, x: 18, y: 28 },
+      { id: 'O1', kind: 'offense', num: '57', label: 'Matthew', x: 50, y: 46 },
+      { id: 'O2', kind: 'offense', num: '89', label: 'John', x: 50, y: 54 },
+      { id: 'O3', kind: 'offense', num: '58', label: 'Greg', x: 50, y: 62 },
+      { id: 'O4', kind: 'offense', num: '99', label: 'Peter', x: 82, y: 28 },
+      { id: 'O5', kind: 'offense', num: '74', label: 'Josh', x: 18, y: 28 },
       { id: 'C1', kind: 'cone', num: '🔺', label: 'กรวย 1', x: 50, y: 36 },
       { id: 'C2', kind: 'cone', num: '🔺', label: 'กรวย 2', x: 36, y: 28 },
       { id: 'C3', kind: 'cone', num: '🔺', label: 'กรวย 3', x: 64, y: 22 },
@@ -216,18 +153,64 @@ function getDefaultCoachBoardTokens(mode = 'full', preset = '5out') {
     ];
   }
 
+  if (mode === 'full') {
+    // Exact Lineup & Sideline Bench from BLUELINDEN Full Court Screenshot (Photo 2)
+    const tokens = [
+      { id: 'O1', kind: 'offense', num: '57', label: 'Matthew', x: 30, y: 77 },
+      { id: 'O2', kind: 'offense', num: '89', label: 'John', x: 74, y: 77 },
+      { id: 'D1', kind: 'defense', num: '47', label: 'Kevin', x: 30, y: 69 },
+      { id: 'D2', kind: 'defense', num: '97', label: 'Steven', x: 70, y: 67 },
+      { id: 'D3', kind: 'defense', num: '77', label: 'David', x: 71, y: 37 },
+      { id: 'BALL', kind: 'ball', num: '🏀', label: 'บอล', x: 67, y: 44 },
+      // Bottom bench reserve tokens
+      { id: 'OB0', kind: 'offense', isBench: true, num: '99', label: 'Peter', x: 20, y: 93 },
+      { id: 'DB0', kind: 'defense', isBench: true, num: '68', label: 'Ryan', x: 32, y: 93 }
+    ];
+
+    // Left Sideline Bench Reserves (Team A Blue 12..20)
+    for (let i = 12; i <= 20; i++) {
+      const idx = i - 12;
+      tokens.push({
+        id: `OB_${i}`,
+        kind: 'offense',
+        isBench: true,
+        num: String(i),
+        label: `Player ${i}`,
+        x: 6,
+        y: Math.round(23 + idx * 7)
+      });
+    }
+
+    // Right Sideline Bench Reserves (Team B Red 12..20)
+    for (let i = 12; i <= 20; i++) {
+      const idx = i - 12;
+      tokens.push({
+        id: `DB_${i}`,
+        kind: 'defense',
+        isBench: true,
+        num: String(i),
+        label: `Player ${i}`,
+        x: 94,
+        y: Math.round(23 + idx * 7)
+      });
+    }
+
+    return tokens;
+  }
+
+  // Default Half Court Lineup matching Photo 1
   return [
-    { id: 'O1', kind: 'offense', num: '1', label: coachBoardState.lineupNames.O1, x: 50, y: 40 },
-    { id: 'O2', kind: 'offense', num: '2', label: coachBoardState.lineupNames.O2, x: 82, y: 31 },
-    { id: 'O3', kind: 'offense', num: '3', label: coachBoardState.lineupNames.O3, x: 18, y: 31 },
-    { id: 'O4', kind: 'offense', num: '4', label: coachBoardState.lineupNames.O4, x: 86, y: 14 },
-    { id: 'O5', kind: 'offense', num: '5', label: coachBoardState.lineupNames.O5, x: 14, y: 14 },
-    { id: 'D1', kind: 'defense', num: 'X1', label: 'X1', x: 50, y: 32 },
-    { id: 'D2', kind: 'defense', num: 'X2', label: 'X2', x: 72, y: 26 },
-    { id: 'D3', kind: 'defense', num: 'X3', label: 'X3', x: 28, y: 26 },
-    { id: 'D4', kind: 'defense', num: 'X4', label: 'X4', x: 74, y: 14 },
-    { id: 'D5', kind: 'defense', num: 'X5', label: 'X5', x: 26, y: 14 },
-    { id: 'BALL', kind: 'ball', num: '🏀', label: 'บอล', x: 55, y: 39 }
+    { id: 'O1', kind: 'offense', num: '57', label: 'Matthew', x: 58, y: 22 },
+    { id: 'O2', kind: 'offense', num: '89', label: 'John', x: 27, y: 52 },
+    { id: 'O3', kind: 'offense', num: '58', label: 'Greg', x: 42, y: 73 },
+    { id: 'O4', kind: 'offense', num: '99', label: 'Peter', x: 64, y: 86 },
+    { id: 'O5', kind: 'offense', num: '74', label: 'Josh', x: 65, y: 55 },
+    { id: 'D1', kind: 'defense', num: '47', label: 'Kevin', x: 67, y: 30 },
+    { id: 'D2', kind: 'defense', num: '68', label: 'Ryan', x: 45, y: 48 },
+    { id: 'D3', kind: 'defense', num: '97', label: 'Steven', x: 71, y: 50 },
+    { id: 'D4', kind: 'defense', num: '77', label: 'Justin', x: 57, y: 71 },
+    { id: 'D5', kind: 'defense', num: '77', label: 'David', x: 69, y: 80 },
+    { id: 'BALL', kind: 'ball', num: '🏀', label: 'บอล', x: 67, y: 44 }
   ];
 }
 
@@ -250,18 +233,18 @@ function initCoachBoard() {
   populateCoachBoardStudentAssigners();
   renderCoachBoardSavedPlaysList();
   setCoachBoardCourtMode(coachBoardState.courtMode, true);
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // Convert stored vertical-court coordinates (x:0..100, y:0..100) to current court view display %
 function toDisplayCoords(xPct, yPct, mode) {
   if (mode === 'half') {
     return {
-      x: Math.min(95, Math.max(5, xPct)),
-      y: Math.min(93, Math.max(6, yPct * 1.68))
+      x: Math.min(94, Math.max(6, xPct)),
+      y: Math.min(92, Math.max(8, yPct))
     };
   }
   if (mode === 'landscape') {
-    // Rotate 90 deg counter-clockwise: top hoop (y=0) -> left hoop (displayX=0), x (0..100) -> displayY (100..0)
     return {
       x: Math.min(96, Math.max(4, yPct)),
       y: Math.min(94, Math.max(6, 100 - xPct))
@@ -273,12 +256,12 @@ function toDisplayCoords(xPct, yPct, mode) {
   };
 }
 
-// Convert display % (0..100, 0..100) back to canonical vertical-court coordinates
+// Convert display % (0..100, 0..100) back to canonical coordinates
 function fromDisplayCoords(dispXPct, dispYPct, mode) {
   if (mode === 'half') {
     return {
       x: dispXPct,
-      y: dispYPct / 1.68
+      y: dispYPct
     };
   }
   if (mode === 'landscape') {
@@ -295,8 +278,14 @@ function fromDisplayCoords(dispXPct, dispYPct, mode) {
 
 function setCoachBoardCourtMode(mode, skipSave = false) {
   const validModes = ['full', 'half', 'landscape'];
+  const prevMode = coachBoardState.courtMode;
   coachBoardState.courtMode = validModes.includes(mode) ? mode : 'full';
   if (!skipSave) saveCoachBoardPrefs();
+
+  // Refresh tokens to match mode layout if no active custom drawing
+  if (prevMode !== coachBoardState.courtMode && (!coachBoardState.drawings || coachBoardState.drawings.length === 0)) {
+    coachBoardState.tokens = getDefaultCoachBoardTokens(coachBoardState.courtMode);
+  }
 
   const stage = document.getElementById('dboCoachBoardStage');
   const fullSvg = document.getElementById('dboFullCourtSvg');
@@ -482,12 +471,52 @@ function applyCoachBoardPreset(presetKey) {
 
 function undoCoachBoardDrawing() {
   if (coachBoardState.drawings.length > 0) {
-    coachBoardState.drawings.pop();
+    const popped = coachBoardState.drawings.pop();
+    if (!coachBoardState.redoStack) coachBoardState.redoStack = [];
+    coachBoardState.redoStack.push(popped);
     renderCoachBoardCanvas();
   }
 }
 
+function redoCoachBoardDrawing() {
+  if (coachBoardState.redoStack && coachBoardState.redoStack.length > 0) {
+    const item = coachBoardState.redoStack.pop();
+    coachBoardState.drawings.push(item);
+    renderCoachBoardCanvas();
+  }
+}
+
+const COACH_BOARD_CYCLE_TOOLS = ['move', 'arrow', 'dribble', 'screen', 'pen'];
+const COACH_BOARD_CYCLE_ICONS = {
+  move: '🖐️',
+  arrow: '↗️',
+  dribble: '〰️',
+  screen: '⊣',
+  pen: '✏️'
+};
+
+function cycleCoachBoardDrawingTool() {
+  const currentIdx = COACH_BOARD_CYCLE_TOOLS.indexOf(coachBoardState.tool);
+  const nextIdx = (currentIdx + 1) % COACH_BOARD_CYCLE_TOOLS.length;
+  setCoachBoardTool(COACH_BOARD_CYCLE_TOOLS[nextIdx]);
+  const iconSpan = document.getElementById('floatingToolCycleIcon');
+  if (iconSpan) iconSpan.innerText = COACH_BOARD_CYCLE_ICONS[coachBoardState.tool] || '✏️';
+  if (typeof showToast === 'function') {
+    const toolNames = {
+      move: 'โหมด: ขยับหมาก 🖐️',
+      arrow: 'โหมด: วาดลูกศร ↗️',
+      dribble: 'โหมด: เส้นเลี้ยงบอล 〰️',
+      screen: 'โหมด: สัญลักษณ์สกรีน ⊣',
+      pen: 'โหมด: วาดอิสระ ✏️'
+    };
+    showToast(toolNames[coachBoardState.tool]);
+  }
+}
+
 function clearCoachBoardDrawings() {
+  if (coachBoardState.drawings.length > 0) {
+    coachBoardState.redoStack = [...coachBoardState.drawings];
+  }
   coachBoardState.drawings = [];
   renderCoachBoardCanvas();
   if (typeof showToast === 'function') showToast('ล้างเส้นวาดบนสนามเรียบร้อย');
@@ -560,8 +589,8 @@ function renderCoachBoardTokens() {
 
   layer.innerHTML = '';
   const mode = coachBoardState.courtMode;
-  const offTheme = DBO_TOKEN_THEMES[coachBoardState.offenseTheme] || DBO_TOKEN_THEMES.purple;
-  const defTheme = DBO_TOKEN_THEMES[coachBoardState.defenseTheme] || DBO_TOKEN_THEMES.gold;
+  const offTheme = DBO_TOKEN_THEMES[coachBoardState.offenseTheme] || DBO_TOKEN_THEMES.blue;
+  const defTheme = DBO_TOKEN_THEMES[coachBoardState.defenseTheme] || DBO_TOKEN_THEMES.red;
 
   coachBoardState.tokens.forEach(tok => {
     if (tok.kind === 'defense' && !coachBoardState.showDefense) return;
@@ -569,7 +598,8 @@ function renderCoachBoardTokens() {
     const pos = toDisplayCoords(tok.x, tok.y, mode);
 
     const el = document.createElement('div');
-    el.className = `dbo-board-token dbo-token-${tok.kind}`;
+    const benchClass = tok.isBench ? 'dbo-token-bench' : '';
+    el.className = `dbo-board-token dbo-token-${tok.kind} ${benchClass}`.trim();
     el.dataset.tokenId = tok.id;
     el.style.left = `${pos.x}%`;
     el.style.top = `${pos.y}%`;
@@ -586,8 +616,8 @@ function renderCoachBoardTokens() {
     } else {
       const theme = tok.kind === 'offense' ? offTheme : defTheme;
       el.innerHTML = `
-        <div class="dbo-token-disc" style="background:${theme.bg}; color:${theme.text}; border: 2.5px solid ${theme.border};">${escapeHtml(tok.num)}</div>
-        <span class="dbo-token-nameplate" style="background:${theme.plateBg}; border-color:${theme.plateBorder};">${escapeHtml(tok.label)}</span>
+        <div class="dbo-token-disc" style="background:${theme.bg}; color:${theme.text};">${escapeHtml(tok.num)}</div>
+        <span class="dbo-token-nameplate">${escapeHtml(tok.label)}</span>
       `;
     }
 
@@ -763,7 +793,8 @@ function bindCoachBoardEvents() {
     const tokenEl = e.target.closest('.dbo-board-token');
     const mode = coachBoardState.courtMode;
 
-    if (tokenEl && (coachBoardState.tool === 'move' || e.pointerType === 'mouse')) {
+    // Tapping or dragging a token always moves the player/ball
+    if (tokenEl) {
       e.preventDefault();
       const tokenId = tokenEl.dataset.tokenId;
       coachBoardState.activeTokenId = tokenId;
@@ -982,6 +1013,7 @@ async function toggleCoachBoardFullscreen() {
   setTimeout(() => {
     renderCoachBoardTokens();
     resizeAndRenderCoachBoardCanvas();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   }, 60);
 }
 
@@ -999,6 +1031,7 @@ document.addEventListener('fullscreenchange', () => {
     setTimeout(() => {
       renderCoachBoardTokens();
       resizeAndRenderCoachBoardCanvas();
+      if (typeof lucide !== 'undefined') lucide.createIcons();
     }, 60);
   }
 });

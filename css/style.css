@@ -1764,12 +1764,13 @@ header .app-header-identity {
   z-index: 9999 !important;
   width: 100vw !important;
   height: 100dvh !important;
-  background: #140826 !important;
-  padding: 8px 10px !important;
+  background: #000000 !important;
+  padding: 0 !important;
+  margin: 0 !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
-  overflow-y: auto !important;
+  gap: 0 !important;
+  overflow: hidden !important;
 }
 
 body.dbo-board-fs-active > header,
@@ -1777,25 +1778,91 @@ body.dbo-board-fs-active > nav.mobile-bottom-nav {
   display: none !important;
 }
 
+.dbo-board-fullscreen .dbo-board-topbar {
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: #000000 !important;
+  padding: 6px 12px !important;
+}
+
+.dbo-board-fullscreen .dbo-board-dock {
+  border-radius: 0 !important;
+  border: none !important;
+  background: #111111 !important;
+  padding: 4px 10px !important;
+}
+
+.dbo-board-fullscreen .dbo-board-dock button.dbo-tool-btn {
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+}
+
 .dbo-board-fullscreen .dbo-court-viewport-container {
   flex: 1 1 auto;
   min-height: 0;
-  padding: 6px !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: #000000 !important;
 }
 
 .dbo-board-fullscreen .dbo-court-stage[data-court-mode="full"] {
-  max-height: calc(100dvh - 135px);
-  max-width: min(100%, calc((100dvh - 135px) * 600 / 940));
+  max-height: calc(100dvh - 52px) !important;
+  max-width: min(100vw, calc((100dvh - 52px) * 600 / 940)) !important;
+  border-radius: 0 !important;
 }
 
 .dbo-board-fullscreen .dbo-court-stage[data-court-mode="landscape"] {
-  max-height: calc(100dvh - 135px);
-  max-width: min(100%, calc((100dvh - 135px) * 940 / 600));
+  max-height: calc(100dvh - 52px) !important;
+  max-width: min(100vw, calc((100dvh - 52px) * 940 / 600)) !important;
+  border-radius: 0 !important;
 }
 
 .dbo-board-fullscreen .dbo-court-stage[data-court-mode="half"] {
-  max-height: calc(100dvh - 135px);
-  max-width: min(100%, calc((100dvh - 135px) * 600 / 560));
+  max-height: calc(100dvh - 52px) !important;
+  max-width: min(100vw, calc((100dvh - 52px) * 600 / 560)) !important;
+  border-radius: 0 !important;
+}
+
+/* Court viewport container in normal tab view - edge-to-edge immersive */
+#tab-coach-board .dbo-court-viewport-container {
+  min-height: calc(100dvh - 165px);
+  max-height: calc(100dvh - 140px);
+}
+
+.dbo-court-stage[data-court-mode="full"] {
+  height: 100%;
+  aspect-ratio: 600 / 940;
+}
+
+.dbo-court-stage[data-court-mode="landscape"] {
+  height: 100%;
+  aspect-ratio: 940 / 600;
+}
+
+.dbo-court-stage[data-court-mode="half"] {
+  height: 100%;
+  aspect-ratio: 600 / 560;
+}
+
+/* Floating quick tactical actions overlay */
+.dbo-floating-ctrls {
+  position: absolute;
+  pointer-events: auto;
+  z-index: 35;
+}
+
+.dbo-floating-bottom-left {
+  bottom: 12px;
+  left: 12px;
+}
+
+.dbo-floating-bottom-right {
+  bottom: 12px;
+  right: 12px;
 }
 
 .dbo-board-token {
@@ -1815,89 +1882,159 @@ body.dbo-board-fs-active > nav.mobile-bottom-nav {
 .dbo-board-token.dragging {
   cursor: grabbing;
   transform: translate(-50%, -50%) scale(1.18);
-  z-index: 35;
+  z-index: 45;
 }
 
+/* ENLARGED PRO TOKENS (Matching BLUELINDEN Coach Tactic Board Screenshot) */
 .dbo-token-disc {
-  width: 38px;
-  height: 38px;
+  width: 54px;
+  height: 54px;
   border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-weight: 900;
-  font-size: 14px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  font-size: 21px;
+  letter-spacing: -0.5px;
+  border: 3.5px solid #FFFFFF;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.65), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .dbo-token-offense .dbo-token-disc {
-  background: linear-gradient(135deg, #241044 0%, #38196B 100%);
-  color: #DEB95B;
-  border: 2.5px solid #DEB95B;
+  background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #1E40AF 100%);
+  color: #FFFFFF;
+  border: 3.5px solid #FFFFFF;
 }
 
 .dbo-token-defense .dbo-token-disc {
-  background: linear-gradient(135deg, #991B1B 0%, #DC2626 100%);
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 50%, #991B1B 100%);
   color: #FFFFFF;
-  border: 2.5px solid #FFFFFF;
+  border: 3.5px solid #FFFFFF;
 }
 
 .dbo-token-ball-circle {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   border-radius: 9999px;
-  background: radial-gradient(circle at 30% 30%, #FB923C, #C2410C);
-  border: 2px solid #241044;
+  background: radial-gradient(circle at 32% 32%, #F97316, #C2410C);
+  border: 3px solid #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  font-size: 24px;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.65);
 }
 
 .dbo-token-cone-circle {
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   border-radius: 9999px;
-  background: rgba(36, 16, 68, 0.85);
-  border: 2px solid #F59E0B;
+  background: rgba(36, 16, 68, 0.9);
+  border: 3px solid #F59E0B;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  font-size: 22px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .dbo-token-nameplate {
   margin-top: 2px;
-  padding: 1px 6px;
+  padding: 1px 7px;
   border-radius: 9999px;
-  background: rgba(36, 16, 68, 0.92);
+  background: rgba(0, 0, 0, 0.75);
   color: #FFFFFF;
-  border: 1px solid rgba(222, 185, 91, 0.75);
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1.25;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
   white-space: nowrap;
-  max-width: 84px;
+  max-width: 95px;
   overflow: hidden;
   text-overflow: ellipsis;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
 }
 
 .dbo-token-defense .dbo-token-nameplate {
-  border-color: rgba(255, 255, 255, 0.75);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(40, 10, 15, 0.82);
 }
 
+/* Sideline Bench Tokens (Photo 2) */
+.dbo-token-bench .dbo-token-disc {
+  width: 42px;
+  height: 42px;
+  font-size: 16px;
+  border-width: 2.5px;
+  opacity: 0.92;
+}
+
+.dbo-token-bench .dbo-token-nameplate {
+  font-size: 9px;
+  padding: 0.5px 5px;
+  max-width: 65px;
+}
+
+/* Responsive adjustments for phones and tablets */
 @media screen and (max-width: 480px) {
   .dbo-token-disc {
-    width: 34px;
-    height: 34px;
-    font-size: 12px;
+    width: 46px;
+    height: 46px;
+    font-size: 18px;
+    border-width: 3px;
+  }
+  .dbo-token-ball-circle {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  .dbo-token-cone-circle {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
   }
   .dbo-token-nameplate {
-    font-size: 9px;
-    padding: 1px 5px;
+    font-size: 10px;
+    padding: 1px 6px;
+    max-width: 80px;
+  }
+  .dbo-token-bench .dbo-token-disc {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+    border-width: 2px;
+  }
+  .dbo-token-bench .dbo-token-nameplate {
+    font-size: 8px;
+    padding: 0px 4px;
+    max-width: 50px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .dbo-token-disc {
+    width: 62px;
+    height: 62px;
+    font-size: 24px;
+    border-width: 4px;
+  }
+  .dbo-token-nameplate {
+    font-size: 12px;
+    padding: 2px 9px;
+    max-width: 115px;
+  }
+  .dbo-token-bench .dbo-token-disc {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+    border-width: 3px;
+  }
+  .dbo-token-bench .dbo-token-nameplate {
+    font-size: 10px;
+    padding: 1px 6px;
+    max-width: 75px;
   }
 }

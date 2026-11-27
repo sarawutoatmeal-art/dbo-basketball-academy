@@ -294,8 +294,8 @@ function updateCoachStateUI() {
   } else {
     if (coachTab) coachTab.classList.add('hidden');
     if (coachMTab) coachMTab.classList.add('hidden');
-    if (boardTab) boardTab.classList.add('hidden');
-    if (boardMTab) boardMTab.classList.add('hidden');
+    if (boardTab) boardTab.classList.remove('hidden');
+    if (boardMTab) boardMTab.classList.remove('hidden');
     if (staffCard) staffCard.classList.add('hidden');
     if (typeof renderParentView === 'function') renderParentView();
   }

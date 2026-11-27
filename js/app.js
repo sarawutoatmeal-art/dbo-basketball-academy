@@ -4,7 +4,7 @@
 
 // Tab Navigation Switcher
 function switchTab(tabName) {
-  if ((tabName === 'coach-roster' || tabName === 'coach-board') && !isCoachAuth) {
+  if (tabName === 'coach-roster' && !isCoachAuth) {
     showToast('เฉพาะโค้ชและทีมงานเท่านั้นที่มีสิทธิ์เข้าใช้งานหน้านี้');
     switchTab('parent-portal');
     return;
