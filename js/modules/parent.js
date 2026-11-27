@@ -174,14 +174,10 @@ function renderParentView(matchedList) {
       }).join('');
     }
 
+    // User request: Remove redundant sibling badge (Image 1) from the card header!
     if (sibBadge) {
-      sibBadge.classList.remove('hidden');
-      sibBadge.innerHTML = `
-        <button type="button" onclick="openSiblingSelectModal()" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FBF4DD] hover:bg-[#DEB95B] text-[#241044] border border-[#DEB95B] transition-colors cursor-pointer">
-          <i data-lucide="users" class="w-3 h-3 text-[#241044]"></i>
-          <span>${tLang('sibling_count_badge')} ${familySiblings.length} ${isEn ? 'Students' : 'คน'} (สลับคน ▾)</span>
-        </button>
-      `;
+      sibBadge.classList.add('hidden');
+      sibBadge.innerHTML = '';
     }
 
     if (sibSharedDesc) sibSharedDesc.textContent = tLang('family_separate_desc');

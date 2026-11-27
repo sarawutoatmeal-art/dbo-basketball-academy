@@ -99,8 +99,20 @@ function handleParentPhoneLogin(e, forcedInput = null) {
     localStorage.setItem('dbo_is_coach_v14', 'false');
     localStorage.removeItem('dbo_current_staff');
 
-    // MULTI-CHILD POPUP: If linked to 2+ students (siblings), prompt popup modal first!
+    // MULTI-CHILD POPUP: If linked to 2+ students (siblings), prompt popup modal FIRST before showing any dashboard data!
     if (matched.length > 1) {
+      // 1. Clear any prior logged in student from state & storage so no data is visible or preselected
+      loggedInStudent = null;
+      localStorage.removeItem('dbo_parent_logged_v14');
+      sessionStorage.removeItem('dbo_tab_parent_logged');
+
+      // 2. Ensure dashboard is strictly hidden and parent login box remains behind modal until selection
+      const dashBox = document.getElementById('parent-dashboard');
+      if (dashBox) dashBox.classList.add('hidden');
+      const loginBox = document.getElementById('parent-login-box');
+      if (loginBox) loginBox.classList.remove('hidden');
+
+      // 3. Open modal for parent to select which child to view
       openSiblingSelectModal(matched, cleanPhone);
       return;
     }
