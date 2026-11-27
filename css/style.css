@@ -521,7 +521,7 @@ header .app-header-identity {
     white-space: normal;
     overflow-wrap: anywhere;
   }
-  .app-header-row :is(#btnHeaderManualRefresh, #btnInstallAppHeader, .app-header-logout) {
+  .app-header-row :is(#btnInstallAppHeader, .app-header-logout) {
     width: 44px;
     flex: 0 0 44px;
     padding: 0;
@@ -529,6 +529,42 @@ header .app-header-identity {
     border-radius: 12px;
     background: var(--nike-cloud);
     color: var(--nike-ink);
+  }
+
+  /* In-App Refresh Button — DBO Premium Purple & Gold Accent */
+  #btnHeaderManualRefresh {
+    width: 38px !important;
+    height: 38px !important;
+    flex: 0 0 38px !important;
+    padding: 0 !important;
+    border: 1.5px solid #DEB95B !important;
+    border-radius: 12px !important;
+    background: #241044 !important;
+    color: #DEB95B !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  #btnHeaderManualRefresh:hover {
+    background: #DEB95B !important;
+    color: #1E0B38 !important;
+    transform: scale(1.05);
+  }
+  #btnHeaderManualRefresh svg,
+  #btnHeaderManualRefresh i {
+    width: 17px !important;
+    height: 17px !important;
+    stroke: #DEB95B !important;
+    color: #DEB95B !important;
+    stroke-width: 2.4px !important;
+  }
+  #btnHeaderManualRefresh:hover svg,
+  #btnHeaderManualRefresh:hover i {
+    stroke: #1E0B38 !important;
+    color: #1E0B38 !important;
   }
   .app-header-row :is(#btnInstallAppHeader, .app-header-logout) svg {
     width: 16px;

@@ -54,7 +54,7 @@ function renderParentView(matchedList) {
   const mPortalLabel = document.querySelector('#nav-m-parent-portal span');
   const mPortalIcon = document.querySelector('#nav-m-parent-portal i');
 
-  // State 1: Coach Logged In (Sees Coach Board, Coach Panel, Register, Calendar, Today's Class)
+  // State 1: Coach Logged In (Sees Coach Board, Coach Panel, Calendar, Today's Class — Hides Register New)
   if (isCoachAuth && currentStaff) {
     if (loginBox) loginBox.classList.add('hidden');
     if (dashBox) dashBox.classList.add('hidden');
@@ -74,8 +74,8 @@ function renderParentView(matchedList) {
     if (dailyMNav) dailyMNav.classList.remove('hidden');
     if (calNav) calNav.classList.remove('hidden');
     if (calMNav) calMNav.classList.remove('hidden');
-    if (regNav) regNav.classList.remove('hidden');
-    if (regMNav) regMNav.classList.remove('hidden');
+    if (regNav) regNav.classList.add('hidden');
+    if (regMNav) regMNav.classList.add('hidden');
     if (boardNav) boardNav.classList.remove('hidden');
     if (boardMNav) boardMNav.classList.remove('hidden');
 
@@ -215,6 +215,10 @@ function renderParentView(matchedList) {
       renewSiblingPicker.classList.remove('hidden');
       renewSiblingPicker.innerHTML = `
         <div class="space-y-1.5">
+          <div class="text-xs font-bold text-[#241044] flex items-center gap-1.5" id="renewSiblingPickerTitle">
+            <i data-lucide="users" class="w-3.5 h-3.5 text-[#DEB95B]"></i>
+            <span>${tLang('renew_sibling_picker_title')}</span>
+          </div>
           <div class="grid grid-cols-2 gap-2">
             ${familySiblings.map(s => {
               const isCur = Number(s.id) === Number(loggedInStudent.id);
@@ -420,7 +424,7 @@ function renderParentView(matchedList) {
     periodEl.innerText = 'ไม่มีวันตัดรอบ • เรียนให้ครบจำนวนครั้ง (จ./อ./พฤ.)';
   }
 
-  document.getElementById('renewingStudentName').innerText = `น้อง ${loggedInStudent.name}`;
+  document.getElementById('renewingStudentName').innerText = displayName;
   document.getElementById('renewingStudentPhone').innerText = loggedInStudent.phone;
   document.getElementById('slipStudentName').value = loggedInStudent.name;
 
@@ -688,6 +692,27 @@ function switchParentCategory(category) {
   }
   lucide.createIcons();
 }
+
+window.toggleParentHistoryAccordion = function() {
+  const body = document.getElementById('parentHistoryAccordionBody');
+  const chevron = document.getElementById('iconParentHistoryChevron');
+  const btn = document.getElementById('btnToggleParentHistoryAccordion');
+  const hint = document.getElementById('parentHistoryAccordionHint');
+  if (!body) return;
+  const isHidden = body.classList.contains('hidden');
+  const isEn = typeof currentAppLang !== 'undefined' && currentAppLang === 'en';
+  if (isHidden) {
+    body.classList.remove('hidden');
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
+    if (btn) btn.setAttribute('aria-expanded', 'true');
+    if (hint) hint.textContent = isEn ? 'Tap to collapse' : 'แตะเพื่อซ่อน';
+  } else {
+    body.classList.add('hidden');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    if (hint) hint.textContent = isEn ? 'Tap to view history' : 'แตะเพื่อดูประวัติ';
+  }
+};
 
 function renderLivePeers() {
   const peerContainer = document.getElementById('todayPeerList');
@@ -1321,15 +1346,17 @@ function calculateFee() {
   }
 
   if (display) {
-    display.innerText = `${amount.toLocaleString()} บาท`;
+    const isEn = typeof currentAppLang !== 'undefined' ? currentAppLang === 'en' : (localStorage.getItem('dbo_app_lang_v1') === 'en');
+    display.innerText = isEn ? `${amount.toLocaleString()} THB` : `${amount.toLocaleString()} บาท`;
   }
   return amount;
 }
 
 function setTechawitSchool() {
+  const isEn = typeof currentAppLang !== 'undefined' ? currentAppLang === 'en' : (localStorage.getItem('dbo_app_lang_v1') === 'en');
   const input = document.getElementById('regSchool');
-  input.value = 'โรงเรียนเตชะวิทย์';
-  checkTechawitSchool('โรงเรียนเตชะวิทย์');
+  input.value = isEn ? 'Techawit School' : 'โรงเรียนเตชะวิทย์';
+  checkTechawitSchool(input.value);
   calculateFee();
 }
 

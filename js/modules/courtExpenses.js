@@ -303,6 +303,11 @@ function setCalendarTabSubView(view) {
   const bGCal = document.getElementById('btnSubViewGCal');
 
   if (currentCalendarSubView === 'statement') {
+    if (typeof currentStaff !== 'undefined' && currentStaff && currentStaff.isAssistant) {
+      if (typeof showToast === 'function') showToast('สิทธิ์เฉพาะ Head Coach เท่านั้น (ผู้ช่วยโค้ชไม่สามารถดูหรือแก้ไขค่าเช่าสนามได้)');
+      currentCalendarSubView = 'gcal';
+      return setCalendarTabSubView('gcal');
+    }
     if (vGCal) vGCal.classList.add('hidden');
     if (vStat) vStat.classList.remove('hidden');
     if (bStat) {
@@ -327,9 +332,9 @@ function setCalendarTabSubView(view) {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// Access Control: Only Coach / Admin see court expenses; Parents & kids see only the Calendar & Google Calendar
+// Access Control: Only Head Coach (โค้ชโอ๊ต) can see/manage court expenses; Assistant coaches and parents see only the calendar
 function updateCourtCalendarRoleVisibility() {
-  const isCoach = (typeof isCoachAuth !== 'undefined' && isCoachAuth && typeof currentStaff !== 'undefined' && currentStaff);
+  const isHeadCoach = Boolean(typeof isCoachAuth !== 'undefined' && isCoachAuth && typeof currentStaff !== 'undefined' && currentStaff && !currentStaff.isAssistant);
   const printBtn = document.getElementById('btnCourtPrintModal');
   const navBar = document.getElementById('calendarSubViewNav');
   const vStat = document.getElementById('subViewCourtStatement');
@@ -337,18 +342,19 @@ function updateCourtCalendarRoleVisibility() {
   const headerTitle = document.getElementById('calendarTabHeaderTitle');
   const headerSub = document.getElementById('calendarTabHeaderSubtitle');
 
-  if (isCoach) {
+  if (isHeadCoach) {
     if (printBtn) printBtn.classList.remove('hidden');
     if (navBar) navBar.classList.remove('hidden');
     if (headerTitle) headerTitle.innerText = 'ปฏิทินและค่าสนาม';
     if (headerSub) headerSub.innerText = 'ตารางซ้อมและค่าเช่าสนาม 500 บาท/ชม.';
     setCalendarTabSubView(currentCalendarSubView);
   } else {
-    // Parents, students, public visitors
+    // Parents, students, public visitors, and Assistant Coaches (cannot see or print court expenses)
     if (printBtn) printBtn.classList.add('hidden');
     if (navBar) navBar.classList.add('hidden');
     if (vStat) vStat.classList.add('hidden');
     if (vGCal) vGCal.classList.remove('hidden');
+    currentCalendarSubView = 'gcal';
     if (headerTitle) headerTitle.innerText = 'ปฏิทินฝึกซ้อม';
     if (headerSub) headerSub.innerText = 'ตารางซ้อมประจำสัปดาห์';
     if (typeof renderMasterCalendarGrid === 'function') renderMasterCalendarGrid();
@@ -363,6 +369,10 @@ function updateCourtCalendarRoleVisibility() {
 let currentCourtEditChoice = 'normal';
 
 function openEditCourtDayModal(dateKey) {
+  if (typeof currentStaff !== 'undefined' && currentStaff && currentStaff.isAssistant) {
+    if (typeof showToast === 'function') showToast('สิทธิ์เฉพาะ Head Coach เท่านั้น (ผู้ช่วยโค้ชไม่สามารถแก้ไขค่าเช่าสนามได้)');
+    return;
+  }
   activeEditCourtDateKey = dateKey;
   const modal = document.getElementById('editCourtDayModal');
   if (!modal) return;
@@ -527,6 +537,10 @@ function resetCourtDayToDefault(dateKey) {
 // ADD SPECIAL DAY / PRIVATE CLASS MODAL
 // ========================================================
 function openAddSpecialCourtDayModal() {
+  if (typeof currentStaff !== 'undefined' && currentStaff && currentStaff.isAssistant) {
+    if (typeof showToast === 'function') showToast('สิทธิ์เฉพาะ Head Coach เท่านั้น (ผู้ช่วยโค้ชไม่สามารถจัดการค่าเช่าสนามได้)');
+    return;
+  }
   const modal = document.getElementById('addSpecialCourtDayModal');
   if (!modal) return;
 
@@ -597,6 +611,10 @@ function saveAddSpecialCourtDay() {
 // PRINT FORMAL STATEMENT MODAL (A4 Attachment for School)
 // ========================================================
 function openPrintCourtStatementModal() {
+  if (typeof currentStaff !== 'undefined' && currentStaff && currentStaff.isAssistant) {
+    if (typeof showToast === 'function') showToast('สิทธิ์เฉพาะ Head Coach เท่านั้น (ผู้ช่วยโค้ชไม่สามารถพิมพ์ใบสรุปค่าเช่าสนามได้)');
+    return;
+  }
   const modal = document.getElementById('printCourtStatementModal');
   if (!modal) return;
 
@@ -666,6 +684,10 @@ function triggerPrintCourtDocument() {
 
 // Copy Summary Text for Line / Email / School admin
 function copyCourtSummaryText() {
+  if (typeof currentStaff !== 'undefined' && currentStaff && currentStaff.isAssistant) {
+    if (typeof showToast === 'function') showToast('สิทธิ์เฉพาะ Head Coach เท่านั้น (ผู้ช่วยโค้ชไม่สามารถคัดลอกสรุปค่าเช่าสนามได้)');
+    return;
+  }
   const data = getCourtMonthData(courtSelectedYear, courtSelectedMonth);
   let text = `🏀 สรุปค่าใช้จ่ายค่าเช่าสนาม DBO Basketball Academy\n`;
   text += `ประจำเดือน: ${data.monthName} ${data.thaiYear}\n`;

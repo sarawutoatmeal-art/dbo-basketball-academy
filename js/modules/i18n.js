@@ -228,7 +228,95 @@ const DBO_I18N_DICT = {
 
     // Auth & Logout
     logout_this_device: 'ออกจากระบบเครื่องนี้',
-    logout_all_devices: 'ออกจากระบบทุกเครื่อง (Logout All Devices)'
+    logout_all_devices: 'ออกจากระบบทุกเครื่อง (Logout All Devices)',
+
+    // Bank & Payment Details
+    bank_account_holder: 'นายศราวุธ สระแกทอง',
+    bank_account_holder_short: 'ชื่อบัญชี: ศราวุธ สระแกทอง',
+    bank_account_name_label: 'ชื่อบัญชี:',
+    bank_account_num_label: 'เลขที่บัญชี:',
+    bank_name_label: 'ธนาคาร:',
+    bank_kbank: 'กสิกรไทย (KBANK)',
+    btn_copy: 'คัดลอก',
+    renew_sibling_picker_title: 'เลือกบุตรหลานที่ต้องการต่อคอร์สเรียน (ป้องกันการต่อคอร์สผิดคน)',
+    package_selected_label: 'แพ็กเกจที่เลือก',
+    amount_transfer_label: 'ยอดที่ต้องโอน (บาท)',
+    slip_upload_label: 'แนบสลิปโอนเงิน (ภาพถ่าย / PDF)',
+
+    // Accordion History
+    history_tap_view: 'แตะเพื่อดูประวัติ',
+    history_tap_hide: 'แตะเพื่อซ่อน',
+    history_th_date: 'วันที่ซ้อม',
+    history_th_class: 'คลาส',
+    history_th_status: 'สถานะ',
+    history_th_deduct: 'หักสิทธิ์',
+    history_th_remain: 'คงเหลือ',
+
+    // Calendar & Buttons
+    btn_sync_calendar: 'ซิงค์ปฏิทิน',
+    btn_google_calendar: 'Google Calendar',
+    btn_download_ical: 'ดาวน์โหลด iCal (.ics)',
+    cal_header_title: 'ปฏิทินฝึกซ้อม',
+    cal_header_subtitle: 'ตารางฝึกซ้อมประจำสัปดาห์ & ปฏิทิน Google Calendar',
+    cal_cur_month_btn: 'เดือนปัจจุบัน',
+
+    // Curriculum
+    weekly_curriculum_main_title: 'หัวข้อฝึกซ้อมประจำสัปดาห์ (Weekly Training Curriculum)',
+    weekly_focus_title: '🎯 เป้าหมายการฝึกซ้อมประจำสัปดาห์:',
+    edit_weekly_schedule_btn: 'แก้ไขเนื้อหาการสอนประจำสัปดาห์',
+
+    // Registration Form
+    reg_title: 'สมัครเรียน',
+    reg_subtitle: 'คลาสที่โรงเรียนเตชะวิทย์',
+    reg_choose_course: 'เลือกคอร์ส',
+    reg_course_regular: 'คอร์สปกติ 10 ครั้ง',
+    reg_course_regular_time: 'จ. / อ. / พฤ. · 17:30–19:30 น.',
+    reg_price_regular: '4,290 บาท',
+    reg_course_sat: 'คอร์สวันเสาร์ 4 ครั้ง',
+    reg_course_sat_time: 'โค้ชโอ๊ต · 16:00–17:30 น.',
+    reg_price_sat: '1,690 บาท',
+    reg_course_monthly: 'แพ็กเกจรายเดือน',
+    reg_course_monthly_desc: 'ซ้อม 2 วันต่อสัปดาห์',
+    reg_price_monthly: '2,790 บาท/เดือน',
+    reg_course_private: 'คลาสส่วนตัว',
+    reg_course_private_desc: 'เลือกเวลาและโค้ชได้',
+    reg_price_private: 'คิดตามเวลา',
+    reg_fullname_label: 'ชื่อ - นามสกุล นักเรียน *',
+    reg_nickname_label: 'ชื่อเล่นน้อง *',
+    reg_birthdate_label: 'วัน/เดือน/ปีเกิด *',
+    reg_age_label: 'อายุ (ปี)',
+    reg_school_label: 'โรงเรียนปัจจุบัน *',
+    reg_referral_check: 'มีคนแนะนำมาเป็นคนภายใน DBO Academy (รับส่วนลดพิเศษ)',
+    reg_referral_desc: 'สมาชิกแนะนำ: รับสิทธิ์ส่วนลดคอร์สปกติเหลือ 3,990.- / วันเสาร์เหลือ 1,500.- ทันที',
+    reg_parent_name_label: 'ชื่อผู้ปกครอง',
+    reg_phone_label: 'เบอร์โทรศัพท์ (ใช้ล็อกอินระบบ) *',
+    reg_start_date_label: 'วันที่ต้องการเริ่มเรียนวันแรก *',
+    reg_monthly_hint: '* สำหรับรายเดือน ระบบจะตัดรอบการต่อคอร์สในวันเดิมของเดือนถัดไปให้อัตโนมัติ',
+    reg_total_pay_label: 'ยอดชำระที่ต้องโอน:',
+    reg_slip_label: 'แนบสลิปโอนเงิน *',
+    reg_slip_tap_label: 'แตะเพื่อแนบรูปสลิป',
+    reg_slip_hint: 'เมื่อแอดมิน (โค้ชโอ๊ต/โค้ชโอ๊ค/ไอริส/ออม) ตรวจสอบสลิป จะเปิดบัญชีให้ทันที',
+    reg_submit_btn: 'ยืนยันการสมัคร & ส่งสลิปโอนเงิน',
+    reg_school_quick_btn: 'เตชะวิทย์',
+    bank_kbank_full: 'ธนาคารกสิกรไทย (KBANK)',
+
+    // Today's Board & Status
+    daily_board_title: "คลาสวันนี้ (Today's Training Session)",
+    gym_badge: '📍 โรงยิม รร.เตชะวิทย์',
+    daily_stat_attending: 'มาเรียน / ยืนยันแล้ว (คน)',
+    daily_stat_leave: 'แจ้งลาหยุด (คน)',
+    daily_stat_unconfirmed: 'รอยืนยันเข้าเรียน (คน)',
+    header_notify_badge: 'เปิดแจ้งเตือน',
+    daily_btn_stats: 'ยอดรายวัน',
+    daily_btn_leave: 'แจ้งขอลา',
+    daily_btn_attend: 'ยืนยันเข้าเรียน',
+    daily_section_attending: 'ยืนยันมาเรียน',
+    daily_section_leave: 'รายชื่อน้องที่แจ้งขอลาหยุดวันนี้',
+    daily_section_other: 'นักเรียนท่านอื่นในคอร์ส',
+    daily_btn_toggle_all: 'แสดงรายชื่อทั้งหมด',
+    daily_class_location_hint: 'คลาสมาตรฐาน ยิมเตชะวิทย์',
+    daily_leave_notified_hint: 'แจ้งล่วงหน้าเรียบร้อย',
+    people_unit: 'คน'
   },
   en: {
     // Nav
@@ -403,7 +491,95 @@ const DBO_I18N_DICT = {
 
     // Auth & Logout
     logout_this_device: 'Sign Out (This Device)',
-    logout_all_devices: 'Sign Out of All Devices'
+    logout_all_devices: 'Sign Out of All Devices',
+
+    // Bank & Payment Details
+    bank_account_holder: 'Mr. Sarawut Sakaethong',
+    bank_account_holder_short: 'Account Name: Sarawut Sakaethong',
+    bank_account_name_label: 'Account Name:',
+    bank_account_num_label: 'Account Number:',
+    bank_name_label: 'Bank:',
+    bank_kbank: 'Kasikornbank (KBANK)',
+    btn_copy: 'Copy',
+    renew_sibling_picker_title: 'Select student to renew course (prevents incorrect renewal)',
+    package_selected_label: 'Selected Package',
+    amount_transfer_label: 'Transfer Amount (THB)',
+    slip_upload_label: 'Attach Payment Slip (Photo / PDF)',
+
+    // Accordion History
+    history_tap_view: 'Tap to view history',
+    history_tap_hide: 'Tap to collapse',
+    history_th_date: 'Date',
+    history_th_class: 'Class',
+    history_th_status: 'Status',
+    history_th_deduct: 'Deduction',
+    history_th_remain: 'Balance',
+
+    // Calendar & Buttons
+    btn_sync_calendar: 'Sync Calendar',
+    btn_google_calendar: 'Google Calendar',
+    btn_download_ical: 'Download iCal (.ics)',
+    cal_header_title: 'Training Schedule',
+    cal_header_subtitle: 'Weekly Training Schedule & Google Calendar',
+    cal_cur_month_btn: 'Current Month',
+
+    // Curriculum
+    weekly_curriculum_main_title: 'Weekly Training Curriculum',
+    weekly_focus_title: '🎯 Weekly Training Focus:',
+    edit_weekly_schedule_btn: 'Edit Weekly Curriculum',
+
+    // Registration Form
+    reg_title: 'Enroll / Register',
+    reg_subtitle: 'Basketball training at Techawit School Gymnasium',
+    reg_choose_course: 'Select Course',
+    reg_course_regular: 'Regular Course (10 Sessions)',
+    reg_course_regular_time: 'Mon / Tue / Thu · 5:30–7:30 PM',
+    reg_price_regular: '4,290 THB',
+    reg_course_sat: 'Saturday Course (4 Sessions)',
+    reg_course_sat_time: 'Coach Oat · 4:00–5:30 PM',
+    reg_price_sat: '1,690 THB',
+    reg_course_monthly: 'Monthly Membership',
+    reg_course_monthly_desc: 'Practice 2 days per week',
+    reg_price_monthly: '2,790 THB/Month',
+    reg_course_private: 'Private Coaching',
+    reg_course_private_desc: 'Flexible time & personalized coach',
+    reg_price_private: 'Custom Hourly Rate',
+    reg_fullname_label: 'Student Full Name *',
+    reg_nickname_label: 'Nickname *',
+    reg_birthdate_label: 'Date of Birth *',
+    reg_age_label: 'Age (Years)',
+    reg_school_label: 'Current School *',
+    reg_referral_check: 'Referred by active DBO Academy member (Discount applied)',
+    reg_referral_desc: 'Referral benefit: Regular course discounted to 3,990.- / Saturday to 1,500.-',
+    reg_parent_name_label: 'Parent Name',
+    reg_phone_label: 'Mobile Phone (Used for login) *',
+    reg_start_date_label: 'Requested Start Date *',
+    reg_monthly_hint: '* For monthly packages, billing cycles renew automatically on the same calendar day next month.',
+    reg_total_pay_label: 'Total Amount Due:',
+    reg_slip_label: 'Attach Payment Slip *',
+    reg_slip_tap_label: 'Tap to upload payment slip photo',
+    reg_slip_hint: 'Account activates immediately once verified by coaching staff.',
+    reg_submit_btn: 'Submit Enrollment & Transfer Slip',
+    reg_school_quick_btn: 'Techawit',
+    bank_kbank_full: 'Kasikornbank (KBANK)',
+
+    // Today's Board & Status
+    daily_board_title: "Today's Training Session",
+    gym_badge: '📍 Techawit School Gymnasium',
+    daily_stat_attending: 'Attending / Confirmed',
+    daily_stat_leave: 'On Leave',
+    daily_stat_unconfirmed: 'Pending Confirmation',
+    header_notify_badge: 'Alerts Active',
+    daily_btn_stats: 'Daily Stats',
+    daily_btn_leave: 'Request Leave',
+    daily_btn_attend: 'Confirm Attendance',
+    daily_section_attending: 'Confirmed Attending',
+    daily_section_leave: 'Students on Leave Today',
+    daily_section_other: 'Other Students in Course',
+    daily_btn_toggle_all: 'Show All Students',
+    daily_class_location_hint: 'Standard Class · Techawit Gym',
+    daily_leave_notified_hint: 'Notified in Advance',
+    people_unit: 'students'
   }
 };
 
@@ -439,7 +615,30 @@ function applyAppLanguageUI() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     const txt = tLang(key);
-    if (txt) el.textContent = txt;
+    if (txt) {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = txt;
+      } else if (txt.includes('<') && txt.includes('>')) {
+        el.innerHTML = txt;
+      } else {
+        el.textContent = txt;
+      }
+    }
+  });
+
+  // Update localized placeholders
+  const phMap = {
+    'regFullName': isEn ? 'e.g. Alex Smith' : 'เช่น ด.ช. ธนกร พัฒนาดี',
+    'regNickName': isEn ? 'e.g. Alex' : 'เช่น น้องเจเจ',
+    'regAge': isEn ? 'e.g. 10 years' : 'เช่น 10 ปี',
+    'regSchool': isEn ? 'e.g. Techawit School...' : 'เช่น โรงเรียนเตชะวิทย์...',
+    'regParentName': isEn ? 'e.g. Parent Name' : 'เช่น คุณแม่ธนกร',
+    'regParentPhone': isEn ? '08x-xxx-xxxx (10 digits)' : '08x-xxx-xxxx (10 หลัก)',
+    'parentPhoneInput': isEn ? 'e.g. 081-234-5678' : 'เช่น 081-234-5678'
+  };
+  Object.entries(phMap).forEach(([id, ph]) => {
+    const inp = document.getElementById(id);
+    if (inp) inp.placeholder = ph;
   });
 
   // Translate navigation tabs & core labels directly by ID
@@ -499,12 +698,58 @@ function applyAppLanguageUI() {
   // Attendance history table headers
   const historyHeaders = document.querySelectorAll('#parentCatPanel-history thead th');
   if (historyHeaders.length >= 5) {
-    historyHeaders[0].textContent = tLang('col_date');
-    historyHeaders[1].textContent = tLang('col_class');
-    historyHeaders[2].textContent = tLang('col_status');
-    historyHeaders[3].textContent = tLang('col_deduct');
-    historyHeaders[4].textContent = tLang('col_balance');
+    historyHeaders[0].textContent = tLang('history_th_date');
+    historyHeaders[1].textContent = tLang('history_th_class');
+    historyHeaders[2].textContent = tLang('history_th_status');
+    historyHeaders[3].textContent = tLang('history_th_deduct');
+    historyHeaders[4].textContent = tLang('history_th_remain');
   }
+
+  // Attendance history accordion hint
+  const accHint = document.getElementById('parentHistoryAccordionHint');
+  if (accHint) {
+    const accBody = document.getElementById('parentHistoryAccordionBody');
+    const isAccOpen = accBody && !accBody.classList.contains('hidden');
+    accHint.textContent = isAccOpen ? tLang('history_tap_hide') : tLang('history_tap_view');
+  }
+
+  // Sibling Course Renew Picker Title
+  const renewSibTitle = document.querySelector('#renewSiblingPickerTitle span');
+  if (renewSibTitle) renewSibTitle.textContent = tLang('renew_sibling_picker_title');
+
+  // Sibling Modal Static Labels
+  const sibModalH2 = document.querySelector('#siblingSelectModal [data-i18n="sibling_modal_title"]');
+  if (sibModalH2) sibModalH2.textContent = tLang('sibling_modal_title');
+  const sibModalSub = document.querySelector('#siblingSelectModal [data-i18n="sibling_modal_subtitle"]');
+  if (sibModalSub) sibModalSub.textContent = tLang('sibling_modal_subtitle');
+  const sibModalCloseBtn = document.querySelector('#siblingSelectModal [data-i18n="close_btn"]');
+  if (sibModalCloseBtn) sibModalCloseBtn.textContent = tLang('close_btn');
+
+  // Bank Info Labels
+  const bankHolderEl = document.querySelector('[data-i18n="bank_account_holder"]');
+  if (bankHolderEl) bankHolderEl.textContent = tLang('bank_account_holder');
+  const bankHolderShortEl = document.querySelector('[data-i18n="bank_account_holder_short"]');
+  if (bankHolderShortEl) bankHolderShortEl.textContent = tLang('bank_account_holder_short');
+  const bankAccountNameLabel = document.querySelector('[data-i18n="bank_account_name_label"]');
+  if (bankAccountNameLabel) bankAccountNameLabel.textContent = tLang('bank_account_name_label');
+
+  // Calendar Header for Parents & Public
+  const calTabH2 = document.getElementById('calendarTabHeaderTitle');
+  if (calTabH2 && (typeof currentStaff === 'undefined' || !currentStaff || !isCoachAuth || currentStaff.isAssistant)) {
+    calTabH2.textContent = tLang('cal_header_title');
+  }
+  const calTabSub = document.getElementById('calendarTabHeaderSubtitle');
+  if (calTabSub && (typeof currentStaff === 'undefined' || !currentStaff || !isCoachAuth || currentStaff.isAssistant)) {
+    calTabSub.textContent = tLang('cal_header_subtitle');
+  }
+  const btnSubViewGCalSpan = document.querySelector('#btnSubViewGCal span');
+  if (btnSubViewGCalSpan) btnSubViewGCalSpan.textContent = tLang('cal_header_title');
+
+  // Curriculum Main Section Heading
+  const currHeadingSpan = document.querySelector('#weeklyScheduleCardsContainer')?.previousElementSibling?.previousElementSibling?.querySelector('h3 span');
+  if (currHeadingSpan) currHeadingSpan.textContent = tLang('weekly_curriculum_main_title');
+  const editWkBtnSpan = document.querySelector('#btnEditWeeklySchedule span');
+  if (editWkBtnSpan) editWkBtnSpan.textContent = tLang('edit_weekly_schedule_btn');
 
   // Calendar toggle buttons
   const btnCalW = document.getElementById('btnCalWeekly');
@@ -572,6 +817,19 @@ function applyAppLanguageUI() {
     calLegends[1].innerHTML = `<strong>${isEn ? 'Saturday' : 'คลาสวันเสาร์'}</strong> ${isEn ? '(4:00–5:30 PM)' : '(16:00–17:30)'}`;
     calLegends[2].innerHTML = `<strong>${tLang('cal_legend_canceled')}</strong>`;
     calLegends[3].innerHTML = `<strong>${tLang('cal_legend_private')}</strong>`;
+  }
+
+  // Push Notification Badge
+  const pushBadge = document.getElementById('pushStatusBadge');
+  if (pushBadge) {
+    if (pushBadge.textContent.includes('แจ้งเตือน') || pushBadge.textContent.includes('Alerts')) {
+      pushBadge.textContent = isEn ? 'Alerts Active' : 'เปิดแจ้งเตือนแล้ว';
+    }
+  }
+
+  // Calculate Fee Display in Registration
+  if (typeof calculateFee === 'function') {
+    calculateFee();
   }
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
