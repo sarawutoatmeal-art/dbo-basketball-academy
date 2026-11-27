@@ -101,9 +101,30 @@ function renderCoachRosterTable() {
     }
   });
 
+  const rawSearch = (search || '').trim().toLowerCase();
+  const cleanSearch = rawSearch.replace(/^น้อง\s*/, '').trim();
+
   let filtered = students.filter(s => {
-    const matchSearch = s.name.toLowerCase().includes(search) || (s.fullName || '').toLowerCase().includes(search) || (s.phone || '').includes(search) || String(s.id).includes(search);
+    const sName = (s.name || '').toLowerCase();
+    const cleanSName = sName.replace(/^น้อง\s*/, '').trim();
+    const sFullName = (s.fullName || '').toLowerCase();
+    const sPhone = (s.phone || '').replace(/[^\d]/g, '');
+    const sId = String(s.id || '');
+
+    const matchSearch = !rawSearch || 
+      cleanSName.includes(cleanSearch) || 
+      sName.includes(rawSearch) || 
+      sFullName.includes(cleanSearch) || 
+      sFullName.includes(rawSearch) || 
+      sPhone.includes(cleanSearch) || 
+      sId === rawSearch ||
+      sId === cleanSearch;
+
     if (!matchSearch) return false;
+
+    // If searching by keyword, show across all categories so search is never silently blocked
+    if (rawSearch.length > 0) return true;
+
     if (currentCoachFilter === 'all') return true;
     if (uBrackets.includes(currentCoachFilter)) {
       if (typeof calculateAthleteAgeAndUCategory === 'function') {
@@ -143,6 +164,7 @@ function renderCoachRosterTable() {
   filtered.forEach(s => {
     const isSaturdayFilter = (currentCoachFilter === 'saturday');
     const rem = isSaturdayFilter ? (s.saturdayRemaining || 0) : (s.remaining || 0);
+    const cleanName = (s.name || '').replace(/^น้อง\s*/, '').trim();
     
     // Clean, non-redundant quota status pill (Expresses count + urgency in a single clear pill)
     let remBadge = '';
@@ -211,7 +233,7 @@ function renderCoachRosterTable() {
         <td data-label="เลขที่" class="py-2.5 px-3 text-center text-xs text-slate-400 font-mono font-medium">${s.id}</td>
         <td data-label="นักเรียน" class="py-2.5 px-3">
           <div class="flex items-center gap-1.5 flex-wrap">
-            <strong onclick="openEditStudentModal(${s.id})" class="text-xs sm:text-sm font-bold text-dbo-navy hover:text-indigo-600 cursor-pointer" title="คลิกเพื่อแก้ไข">น้อง ${s.name}</strong>
+            <strong onclick="openEditStudentModal(${s.id})" class="text-xs sm:text-sm font-bold text-dbo-navy hover:text-indigo-600 cursor-pointer" title="คลิกเพื่อแก้ไข">น้อง ${cleanName}</strong>
             ${uBadgeHtml}
             ${pdpaBadgeHtml}
           </div>
@@ -250,7 +272,7 @@ function renderCoachRosterTable() {
       card.innerHTML = `
         <div class="roster-card-heading">
           <div class="roster-card-identity">
-            <h4><button type="button" onclick="openEditStudentModal(${s.id})" class="text-start hover:underline">น้อง ${s.name}</button></h4>
+            <h4><button type="button" onclick="openEditStudentModal(${s.id})" class="text-start hover:underline">น้อง ${cleanName}</button></h4>
             <div class="roster-card-meta flex-wrap">
               <span class="tabular-nums">#${s.id}</span>
               ${typeBadge}

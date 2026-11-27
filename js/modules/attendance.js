@@ -794,13 +794,18 @@ function populateRecordChecklist(stateMap = {}) {
   if (!container) return;
 
   container.innerHTML = '';
-  const sorted = [...students].sort((a, b) => a.name.localeCompare(b.name, 'th'));
+  const sorted = [...students].sort((a, b) => {
+    const nameA = (a.name || '').replace(/^น้อง\s*/, '').trim();
+    const nameB = (b.name || '').replace(/^น้อง\s*/, '').trim();
+    return nameA.localeCompare(nameB, 'th');
+  });
 
   sorted.forEach(s => {
+    const cleanName = (s.name || '').replace(/^น้อง\s*/, '').trim();
     const row = document.createElement('div');
     row.className = "record-student-row flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 transition border-b border-slate-50";
     row.setAttribute('data-student-id', s.id);
-    row.setAttribute('data-student-name', (s.name || '').toLowerCase());
+    row.setAttribute('data-student-name', cleanName.toLowerCase());
 
     const currentStatus = (stateMap[s.id] && stateMap[s.id].status) || 'absent';
     row.dataset.status = ['attending', 'leave'].includes(currentStatus) ? currentStatus : 'absent';
@@ -813,7 +818,7 @@ function populateRecordChecklist(stateMap = {}) {
           ${s.id}
         </span>
         <div class="min-w-0">
-          <strong class="text-xs sm:text-sm font-bold text-slate-900 block truncate">น้อง ${s.name}</strong>
+          <strong class="text-xs sm:text-sm font-bold text-slate-900 block truncate">น้อง ${cleanName}</strong>
           <span class="text-[10px] text-slate-500 font-mono">
             คงเหลือ: <span class="${quotaColor}">${rem} ครั้ง</span> ${s.saturdayRemaining ? `• เสาร์: ${s.saturdayRemaining}` : ''}
           </span>
@@ -850,12 +855,14 @@ function setRecordStudentStatus(studentId, status, updateCounts = true) {
 }
 
 function filterRecordStudents(query) {
-  const q = (query || '').trim().toLowerCase();
+  const rawQ = (query || '').trim().toLowerCase();
+  const cleanQ = rawQ.replace(/^น้อง\s*/, '').trim();
   const rows = document.querySelectorAll('.record-student-row');
   rows.forEach(r => {
-    const sName = r.getAttribute('data-student-name') || '';
+    const sName = (r.getAttribute('data-student-name') || '').toLowerCase();
+    const cleanSName = sName.replace(/^น้อง\s*/, '').trim();
     const sId = r.getAttribute('data-student-id') || '';
-    if (sName.includes(q) || sId.includes(q)) {
+    if (!rawQ || cleanSName.includes(cleanQ) || sName.includes(rawQ) || sId === rawQ || sId === cleanQ) {
       r.classList.remove('hidden');
     } else {
       r.classList.add('hidden');

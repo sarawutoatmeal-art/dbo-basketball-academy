@@ -1141,25 +1141,33 @@ function approveParentRegistration(regId) {
   const reg = parentRegistrations.find(r => r.id === regId);
   if (!reg) return;
   const nowTs = Date.now();
+  const cleanStudentName = (reg.studentName || '').replace(/^น้อง\s*/, '').trim();
 
   let st = null;
   if (reg.studentId) {
-    st = students.find(s => s.id === reg.studentId);
+    st = students.find(s => Number(s.id) === Number(reg.studentId));
   }
-  if (!st) {
-    st = students.find(s => s.name === reg.studentName);
+  if (!st && cleanStudentName) {
+    st = students.find(s => {
+      const sName = (s.name || '').replace(/^น้อง\s*/, '').trim().toLowerCase();
+      return sName === cleanStudentName.toLowerCase() || (s.fullName || '').toLowerCase().includes(cleanStudentName.toLowerCase());
+    });
   }
 
   if (st) {
     st.phone = reg.phone;
-    st.parentName = reg.parentName;
-    st.parentRelation = reg.relation;
+    if (reg.parentName) st.parentName = reg.parentName;
+    if (reg.relation) st.parentRelation = reg.relation;
+    if (st.name) st.name = st.name.replace(/^น้อง\s*/, '').trim();
     st._updatedAt = nowTs;
+    reg.studentId = st.id;
   } else {
-    const newId = students.length > 0 ? Math.max(...students.map(s => s.id || 0)) + 1 : 1;
+    const newId = students.length > 0 ? Math.max(...students.map(s => Number(s.id) || 0)) + 1 : 1;
+    const parentLastName = (reg.parentName || '').trim().split(/\s+/).slice(1).join(' ');
     const newSt = {
       id: newId,
-      name: reg.studentName,
+      name: cleanStudentName || reg.studentName,
+      fullName: reg.fullName || (parentLastName ? `ด.ช. ${cleanStudentName} ${parentLastName}` : `ด.ช. ${cleanStudentName}`),
       phone: reg.phone,
       parentName: reg.parentName,
       parentRelation: reg.relation,
@@ -1170,10 +1178,14 @@ function approveParentRegistration(regId) {
       remaining: 10,
       saturdayRemaining: 0,
       remark: 'สมัครใหม่ผ่านการอนุมัติผู้ปกครอง',
+      checkInHistory: [],
+      _lastCoachActionAt: nowTs,
+      _isCoachAuthoritative: true,
       _updatedAt: nowTs
     };
     students.push(newSt);
     st = newSt;
+    reg.studentId = newId;
   }
 
   reg.status = 'approved';
@@ -1181,11 +1193,12 @@ function approveParentRegistration(regId) {
   reg.approvedAt = new Date().toISOString();
   reg.updatedAt = nowTs;
 
-  saveState(true, `อนุมัติเบอร์ผู้ปกครองน้อง ${reg.studentName}`, true);
+  saveState(true, `อนุมัติเบอร์ผู้ปกครองน้อง ${cleanStudentName || reg.studentName}`, true);
   renderParentRegistrations();
   if (typeof renderCoachRosterTable === 'function') renderCoachRosterTable();
-  showToast(`อนุมัติเบอร์ ${reg.phone} ผูกกับน้อง ${reg.studentName} เรียบร้อยแล้ว`);
-  triggerTelegramPush(`โค้ชอนุมัติเบอร์ ${reg.phone} ผูกกับน้อง ${reg.studentName} เรียบร้อย ผู้ปกครองเข้าสู่ระบบได้ทันที`, 'DBO Academy Admin');
+  if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+  showToast(`อนุมัติเบอร์ ${reg.phone} ผูกกับน้อง ${cleanStudentName || reg.studentName} เรียบร้อยแล้ว`);
+  triggerTelegramPush(`โค้ชอนุมัติเบอร์ ${reg.phone} ผูกกับน้อง ${cleanStudentName || reg.studentName} เรียบร้อย ผู้ปกครองเข้าสู่ระบบได้ทันที`, 'DBO Academy Admin');
   playNotificationChime();
 }
 

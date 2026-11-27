@@ -244,10 +244,17 @@ function applyIncomingState(incomingData, actionDesc = '') {
         inc.longJump = null;
         inc.longJumpHistory = [];
       }
+      // Normalize student name to bare nickname without 'น้อง' prefix
+      if (inc.name) {
+        inc.name = inc.name.replace(/^น้อง\s*/, '').trim();
+      }
       const sid = Number(inc.id);
       if (deletedStudentIds[String(sid)]) return;
 
       const existing = studentMap.get(sid);
+      if (existing && existing.name) {
+        existing.name = existing.name.replace(/^น้อง\s*/, '').trim();
+      }
       if (!existing) {
         studentMap.set(sid, inc);
         hasChanges = true;
@@ -461,7 +468,17 @@ function applyIncomingState(incomingData, actionDesc = '') {
       }
     }
 
-    refreshAllViews();
+    if (typeof refreshAllViews === 'function') {
+      refreshAllViews();
+    } else {
+      if (typeof renderParentView === 'function') renderParentView();
+      if (typeof renderCoachRosterTable === 'function') renderCoachRosterTable();
+      if (typeof renderDailyAttendanceBoard === 'function') renderDailyAttendanceBoard();
+      if (typeof renderParentRegistrations === 'function') renderParentRegistrations();
+      if (typeof renderPendingSlips === 'function') renderPendingSlips();
+      if (typeof renderTeachingRecordsList === 'function') renderTeachingRecordsList();
+      if (typeof updateSessionDateDisplay === 'function') updateSessionDateDisplay();
+    }
 
     if (actionDesc) {
       showToast(`อัปเดตข้อมูลล่าสุด: ${actionDesc}`);

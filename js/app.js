@@ -81,6 +81,7 @@ function refreshAllViews() {
   if (typeof applyAppLanguageUI === 'function') applyAppLanguageUI();
   lucide.createIcons();
 }
+window.refreshAllViews = refreshAllViews;
 
 // In-App Manual Refresh (Syncs latest cloud state in-place without page reload)
 async function handleManualInAppRefresh(e) {
