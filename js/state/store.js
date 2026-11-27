@@ -14,7 +14,21 @@ if (typeof defaultDeletedStudentIds !== 'undefined' && defaultDeletedStudentIds)
   Object.keys(defaultDeletedStudentIds).forEach(k => {
     if (!deletedStudentIds[k]) deletedStudentIds[k] = defaultDeletedStudentIds[k];
   });
-  localStorage.setItem('dbo_deleted_students_v16', JSON.stringify(deletedStudentIds));
+}
+// Munich (#58) and Champ (#59) are active registered students - never treat as deleted!
+delete deletedStudentIds['58'];
+delete deletedStudentIds['59'];
+localStorage.setItem('dbo_deleted_students_v16', JSON.stringify(deletedStudentIds));
+
+// Sanitize assistantCoaches so parent phone 0612182195 is never hijacked as coach
+if (Array.isArray(assistantCoaches)) {
+  assistantCoaches.forEach(a => {
+    if ((a.phone || '').replace(/[^\d]/g, '') === '0612182195') {
+      a.phone = '0900000002';
+      a.name = 'ผู้ช่วยโค้ชคนที่ 2';
+    }
+  });
+  localStorage.setItem('dbo_assistant_coaches_v14', JSON.stringify(assistantCoaches));
 }
 let processedSlipIds = JSON.parse(localStorage.getItem('dbo_processed_slips_v16')) || {};
 let lastSubmittedAt = parseInt(localStorage.getItem('dbo_last_submitted_at_v16') || '0', 10);
@@ -117,6 +131,45 @@ if (!localStorage.getItem(COLLISION_RECOVERY_KEY)) {
     }
   });
 }
+
+// Always ensure all valid students from initialRawData are present in memory and localStorage
+initialRawData.forEach(raw => {
+  if (!deletedStudentIds[String(raw.id)]) {
+    const existing = students.find(s => Number(s.id) === Number(raw.id));
+    if (!existing) {
+      students.push({
+        ...raw,
+        phone: raw.phone || '',
+        parentName: raw.parentName || '',
+        parentRelation: raw.parentRelation || '',
+        nextRenewal: raw.courseType === 'monthly' ? calculateMonthlyNextRenewal(raw.startDate) : '-',
+        remarkOat: '',
+        remarkOak: '',
+        vJump: null,
+        vJumpHistory: [],
+        longJump: null,
+        longJumpHistory: [],
+        checkInHistory: raw.checkInHistory || [],
+        _updatedAt: raw._updatedAt || Date.now()
+      });
+    } else {
+      if (raw.phone && !existing.phone) existing.phone = raw.phone;
+      if (raw.parentName && !existing.parentName) existing.parentName = raw.parentName;
+      if (raw.parentRelation && !existing.parentRelation) existing.parentRelation = raw.parentRelation;
+      if (raw.fullName && !existing.fullName) existing.fullName = raw.fullName;
+    }
+  }
+});
+
+// Normalize names for all students in memory
+students.forEach(st => {
+  if (st && st.name) {
+    st.name = st.name.replace(/^น้อง\s*/, '').trim();
+  }
+});
+students.sort((a, b) => Number(a.id) - Number(b.id));
+syncSiblingState(students);
+localStorage.setItem('dbo_students_v14', JSON.stringify(students));
 
 // Ensure student timestamps are normalized to real time so new coach edits are strictly authoritative
 const nowBaseline = Date.now();

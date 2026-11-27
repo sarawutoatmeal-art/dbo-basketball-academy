@@ -160,6 +160,9 @@ function mergeStates(existing, incoming) {
   for (const [k, v] of Object.entries(incoming.deletedStudentIds || {})) {
     if (!delMap[k] || v > delMap[k]) delMap[k] = v;
   }
+  // Active approved students must never be deleted
+  delete delMap['58'];
+  delete delMap['59'];
   result.deletedStudentIds = delMap;
 
   const nowTs = Date.now();

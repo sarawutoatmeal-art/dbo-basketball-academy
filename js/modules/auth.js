@@ -50,8 +50,9 @@ function handleParentPhoneLogin(e, forcedInput = null) {
     return;
   }
 
-  // 1.5 Check Assistant Coaches Whitelist
-  const matchedAsst = assistantCoaches.find(a => (a.phone || '').replace(/[^\d]/g, '') === cleanPhone && cleanPhone !== '');
+  // 1.5 Check Assistant Coaches Whitelist (Only if this phone does NOT belong to a student/parent)
+  const isStudentParentPhone = students.some(s => (s.phone || '').replace(/[^\d]/g, '') === cleanPhone);
+  const matchedAsst = !isStudentParentPhone && assistantCoaches.find(a => (a.phone || '').replace(/[^\d]/g, '') === cleanPhone && cleanPhone !== '');
   if (matchedAsst) {
     isCoachAuth = true;
     currentStaff = {

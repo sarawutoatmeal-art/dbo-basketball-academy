@@ -227,6 +227,14 @@ function applyIncomingState(incomingData, actionDesc = '') {
 
   // 2. Smart Record-by-Record Merge for Students
   if (incomingData.students && Array.isArray(incomingData.students)) {
+    // Munich (#58) and Champ (#59) are active registered students - never treat as deleted!
+    delete deletedStudentIds['58'];
+    delete deletedStudentIds['59'];
+    if (incomingData.deletedStudentIds) {
+      delete incomingData.deletedStudentIds['58'];
+      delete incomingData.deletedStudentIds['59'];
+    }
+
     const studentMap = new Map();
     students.forEach(s => {
       if (s && s.id !== undefined && !deletedStudentIds[String(s.id)]) {
