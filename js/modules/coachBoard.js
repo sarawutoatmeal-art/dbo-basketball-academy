@@ -1,23 +1,110 @@
 // ========================================================
-// DBO Basketball Academy - Interactive Coach Tactic Board
-// (Full/Half DBO Court with Center Logo, Draggable Players/Ball/Cones,
-//  Tactical Arrows/Dribble/Screen/Freehand Drawing, Presets & Real Student Lineup)
+// DBO Basketball Academy - Interactive Coach Tactic Board v2
+// (Die-Cut DBO Gold Center Crest, Full-Screen iPad & Phone Auto-Fit
+//  Portrait & Landscape Courts, Customizable Token Colors, Arrows/Drills)
 // ========================================================
 
 const DBO_COACH_BOARD_SAVED_KEY = 'dbo_coach_board_saved_plays_v1';
+const DBO_COACH_BOARD_PREFS_KEY = 'dbo_coach_board_prefs_v2';
+
+const DBO_TOKEN_THEMES = {
+  purple: {
+    id: 'purple',
+    name: 'ม่วง-ทอง DBO',
+    bg: 'linear-gradient(135deg, #241044 0%, #38196B 100%)',
+    text: '#DEB95B',
+    border: '#DEB95B',
+    plateBg: 'rgba(36, 16, 68, 0.94)',
+    plateBorder: '#DEB95B',
+    swatch: '#241044'
+  },
+  gold: {
+    id: 'gold',
+    name: 'ทองแชมเปี้ยน DBO',
+    bg: 'linear-gradient(135deg, #F3D27A 0%, #CAA044 100%)',
+    text: '#241044',
+    border: '#241044',
+    plateBg: 'rgba(36, 16, 68, 0.94)',
+    plateBorder: '#DEB95B',
+    swatch: '#DEB95B'
+  },
+  white: {
+    id: 'white',
+    name: 'ขาวบริสุทธิ์ DBO',
+    bg: 'linear-gradient(135deg, #FFFFFF 0%, #F3EEF8 100%)',
+    text: '#241044',
+    border: '#241044',
+    plateBg: 'rgba(36, 16, 68, 0.92)',
+    plateBorder: '#FFFFFF',
+    swatch: '#FFFFFF'
+  },
+  blue: {
+    id: 'blue',
+    name: 'น้ำเงินรอยัล',
+    bg: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%)',
+    text: '#FFFFFF',
+    border: '#93C5FD',
+    plateBg: 'rgba(30, 58, 138, 0.94)',
+    plateBorder: '#93C5FD',
+    swatch: '#2563EB'
+  },
+  emerald: {
+    id: 'emerald',
+    name: 'เขียวมรกต',
+    bg: 'linear-gradient(135deg, #065F46 0%, #10B981 100%)',
+    text: '#FFFFFF',
+    border: '#A7F3D0',
+    plateBg: 'rgba(6, 95, 70, 0.94)',
+    plateBorder: '#6EE7B7',
+    swatch: '#10B981'
+  },
+  orange: {
+    id: 'orange',
+    name: 'ส้มบาสเกตบอล',
+    bg: 'linear-gradient(135deg, #9A3412 0%, #EA580C 100%)',
+    text: '#FFFFFF',
+    border: '#FDBA74',
+    plateBg: 'rgba(124, 45, 18, 0.94)',
+    plateBorder: '#FDBA74',
+    swatch: '#EA580C'
+  },
+  black: {
+    id: 'black',
+    name: 'ดำคาร์บอน-ทอง',
+    bg: 'linear-gradient(135deg, #111111 0%, #27272A 100%)',
+    text: '#DEB95B',
+    border: '#DEB95B',
+    plateBg: 'rgba(17, 17, 17, 0.94)',
+    plateBorder: '#DEB95B',
+    swatch: '#18181B'
+  },
+  red: {
+    id: 'red',
+    name: 'แดงแทคติก',
+    bg: 'linear-gradient(135deg, #991B1B 0%, #DC2626 100%)',
+    text: '#FFFFFF',
+    border: '#FCA5A5',
+    plateBg: 'rgba(127, 29, 29, 0.94)',
+    plateBorder: '#FCA5A5',
+    swatch: '#DC2626'
+  }
+};
 
 const coachBoardState = {
   initialized: false,
-  courtMode: 'full', // 'full' | 'half'
-  tool: 'move',      // 'move' | 'arrow' | 'dribble' | 'screen' | 'pen'
+  courtMode: 'full',       // 'full' | 'half' | 'landscape'
+  tool: 'move',            // 'move' | 'arrow' | 'dribble' | 'screen' | 'pen'
   strokeColor: '#DEB95B',
+  offenseTheme: 'purple',  // Default Offense 1-5: DBO Purple & Gold
+  defenseTheme: 'gold',    // Default Defense X1-X5: DBO Gold & Navy (changeable to any color!)
   showDefense: true,
   isFullscreen: false,
+  openDrawer: null,        // null | 'colors' | 'presets' | 'lineup' | 'saves'
   activeTokenId: null,
   isDrawing: false,
   currentDrawing: null,
-  drawings: [],      // Array of { type, color, points: [{x, y}] } in normalized 0..1000x0..1500 coords
-  tokens: [],        // Normalized coordinates: x in [0..100], y in [0..100]
+  drawings: [],            // Normalized 0..1000 coords
+  tokens: [],              // Normalized 0..100 coords (stored in vertical portrait reference frame)
   lineupNames: {
     O1: 'PG (1)',
     O2: 'SG (2)',
@@ -27,8 +114,29 @@ const coachBoardState = {
   }
 };
 
+function loadCoachBoardPrefs() {
+  try {
+    const raw = localStorage.getItem(DBO_COACH_BOARD_PREFS_KEY);
+    if (raw) {
+      const p = JSON.parse(raw);
+      if (p.offenseTheme && DBO_TOKEN_THEMES[p.offenseTheme]) coachBoardState.offenseTheme = p.offenseTheme;
+      if (p.defenseTheme && DBO_TOKEN_THEMES[p.defenseTheme]) coachBoardState.defenseTheme = p.defenseTheme;
+      if (p.courtMode) coachBoardState.courtMode = p.courtMode;
+    }
+  } catch (e) {}
+}
+
+function saveCoachBoardPrefs() {
+  try {
+    localStorage.setItem(DBO_COACH_BOARD_PREFS_KEY, JSON.stringify({
+      offenseTheme: coachBoardState.offenseTheme,
+      defenseTheme: coachBoardState.defenseTheme,
+      courtMode: coachBoardState.courtMode
+    }));
+  } catch (e) {}
+}
+
 function getDefaultCoachBoardTokens(mode = 'full', preset = '5out') {
-  // Normalized coordinates: x (0=left, 100=right), y (0=top hoop, 100=bottom hoop/midcourt)
   if (preset === 'pick_roll') {
     return [
       { id: 'O1', kind: 'offense', num: '1', label: coachBoardState.lineupNames.O1, x: 50, y: 38 },
@@ -108,7 +216,6 @@ function getDefaultCoachBoardTokens(mode = 'full', preset = '5out') {
     ];
   }
 
-  // Default: 5-Out Motion
   return [
     { id: 'O1', kind: 'offense', num: '1', label: coachBoardState.lineupNames.O1, x: 50, y: 40 },
     { id: 'O2', kind: 'offense', num: '2', label: coachBoardState.lineupNames.O2, x: 82, y: 31 },
@@ -129,36 +236,80 @@ function initCoachBoard() {
   if (!stage) return;
 
   if (!coachBoardState.initialized) {
+    loadCoachBoardPrefs();
+    // Auto-select landscape court on wide iPad/tablet screens if user hasn't chosen yet
+    if (!localStorage.getItem(DBO_COACH_BOARD_PREFS_KEY) && window.innerWidth >= 768 && window.innerWidth > window.innerHeight) {
+      coachBoardState.courtMode = 'landscape';
+    }
     coachBoardState.tokens = getDefaultCoachBoardTokens(coachBoardState.courtMode, '5out');
     bindCoachBoardEvents();
     coachBoardState.initialized = true;
   }
 
+  renderTokenColorPickers();
   populateCoachBoardStudentAssigners();
   renderCoachBoardSavedPlaysList();
-  renderCoachBoardTokens();
-  resizeAndRenderCoachBoardCanvas();
-  updateCoachBoardToolbarUI();
+  setCoachBoardCourtMode(coachBoardState.courtMode, true);
 }
 
-function setCoachBoardCourtMode(mode) {
-  coachBoardState.courtMode = mode === 'half' ? 'half' : 'full';
+// Convert stored vertical-court coordinates (x:0..100, y:0..100) to current court view display %
+function toDisplayCoords(xPct, yPct, mode) {
+  if (mode === 'half') {
+    return {
+      x: Math.min(95, Math.max(5, xPct)),
+      y: Math.min(93, Math.max(6, yPct * 1.68))
+    };
+  }
+  if (mode === 'landscape') {
+    // Rotate 90 deg counter-clockwise: top hoop (y=0) -> left hoop (displayX=0), x (0..100) -> displayY (100..0)
+    return {
+      x: Math.min(96, Math.max(4, yPct)),
+      y: Math.min(94, Math.max(6, 100 - xPct))
+    };
+  }
+  return {
+    x: Math.min(95, Math.max(5, xPct)),
+    y: Math.min(96, Math.max(4, yPct))
+  };
+}
+
+// Convert display % (0..100, 0..100) back to canonical vertical-court coordinates
+function fromDisplayCoords(dispXPct, dispYPct, mode) {
+  if (mode === 'half') {
+    return {
+      x: dispXPct,
+      y: dispYPct / 1.68
+    };
+  }
+  if (mode === 'landscape') {
+    return {
+      x: 100 - dispYPct,
+      y: dispXPct
+    };
+  }
+  return {
+    x: dispXPct,
+    y: dispYPct
+  };
+}
+
+function setCoachBoardCourtMode(mode, skipSave = false) {
+  const validModes = ['full', 'half', 'landscape'];
+  coachBoardState.courtMode = validModes.includes(mode) ? mode : 'full';
+  if (!skipSave) saveCoachBoardPrefs();
+
   const stage = document.getElementById('dboCoachBoardStage');
   const fullSvg = document.getElementById('dboFullCourtSvg');
   const halfSvg = document.getElementById('dboHalfCourtSvg');
+  const landSvg = document.getElementById('dboLandscapeCourtSvg');
 
   if (stage) {
     stage.dataset.courtMode = coachBoardState.courtMode;
   }
-  if (fullSvg && halfSvg) {
-    if (coachBoardState.courtMode === 'half') {
-      fullSvg.classList.add('hidden');
-      halfSvg.classList.remove('hidden');
-    } else {
-      halfSvg.classList.add('hidden');
-      fullSvg.classList.remove('hidden');
-    }
-  }
+
+  if (fullSvg) fullSvg.classList.toggle('hidden', coachBoardState.courtMode !== 'full');
+  if (halfSvg) halfSvg.classList.toggle('hidden', coachBoardState.courtMode !== 'half');
+  if (landSvg) landSvg.classList.toggle('hidden', coachBoardState.courtMode !== 'landscape');
 
   updateCoachBoardToolbarUI();
   setTimeout(() => {
@@ -175,6 +326,89 @@ function setCoachBoardTool(toolName) {
 function setCoachBoardColor(colorHex) {
   coachBoardState.strokeColor = colorHex;
   updateCoachBoardToolbarUI();
+}
+
+function setCoachBoardTokenTheme(team, themeId) {
+  if (!DBO_TOKEN_THEMES[themeId]) return;
+  if (team === 'offense') {
+    coachBoardState.offenseTheme = themeId;
+  } else {
+    coachBoardState.defenseTheme = themeId;
+  }
+  saveCoachBoardPrefs();
+  renderTokenColorPickers();
+  renderCoachBoardTokens();
+  updateCoachBoardToolbarUI();
+  if (typeof showToast === 'function') {
+    const teamLabel = team === 'offense' ? 'หมากทีมบุก (1-5)' : 'หมากทีมรับ (X1-X5)';
+    showToast(`เปลี่ยนสี${teamLabel} เป็น "${DBO_TOKEN_THEMES[themeId].name}" แล้ว`);
+  }
+}
+
+function renderTokenColorPickers() {
+  const offContainer = document.getElementById('offenseTokenColorSwatches');
+  const defContainer = document.getElementById('defenseTokenColorSwatches');
+  const defQuickContainer = document.getElementById('quickDefenseColorBar');
+
+  const themes = Object.values(DBO_TOKEN_THEMES);
+
+  if (offContainer) {
+    offContainer.innerHTML = themes.map(t => {
+      const active = coachBoardState.offenseTheme === t.id;
+      return `
+        <button type="button" onclick="setCoachBoardTokenTheme('offense', '${t.id}')" title="${t.name}" aria-label="สีทีมบุก ${t.name}" class="px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer ${active ? 'bg-[#241044] text-[#DEB95B] border-[#DEB95B] ring-2 ring-[#DEB95B]' : 'bg-nike-cloud text-nike-ink border-nike-hairlineSoft hover:bg-purple-100/60'}">
+          <span class="w-4 h-4 rounded-full flex-shrink-0 border border-black/30" style="background:${t.bg};"></span>
+          <span>${t.name}</span>
+        </button>
+      `;
+    }).join('');
+  }
+
+  if (defContainer) {
+    defContainer.innerHTML = themes.map(t => {
+      const active = coachBoardState.defenseTheme === t.id;
+      return `
+        <button type="button" onclick="setCoachBoardTokenTheme('defense', '${t.id}')" title="${t.name}" aria-label="สีทีมรับ ${t.name}" class="px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer ${active ? 'bg-[#241044] text-[#DEB95B] border-[#DEB95B] ring-2 ring-[#DEB95B]' : 'bg-nike-cloud text-nike-ink border-nike-hairlineSoft hover:bg-purple-100/60'}">
+          <span class="w-4 h-4 rounded-full flex-shrink-0 border border-black/30" style="background:${t.bg};"></span>
+          <span>${t.name}</span>
+        </button>
+      `;
+    }).join('');
+  }
+
+  if (defQuickContainer) {
+    defQuickContainer.innerHTML = themes.map(t => {
+      const active = coachBoardState.defenseTheme === t.id;
+      return `
+        <button type="button" onclick="setCoachBoardTokenTheme('defense', '${t.id}')" title="เปลี่ยนสีหมาก X1-X5: ${t.name}" aria-label="เปลี่ยนสีหมาก X1-X5 เป็น ${t.name}" class="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black transition-transform cursor-pointer" style="background:${t.bg}; color:${t.text}; border: 2px solid ${active ? '#DEB95B' : t.border}; transform: ${active ? 'scale(1.22)' : 'scale(1)'}; box-shadow: ${active ? '0 0 0 2px #241044, 0 0 0 4px #DEB95B' : 'none'};">
+          X
+        </button>
+      `;
+    }).join('');
+  }
+}
+
+function toggleCoachBoardDrawer(drawerName) {
+  if (coachBoardState.openDrawer === drawerName) {
+    coachBoardState.openDrawer = null;
+  } else {
+    coachBoardState.openDrawer = drawerName;
+  }
+
+  ['colors', 'presets', 'lineup', 'saves'].forEach(d => {
+    const panel = document.getElementById(`coachBoardDrawer-${d}`);
+    const btn = document.getElementById(`btnBoardDrawer-${d}`);
+    const isOpen = coachBoardState.openDrawer === d;
+    if (panel) panel.classList.toggle('hidden', !isOpen);
+    if (btn) {
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      if (isOpen) {
+        btn.classList.add('ring-2', 'ring-[#DEB95B]', 'bg-[#241044]', 'text-[#DEB95B]');
+      } else {
+        btn.classList.remove('ring-2', 'ring-[#DEB95B]', 'bg-[#241044]', 'text-[#DEB95B]');
+      }
+    }
+  });
 }
 
 function toggleCoachBoardDefense() {
@@ -198,7 +432,7 @@ function addCoachBoardCone() {
   coachBoardState.tool = 'move';
   renderCoachBoardTokens();
   updateCoachBoardToolbarUI();
-  if (typeof showToast === 'function') showToast(`เพิ่มกรวยฝึกซ้อม #${num} บนสนามแล้ว (ลากวางได้เลย)`);
+  if (typeof showToast === 'function') showToast(`เพิ่มกรวยฝึกซ้อม #${num} บนสนามแล้ว`);
 }
 
 function clearCoachBoardCones() {
@@ -210,7 +444,6 @@ function applyCoachBoardPreset(presetKey) {
   coachBoardState.tokens = getDefaultCoachBoardTokens(coachBoardState.courtMode, presetKey);
   coachBoardState.drawings = [];
 
-  // Add sample tactical diagram arrows for each preset so coaches see an instant visual play!
   if (presetKey === 'pick_roll') {
     coachBoardState.drawings.push(
       { type: 'screen', color: '#DEB95B', points: [{ x: 420, y: 330 }, { x: 465, y: 370 }] },
@@ -326,20 +559,20 @@ function renderCoachBoardTokens() {
   if (!layer) return;
 
   layer.innerHTML = '';
-  const isHalf = coachBoardState.courtMode === 'half';
+  const mode = coachBoardState.courtMode;
+  const offTheme = DBO_TOKEN_THEMES[coachBoardState.offenseTheme] || DBO_TOKEN_THEMES.purple;
+  const defTheme = DBO_TOKEN_THEMES[coachBoardState.defenseTheme] || DBO_TOKEN_THEMES.gold;
 
   coachBoardState.tokens.forEach(tok => {
     if (tok.kind === 'defense' && !coachBoardState.showDefense) return;
 
-    // In half-court mode, scale top-half y [0..55] into [0..92] so tokens fill the spacious half-court
-    const displayY = isHalf ? Math.min(94, Math.max(6, tok.y * 1.68)) : Math.min(96, Math.max(4, tok.y));
-    const displayX = Math.min(95, Math.max(5, tok.x));
+    const pos = toDisplayCoords(tok.x, tok.y, mode);
 
     const el = document.createElement('div');
     el.className = `dbo-board-token dbo-token-${tok.kind}`;
     el.dataset.tokenId = tok.id;
-    el.style.left = `${displayX}%`;
-    el.style.top = `${displayY}%`;
+    el.style.left = `${pos.x}%`;
+    el.style.top = `${pos.y}%`;
 
     if (tok.kind === 'ball') {
       el.innerHTML = `
@@ -351,9 +584,10 @@ function renderCoachBoardTokens() {
         <span class="dbo-token-nameplate">${escapeHtml(tok.label)}</span>
       `;
     } else {
+      const theme = tok.kind === 'offense' ? offTheme : defTheme;
       el.innerHTML = `
-        <div class="dbo-token-disc">${escapeHtml(tok.num)}</div>
-        <span class="dbo-token-nameplate">${escapeHtml(tok.label)}</span>
+        <div class="dbo-token-disc" style="background:${theme.bg}; color:${theme.text}; border: 2.5px solid ${theme.border};">${escapeHtml(tok.num)}</div>
+        <span class="dbo-token-nameplate" style="background:${theme.plateBg}; border-color:${theme.plateBorder};">${escapeHtml(tok.label)}</span>
       `;
     }
 
@@ -363,13 +597,13 @@ function renderCoachBoardTokens() {
 
 function updateCoachBoardToolbarUI() {
   // Court Mode buttons
-  ['full', 'half'].forEach(m => {
+  ['full', 'landscape', 'half'].forEach(m => {
     const btn = document.getElementById(`btnCourtMode-${m}`);
     if (btn) {
       const active = coachBoardState.courtMode === m;
       btn.className = active
-        ? 'px-3 py-1.5 rounded-full text-xs font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] shadow-2xs cursor-pointer transition-all'
-        : 'px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-nike-ink border border-nike-hairlineSoft hover:bg-nike-cloud cursor-pointer transition-all';
+        ? 'px-3 py-1.5 rounded-full text-xs font-bold bg-[#DEB95B] text-[#241044] border border-[#DEB95B] shadow-2xs cursor-pointer transition-all'
+        : 'px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20 hover:bg-white/20 cursor-pointer transition-all';
     }
   });
 
@@ -385,7 +619,7 @@ function updateCoachBoardToolbarUI() {
     }
   });
 
-  // Color swatches
+  // Line Color swatches
   document.querySelectorAll('[data-board-color]').forEach(sw => {
     const c = sw.getAttribute('data-board-color');
     const active = c.toLowerCase() === coachBoardState.strokeColor.toLowerCase();
@@ -396,14 +630,15 @@ function updateCoachBoardToolbarUI() {
   // Defense toggle button
   const defBtn = document.getElementById('btnToggleBoardDefense');
   if (defBtn) {
+    const defTheme = DBO_TOKEN_THEMES[coachBoardState.defenseTheme] || DBO_TOKEN_THEMES.gold;
     defBtn.className = coachBoardState.showDefense
-      ? 'px-3 py-1.5 rounded-full text-xs font-bold bg-rose-700 text-white border border-rose-800 flex items-center gap-1.5 cursor-pointer transition-all'
+      ? 'px-3 py-1.5 rounded-full text-xs font-bold bg-[#241044] text-[#DEB95B] border border-[#DEB95B] flex items-center gap-1.5 cursor-pointer transition-all'
       : 'px-3 py-1.5 rounded-full text-xs font-semibold bg-nike-cloud text-nike-mute border border-nike-hairlineSoft flex items-center gap-1.5 cursor-pointer transition-all';
     const span = defBtn.querySelector('span');
-    if (span) span.textContent = coachBoardState.showDefense ? 'ทีมรับ X1-X5: เปิด' : 'ทีมรับ X1-X5: ปิด';
+    if (span) span.textContent = coachBoardState.showDefense ? `X1-X5 (${defTheme.name})` : 'X1-X5: ปิด';
   }
 
-  // Stage cursor class
+  // Stage cursor
   const stage = document.getElementById('dboCoachBoardStage');
   if (stage) {
     stage.style.cursor = coachBoardState.tool === 'move' ? 'grab' : 'crosshair';
@@ -445,15 +680,18 @@ function renderCoachBoardCanvas() {
     allStrokes.push(coachBoardState.currentDrawing);
   }
 
-  const isHalf = coachBoardState.courtMode === 'half';
+  const mode = coachBoardState.courtMode;
 
   allStrokes.forEach(stroke => {
     if (!stroke || !Array.isArray(stroke.points) || stroke.points.length < 2) return;
 
-    const pts = stroke.points.map(p => ({
-      x: (p.x / 1000) * w,
-      y: ((isHalf ? Math.min(1000, p.y * 1.68) : p.y) / 1000) * h
-    }));
+    const pts = stroke.points.map(p => {
+      const disp = toDisplayCoords(p.x / 10, p.y / 10, mode);
+      return {
+        x: (disp.x / 100) * w,
+        y: (disp.y / 100) * h
+      };
+    });
 
     ctx.save();
     ctx.strokeStyle = stroke.color || '#DEB95B';
@@ -483,7 +721,6 @@ function renderCoachBoardCanvas() {
     const angle = Math.atan2(last.y - prev.y, last.x - prev.x);
 
     if (stroke.type === 'arrow' || stroke.type === 'dribble') {
-      // Draw tactical arrowhead
       const headLen = 15;
       ctx.beginPath();
       ctx.moveTo(last.x, last.y);
@@ -498,7 +735,6 @@ function renderCoachBoardCanvas() {
       ctx.closePath();
       ctx.fill();
     } else if (stroke.type === 'screen') {
-      // Draw perpendicular Screen / Pick T-bar
       const barHalf = 13;
       const perp = angle + Math.PI / 2;
       ctx.beginPath();
@@ -525,9 +761,8 @@ function bindCoachBoardEvents() {
     if (rect.width === 0 || rect.height === 0) return;
 
     const tokenEl = e.target.closest('.dbo-board-token');
-    const isHalf = coachBoardState.courtMode === 'half';
+    const mode = coachBoardState.courtMode;
 
-    // If user touches a player/ball/cone token, always allow dragging it smoothly
     if (tokenEl && (coachBoardState.tool === 'move' || e.pointerType === 'mouse')) {
       e.preventDefault();
       const tokenId = tokenEl.dataset.tokenId;
@@ -539,60 +774,58 @@ function bindCoachBoardEvents() {
 
     if (coachBoardState.tool === 'move') return;
 
-    // Drawing mode
     e.preventDefault();
     try { stage.setPointerCapture(e.pointerId); } catch (err) {}
 
-    const relX = ((e.clientX - rect.left) / rect.width) * 1000;
-    const rawRelY = ((e.clientY - rect.top) / rect.height) * 1000;
-    const relY = isHalf ? (rawRelY / 1.68) : rawRelY;
+    const dispXPct = ((e.clientX - rect.left) / rect.width) * 100;
+    const dispYPct = ((e.clientY - rect.top) / rect.height) * 100;
+    const canon = fromDisplayCoords(dispXPct, dispYPct, mode);
 
     coachBoardState.isDrawing = true;
     coachBoardState.currentDrawing = {
       type: coachBoardState.tool,
       color: coachBoardState.strokeColor,
-      points: [{ x: relX, y: relY }]
+      points: [{ x: canon.x * 10, y: canon.y * 10 }]
     };
   });
 
   stage.addEventListener('pointermove', (e) => {
     const rect = stage.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
-    const isHalf = coachBoardState.courtMode === 'half';
+    const mode = coachBoardState.courtMode;
 
-    // 1. Dragging a player/ball/cone token
     if (coachBoardState.activeTokenId) {
       e.preventDefault();
-      const pctX = Math.min(95, Math.max(5, ((e.clientX - rect.left) / rect.width) * 100));
-      const rawPctY = Math.min(96, Math.max(4, ((e.clientY - rect.top) / rect.height) * 100));
+      const dispXPct = Math.min(96, Math.max(4, ((e.clientX - rect.left) / rect.width) * 100));
+      const dispYPct = Math.min(96, Math.max(4, ((e.clientY - rect.top) / rect.height) * 100));
+      const canon = fromDisplayCoords(dispXPct, dispYPct, mode);
 
       const tok = coachBoardState.tokens.find(t => t.id === coachBoardState.activeTokenId);
       if (tok) {
-        tok.x = Math.round(pctX * 10) / 10;
-        tok.y = Math.round((isHalf ? (rawPctY / 1.68) : rawPctY) * 10) / 10;
+        tok.x = Math.round(canon.x * 10) / 10;
+        tok.y = Math.round(canon.y * 10) / 10;
       }
 
       const tokenEl = stage.querySelector(`.dbo-board-token[data-token-id="${coachBoardState.activeTokenId}"]`);
       if (tokenEl) {
-        tokenEl.style.left = `${pctX}%`;
-        tokenEl.style.top = `${rawPctY}%`;
+        tokenEl.style.left = `${dispXPct}%`;
+        tokenEl.style.top = `${dispYPct}%`;
       }
       return;
     }
 
-    // 2. Drawing tactical line
     if (coachBoardState.isDrawing && coachBoardState.currentDrawing) {
       e.preventDefault();
-      const relX = Math.min(1000, Math.max(0, ((e.clientX - rect.left) / rect.width) * 1000));
-      const rawRelY = Math.min(1000, Math.max(0, ((e.clientY - rect.top) / rect.height) * 1000));
-      const relY = isHalf ? (rawRelY / 1.68) : rawRelY;
+      const dispXPct = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
+      const dispYPct = Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100));
+      const canon = fromDisplayCoords(dispXPct, dispYPct, mode);
+      const relX = canon.x * 10;
+      const relY = canon.y * 10;
 
       const pts = coachBoardState.currentDrawing.points;
       if (coachBoardState.currentDrawing.type === 'arrow' || coachBoardState.currentDrawing.type === 'screen') {
-        // Straight tactical vector line from start to current cursor
         coachBoardState.currentDrawing.points = [pts[0], { x: relX, y: relY }];
       } else {
-        // Smooth freehand / dribble path
         const last = pts[pts.length - 1];
         const dist = Math.hypot(relX - last.x, relY - last.y);
         if (dist > 8) {
@@ -603,7 +836,7 @@ function bindCoachBoardEvents() {
     }
   });
 
-  const endPointer = (e) => {
+  const endPointer = () => {
     if (coachBoardState.activeTokenId) {
       const tokenEl = stage.querySelector(`.dbo-board-token[data-token-id="${coachBoardState.activeTokenId}"]`);
       if (tokenEl) tokenEl.classList.remove('dragging');
@@ -636,6 +869,8 @@ function saveCustomCoachBoardPlay() {
     id: 'play_' + Date.now(),
     title,
     courtMode: coachBoardState.courtMode,
+    offenseTheme: coachBoardState.offenseTheme,
+    defenseTheme: coachBoardState.defenseTheme,
     showDefense: coachBoardState.showDefense,
     tokens: JSON.parse(JSON.stringify(coachBoardState.tokens)),
     drawings: JSON.parse(JSON.stringify(coachBoardState.drawings)),
@@ -660,12 +895,15 @@ function loadSavedCoachBoardPlay(playId) {
   if (!found) return;
 
   coachBoardState.showDefense = found.showDefense !== false;
+  if (found.offenseTheme && DBO_TOKEN_THEMES[found.offenseTheme]) coachBoardState.offenseTheme = found.offenseTheme;
+  if (found.defenseTheme && DBO_TOKEN_THEMES[found.defenseTheme]) coachBoardState.defenseTheme = found.defenseTheme;
   coachBoardState.tokens = JSON.parse(JSON.stringify(found.tokens || []));
   coachBoardState.drawings = JSON.parse(JSON.stringify(found.drawings || []));
   if (found.lineupNames) {
     coachBoardState.lineupNames = { ...coachBoardState.lineupNames, ...found.lineupNames };
   }
 
+  renderTokenColorPickers();
   setCoachBoardCourtMode(found.courtMode || 'full');
   populateCoachBoardStudentAssigners();
   renderCoachBoardTokens();
@@ -694,7 +932,7 @@ function renderCoachBoardSavedPlaysList() {
   } catch (e) { saved = []; }
 
   if (saved.length === 0) {
-    container.innerHTML = `<span class="text-xs text-nike-mute">ยังไม่มีแผนที่บันทึกไว้ — จัดตำแหน่งผู้เล่นและวาดลูกศรแล้วกด "บันทึกแผน" ได้เลย</span>`;
+    container.innerHTML = `<span class="text-xs text-nike-mute">ยังไม่มีแผนที่บันทึกไว้ — จัดตำแหน่งผู้เล่นและวาดลูกศรแล้วกด "+ บันทึกแผน" ได้เลย</span>`;
     return;
   }
 
@@ -708,25 +946,59 @@ function renderCoachBoardSavedPlaysList() {
   `).join('');
 }
 
-function toggleCoachBoardFullscreen() {
+async function toggleCoachBoardFullscreen() {
   const wrapper = document.getElementById('dboCoachBoardCardWrapper');
   if (!wrapper) return;
 
   coachBoardState.isFullscreen = !coachBoardState.isFullscreen;
   if (coachBoardState.isFullscreen) {
     wrapper.classList.add('dbo-board-fullscreen');
+    document.body.classList.add('dbo-board-fs-active');
+    try {
+      if (wrapper.requestFullscreen) {
+        await wrapper.requestFullscreen();
+      } else if (wrapper.webkitRequestFullscreen) {
+        wrapper.webkitRequestFullscreen();
+      }
+    } catch (e) {}
   } else {
     wrapper.classList.remove('dbo-board-fullscreen');
+    document.body.classList.remove('dbo-board-fs-active');
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    } catch (e) {}
   }
 
   const btn = document.getElementById('btnCoachBoardFullscreen');
   if (btn) {
     const span = btn.querySelector('span');
-    if (span) span.textContent = coachBoardState.isFullscreen ? 'ย่อหน้าจอ' : 'เต็มจอ';
+    if (span) span.textContent = coachBoardState.isFullscreen ? 'ออกจากเต็มจอ' : 'เต็มจอ iPad / มือถือ';
   }
 
   setTimeout(() => {
     renderCoachBoardTokens();
     resizeAndRenderCoachBoardCanvas();
-  }, 50);
+  }, 60);
 }
+
+document.addEventListener('fullscreenchange', () => {
+  const wrapper = document.getElementById('dboCoachBoardCardWrapper');
+  if (!document.fullscreenElement && coachBoardState.isFullscreen) {
+    coachBoardState.isFullscreen = false;
+    if (wrapper) wrapper.classList.remove('dbo-board-fullscreen');
+    document.body.classList.remove('dbo-board-fs-active');
+    const btn = document.getElementById('btnCoachBoardFullscreen');
+    if (btn) {
+      const span = btn.querySelector('span');
+      if (span) span.textContent = 'เต็มจอ iPad / มือถือ';
+    }
+    setTimeout(() => {
+      renderCoachBoardTokens();
+      resizeAndRenderCoachBoardCanvas();
+    }, 60);
+  }
+});

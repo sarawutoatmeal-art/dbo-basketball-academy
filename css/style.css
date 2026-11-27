@@ -1727,11 +1727,75 @@ header .app-header-identity {
 /* ======================================================== */
 /* DBO BASKETBALL COACH TACTIC BOARD STYLES                 */
 /* ======================================================== */
+.dbo-court-viewport-container {
+  width: 100%;
+  overflow: hidden;
+}
+
 .dbo-court-stage {
-  max-width: 540px;
+  width: 100%;
+  margin-inline: auto;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+}
+
+.dbo-court-stage[data-court-mode="full"] {
+  aspect-ratio: 600 / 940;
+  max-height: calc(100dvh - 185px);
+  max-width: min(100%, calc((100dvh - 185px) * 600 / 940));
+}
+
+.dbo-court-stage[data-court-mode="landscape"] {
+  aspect-ratio: 940 / 600;
+  max-height: calc(100dvh - 185px);
+  max-width: min(100%, calc((100dvh - 185px) * 940 / 600));
+}
+
+.dbo-court-stage[data-court-mode="half"] {
+  aspect-ratio: 600 / 560;
+  max-height: calc(100dvh - 185px);
+  max-width: min(100%, calc((100dvh - 185px) * 600 / 560));
+}
+
+.dbo-board-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  background: #140826 !important;
+  padding: 8px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  overflow-y: auto !important;
+}
+
+body.dbo-board-fs-active > header,
+body.dbo-board-fs-active > nav.mobile-bottom-nav {
+  display: none !important;
+}
+
+.dbo-board-fullscreen .dbo-court-viewport-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 6px !important;
+}
+
+.dbo-board-fullscreen .dbo-court-stage[data-court-mode="full"] {
+  max-height: calc(100dvh - 135px);
+  max-width: min(100%, calc((100dvh - 135px) * 600 / 940));
+}
+
+.dbo-board-fullscreen .dbo-court-stage[data-court-mode="landscape"] {
+  max-height: calc(100dvh - 135px);
+  max-width: min(100%, calc((100dvh - 135px) * 940 / 600));
+}
+
+.dbo-board-fullscreen .dbo-court-stage[data-court-mode="half"] {
+  max-height: calc(100dvh - 135px);
+  max-width: min(100%, calc((100dvh - 135px) * 600 / 560));
 }
 
 .dbo-board-token {
@@ -1823,17 +1887,7 @@ header .app-header-identity {
 }
 
 .dbo-token-defense .dbo-token-nameplate {
-  background: rgba(127, 29, 29, 0.92);
-  border-color: rgba(255, 255, 255, 0.65);
-}
-
-.dbo-board-fullscreen {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  background: #F6F3FA;
-  padding: 12px;
-  overflow-y: auto;
+  border-color: rgba(255, 255, 255, 0.75);
 }
 
 @media screen and (max-width: 480px) {
